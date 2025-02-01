@@ -104,14 +104,14 @@ function ManageLoanPrograms() {
     setNumTiers(program.tiers.length);
     setTierData(
       program.tiers.map((tier) => ({
-        ...tier,
-        minLoan: tier.minLoan || "",
-        maxLoan: tier.maxLoan || "",
+        tier: tier.tier || 1,
         fico: tier.fico || "",
         experience: tier.experience || "",
         maxLTP: tier.maxLTP || "",
         totalLTC: tier.totalLTC || "",
         maxARV: tier.maxARV || "",
+        minLoan: tier.minLoan || "",
+        maxLoan: tier.maxLoan || "",
       }))
     );
   };
@@ -121,24 +121,6 @@ function ManageLoanPrograms() {
     updatedTiers[index][field] = value;
     setTierData(updatedTiers);
   };
-
-  useEffect(() => {
-    if (selectedProgram && numTiers > 0) {
-      setTierData((prevTiers) => {
-        const newTiers = Array.from({ length: numTiers }, (_, i) => prevTiers[i] || {
-          tier: i + 1,
-          fico: "",
-          experience: "",
-          maxLTP: "",
-          totalLTC: "",
-          maxARV: "",
-          minLoan: "",
-          maxLoan: "",
-        });
-        return newTiers;
-      });
-    }
-  }, [numTiers, selectedProgram]);
 
   const resetForm = () => {
     setEditingProgramId(null);
@@ -168,25 +150,25 @@ function ManageLoanPrograms() {
             value={numTiers}
             onChange={(e) => setNumTiers(parseInt(e.target.value) || 1)}
           />
+
           <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
             {tierData.map((tier, index) => (
               <div key={index} style={{ border: "1px solid black", padding: "10px", minWidth: "200px" }}>
                 <h3>Tier {tier.tier}</h3>
-                {Object.keys(tier).map((key) => (
-                  key !== "tier" && (
-                    <div key={key}>
-                      <label>{key.toUpperCase()}: </label>
-                      <input
-                        type="number"
-                        value={tier[key] || ""}
-                        onChange={(e) => handleTierChange(index, key, e.target.value)}
-                      />
-                    </div>
-                  )
+                {["fico", "experience", "maxLTP", "totalLTC", "maxARV", "minLoan", "maxLoan"].map((field) => (
+                  <div key={field}>
+                    <label>{field.toUpperCase()}: </label>
+                    <input
+                      type="number"
+                      value={tier[field] || ""}
+                      onChange={(e) => handleTierChange(index, field, e.target.value)}
+                    />
+                  </div>
                 ))}
               </div>
             ))}
           </div>
+
           <button onClick={handleSaveLoanProgram}>{editingProgramId ? "Update Loan Program" : "Save Loan Program"}</button>
         </div>
       )}
