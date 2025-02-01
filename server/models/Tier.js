@@ -1,17 +1,47 @@
 const mongoose = require("mongoose");
 
-const TierSchema = new mongoose.Schema({
-  lenderId: { type: mongoose.Schema.Types.ObjectId, ref: "Lender", required: true }, // Tied to lender
-  loanProgramId: { type: mongoose.Schema.Types.ObjectId, ref: "FixAndFlipLoan", required: true }, // Linked to loan program
-  tierName: { type: String, required: true }, // e.g., "Tier 1", "Tier 2", "Elite"
-  minFICO: { type: Number, required: true },
-  minExperience: { type: Number, required: true }, // Min completed flips
-  minTransactionCount: { type: Number, required: true }, // Total transactions
-  minTrueFlips: { type: Number, required: true }, // "True flip" completions
-  maxLTP: { type: Number, required: true }, // Loan-to-Purchase cap for this tier
-  maxARV: { type: Number, required: true }, // Max ARV % allowed
-  totalLTC: { type: Number, required: true }, // Max Loan-to-Cost %
-  heavyRehabAllowed: { type: Boolean, default: false }, // If heavy rehab is allowed
+// Base Tier Schema (if you still want it)
+const BaseTierSchema = new mongoose.Schema({
+  tier: Number,
+  minFICO: Number,
+  minExperience: Number,
+  minLoan: Number,
+  maxLoan: Number,
 });
+
+// Fix and Flip Schema
+const FixAndFlipSchema = new mongoose.Schema({
+  ...BaseTierSchema.obj, // Include base fields
+  maxLTP: Number,
+  totalLTC: Number,
+  maxARV: Number,
+});
+
+// DSCR Schema
+const DSCRSchema = new mongoose.Schema({
+  ...BaseTierSchema.obj,
+  minDSCRRatio: Number,
+  maxLTV: Number,
+});
+
+// Ground Up Construction Schema
+const GroundUpSchema = new mongoose.Schema({
+  ...BaseTierSchema.obj,
+  maxLTC: Number,
+});
+
+// Stabilized Bridge Schema
+const StabilizedBridgeSchema = new mongoose.Schema({
+  ...BaseTierSchema.obj,
+  maxLTV: Number,
+});
+
+module.exports = {
+  FixAndFlipTier: mongoose.model("FixAndFlipTier", FixAndFlipSchema),
+  DSCRTier: mongoose.model("DSCRTier", DSCRSchema),
+  GroundUpTier: mongoose.model("GroundUpTier", GroundUpSchema),
+  StabilizedBridgeTier: mongoose.model("StabilizedBridgeTier", StabilizedBridgeSchema),
+  BaseTierSchema // Export the BaseTierSchema
+};
 
 module.exports = mongoose.model("Tier", TierSchema);
