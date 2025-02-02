@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FixAndFlipSchema } from "../../Tier"; // Import the schema
+import { FixAndFlipSchema } from "../Tier"; // Import the schema
 
 function FixAndFlipLoanForm({ program, tierData, setTierData, onSave }) {
     const [formData, setFormData] = useState({ ...program }); // Initialize with program data

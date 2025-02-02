@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StabilizedBridgeSchema } from "../../Tier"; // Import the Stabilized Bridge schema
+import { StabilizedBridgeSchema } from "../Tier"; // Import the Stabilized Bridge schema
 
 function StabilizedBridgeLoanForm({ program, tierData, setTierData, onSave }) {
     const [formData, setFormData] = useState({ ...program });

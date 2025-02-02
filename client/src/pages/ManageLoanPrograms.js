@@ -1,39 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import FixAndFlipLoanForm from "../components/LoanProgramForms/FixAndFlipLoanForm"; // Corrected path
-import DSCRLoanForm from "../components/LoanProgramForms/DSCRLoanForm";         // Corrected path
-import GroundUpLoanForm from "../components/LoanProgramForms/GroundUpLoanForm";   // Corrected path
-import StabilizedBridgeLoanForm from "../components/LoanProgramForms/StabilizedBridgeLoanForm"; // Corrected path
+import FixAndFlipLoanForm from "../components/LoanProgramForms/FixAndFlipLoanForm";
+import DSCRLoanForm from "../components/LoanProgramForms/DSCRLoanForm";
+import GroundUpLoanForm from "../components/LoanProgramForms/GroundUpLoanForm";
+import StabilizedBridgeLoanForm from "../components/LoanProgramForms/StabilizedBridgeLoanForm";
 
 function ManageLoanPrograms() {
     const { lenderId } = useParams();
-    const [lender, setLender] = useState(null);
     const [loanPrograms, setLoanPrograms] = useState([]);
-    const [selectedProgram, setSelectedProgram] = useState(null); // Store the whole program object
-    const [editingProgram, setEditingProgram] = useState(null); // Store the program being edited
-    const [tierData, setTierData] = useState([]); // Data for the tiers
+    const [editingProgram, setEditingProgram] = useState(null);
+    const [tierData, setTierData] = useState([]);
 
     useEffect(() => {
-        fetch(`/api/lenders/${lenderId}`)
-            .then((res) => res.json())
-            .then((data) => setLender(data.lender || data))
-            .catch((err) => console.error("Error fetching lender:", err));
-
         fetch(`/api/lenders/${lenderId}/loanPrograms`)
             .then((res) => res.json())
-            .then((data) => {
-                setLoanPrograms(data.loanPrograms);
-            })
+            .then((data) => setLoanPrograms(data.loanPrograms))
             .catch((err) => console.error("Error fetching loan programs:", err));
     }, [lenderId]);
 
     const handleEdit = (program) => {
         setEditingProgram(program);
-        setTierData(program.tiers); // Initialize tier data with existing tiers
+        setTierData(program.tiers || []); // Handle undefined tiers
     };
 
     const handleSave = (updatedProgram) => {
-        // Send the updated program data to your API for saving
         fetch(`/api/lenders/${lenderId}/loanPrograms/${updatedProgram._id}`, {
             method: "PUT",
             headers: {
@@ -43,18 +33,15 @@ function ManageLoanPrograms() {
         })
             .then((res) => res.json())
             .then((data) => {
-                // Update the loanPrograms state with the saved data.
                 setLoanPrograms(loanPrograms.map(program => program._id === data.loanProgram._id ? data.loanProgram : program));
-                setEditingProgram(null); // Close the form after saving
+                setEditingProgram(null);
             })
             .catch(error => console.error("Error saving loan program:", error));
-
     };
-
 
     const renderLoanForm = () => {
         if (!editingProgram) {
-            return null; // Or a message like "Select a program to edit"
+            return null;
         }
 
         switch (editingProgram.type) {
