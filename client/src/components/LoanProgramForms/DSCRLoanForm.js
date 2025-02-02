@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { DSCRSchema } from "../Tier"; // Import the DSCR schema
+import { DSCRSchema } from "../../Tier"; // Import the DSCR schema
 
 function DSCRLoanForm({ program, tierData, setTierData, onSave }) {
     const [formData, setFormData] = useState({ ...program });

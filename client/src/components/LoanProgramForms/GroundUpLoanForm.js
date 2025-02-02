@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { GroundUpSchema } from "../Tier"; // Import the Ground Up schema
+import { GroundUpSchema } from "../../Tier"; // Import the Ground Up schema
 
 function GroundUpLoanForm({ program, tierData, setTierData, onSave }) {
     const [formData, setFormData] = useState({ ...program });
