@@ -12,9 +12,32 @@ const GroundUpTier = mongoose.model("GroundUpTier", GroundUpSchema);
 const StabilizedBridgeTier = mongoose.model("StabilizedBridgeTier", StabilizedBridgeSchema);
 
 
-// ... (GET all loan programs for a lender - no changes needed)
+// GET all loan programs for a lender
+router.get("/:lenderId/loanPrograms", async (req, res) => {
+  try {
+      const lenderId = req.params.lenderId;
+      const loanPrograms = await LoanProgram.find({ lender: lenderId });
+      res.status(200).json({ loanPrograms });
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
+  }
+});
 
-// GET an individual loan program (no changes needed)
+// GET a single loan program (for editing)
+router.get("/:lenderId/loanPrograms/:programId", async (req, res) => {
+  try {
+      const programId = req.params.programId;
+      const loanProgram = await LoanProgram.findById(programId);
+      if (!loanProgram) {
+          return res.status(404).json({ message: "Loan program not found" });
+      }
+      res.status(200).json({ loanProgram });
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
+  }
+});
 
 // POST: Add a loan program (Significant Changes)
 router.post("/:lenderId/loanPrograms", async (req, res) => {

@@ -14,13 +14,21 @@ function ManageLoanPrograms() {
     useEffect(() => {
         fetch(`/api/lenders/${lenderId}/loanPrograms`)
             .then((res) => res.json())
-            .then((data) => setLoanPrograms(data.loanPrograms))
-            .catch((err) => console.error("Error fetching loan programs:", err));
+            .then((data) => {
+                setLoanPrograms(data.loanPrograms || []);
+                console.log("Loan Programs:", data.loanPrograms);
+            })
+            .catch((err) => console.error("Error:", err));
     }, [lenderId]);
 
     const handleEdit = (program) => {
-        setEditingProgram(program);
-        setTierData(program.tiers || []); // Handle undefined tiers
+        fetch(`/api/lenders/${lenderId}/loanPrograms/${program._id}`)
+        .then(res => res.json())
+        .then(data => {
+            setEditingProgram(data.loanProgram);
+            setTierData(data.loanProgram.tiers || []);
+        })
+        .catch(err => console.error("Error fetching program for edit:", err));
     };
 
     const handleSave = (updatedProgram) => {
@@ -37,6 +45,17 @@ function ManageLoanPrograms() {
                 setEditingProgram(null);
             })
             .catch(error => console.error("Error saving loan program:", error));
+    };
+
+    const handleAddProgram = () => {
+        const newProgram = {
+            name: "",
+            type: "",
+            lender: lenderId,
+            tiers: [],
+        };
+        setEditingProgram(newProgram);
+        setTierData([]);
     };
 
     const renderLoanForm = () => {
@@ -61,13 +80,21 @@ function ManageLoanPrograms() {
     return (
         <div>
             <h2>Manage Loan Programs</h2>
+
+            <h3>Existing Loan Programs</h3>
+            <button onClick={handleAddProgram}>Add Loan Program</button> {/* onClick handler added here */}
+
             <ul>
-                {loanPrograms.map((program) => (
-                    <li key={program._id}>
-                        {program.name} ({program.type})
-                        <button onClick={() => handleEdit(program)}>Edit</button>
-                    </li>
-                ))}
+                {loanPrograms && loanPrograms.length > 0 ? (
+                    loanPrograms.map((program) => (
+                        <li key={program._id}>
+                            {program.name} ({program.type})
+                            <button onClick={() => handleEdit(program)}>Edit</button>
+                        </li>
+                    ))
+                ) : (
+                    <p>No loan programs found.</p>
+                )}
             </ul>
 
             {renderLoanForm()}
