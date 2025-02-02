@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import FixAndFlipLoanForm from "./FixAndFlipLoanForm";
 
 const LOAN_PROGRAMS = [
   "Fix and Flip",
@@ -20,11 +21,7 @@ function ManageLoanPrograms() {
   const { lenderId } = useParams();
   const navigate = useNavigate();
   const [lender, setLender] = useState(null);
-  const [selectedProgram, setSelectedProgram] = useState("");
   const [loanPrograms, setLoanPrograms] = useState([]);
-  const [numTiers, setNumTiers] = useState(1);
-  const [tierData, setTierData] = useState([]);
-  const [editingProgramId, setEditingProgramId] = useState(null);
 
   useEffect(() => {
     fetch(`/api/lenders/${lenderId}`)
@@ -42,144 +39,33 @@ function ManageLoanPrograms() {
       .catch((err) => console.error("Error fetching loan programs:", err));
   }, [lenderId]);
 
-  const handleSaveLoanProgram = () => {
-    const programData = {
-      name: selectedProgram,
-      tiers: tierData,
-    };
-
-    const url = editingProgramId
-      ? `/api/lenders/${lenderId}/loan-programs/${editingProgramId}`
-      : `/api/lenders/${lenderId}/loan-programs`;
-
-    const method = editingProgramId ? "PUT" : "POST";
-
-    fetch(url, {
-      method: method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(programData),
-    })
+  const handleLoanUpdated = () => {
+    fetch(`/api/lenders/${lenderId}/loan-programs`)
       .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          if (editingProgramId) {
-            setLoanPrograms(loanPrograms.map((p) => (p._id === editingProgramId ? data.loanProgram : p)));
-          } else {
-            setLoanPrograms([...loanPrograms, data.loanProgram]);
-          }
-          alert("Loan program saved successfully!");
-          resetForm();
-        } else {
-          alert("Error saving loan program.");
-        }
-      })
-      .catch((err) => {
-        console.error("Error saving loan program:", err);
-        alert("Error saving loan program.");
-      });
-  };
-
-  const handleDeleteLoanProgram = (programId) => {
-    if (!window.confirm("Are you sure you want to delete this loan program?")) return;
-
-    fetch(`/api/lenders/${lenderId}/loan-programs/${programId}`, { method: "DELETE" })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setLoanPrograms(loanPrograms.filter((program) => program._id !== programId));
-          alert("Loan program deleted successfully!");
-        } else {
-          alert("Error deleting loan program.");
-        }
-      })
-      .catch((err) => {
-        console.error("Error deleting loan program:", err);
-        alert("Error deleting loan program.");
-      });
-  };
-
-  const handleEditLoanProgram = (program) => {
-    setEditingProgramId(program._id);
-    setSelectedProgram(program.name);
-    setNumTiers(program.tiers.length);
-    setTierData(
-      program.tiers.map((tier) => ({
-        tier: tier.tier || 1,
-        fico: tier.fico || "",
-        experience: tier.experience || "",
-        maxLTP: tier.maxLTP || "",
-        totalLTC: tier.totalLTC || "",
-        maxARV: tier.maxARV || "",
-        minLoan: tier.minLoan || "",
-        maxLoan: tier.maxLoan || "",
-      }))
-    );
-  };
-
-  const handleTierChange = (index, field, value) => {
-    const updatedTiers = [...tierData];
-    updatedTiers[index][field] = value;
-    setTierData(updatedTiers);
-  };
-
-  const resetForm = () => {
-    setEditingProgramId(null);
-    setSelectedProgram("");
-    setTierData([]);
-    setNumTiers(1);
+      .then((data) => setLoanPrograms(data))
+      .catch((err) => console.error("Error updating loan programs:", err));
   };
 
   return (
     <div>
       <h1>Manage Loan Programs for {lender ? lender.name : "Loading..."}</h1>
 
-      <select value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)}>
-        <option value="">-- Select Program --</option>
+      <h2>Available Loan Programs</h2>
+      <select>
         {LOAN_PROGRAMS.map((program) => (
           <option key={program} value={program}>{program}</option>
         ))}
       </select>
 
-      {selectedProgram && (
-        <div>
-          <h2>{editingProgramId ? `Edit ${selectedProgram}` : `Configure ${selectedProgram}`}</h2>
-          <label>How many tiers?</label>
-          <input
-            type="number"
-            min="1"
-            value={numTiers}
-            onChange={(e) => setNumTiers(parseInt(e.target.value) || 1)}
-          />
-
-          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-            {tierData.map((tier, index) => (
-              <div key={index} style={{ border: "1px solid black", padding: "10px", minWidth: "200px" }}>
-                <h3>Tier {tier.tier}</h3>
-                {["fico", "experience", "maxLTP", "totalLTC", "maxARV", "minLoan", "maxLoan"].map((field) => (
-                  <div key={field}>
-                    <label>{field.toUpperCase()}: </label>
-                    <input
-                      type="number"
-                      value={tier[field] || ""}
-                      onChange={(e) => handleTierChange(index, field, e.target.value)}
-                    />
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-
-          <button onClick={handleSaveLoanProgram}>{editingProgramId ? "Update Loan Program" : "Save Loan Program"}</button>
-        </div>
-      )}
+      <FixAndFlipLoanForm lenderId={lenderId} onLoanUpdated={handleLoanUpdated} />
 
       <h2>Existing Loan Programs</h2>
       <ul>
         {loanPrograms.map((program) => (
           <li key={program._id}>
-            {program.name} (Tiers: {program.tiers.length})
-            <button onClick={() => handleEditLoanProgram(program)}>Edit</button>
-            <button onClick={() => handleDeleteLoanProgram(program._id)}>Delete</button>
+            {program.name}
+            <button onClick={() => navigate(`/edit-loan-program/${program._id}`)}>Edit</button>
+            <button onClick={() => handleLoanUpdated()}>Refresh</button>
           </li>
         ))}
       </ul>
