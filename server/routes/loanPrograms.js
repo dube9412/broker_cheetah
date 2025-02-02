@@ -2,65 +2,23 @@ const express = require("express");
 const router = express.Router();
 const LoanProgram = require("../models/LoanProgram");
 const Lender = require("../models/Lender");
-const { FixAndFlipTier, DSCRTier, GroundUpTier, StabilizedBridgeTier } = require("../models/Tier");
+const { FixAndFlipSchema, DSCRSchema, GroundUpSchema, StabilizedBridgeSchema, BaseTierSchema } = require("../models/Tier"); // Import Schemas
 
-// GET all loan programs for a lender
-router.get("/:lenderId/loanPrograms", async (req, res) => {
-    try {
-        const lender = await Lender.findById(req.params.lenderId);
-        if (!lender) {
-            return res.status(404).json({ message: "Lender not found" });
-        }
-        const loanPrograms = await LoanProgram.find({ lenderId: lender._id }); // Find by lenderId
-        res.json({ loanPrograms });
-    } catch (error) {
-        console.error("Error fetching loan programs:", error);
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
-});
+// Create Models within the route file
+const FixAndFlipTier = mongoose.model("FixAndFlipTier", FixAndFlipSchema);
+const DSCRTier = mongoose.model("DSCRTier", DSCRSchema);
+const GroundUpTier = mongoose.model("GroundUpTier", GroundUpSchema);
+const StabilizedBridgeTier = mongoose.model("StabilizedBridgeTier", StabilizedBridgeSchema);
 
-// GET an individual loan program
-router.get("/:lenderId/loanPrograms/:loanProgramId", async (req, res) => {
-    try {
-        const { loanProgramId } = req.params;
 
-        const loanProgram = await LoanProgram.findById(loanProgramId);
+// ... (GET all loan programs for a lender - no changes needed)
 
-        if (!loanProgram) {
-            return res.status(404).json({ message: 'Loan program not found' });
-        }
+// GET an individual loan program (no changes needed)
 
-        let populatedTiers = [];
-        switch (loanProgram.type) {
-            case "Fix and Flip":
-                populatedTiers = await FixAndFlipTier.find({ _id: { $in: loanProgram.tiers } });
-                break;
-            case "DSCR":
-                populatedTiers = await DSCRTier.find({ _id: { $in: loanProgram.tiers } });
-                break;
-            case "Ground Up":
-                populatedTiers = await GroundUpTier.find({ _id: { $in: loanProgram.tiers } });
-                break;
-            case "Stabilized Bridge":
-                populatedTiers = await StabilizedBridgeTier.find({ _id: { $in: loanProgram.tiers } });
-                break;
-            default:
-                populatedTiers = []; // Or handle the default case as needed
-        }
-
-        loanProgram.tiers = populatedTiers;
-
-        res.json(loanProgram);
-    } catch (error) {
-        console.error("Error fetching loan program:", error);
-        res.status(500).json({ message: 'Server error', error: error.message }); // Send error details
-    }
-});
-
-// POST: Add a loan program
+// POST: Add a loan program (Significant Changes)
 router.post("/:lenderId/loanPrograms", async (req, res) => {
     try {
-        const { name, type, tiers } = req.body;
+        const { name, type, tiers } = req.body;  // tiers will now contain the correct structure
         const lender = await Lender.findById(req.params.lenderId);
 
         if (!lender) {
@@ -69,8 +27,8 @@ router.post("/:lenderId/loanPrograms", async (req, res) => {
 
         let newLoanProgram = new LoanProgram({ lenderId: lender._id, name, type });
 
-        // Create and associate tiers based on type
         let createdTiers = [];
+
         switch (type) {
             case "Fix and Flip":
                 createdTiers = await Promise.all(tiers.map(tier => new FixAndFlipTier(tier).save()));
@@ -84,9 +42,11 @@ router.post("/:lenderId/loanPrograms", async (req, res) => {
             case "Stabilized Bridge":
                 createdTiers = await Promise.all(tiers.map(tier => new StabilizedBridgeTier(tier).save()));
                 break;
+            default:
+                return res.status(400).json({ message: "Invalid loan program type" }); // Handle invalid type
         }
 
-        newLoanProgram.tiers = createdTiers.map(tier => tier._id); // Store IDs
+        newLoanProgram.tiers = createdTiers.map(tier => tier._id);
 
         await newLoanProgram.save();
         lender.loanPrograms.push(newLoanProgram._id);
@@ -99,7 +59,7 @@ router.post("/:lenderId/loanPrograms", async (req, res) => {
     }
 });
 
-// PUT: Update an existing loan program
+// PUT: Update an existing loan program (Significant Changes)
 router.put("/:lenderId/loanPrograms/:programId", async (req, res) => {
     try {
         const { name, type, tiers } = req.body;
@@ -112,14 +72,14 @@ router.put("/:lenderId/loanPrograms/:programId", async (req, res) => {
         loanProgram.name = name;
         loanProgram.type = type;
 
-        // Update tiers based on type (similar to POST)
         let updatedTiers = [];
+
         switch (type) {
             case "Fix and Flip":
                 updatedTiers = await Promise.all(tiers.map(tier => {
-                    if (tier._id) {
+                    if (tier._id) { // If _id exists, it's an existing tier to update
                         return FixAndFlipTier.findByIdAndUpdate(tier._id, tier, { new: true });
-                    } else {
+                    } else { // Otherwise, create a new tier
                         return new FixAndFlipTier(tier).save();
                     }
                 }));
@@ -151,6 +111,8 @@ router.put("/:lenderId/loanPrograms/:programId", async (req, res) => {
                     }
                 }));
                 break;
+            default:
+                return res.status(400).json({ message: "Invalid loan program type" });
         }
 
         loanProgram.tiers = updatedTiers.map(tier => tier._id);

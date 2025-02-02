@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { FixAndFlipSchema } from "../Tier"; // Import the schema
+import { GroundUpSchema } from "../Tier"; // Import the Ground Up schema
 
-function FixAndFlipLoanForm({ program, tierData, setTierData, onSave }) {
-    const [formData, setFormData] = useState({ ...program }); // Initialize with program data
+function GroundUpLoanForm({ program, tierData, setTierData, onSave }) {
+    const [formData, setFormData] = useState({ ...program });
 
     useEffect(() => {
-        setFormData({ ...program }); // Update form data when program prop changes
-    }, [program]); // Add program to dependency array
+        setFormData({ ...program });
+    }, [program]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,21 +26,21 @@ function FixAndFlipLoanForm({ program, tierData, setTierData, onSave }) {
 
     return (
         <form onSubmit={handleSubmit}>
-            <h3>Fix and Flip Loan Form</h3>
+            <h3>Ground Up Loan Form</h3>
             <label>Name:</label>
             <input type="text" name="name" value={formData.name} onChange={handleChange} /><br />
             {/* ... other common fields (lender, etc.) ... */}
 
-            {/* Fix and Flip Specific Fields */}
-            <label>Max LTP:</label>
-            <input type="number" name="maxLTP" value={formData.maxLTP || ''} onChange={handleChange} /><br />
-            {/* ... other Fix and Flip fields ... */}
+            {/* Ground Up Specific Fields */}
+            <label>Max LTC:</label>
+            <input type="number" name="maxLTC" value={formData.maxLTC || ''} onChange={handleChange} /><br />
+            {/* ... other Ground Up fields ... */}
 
             {/* Tier Handling */}
             {tierData.map((tier, index) => (
                 <div key={index}>
                     <h4>Tier {tier.tier}</h4>
-                    {Object.keys(FixAndFlipSchema.obj).filter(key => key !== 'tier').map(key => (
+                    {Object.keys(GroundUpSchema.obj).filter(key => key !== 'tier').map(key => (
                         <div key={key}>
                             <label>{key.toUpperCase()}:</label>
                             <input
@@ -53,9 +53,10 @@ function FixAndFlipLoanForm({ program, tierData, setTierData, onSave }) {
                     ))}
                 </div>
             ))}
+
             <button type="submit">Save</button>
         </form>
     );
 }
 
-export default FixAndFlipLoanForm;
+export default GroundUpLoanForm;
