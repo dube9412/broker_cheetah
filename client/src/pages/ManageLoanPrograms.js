@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import FixAndFlipLoanForm from "./LoanProgramForms/FixAndFlipLoanForm";
-import DSCRLoanForm from "./LoanProgramForms/DSCRLoanForm";
-import GroundUpLoanForm from "./LoanProgramForms/GroundUpLoanForm";
-import StabilizedBridgeLoanForm from "./LoanProgramForms/StabilizedBridgeLoanForm";
+import FixAndFlipLoanForm from "../components/LoanProgramForms/FixAndFlipLoanForm"; // Corrected path
+import DSCRLoanForm from "../components/LoanProgramForms/DSCRLoanForm";         // Corrected path
+import GroundUpLoanForm from "../components/LoanProgramForms/GroundUpLoanForm";   // Corrected path
+import StabilizedBridgeLoanForm from "../components/LoanProgramForms/StabilizedBridgeLoanForm"; // Corrected path
 
 function ManageLoanPrograms() {
     const { lenderId } = useParams();
