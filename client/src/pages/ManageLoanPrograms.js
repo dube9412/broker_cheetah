@@ -26,25 +26,32 @@ function ManageLoanPrograms() {
         .then(res => res.json())
         .then(data => {
             setEditingProgram(data.loanProgram);
-            setTierData(data.loanProgram.tiers || []);
+            setTierData(data.loanProgram.tiers || []); // Important: Handle undefined tiers
         })
         .catch(err => console.error("Error fetching program for edit:", err));
     };
 
     const handleSave = (updatedProgram) => {
-        fetch(`/api/lenders/${lenderId}/loanPrograms/${updatedProgram._id}`, {
-            method: "PUT",
+        const method = updatedProgram._id ? "PUT" : "POST";
+        const url = updatedProgram._id ? `/api/lenders/${lenderId}/loanPrograms/${updatedProgram._id}` : `/api/lenders/${lenderId}/loanPrograms`;
+
+        fetch(url, {
+            method,
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(updatedProgram),
         })
-            .then((res) => res.json())
-            .then((data) => {
-                setLoanPrograms(loanPrograms.map(program => program._id === data.loanProgram._id ? data.loanProgram : program));
-                setEditingProgram(null);
-            })
-            .catch(error => console.error("Error saving loan program:", error));
+        .then(res => res.json())
+        .then(data => {
+            if(method === "PUT") {
+              setLoanPrograms(loanPrograms.map(program => program._id === data.loanProgram._id ? data.loanProgram : program));
+            } else {
+              setLoanPrograms([...loanPrograms, data.loanProgram])
+            }
+            setEditingProgram(null);
+        })
+        .catch(error => console.error("Error saving loan program:", error));
     };
 
     const handleAddProgram = () => {
@@ -81,8 +88,8 @@ function ManageLoanPrograms() {
         <div>
             <h2>Manage Loan Programs</h2>
 
+            <button onClick={handleAddProgram}>Add Loan Program</button>
             <h3>Existing Loan Programs</h3>
-            <button onClick={handleAddProgram}>Add Loan Program</button> {/* onClick handler added here */}
 
             <ul>
                 {loanPrograms && loanPrograms.length > 0 ? (
