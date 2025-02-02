@@ -4,6 +4,7 @@ const router = express.Router();
 const LoanProgram = require("../models/LoanProgram");
 const Lender = require("../models/Lender");
 const { FixAndFlipSchema, DSCRSchema, GroundUpSchema, StabilizedBridgeSchema, BaseTierSchema } = require("../../client/src/components/Tier"); // Import Schemas
+const { FixAndFlipTier, DSCRTier, GroundUpTier, StabilizedBridgeTier, LoanProgram } = require("../models/LoanProgram"); // Import models
 
 // Create Models within the route file
 const FixAndFlipTier = mongoose.model("FixAndFlipTier", FixAndFlipSchema);
