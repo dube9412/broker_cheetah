@@ -33,24 +33,28 @@ function ManageLoanPrograms() {
   const [tierData, setTierData] = useState([]);
   const [editingProgramId, setEditingProgramId] = useState(null); // Track if editing
 
-  useEffect(() => {
-    fetch(`/api/lenders/${lenderId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Fetched lender data:", data);
-        setLender(data.lender || data);
-      })
-      .catch((err) => console.error("Error fetching lender:", err));
+ useEffect(() => {
+  console.log("Lender ID from URL:", lenderId); // Debugging line
 
-    fetch(`/api/lenders/${lenderId}/loan-programs`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.loanPrograms) {
-          setLoanPrograms(data.loanPrograms);
-        }
-      })
-      .catch((err) => console.error("Error fetching loan programs:", err));
-  }, [lenderId]);
+  if (!lenderId || lenderId === "undefined") {
+    console.error("Invalid lender ID!");
+    return;
+  }
+
+  fetch(`/api/lenders/${lenderId}`)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("Fetched lender data:", data); // Debugging line
+      if (data && data.name) {
+        setLender(data);
+        setLoanPrograms(data.loanPrograms || []);
+      } else {
+        console.error("Lender data is invalid:", data);
+      }
+    })
+    .catch((err) => console.error("Error fetching lender:", err));
+}, [lenderId]);
+
 
   const handleAddLoanProgram = () => {
     if (selectedProgram) {
