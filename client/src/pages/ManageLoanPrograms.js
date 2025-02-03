@@ -34,25 +34,27 @@ function ManageLoanPrograms() {
     const handleSave = (updatedProgram) => {
         const method = updatedProgram._id ? "PUT" : "POST";
         const url = updatedProgram._id ? `/api/lenders/${lenderId}/loanPrograms/${updatedProgram._id}` : `/api/lenders/${lenderId}/loanPrograms`;
+         // Conditionally include _id in the request body
+         const programData = updatedProgram._id? {...updatedProgram }: {...updatedProgram, _id: undefined }; // Remove _id if it doesn't exist
 
-        fetch(url, {
-            method,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(updatedProgram),
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(method === "PUT") {
-              setLoanPrograms(loanPrograms.map(program => program._id === data.loanProgram._id ? data.loanProgram : program));
-            } else {
-              setLoanPrograms([...loanPrograms, data.loanProgram])
-            }
-            setEditingProgram(null);
-        })
-        .catch(error => console.error("Error saving loan program:", error));
-    };
+  fetch(url, {
+      method,
+      headers: {
+          "Content-Type": "application/json",
+      },
+      body: JSON.stringify(programData), // Send the correct data
+  })
+    .then((res) => res.json())
+    .then((data) => {
+          if (method === "PUT") {
+              setLoanPrograms(loanPrograms.map((program) => (program._id === data.loanProgram._id? data.loanProgram: program)));
+          } else {
+              setLoanPrograms([...loanPrograms, data.loanProgram]);
+          }
+          setEditingProgram(null);
+      })
+    .catch((error) => console.error("Error saving loan program:", error));
+};
 
     const handleAddProgram = () => {
         const newProgram = {

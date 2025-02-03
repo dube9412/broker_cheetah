@@ -8,17 +8,23 @@ const GroundUpTier = mongoose.model("GroundUpTier", GroundUpSchema);
 const StabilizedBridgeTier = mongoose.model("StabilizedBridgeTier", StabilizedBridgeSchema);
 
 
-const LoanProgramSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    lender: { type: mongoose.Schema.Types.ObjectId, ref: "Lender", required: true }, // Correct field name: lender
-    type: { type: String, required: true },
-    tiers: [{
-        type: mongoose.Schema.Types.ObjectId,
-        refPath: 'type' // Dynamically reference the correct Tier model
-    }]
-}, { timestamps: true }); // Add timestamps for better data management
+const LoanProgramSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true },
+        lender: { type: mongoose.Schema.Types.ObjectId, ref: "Lender", required: true }, // Add lender field
+        type: { type: String, required: true },
+        tiers: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                refPath: "type",
+            },
+        ],
+    },
+    { timestamps: true },
+);
 
 const LoanProgram = mongoose.model("LoanProgram", LoanProgramSchema);
+
 
 module.exports = { // Export all models
     FixAndFlipTier,
