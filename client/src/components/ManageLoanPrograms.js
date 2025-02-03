@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import FixAndFlipLoanForm from "./LoanProgramForms/FixAndFlipLoanForm";
+import DSCRLoanForm from "./LoanProgramForms/DSCRLoanForm";
+//... import other loan form components
 
 const LOAN_SCHEMAS = {
   "Fix and Flip": ["minFICO", "minExperience", "maxLTP", "totalLTC", "maxARV", "minLoanAmount", "maxLoanAmount"],
@@ -145,6 +148,18 @@ function ManageLoanPrograms() {
     });
   };
 
+  const renderLoanProgramForm = (program) => {
+    switch (program.type) {
+      case "Fix and Flip":
+        return <FixAndFlipLoanForm program={program} />;
+      case "DSCR":
+        return <DSCRLoanForm program={program} />;
+      //... cases for other loan program types
+      default:
+        return null;
+    }
+  };
+
   return (
     <div>
       <h1>Manage Loan Programs for {lender ? lender.name : "Lender"}</h1>
@@ -209,37 +224,22 @@ function ManageLoanPrograms() {
       </button>
       <br />
 
+      
+
       {/* Existing Loan Programs List */}
       <h2>Existing Loan Programs</h2>
       <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-        {loanPrograms.length > 0 ? (
+        {loanPrograms.length > 0? (
           loanPrograms.map((program, programIndex) => (
-            <div key={programIndex} style={{ border: "1px solid #ccc", padding: "10px" }}>
+            <div key={programIndex} style={{ border: "1px solid #ccc", padding: "10px", width: "300px" }}>
               <h3>{program.name}</h3>
-              {program.tiers && program.tiers.length > 0 ? (
-                program.tiers.map((tier, tierIndex) => (
-                  <div key={tierIndex} style={{ border: "1px solid #ccc", padding: "10px" }}>
-                    {LOAN_SCHEMAS[program.name].map((field) => (
-                      <div key={field}>
-                        <label>{field}</label>
-                        <input
-                          type="text"
-                          value={tier[field] || ""}
-                          onChange={(e) => handleTierChange(tierIndex, field, e.target.value)}
-                        />
-                        <br />
-                      </div>
-                    ))}
-                  </div>
-                ))
-              ) : (
-                <p>No tiers available</p>
-              )}
+              {/* Render the appropriate loan program form */}
+              {renderLoanProgramForm(program)}
               <button onClick={() => handleEditLoanProgram(program)}>Edit</button>
               <button onClick={() => handleDeleteLoanProgram(program._id)}>Delete</button>
             </div>
           ))
-        ) : (
+        ): (
           <p>No loan programs available</p>
         )}
       </div>
