@@ -5,6 +5,13 @@ const Lender = require("../models/Lender");
 const LoanProgram = require("../models/LoanProgram");
 const { FixAndFlipSchema, DSCRSchema, GroundUpSchema, StabilizedBridgeSchema } = require("../../client/src/components/Tier");
 
+// Create Mongoose schemas from the plain JavaScript objects
+const FixAndFlipSchemaMongoose = new mongoose.Schema(FixAndFlipSchema);
+const DSCRSchemaMongoose = new mongoose.Schema(DSCRSchema);
+const GroundUpSchemaMongoose = new mongoose.Schema(GroundUpSchema);
+const StabilizedBridgeSchemaMongoose = new mongoose.Schema(StabilizedBridgeSchema);
+
+
 // Create Models within the route file if not already declared
 const FixAndFlipTier = mongoose.models.FixAndFlipTier || mongoose.model("FixAndFlipTier", FixAndFlipSchema);
 const DSCRTier = mongoose.models.DSCRTier || mongoose.model("DSCRTier", DSCRSchema);
@@ -18,7 +25,9 @@ router.get("/:lenderId/loanPrograms", async (req, res) => {
         if (!lender) {
             return res.status(404).json({ message: "Lender not found" });
         }
-        res.json({ loanPrograms: lender.loanPrograms || [] });
+        // Populate the 'tiers' field when fetching loan programs
+        const loanPrograms = await LoanProgram.find({ lender: lender._id }).populate("tiers");
+                res.json({ loanPrograms: lender.loanPrograms || [] });
     } catch (error) {
         console.error("Error fetching loan programs:", error);
         res.status(500).json({ message: "Server error" });

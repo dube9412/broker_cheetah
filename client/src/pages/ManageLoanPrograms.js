@@ -7,64 +7,67 @@ import StabilizedBridgeLoanForm from "../components/LoanProgramForms/StabilizedB
 
 function ManageLoanPrograms() {
     const { lenderId } = useParams();
-    const [loanPrograms, setLoanPrograms] = useState([]);
+    const [loanPrograms, setLoanPrograms] = useState();
     const [editingProgram, setEditingProgram] = useState(null);
-    const [tierData, setTierData] = useState([]);
+    const [tierData, setTierData] = useState();
 
     useEffect(() => {
         fetch(`/api/lenders/${lenderId}/loanPrograms`)
-            .then((res) => res.json())
-            .then((data) => {
-                setLoanPrograms(data.loanPrograms || []);
+          .then((res) => res.json())
+          .then((data) => {
+                setLoanPrograms(data.loanPrograms ||[]);
                 console.log("Loan Programs:", data.loanPrograms);
             })
-            .catch((err) => console.error("Error:", err));
+          .catch((err) => console.error("Error:", err));
     }, [lenderId]);
 
-    const handleEdit = (program) => {
+    function handleEdit(program) {
         fetch(`/api/lenders/${lenderId}/loanPrograms/${program._id}`)
-        .then(res => res.json())
-        .then(data => {
-            setEditingProgram(data.loanProgram);
-            setTierData(data.loanProgram.tiers || []); // Important: Handle undefined tiers
-        })
-        .catch(err => console.error("Error fetching program for edit:", err));
-    };
+            .then(res => res.json())
+            .then(data => {
+                setEditingProgram(data.loanProgram);
+                setTierData(data.loanProgram.tiers ||[]);
+            })
+            .catch(err => console.error("Error fetching program for edit:", err));
+    }
 
     const handleSave = (updatedProgram) => {
-        const method = updatedProgram._id ? "PUT" : "POST";
-        const url = updatedProgram._id ? `/api/lenders/${lenderId}/loanPrograms/${updatedProgram._id}` : `/api/lenders/${lenderId}/loanPrograms`;
-         // Conditionally include _id in the request body
-         const programData = updatedProgram._id? {...updatedProgram }: {...updatedProgram, _id: undefined }; // Remove _id if it doesn't exist
+        const method = updatedProgram._id? "PUT": "POST";
+        const url = updatedProgram._id
+          ? `/api/lenders/${lenderId}/loanPrograms/${updatedProgram._id}`
+          : `/api/lenders/${lenderId}/loanPrograms`;
 
-  fetch(url, {
-      method,
-      headers: {
-          "Content-Type": "application/json",
-      },
-      body: JSON.stringify(programData), // Send the correct data
-  })
-    .then((res) => res.json())
-    .then((data) => {
-          if (method === "PUT") {
-              setLoanPrograms(loanPrograms.map((program) => (program._id === data.loanProgram._id? data.loanProgram: program)));
-          } else {
-              setLoanPrograms([...loanPrograms, data.loanProgram]);
-          }
-          setEditingProgram(null);
-      })
-    .catch((error) => console.error("Error saving loan program:", error));
-};
+        // Conditionally include _id in the request body
+        const programData = updatedProgram._id? {...updatedProgram }: {...updatedProgram, _id: undefined };
+
+        fetch(url, {
+            method,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(programData),
+        })
+          .then(res => res.json())
+          .then(data => {
+                if (method === "PUT") {
+                    setLoanPrograms(loanPrograms.map(program => program._id === data.loanProgram._id? data.loanProgram: program));
+                } else {
+                    setLoanPrograms([...loanPrograms, data.loanProgram]);
+                }
+                setEditingProgram(null);
+            })
+          .catch(error => console.error("Error saving loan program:", error));
+    };
 
     const handleAddProgram = () => {
         const newProgram = {
             name: "",
             type: "",
             lender: lenderId,
-            tiers: [],
+            tiers:[],
         };
         setEditingProgram(newProgram);
-        setTierData([]);
+        setTierData();
     };
 
     const renderLoanForm = () => {
@@ -72,6 +75,7 @@ function ManageLoanPrograms() {
             return null;
         }
 
+        // Pass handleSave as a prop to the form components
         switch (editingProgram.type) {
             case "Fix and Flip":
                 return <FixAndFlipLoanForm program={editingProgram} tierData={tierData} setTierData={setTierData} onSave={handleSave} />;
@@ -94,19 +98,19 @@ function ManageLoanPrograms() {
             <h3>Existing Loan Programs</h3>
 
             <ul>
-                {loanPrograms && loanPrograms.length > 0 ? (
+                {loanPrograms && loanPrograms.length > 0? (
                     loanPrograms.map((program) => (
                         <li key={program._id}>
                             {program.name} ({program.type})
                             <button onClick={() => handleEdit(program)}>Edit</button>
                         </li>
                     ))
-                ) : (
+                ): (
                     <p>No loan programs found.</p>
                 )}
             </ul>
 
-            {renderLoanForm()}
+            {renderLoanForm()} {/* Render the form based on editingProgram */}
         </div>
     );
 }
