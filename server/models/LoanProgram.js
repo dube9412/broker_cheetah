@@ -1,13 +1,6 @@
 const mongoose = require("mongoose");
 const { FixAndFlipSchema, DSCRSchema, GroundUpSchema, StabilizedBridgeSchema, BaseTierSchema } = require("../../client/src/components/Tier"); // Correct path to your Tier schemas
 
-// Define your Tier models *here*, in LoanProgram.js
-const FixAndFlipTier = mongoose.model("FixAndFlipTier", FixAndFlipSchema);
-const DSCRTier = mongoose.model("DSCRTier", DSCRSchema);
-const GroundUpTier = mongoose.model("GroundUpTier", GroundUpSchema);
-const StabilizedBridgeTier = mongoose.model("StabilizedBridgeTier", StabilizedBridgeSchema);
-
-
 const LoanProgramSchema = new mongoose.Schema(
     {
         name: { type: String, required: true },
@@ -24,6 +17,12 @@ const LoanProgramSchema = new mongoose.Schema(
 );
 
 const LoanProgram = mongoose.model("LoanProgram", LoanProgramSchema);
+
+// Define your Tier models *here*, in LoanProgram.js
+const FixAndFlipTier = mongoose.model("FixAndFlipTier", FixAndFlipSchema);
+const DSCRTier = mongoose.model("DSCRTier", DSCRSchema);
+const GroundUpTier = mongoose.model("GroundUpTier", GroundUpSchema);
+const StabilizedBridgeTier = mongoose.model("StabilizedBridgeTier", StabilizedBridgeSchema);
 
 
 module.exports = { // Export all models
