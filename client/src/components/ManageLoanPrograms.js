@@ -115,8 +115,8 @@ function ManageLoanPrograms() {
   const handleEditLoanProgram = (program) => {
     setEditingProgramId(program._id);
     setSelectedProgram(program.name);
-    setNumTiers(program.tiers.length);
-    setTierData(program.tiers);
+    setNumTiers(program.tiers? program.tiers.length: 1); // Use 1 as default if tiers is undefined
+    setTierData(program.tiers ||[]); // Use an empty array as default if tiers is undefined
   };
 
   const handleDeleteLoanProgram = (programId) => {
