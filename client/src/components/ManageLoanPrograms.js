@@ -33,28 +33,24 @@ function ManageLoanPrograms() {
   const [tierData, setTierData] = useState([]);
   const [editingProgramId, setEditingProgramId] = useState(null); // Track if editing
 
- useEffect(() => {
-  console.log("Lender ID from URL:", lenderId); // Debugging line
+  useEffect(() => {
+    fetch(`/api/lenders/${lenderId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Fetched lender data:", data);
+        setLender(data.lender || data);
+      })
+      .catch((err) => console.error("Error fetching lender:", err));
 
-  if (!lenderId || lenderId === "undefined") {
-    console.error("Invalid lender ID!");
-    return;
-  }
-
-  fetch(`/api/lenders/${lenderId}`)
-    .then((res) => res.json())
-    .then((data) => {
-      console.log("Fetched lender data:", data); // Debugging line
-      if (data && data.name) {
-        setLender(data);
-        setLoanPrograms(data.loanPrograms || []);
-      } else {
-        console.error("Lender data is invalid:", data);
-      }
-    })
-    .catch((err) => console.error("Error fetching lender:", err));
-}, [lenderId]);
-
+    fetch(`/api/lenders/${lenderId}/loan-programs`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.loanPrograms) {
+          setLoanPrograms(data.loanPrograms);
+        }
+      })
+      .catch((err) => console.error("Error fetching loan programs:", err));
+  }, [lenderId]);
 
   const handleAddLoanProgram = () => {
     if (selectedProgram) {
@@ -64,11 +60,34 @@ function ManageLoanPrograms() {
     }
   };
 
-  const handleSaveLoanProgram = () => {
-    const programData = {
-      name: selectedProgram,
-      tiers: tierData,
-    };
+  const handleSave = (updatedProgram) => {
+    const method = updatedProgram._id? "PUT": "POST";
+    const url = updatedProgram._id
+      ? `/api/lenders/<span class="math-inline">\{lenderId\}/loanPrograms/</span>{updatedProgram._id}`
+      : `/api/lenders/${lenderId}/loanPrograms`;
+
+    fetch(url, {
+        method,
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedProgram),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+            if (method === "PUT") {
+                // Update the existing program in the array
+                setLoanPrograms(loanPrograms.map(program =>
+                    program._id === data.loanProgram._id? data.loanProgram: program
+                ));
+            } else {
+                // Add the new program to the array
+                setLoanPrograms([...loanPrograms, data.loanProgram]);
+            }
+            setEditingProgram(null);
+        })
+      .catch((error) => console.error("Error saving loan program:", error));
+};
 
     console.log("Saving Loan Program Data:", programData); // ✅ Debugging
 
@@ -103,8 +122,9 @@ function ManageLoanPrograms() {
   const handleEditLoanProgram = (program) => {
     setEditingProgramId(program._id);
     setSelectedProgram(program.name);
-    setTierData(program.tiers);
-  };
+    setNumTiers(program.tiers.length);
+    setTierData(program.tiers); // Set tierData directly from program.tiers
+};
 
   const handleDeleteLoanProgram = (programId) => {
     fetch(`/api/lenders/${lenderId}/loan-programs/${programId}`, {
@@ -184,6 +204,6 @@ function ManageLoanPrograms() {
       <button onClick={() => navigate("/dashboard")} style={{ marginTop: "20px" }}>Back to Dashboard</button>
     </div>
   );
-}
+
 
 export default ManageLoanPrograms;

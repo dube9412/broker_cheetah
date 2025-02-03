@@ -5,16 +5,17 @@ const Tier = require("../models/Tier"); // Import the Tier model
 const Lender = require("../models/Lender");
 
 // GET all loan programs for a lender
-router.get("/:lenderId/loanPrograms", async (req, res) => {
+router.get("/:lenderId/loan-programs", async (req, res) => {
     try {
-        const lender = await Lender.findById(req.params.lenderId).populate("loanPrograms");
+        const lender = await Lender.findById(req.params.lenderId);
         if (!lender) {
             return res.status(404).json({ message: "Lender not found" });
         }
-        res.json({ loanPrograms: lender.loanPrograms || });
+        // Populate the 'tiers' field when fetching loan programs
+        const loanPrograms = await LoanProgram.find({ lender: lender._id }).populate("tiers");
+        res.json({ loanPrograms: loanPrograms || });
     } catch (error) {
-        console.error("Error fetching loan programs:", error);
-        res.status(500).json({ message: "Server error" });
+        //... error handling
     }
 });
 
