@@ -1,12 +1,16 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require("path"); 
 
 const authRoutes = require("./routes/auth");
 const lenderRoutes = require("./routes/lender");
 const loanProgramRoutes = require("./routes/loanPrograms"); // FIXED HERE
 
 const app = express();
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use(cors());
 app.use(express.json());
