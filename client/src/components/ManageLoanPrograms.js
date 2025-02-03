@@ -57,70 +57,99 @@ function ManageLoanPrograms() {
 
   const handleAddLoanProgram = () => {
     if (selectedProgram) {
-      // Initialize tierData with an array of objects, one for each tier
-      const initialTierData = Array.from({ length: numTiers }, (_, i) => ({
-        tier: i + 1,
-        //... other initial tier properties based on the selected program type
-      }));
-      setTierData(initialTierData);
-
-      const newProgram = { name: selectedProgram, type: selectedProgram, tiers: initialTierData };
-      setLoanPrograms([...loanPrograms, newProgram]);
-      setSelectedProgram("");
+      const newProgram = {
+        name: selectedProgram,
+        type: selectedProgram,
+        lender: lenderId, // Associate with the current lender
+        tiers:,
+      };
+  
+      fetch(`/api/lenders/${lenderId}/loan-programs`, { // POST request to create a new loan program
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newProgram),
+      })
+      .then((res) => res.json())
+      .then((data) => {
+          if (data.success) {
+            setLoanPrograms([...loanPrograms, data.loanProgram]); // Add the new program to the state
+            setSelectedProgram("");
+          } else {
+            alert("Error adding loan program.");
+          }
+        })
+      .catch((err) => {
+          console.error("Error adding loan program:", err);
+          alert("Error adding loan program.");
+        });
     }
   };
 
   const handleSaveLoanProgram = () => {
     const programData = {
       name: selectedProgram,
-      tiers: tierData, // Use tierData directly
+      tiers: tierData,
     };
-
-    console.log("Saving Loan Program Data:", programData);
-
+  
+    // Determine whether to use PUT (update) or POST (create) based on editingProgramId
+    const method = editingProgramId? "PUT": "POST";
     const url = editingProgramId
-      ? `/api/lenders/${lenderId}/loan-programs/${editingProgramId}`
-      : `/api/lenders/${lenderId}/loan-programs`;
-
-    const method = editingProgramId ? "PUT" : "POST";
-
+    ? `/api/lenders/${lenderId}/loan-programs/${editingProgramId}`
+    : `/api/lenders/${lenderId}/loan-programs`;
+  
     fetch(url, {
       method: method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(programData),
     })
-      .then((res) => res.json())
-      .then((data) => {
+    .then((res) => res.json())
+    .then((data) => {
         if (data.success) {
           // Update loanPrograms state based on whether it's a new program or an edit
-          setLoanPrograms((prevPrograms) => {
+          setLoanPrograms(prevPrograms => {
             if (method === "PUT") {
-              return prevPrograms.map((program) =>
-                program._id === data.loanProgram._id ? data.loanProgram : program
+              // If it's an update (PUT), find and update the existing program
+              return prevPrograms.map(program =>
+                program._id === editingProgramId? data.loanProgram: program
               );
             } else {
+              // If it's a new program (POST), add it to the loanPrograms array
               return [...prevPrograms, data.loanProgram];
             }
           });
+  
           setSelectedProgram("");
-          setTierData([]);
+          setTierData();
           setEditingProgramId(null);
         } else {
           alert("Error saving loan program.");
         }
       })
-      .catch((err) => {
+    .catch((err) => {
         console.error("Error saving loan program:", err);
         alert("Error saving loan program.");
       });
   };
 
-  const handleEditLoanProgram = (program) => {
-    setEditingProgramId(program._id);
-    setSelectedProgram(program.name);
-    setNumTiers(program.tiers? program.tiers.length: 1); // Use 1 as default if tiers is undefined
-    setTierData(program.tiers ||[]); // Use an empty array as default if tiers is undefined
-  };
+  const handleEditLoanProgram = (programId) => {
+    fetch(`/api/lenders/${lenderId}/loan-programs/${programId}`)
+      .then((res) => res.json())
+      .then((data) => {
+            if (data.success) {
+                const program = data.loanProgram;
+                setEditingProgramId(program._id);
+                setSelectedProgram(program.name);
+                setNumTiers(program.tiers.length);
+                setTierData(program.tiers);
+            } else {
+                alert("Error fetching loan program.");
+            }
+        })
+      .catch((err) => {
+            console.error("Error fetching loan program:", err);
+            alert("Error fetching loan program.");
+        });
+};
 
   const handleDeleteLoanProgram = (programId) => {
     fetch(`/api/lenders/${lenderId}/loan-programs/${programId}`, {
