@@ -1,4 +1,3 @@
-<h2><%= program? 'Edit': 'Add' %> Fix and Flip Loan Program</h2>
 <form method="POST" action="<%= program? '/api/lenders/' + lenderId + '/loanPrograms/' + program._id: '/api/lenders/' + lenderId + '/loanPrograms' %>">
     <input type="hidden" name="type" value="Fix and Flip">
     <label for="name">Name:</label>
