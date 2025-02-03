@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+
+ul.loan-programs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  list-style: none;
+  gap: 20px;
+  grid-auto-rows: minmax(100px, auto); /* Add this line */
+}

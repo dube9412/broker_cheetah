@@ -54,9 +54,10 @@ function ManageLoanPrograms() {
 
   const handleAddLoanProgram = () => {
     if (selectedProgram) {
-      const newProgram = { name: selectedProgram, tiers: [] };
+      const newProgram = { name: selectedProgram, tiers: Array(numTiers).fill({}) };
       setLoanPrograms([...loanPrograms, newProgram]);
       setSelectedProgram("");
+      setNumTiers(1); // Reset numTiers after adding a program
     }
   };
 
@@ -135,6 +136,13 @@ function ManageLoanPrograms() {
           <option key={program} value={program}>{program}</option>
         ))}
       </select>
+      <input
+        type="number"
+        value={numTiers}
+        onChange={(e) => setNumTiers(Number(e.target.value))}
+        min="1"
+        style={{ marginLeft: "10px" }}
+      />
       <button onClick={handleAddLoanProgram} style={{ marginLeft: "10px" }}>Add Loan Program</button>
       <br />
       <button onClick={handleSaveLoanProgram} style={{ marginTop: "20px" }}>
@@ -144,10 +152,10 @@ function ManageLoanPrograms() {
 
       {/* 🔹 Existing Loan Programs List */}
       <h2>Existing Loan Programs</h2>
-      <ul>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
         {loanPrograms.length > 0 ? (
           loanPrograms.map((program, programIndex) => (
-            <li key={programIndex}>
+            <div key={programIndex} style={{ border: "1px solid black", padding: "10px", minWidth: "200px" }}>
               <h3>{program.name}</h3>
               {program.tiers && program.tiers.length > 0 ? (
                 program.tiers.map((tier, tierIndex) => (
@@ -170,14 +178,16 @@ function ManageLoanPrograms() {
               )}
               <button onClick={() => handleEditLoanProgram(program)}>Edit</button>
               <button onClick={() => handleDeleteLoanProgram(program._id)}>Delete</button>
-            </li>
+            </div>
           ))
         ) : (
           <p>No loan programs available</p>
         )}
-      </ul>
+      </div>
 
-      <button onClick={() => navigate("/dashboard")} style={{ marginTop: "20px" }}>Back to Dashboard</button>
+      <button onClick={() => navigate("/dashboard")} style={{ marginTop: "20px" }}>
+        Back to Dashboard
+      </button>
     </div>
   );
 }
