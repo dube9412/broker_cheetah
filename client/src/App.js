@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import RequestQuote from "./components/RequestQuote";
 
@@ -13,7 +13,7 @@ import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import LoanTypeSelection from "./pages/LoanTypeSelection";
 import FixAndFlipSearch from "./pages/FixAndFlipSearch";
-import ManageLoanPrograms from "./pages/ManageLoanPrograms";
+import ManageLoanPrograms from "./components/ManageLoanPrograms";
 
 // Admin-only
 import AddLender from "./components/AddLender";
@@ -23,34 +23,27 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gray-50">
-          <NavBar />
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          {/* Go to Manage Loan Programs Page*/}
+          <Route path="/manage-loan-programs/:lenderId" element={<ManageLoanPrograms />} />
 
-          <div className="container mx-auto p-6">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/manage-loan-programs/:lenderId" element={<ManageLoanPrograms />} />
 
-              {/* Loan type & search */}
-              <Route path="/select-loan-type" element={<LoanTypeSelection />} />
-              <Route path="/search/fixandflip" element={<FixAndFlipSearch />} /> 
+          {/* Loan type & search */}
+          <Route path="/select-loan-type" element={<LoanTypeSelection />} />
+          <Route path="/search/fixandflip" element={<FixAndFlipSearch />} /> 
 
-              {/* Request Quote */}
-              <Route path="/request-quote/:lenderId" element={<RequestQuote />} />
+          {/* Request Quote */}
+          <Route path="/request-quote/:lenderId" element={<RequestQuote />} />
   
-              {/* Admin only route for adding & editing lenders */}
-              <Route path="/add-lender" element={<AddLender />} />
-              <Route path="/edit-lender/:id" element={<EditLender />} />
-            </Routes>
-          </div>
-
-          <footer className="bg-blue-700 text-white p-4 text-center shadow-inner">
-            &copy; {new Date().getFullYear()} Broker Cheetah. All rights reserved.
-          </footer>
-        </div>
+          {/* Admin only route for adding & editing lenders */}
+          <Route path="/add-lender" element={<AddLender />} />
+          <Route path="/edit-lender/:id" element={<EditLender />} />
+        </Routes>
       </Router>
     </AuthProvider>
   );
