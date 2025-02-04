@@ -116,12 +116,7 @@ function Dashboard() {
                     <td>
                       <Link to={`/edit-lender/${lender._id}`}>Edit</Link> {" | "}
                       <button onClick={() => handleDelete(lender._id)}>Delete</button> {" | "}
-                      <button onClick={() => {
-  console.log("Navigating to Manage Loan Programs with ID:", lender._id); // Debugging line
-  navigate(`/manage-loan-programs/${lender._id}`);
-}}>
-  Manage Loan Programs
-</button>
+                      <button onClick={() => navigate(`/manage-loan-programs/${lender._id}`)}>Manage Loan Programs</button>
                     </td>
                   </tr>
                 ))
