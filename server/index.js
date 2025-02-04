@@ -12,9 +12,19 @@ const loanProgramRoutes = require("./routes/loanPrograms");
 //... import other route files
 
 // Connect to MongoDB
-//... (your MongoDB connection code)
+mongoose
+  .connect(process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/brokercheetah", {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+  .then(() => {
+        console.log("Successfully connected to MongoDB.");
+    })
+  .catch((err) => {
+        console.error("MongoDB connection error:", err);
+    });
 
-// Use body-parser middleware
+// Use body-parser middleware to parse JSON and URL-encoded bodies
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
