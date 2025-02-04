@@ -13,7 +13,7 @@ import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import LoanTypeSelection from "./pages/LoanTypeSelection";
 import FixAndFlipSearch from "./pages/FixAndFlipSearch";
-import ManageLoanPrograms from "./components/ManageLoanPrograms";
+import ManageLoanPrograms from "./pages/ManageLoanPrograms";
 
 // Admin-only
 import AddLender from "./components/AddLender";
@@ -50,3 +50,5 @@ function App() {
 }
 
 export default App;
+
+
