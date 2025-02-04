@@ -25,7 +25,7 @@ const LOAN_PROGRAMS = [
 
 function ManageLoanPrograms() {
   const { lenderId } = useParams();
-  const navigate = useNavigate(); // Get the navigate function
+  const navigate = useNavigate();
   const [lender, setLender] = useState(null);
   const [selectedProgram, setSelectedProgram] = useState("");
   const [loanPrograms, setLoanPrograms] = useState();
@@ -54,7 +54,14 @@ function ManageLoanPrograms() {
 
   const handleAddLoanProgram = () => {
     if (selectedProgram) {
-      const newProgram = { name: selectedProgram, tiers:[] };
+      // Initialize tierData with an array of objects, one for each tier
+      const initialTierData = Array.from({ length: numTiers }, (_, i) => ({
+        tier: i + 1,
+        //... other initial tier properties based on selectedProgram
+      }));
+      setTierData(initialTierData);
+
+      const newProgram = { name: selectedProgram, type: selectedProgram, tiers: initialTierData };
       setLoanPrograms([...loanPrograms, newProgram]);
       setSelectedProgram("");
     }
@@ -66,7 +73,7 @@ function ManageLoanPrograms() {
       tiers: tierData,
     };
 
-    console.log("Saving Loan Program Data:", programData); // ✅ Debugging
+    console.log("Saving Loan Program Data:", programData);
 
     const url = editingProgramId
     ? `/api/lenders/${lenderId}/loan-programs/${editingProgramId}`
@@ -82,7 +89,16 @@ function ManageLoanPrograms() {
     .then((res) => res.json())
     .then((data) => {
         if (data.success) {
-          setLoanPrograms([...loanPrograms, data.loanProgram]);
+          // Update loanPrograms state based on whether it's a new program or an edit
+          setLoanPrograms(prevPrograms => {
+            if (method === "PUT") {
+              return prevPrograms.map(program =>
+                program._id === editingProgramId? data.loanProgram: program
+              );
+            } else {
+              return [...prevPrograms, data.loanProgram];
+            }
+          });
           setSelectedProgram("");
           setTierData();
           setEditingProgramId(null);
@@ -99,6 +115,7 @@ function ManageLoanPrograms() {
   const handleEditLoanProgram = (program) => {
     setEditingProgramId(program._id);
     setSelectedProgram(program.name);
+    setNumTiers(program.tiers.length);
     setTierData(program.tiers);
   };
 
@@ -120,10 +137,12 @@ function ManageLoanPrograms() {
       });
   };
 
-  const handleTierChange = (programIndex, tierIndex, field, value) => {
-    const updatedLoanPrograms = [...loanPrograms];
-    updatedLoanPrograms[programIndex].tiers[tierIndex][field] = value;
-    setLoanPrograms(updatedLoanPrograms);
+  const handleTierChange = (tierIndex, field, value) => {
+    setTierData(prevTierData => {
+      const updatedTiers = [...prevTierData];
+      updatedTiers[tierIndex] = {...updatedTiers[tierIndex], [field]: value };
+      return updatedTiers;
+    });
   };
 
   return (
@@ -141,6 +160,43 @@ function ManageLoanPrograms() {
         Add Loan Program
       </button>
       <br />
+      <div>
+        {selectedProgram && ( // Conditionally render input fields
+          <div>
+            <h2>{selectedProgram}</h2>
+            {/* Input fields for the number of tiers */}
+            <div>
+              <label htmlFor="numTiers">Number of Tiers:</label>
+              <input
+                type="number"
+                id="numTiers"
+                name="numTiers"
+                min="1"
+                value={numTiers}
+                onChange={(e) => setNumTiers(parseInt(e.target.value, 10) || 1)}
+              />
+            </div>
+            {/* Render tierData input fields */}
+            {tierData.map((tier, tierIndex) => (
+              <div key={tierIndex} style={{ border: "1px solid #ccc", padding: "10px" }}>
+                {LOAN_SCHEMAS[selectedProgram]?.map((field) => ( // Conditionally render fields based on selectedProgram
+                  <div key={field}>
+                    <label htmlFor={field}>{field}:</label>
+                    <input
+                      type="text"
+                      id={field}
+                      name={field}
+                      value={tier[field] || ""}
+                      onChange={(e) => handleTierChange(tierIndex, field, e.target.value)}
+                    />
+                    <br />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       <button onClick={handleSaveLoanProgram} style={{ marginTop: "20px" }}>
         {editingProgramId? "Update Loan Program": "Save Loan Program"}
       </button>
@@ -148,33 +204,39 @@ function ManageLoanPrograms() {
 
       {/* Existing Loan Programs List */}
       <h2>Existing Loan Programs</h2>
-      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-        {(loanPrograms ||[]).map((program, programIndex) => (
-          <div key={programIndex} style={{ border: "1px solid #ccc", padding: "10px", width: "300px" }}>
-            <h3>{program.name}</h3>
-            {program.tiers && program.tiers.length > 0? (
-              program.tiers.map((tier, tierIndex) => (
-                <div key={tierIndex} style={{ border: "1px solid #ccc", padding: "10px" }}>
-                  {LOAN_SCHEMAS[program.name].map((field) => (
-                    <div key={field}>
-                      <label>{field}</label>
-                      <input
-                        type="text"
-                        value={tier[field] || ""}
-                        onChange={(e) => handleTierChange(programIndex, tierIndex, field, e.target.value)}
-                      />
-                      <br />
+      <div>
+        {loanPrograms.length > 0? (
+          loanPrograms.map((program, programIndex) => (
+            <div key={programIndex} style={{ border: "1px solid #ccc", padding: "10px" }}>
+              <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+                <h3>{program.name}</h3>
+                {program.tiers && program.tiers.length > 0? (
+                  program.tiers.map((tier, tierIndex) => (
+                    <div key={tierIndex} style={{ border: "1px solid #ccc", padding: "10px" }}>
+                      {LOAN_SCHEMAS[program.name].map((field) => (
+                        <div key={field}>
+                          <label>{field}</label>
+                          <input
+                            type="text"
+                            value={tier[field] || ""}
+                            onChange={(e) => handleTierChange(tierIndex, field, e.target.value)}
+                          />
+                          <br />
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              ))
-            ): (
-              <p>No tiers available</p>
-            )}
-            <button onClick={() => handleEditLoanProgram(program)}>Edit</button>
-            <button onClick={() => handleDeleteLoanProgram(program._id)}>Delete</button>
-          </div>
-        ))}
+                  ))
+                ): (
+                  <p>No tiers available</p>
+                )}
+                <button onClick={() => handleEditLoanProgram(program)}>Edit</button>
+                <button onClick={() => handleDeleteLoanProgram(program._id)}>Delete</button>
+              </div>
+            </div>
+          ))
+        ): (
+          <p>No loan programs available</p>
+        )}
       </div>
 
       <button onClick={() => navigate("/dashboard")} style={{ marginTop: "20px" }}>
