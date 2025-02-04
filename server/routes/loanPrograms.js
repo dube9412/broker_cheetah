@@ -4,23 +4,27 @@ const LoanProgram = require("../models/LoanProgram");
 const Tier = require("../models/Tier");
 const Lender = require("../models/Lender");
 
+//... other imports...
+
 // GET all loan programs for a lender
 router.get("/:lenderId/loan-programs", async (req, res) => {
     try {
-        const lender = await Lender.findById(req.params.lenderId).populate("loanPrograms");
-        if (!lender) {
-            return res.status(404).json({ message: "Lender not found" });
-        }
-
-        // Populate the 'tiers' field when fetching loan programs
-        const loanPrograms = await LoanProgram.find({ lender: lender._id }).populate("tiers");
-
-        res.json({ loanPrograms: loanPrograms || });
+      const lender = await Lender.findById(req.params.lenderId).populate("loanPrograms");
+      if (!lender) {
+        return res.status(404).json({ message: "Lender not found" });
+      }
+  
+      // Populate the 'tiers' field when fetching loan programs
+      const loanPrograms = await LoanProgram.find({ lender: lender._id }).populate("tiers");
+  
+      res.json({ loanPrograms: loanPrograms || });
     } catch (error) {
-        console.error("Error fetching loan programs:", error);
-        res.status(500).json({ message: "Server error" });
+      console.error("Error fetching loan programs:", error);
+      res.status(500).json({ message: "Server error" });
     }
-});
+  });
+  
+  //... other routes...
 
 // GET a single loan program (for editing)
 router.get("/:lenderId/loanPrograms/:programId", async (req, res) => {
