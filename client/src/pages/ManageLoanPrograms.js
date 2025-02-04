@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const LOAN_PROGRAMS = [
   "Fix and Flip",
@@ -18,23 +19,25 @@ const LOAN_PROGRAMS = [
 
 function ManageLoanPrograms() {
   const { lenderId } = useParams();
-  const navigate = useNavigate();
-  const [lender, setLender] = useState(null);
+  const [loanPrograms, setLoanPrograms] = useState();
   const [selectedProgram, setSelectedProgram] = useState("");
-  const [loanPrograms, setLoanPrograms] = useState([]);
-  const [numTiers, setNumTiers] = useState(1);
-  const [tierData, setTierData] = useState([]);
+  // const [numTiers, setNumTiers] = useState(1); // Comment out numTiers
+  // const [tierData, setTierData] = useState(); // Comment out tierData
   const [editingProgramId, setEditingProgramId] = useState(null); // Track if editing
+  const navigate = useNavigate(); // Get the navigate function
+  const [lender, setLender] = useState(null); // State variable for lender data
 
   useEffect(() => {
     fetch(`/api/lenders/${lenderId}`)
     .then((res) => res.json())
     .then((data) => {
-        console.log("Fetched lender data:", data);
-        setLender(data.lender || data);
+        setLender(data.lender || data); // Store the lender data in the state
       })
     .catch((err) => console.error("Error fetching lender:", err));
+  }, [lenderId]);
 
+
+  useEffect(() => {
     fetch(`/api/lenders/${lenderId}/loan-programs`)
     .then((res) => res.json())
     .then((data) => {
@@ -48,13 +51,13 @@ function ManageLoanPrograms() {
   const handleAddLoanProgram = () => {
     if (selectedProgram) {
       // Initialize tierData with an array of objects, one for each tier
-      const initialTierData = Array.from({ length: numTiers }, (_, i) => ({
-        tier: i + 1,
-        //... other initial tier properties based on the selected program type
-      }));
-      setTierData(initialTierData);
+      // const initialTierData = Array.from({ length: numTiers }, (_, i) => ({
+      //     tier: i + 1,
+      //     //... other initial tier properties based on the selected program type
+      // }));
+      // setTierData(initialTierData);
 
-      const newProgram = { name: selectedProgram, type: selectedProgram, tiers: initialTierData };
+      const newProgram = { name: selectedProgram, type: selectedProgram /*, tiers: initialTierData*/ }; // Comment out tiers
       setLoanPrograms([...loanPrograms, newProgram]);
       setSelectedProgram("");
     }
@@ -63,14 +66,12 @@ function ManageLoanPrograms() {
   const handleSaveLoanProgram = () => {
     const programData = {
       name: selectedProgram,
-      tiers: tierData, // Use tierData directly
+      // tiers: tierData, // Comment out tiers
     };
 
     console.log("Saving Loan Program Data:", programData);
 
-    const url = editingProgramId
-    ? `/api/lenders/${lenderId}/loan-programs/${editingProgramId}`
-    : `/api/lenders/${lenderId}/loan-programs`;
+    const url = editingProgramId? `/api/lenders/${lenderId}/loan-programs/${editingProgramId}`: `/api/lenders/${lenderId}/loan-programs`;
 
     const method = editingProgramId? "PUT": "POST";
 
@@ -83,17 +84,15 @@ function ManageLoanPrograms() {
     .then((data) => {
         if (data.success) {
           // Update loanPrograms state based on whether it's a new program or an edit
-          setLoanPrograms(prevPrograms => {
+          setLoanPrograms((prevPrograms) => {
             if (method === "PUT") {
-              return prevPrograms.map(program =>
-                program._id === editingProgramId? data.loanProgram: program
-              );
+              return prevPrograms.map((program) => (program._id === editingProgramId? data.loanProgram: program));
             } else {
               return [...prevPrograms, data.loanProgram];
             }
           });
           setSelectedProgram("");
-          setTierData();
+          // setTierData(); // Comment out tierData
           setEditingProgramId(null);
         } else {
           alert("Error saving loan program.");
@@ -108,8 +107,8 @@ function ManageLoanPrograms() {
   const handleEditLoanProgram = (program) => {
     setEditingProgramId(program._id);
     setSelectedProgram(program.name);
-    setNumTiers(program.tiers.length);
-    setTierData(program.tiers);
+    // setNumTiers(program.tiers.length); // Comment out numTiers
+    // setTierData(program.tiers); // Comment out tierData
   };
 
   const handleDeleteLoanProgram = (programId) => {
@@ -130,13 +129,14 @@ function ManageLoanPrograms() {
       });
   };
 
-  const handleTierChange = (tierIndex, field, value) => {
-    setTierData(prevTierData => { // Update tierData directly
-      const updatedTiers = [...prevTierData];
-      updatedTiers[tierIndex] = {...updatedTiers[tierIndex], [field]: value };
-      return updatedTiers;
-    });
-  };
+  // const handleTierChange = (tierIndex, field, value) => { // Comment out handleTierChange
+  //     setTierData((prevTierData) => {
+  //         // Update tierData directly
+  //         const updatedTiers = [...prevTierData];
+  //         updatedTiers[tierIndex] = {...updatedTiers[tierIndex], [field]: value };
+  //         return updatedTiers;
+  //     });
+  // };
 
   return (
     <div>
@@ -154,96 +154,44 @@ function ManageLoanPrograms() {
       </button>
       <br />
       <div>
-        {selectedProgram && ( // Conditionally render input fields
-          <div>
-            <h2>{selectedProgram}</h2>
-            {/* Input fields for the number of tiers */}
-            <div>
-              <label htmlFor="numTiers">Number of Tiers:</label>
-              <input
-                type="number"
-                id="numTiers"
-                name="numTiers"
-                min="1"
-                value={numTiers}
-                onChange={(e) => setNumTiers(parseInt(e.target.value, 10) || 1)}
-              />
-            </div>
-            {/* Render tierData input fields */}
-            {tierData.map((tier, tierIndex) => (
-              <div key={tierIndex} style={{ border: "1px solid #ccc", padding: "10px" }}>
-                {/* Conditionally render fields based on selectedProgram */}
-                {selectedProgram === 'Fix and Flip' && (
-                  <div>
-                    <label htmlFor="minFICO">Min FICO:</label>
-                    <input
-                      type="number"
-                      id="minFICO"
-                      name="minFICO"
-                      value={tier.minFICO || ""}
-                      onChange={(e) => handleTierChange(tierIndex, 'minFICO', e.target.value)}
-                    />
-                    <br />
-                    <label htmlFor="minExperience">Min Experience:</label>
-                    <input
-                      type="number"
-                      id="minExperience"
-                      name="minExperience"
-                      value={tier.minExperience || ""}
-                      onChange={(e) => handleTierChange(tierIndex, 'minExperience', e.target.value)}
-                    />
-                    <br />
-                    <label htmlFor="maxLTP">Max LTP:</label>
-                    <input
-                      type="number"
-                      id="maxLTP"
-                      name="maxLTP"
-                      value={tier.maxLTP || ""}
-                      onChange={(e) => handleTierChange(tierIndex, 'maxLTP', e.target.value)}
-                    />
-                    <br />
-                    <label htmlFor="totalLTC">Total LTC:</label>
-                    <input
-                      type="number"
-                      id="totalLTC"
-                      name="totalLTC"
-                      value={tier.totalLTC || ""}
-                      onChange={(e) => handleTierChange(tierIndex, 'totalLTC', e.target.value)}
-                    />
-                    <br />
-                    <label htmlFor="maxARV">Max ARV:</label>
-                    <input
-                      type="number"
-                      id="maxARV"
-                      name="maxARV"
-                      value={tier.maxARV || ""}
-                      onChange={(e) => handleTierChange(tierIndex, 'maxARV', e.target.value)}
-                    />
-                    <br />
-                    <label htmlFor="minLoanAmount">Min Loan Amount:</label>
-                    <input
-                      type="number"
-                      id="minLoanAmount"
-                      name="minLoanAmount"
-                      value={tier.minLoanAmount || ""}
-                      onChange={(e) => handleTierChange(tierIndex, 'minLoanAmount', e.target.value)}
-                    />
-                    <br />
-                    <label htmlFor="maxLoanAmount">Max Loan Amount:</label>
-                    <input
-                      type="number"
-                      id="maxLoanAmount"
-                      name="maxLoanAmount"
-                      value={tier.maxLoanAmount || ""}
-                      onChange={(e) => handleTierChange(tierIndex, 'maxLoanAmount', e.target.value)}
-                    />
-                    <br />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+        {/* {selectedProgram && ( // Comment out conditional rendering of input fields
+                //     <div>
+                //         <h2>{selectedProgram}</h2> */}
+        {/* Input fields for the number of tiers */}
+        {/* <div>
+                //             <label htmlFor="numTiers">Number of Tiers:</label>
+                //             <input
+                //                 type="number"
+                //                 id="numTiers"
+                //                 name="numTiers"
+                //                 min="1"
+                //                 value={numTiers}
+                //                 onChange={(e) => setNumTiers(parseInt(e.target.value, 10) || 1)}
+                //             />
+                //         </div> */}
+        {/* Render tierData input fields */}
+        {/* {tierData.map((tier, tierIndex) => (
+                //             <div key={tierIndex} style={{ border: "1px solid #ccc", padding: "10px" }}> */}
+        {/* Conditionally render fields based on selectedProgram */}
+        {/* {selectedProgram === 'Fix and Flip' && (
+                //                     <div>
+                //                         <label htmlFor="minFICO">Min FICO:</label>
+                //                         <input
+                //                             type="number"
+                //                             id="minFICO"
+                //                             name="minFICO"
+                //                             value={tier.minFICO || ""}
+                //                             onChange={(e) => handleTierChange(tierIndex, 'minFICO', e.target.value)}
+                //                         />
+                //                         <br /> */}
+        {/*... other input fields for Fix and Flip... */}
+        {/* </div>
+                //                 )} */}
+        {/*... similar blocks for other loan program types... */}
+        {/* </div>
+                //         ))}
+                //     </div>
+                // )} */}
       </div>
       <button onClick={handleSaveLoanProgram} style={{ marginTop: "20px" }}>
         {editingProgramId? "Update Loan Program": "Save Loan Program"}
@@ -258,68 +206,28 @@ function ManageLoanPrograms() {
             <div key={programIndex} style={{ border: "1px solid #ccc", padding: "10px" }}>
               <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
                 <h3>{program.name}</h3>
-                {program.tiers && program.tiers.length > 0? (
-                  program.tiers.map((tier, tierIndex) => (
-                    <div key={tierIndex} style={{ border: "1px solid #ccc", padding: "10px" }}>
-                      {/* Conditionally render fields based on program.name */}
-                      {program.name === 'Fix and Flip' && (
-                        <div>
-                          <label>Min FICO:</label>
-                          <input
-                            type="number"
-                            value={tier.minFICO || ""}
-                            onChange={(e) => handleTierChange(tierIndex, 'minFICO', e.target.value)}
-                          />
-                          <br />
-                          <label>Min Experience:</label>
-                          <input
-                            type="number"
-                            value={tier.minExperience || ""}
-                            onChange={(e) => handleTierChange(tierIndex, 'minExperience', e.target.value)}
-                          />
-                          <br />
-                          <label>Max LTP:</label>
-                          <input
-                            type="number"
-                            value={tier.maxLTP || ""}
-                            onChange={(e) => handleTierChange(tierIndex, 'maxLTP', e.target.value)}
-                          />
-                          <br />
-                          <label>Total LTC:</label>
-                          <input
-                            type="number"
-                            value={tier.totalLTC || ""}
-                            onChange={(e) => handleTierChange(tierIndex, 'totalLTC', e.target.value)}
-                          />
-                          <br />
-                          <label>Max ARV:</label>
-                          <input
-                            type="number"
-                            value={tier.maxARV || ""}
-                            onChange={(e) => handleTierChange(tierIndex, 'maxARV', e.target.value)}
-                          />
-                          <br />
-                          <label>Min Loan Amount:</label>
-                          <input
-                            type="number"
-                            value={tier.minLoanAmount || ""}
-                            onChange={(e) => handleTierChange(tierIndex, 'minLoanAmount', e.target.value)}
-                          />
-                          <br />
-                          <label>Max Loan Amount:</label>
-                          <input
-                            type="number"
-                            value={tier.maxLoanAmount || ""}
-                            onChange={(e) => handleTierChange(tierIndex, 'maxLoanAmount', e.target.value)}
-                          />
-                          <br />
-                        </div>
-                      )}
-                    </div>
-                  ))
-                ): (
-                  <p>No tiers available</p>
-                )}
+                {/* {program.tiers && program.tiers.length > 0? ( // Comment out conditional rendering of tiers
+                                //     program.tiers.map((tier, tierIndex) => (
+                                //         <div key={tierIndex} style={{ border: "1px solid #ccc", padding: "10px" }}> */}
+                {/* Conditionally render fields based on program.name */}
+                {/* {program.name === 'Fix and Flip' && (
+                                //                 <div>
+                                //                     <label>Min FICO:</label>
+                                //                     <input
+                                //                         type="number"
+                                //                         value={tier.minFICO || ""}
+                                //                         onChange={(e) => handleTierChange(tierIndex, 'minFICO', e.target.value)}
+                                //                     />
+                                //                     <br /> */}
+                {/*... other input fields for Fix and Flip... */}
+                {/* </div>
+                                //             )} */}
+                {/*... similar blocks for other loan program types... */}
+                {/* </div>
+                                //     ))
+                                // ): (
+                                //     <p>No tiers available</p>
+                                // )} */}
                 <button onClick={() => handleEditLoanProgram(program)}>Edit</button>
                 <button onClick={() => handleDeleteLoanProgram(program._id)}>Delete</button>
               </div>
