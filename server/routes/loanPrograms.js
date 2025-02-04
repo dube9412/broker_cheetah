@@ -4,32 +4,29 @@ const LoanProgram = require("../models/LoanProgram");
 const Tier = require("../models/Tier");
 const Lender = require("../models/Lender");
 
-//... other imports...
-
 // GET all loan programs for a lender
-router.get("/:lenderId/loan-programs", async (req, res) => {
+router.get("/:lenderId/loanPrograms", async (req, res) => {
     try {
-      const lender = await Lender.findById(req.params.lenderId).populate("loanPrograms");
-      if (!lender) {
-        return res.status(404).json({ message: "Lender not found" });
-      }
-  
-      // Populate the 'tiers' field when fetching loan programs
-      const loanPrograms = await LoanProgram.find({ lender: lender._id }).populate("tiers");
-  
-      res.json({ loanPrograms: loanPrograms || []});
+        const lender = await Lender.findById(req.params.lenderId).populate("loanPrograms");
+        if (!lender) {
+            return res.status(404).json({ message: "Lender not found" });
+        }
+
+        // Populate the 'tiers' field when fetching loan programs
+        const loanPrograms = await LoanProgram.find({ lender: lender._id }).populate("tiers");
+
+        res.json({ loanPrograms: loanPrograms ||[] });
     } catch (error) {
-      console.error("Error fetching loan programs:", error);
-      res.status(500).json({ message: "Server error" });
+        console.error("Error fetching loan programs:", error);
+        res.status(500).json({ message: "Server error" });
     }
-  });
-  
-  //... other routes...
+});
 
 // GET a single loan program (for editing)
 router.get("/:lenderId/loanPrograms/:programId", async (req, res) => {
     try {
         const programId = req.params.programId;
+        // Populate the 'tiers' field when fetching a single loan program
         const loanProgram = await LoanProgram.findById(programId).populate("tiers");
         if (!loanProgram) {
             return res.status(404).json({ message: "Loan program not found" });
@@ -42,7 +39,7 @@ router.get("/:lenderId/loanPrograms/:programId", async (req, res) => {
 });
 
 // POST: Add a loan program
-router.post("/:lenderId/loan-programs", async (req, res) => {
+router.post("/:lenderId/loanPrograms", async (req, res) => {
     try {
         const { name, type, tiers } = req.body;
         const lender = await Lender.findById(req.params.lenderId);
@@ -51,7 +48,7 @@ router.post("/:lenderId/loan-programs", async (req, res) => {
             return res.status(404).json({ message: "Lender not found" });
         }
 
-        const newLoanProgram = new LoanProgram({ lender: lender._id, name, type });
+        const newLoanProgram = new LoanProgram({ lender: lender._id, name, type }); // Use lender (ObjectId)
 
         // Create tiers and associate them with the loan program
         const createdTiers = await Promise.all(tiers.map((tierData) => new Tier({...tierData, lender: lender._id, loanProgramId: newLoanProgram._id }).save()));
@@ -70,7 +67,7 @@ router.post("/:lenderId/loan-programs", async (req, res) => {
 });
 
 // PUT: Update a loan program
-router.put("/:lenderId/loan-programs/:programId", async (req, res) => {
+router.put("/:lenderId/loanPrograms/:programId", async (req, res) => {
     try {
         const { name, type, tiers } = req.body;
         const loanProgram = await LoanProgram.findById(req.params.programId);
@@ -104,7 +101,7 @@ router.put("/:lenderId/loan-programs/:programId", async (req, res) => {
 });
 
 // DELETE: Remove a loan program
-router.delete("/:lenderId/loan-programs/:programId", async (req, res) => {
+router.delete("/:lenderId/loanPrograms/:programId", async (req, res) => {
     try {
         const lender = await Lender.findById(req.params.lenderId);
         if (!lender) {
@@ -134,20 +131,18 @@ router.delete("/:lenderId/loan-programs/:programId", async (req, res) => {
 router.get("/:lenderId/loanPrograms/new", async (req, res) => {
     try {
         const lenderId = req.params.lenderId;
-        const programType = req.query.type; // Get the selected program type from the query parameter
+        const programType = req.query.type;
 
-        // Render the appropriate template based on the program type
         switch (programType) {
             case "Fix and Flip":
                 res.render("fix-and-flip-form", { lenderId, program: null, tiers:[] });
                 break;
             case "DSCR":
-                res.render("dscr-form", { lenderId, program: null, tiers:[] }); // Assuming you have a dscr-form.ejs template
+                res.render("dscr-form", { lenderId, program: null, tiers:[] });
                 break;
             //... cases for other loan program types
             default:
-                // Handle cases where no or invalid type is selected
-                res.redirect(`/lenders/${lenderId}/loanPrograms`); // Or render an error page
+                res.redirect(`/lenders/${lenderId}/loanPrograms`);
         }
     } catch (error) {
         //... error handling
