@@ -17,7 +17,7 @@ router.get("/:lenderId/loan-programs", async (req, res) => {
       // Populate the 'tiers' field when fetching loan programs
       const loanPrograms = await LoanProgram.find({ lender: lender._id }).populate("tiers");
   
-      res.json({ loanPrograms: loanPrograms || });
+      res.json({ loanPrograms: loanPrograms || []});
     } catch (error) {
       console.error("Error fetching loan programs:", error);
       res.status(500).json({ message: "Server error" });
@@ -139,10 +139,10 @@ router.get("/:lenderId/loanPrograms/new", async (req, res) => {
         // Render the appropriate template based on the program type
         switch (programType) {
             case "Fix and Flip":
-                res.render("fix-and-flip-form", { lenderId, program: null, tiers: });
+                res.render("fix-and-flip-form", { lenderId, program: null, tiers:[] });
                 break;
             case "DSCR":
-                res.render("dscr-form", { lenderId, program: null, tiers: }); // Assuming you have a dscr-form.ejs template
+                res.render("dscr-form", { lenderId, program: null, tiers:[] }); // Assuming you have a dscr-form.ejs template
                 break;
             //... cases for other loan program types
             default:
