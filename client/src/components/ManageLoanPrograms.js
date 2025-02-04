@@ -28,9 +28,9 @@ function ManageLoanPrograms() {
   const navigate = useNavigate();
   const [lender, setLender] = useState(null);
   const [selectedProgram, setSelectedProgram] = useState("");
-  const [loanPrograms, setLoanPrograms] = useState();
+  const [loanPrograms, setLoanPrograms] = useState([]);
   const [numTiers, setNumTiers] = useState(1);
-  const [tierData, setTierData] = useState();
+  const [tierData, setTierData] = useState([]);
   const [editingProgramId, setEditingProgramId] = useState(null); // Track if editing
 
   useEffect(() => {
@@ -57,7 +57,7 @@ function ManageLoanPrograms() {
       // Initialize tierData with an array of objects, one for each tier
       const initialTierData = Array.from({ length: numTiers }, (_, i) => ({
         tier: i + 1,
-        //... other initial tier properties based on selectedProgram
+        //... other initial tier properties based on the selected program type
       }));
       setTierData(initialTierData);
 
@@ -70,7 +70,7 @@ function ManageLoanPrograms() {
   const handleSaveLoanProgram = () => {
     const programData = {
       name: selectedProgram,
-      tiers: tierData,
+      tiers: tierData, // Use tierData directly
     };
 
     console.log("Saving Loan Program Data:", programData);
@@ -138,7 +138,7 @@ function ManageLoanPrograms() {
   };
 
   const handleTierChange = (tierIndex, field, value) => {
-    setTierData(prevTierData => {
+    setTierData(prevTierData => { // Update tierData directly
       const updatedTiers = [...prevTierData];
       updatedTiers[tierIndex] = {...updatedTiers[tierIndex], [field]: value };
       return updatedTiers;
