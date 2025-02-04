@@ -184,10 +184,62 @@ function ManageLoanPrograms() {
                       onChange={(e) => handleTierChange(tierIndex, 'minFICO', e.target.value)}
                     />
                     <br />
-                    {/*... other input fields for Fix and Flip... */}
+                    <label htmlFor="minExperience">Min Experience:</label>
+                    <input
+                      type="number"
+                      id="minExperience"
+                      name="minExperience"
+                      value={tier.minExperience || ""}
+                      onChange={(e) => handleTierChange(tierIndex, 'minExperience', e.target.value)}
+                    />
+                    <br />
+                    <label htmlFor="maxLTP">Max LTP:</label>
+                    <input
+                      type="number"
+                      id="maxLTP"
+                      name="maxLTP"
+                      value={tier.maxLTP || ""}
+                      onChange={(e) => handleTierChange(tierIndex, 'maxLTP', e.target.value)}
+                    />
+                    <br />
+                    <label htmlFor="totalLTC">Total LTC:</label>
+                    <input
+                      type="number"
+                      id="totalLTC"
+                      name="totalLTC"
+                      value={tier.totalLTC || ""}
+                      onChange={(e) => handleTierChange(tierIndex, 'totalLTC', e.target.value)}
+                    />
+                    <br />
+                    <label htmlFor="maxARV">Max ARV:</label>
+                    <input
+                      type="number"
+                      id="maxARV"
+                      name="maxARV"
+                      value={tier.maxARV || ""}
+                      onChange={(e) => handleTierChange(tierIndex, 'maxARV', e.target.value)}
+                    />
+                    <br />
+                    <label htmlFor="minLoanAmount">Min Loan Amount:</label>
+                    <input
+                      type="number"
+                      id="minLoanAmount"
+                      name="minLoanAmount"
+                      value={tier.minLoanAmount || ""}
+                      onChange={(e) => handleTierChange(tierIndex, 'minLoanAmount', e.target.value)}
+                    />
+                    <br />
+                    <label htmlFor="maxLoanAmount">Max Loan Amount:</label>
+                    <input
+                      type="number"
+                      id="maxLoanAmount"
+                      name="maxLoanAmount"
+                      value={tier.maxLoanAmount || ""}
+                      onChange={(e) => handleTierChange(tierIndex, 'maxLoanAmount', e.target.value)}
+                    />
+                    <br />
                   </div>
                 )}
-                {/*... similar blocks for other loan program types... */}
               </div>
             ))}
           </div>
@@ -219,10 +271,50 @@ function ManageLoanPrograms() {
                             onChange={(e) => handleTierChange(tierIndex, 'minFICO', e.target.value)}
                           />
                           <br />
-                          {/*... other input fields for Fix and Flip... */}
+                          <label>Min Experience:</label>
+                          <input
+                            type="number"
+                            value={tier.minExperience || ""}
+                            onChange={(e) => handleTierChange(tierIndex, 'minExperience', e.target.value)}
+                          />
+                          <br />
+                          <label>Max LTP:</label>
+                          <input
+                            type="number"
+                            value={tier.maxLTP || ""}
+                            onChange={(e) => handleTierChange(tierIndex, 'maxLTP', e.target.value)}
+                          />
+                          <br />
+                          <label>Total LTC:</label>
+                          <input
+                            type="number"
+                            value={tier.totalLTC || ""}
+                            onChange={(e) => handleTierChange(tierIndex, 'totalLTC', e.target.value)}
+                          />
+                          <br />
+                          <label>Max ARV:</label>
+                          <input
+                            type="number"
+                            value={tier.maxARV || ""}
+                            onChange={(e) => handleTierChange(tierIndex, 'maxARV', e.target.value)}
+                          />
+                          <br />
+                          <label>Min Loan Amount:</label>
+                          <input
+                            type="number"
+                            value={tier.minLoanAmount || ""}
+                            onChange={(e) => handleTierChange(tierIndex, 'minLoanAmount', e.target.value)}
+                          />
+                          <br />
+                          <label>Max Loan Amount:</label>
+                          <input
+                            type="number"
+                            value={tier.maxLoanAmount || ""}
+                            onChange={(e) => handleTierChange(tierIndex, 'maxLoanAmount', e.target.value)}
+                          />
+                          <br />
                         </div>
                       )}
-                      {/*... similar blocks for other loan program types... */}
                     </div>
                   ))
                 ): (
