@@ -28,21 +28,21 @@ function ManageLoanPrograms() {
 
   useEffect(() => {
     fetch(`/api/lenders/${lenderId}`)
-      .then((res) => res.json())
-      .then((data) => {
+    .then((res) => res.json())
+    .then((data) => {
         console.log("Fetched lender data:", data);
         setLender(data.lender || data);
       })
-      .catch((err) => console.error("Error fetching lender:", err));
+    .catch((err) => console.error("Error fetching lender:", err));
 
     fetch(`/api/lenders/${lenderId}/loan-programs`)
-      .then((res) => res.json())
-      .then((data) => {
+    .then((res) => res.json())
+    .then((data) => {
         if (data.loanPrograms) {
           setLoanPrograms(data.loanPrograms);
         }
       })
-      .catch((err) => console.error("Error fetching loan programs:", err));
+    .catch((err) => console.error("Error fetching loan programs:", err));
   }, [lenderId]);
 
   const handleAddLoanProgram = () => {
@@ -69,37 +69,37 @@ function ManageLoanPrograms() {
     console.log("Saving Loan Program Data:", programData);
 
     const url = editingProgramId
-      ? `/api/lenders/${lenderId}/loan-programs/${editingProgramId}`
-      : `/api/lenders/${lenderId}/loan-programs`;
+    ? `/api/lenders/${lenderId}/loan-programs/${editingProgramId}`
+    : `/api/lenders/${lenderId}/loan-programs`;
 
-    const method = editingProgramId ? "PUT" : "POST";
+    const method = editingProgramId? "PUT": "POST";
 
     fetch(url, {
       method: method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(programData),
     })
-      .then((res) => res.json())
-      .then((data) => {
+    .then((res) => res.json())
+    .then((data) => {
         if (data.success) {
           // Update loanPrograms state based on whether it's a new program or an edit
-          setLoanPrograms((prevPrograms) => {
+          setLoanPrograms(prevPrograms => {
             if (method === "PUT") {
-              return prevPrograms.map((program) =>
-                program._id === data.loanProgram._id ? data.loanProgram : program
+              return prevPrograms.map(program =>
+                program._id === editingProgramId? data.loanProgram: program
               );
             } else {
               return [...prevPrograms, data.loanProgram];
             }
           });
           setSelectedProgram("");
-          setTierData([]);
+          setTierData();
           setEditingProgramId(null);
         } else {
           alert("Error saving loan program.");
         }
       })
-      .catch((err) => {
+    .catch((err) => {
         console.error("Error saving loan program:", err);
         alert("Error saving loan program.");
       });
@@ -116,31 +116,31 @@ function ManageLoanPrograms() {
     fetch(`/api/lenders/${lenderId}/loan-programs/${programId}`, {
       method: "DELETE",
     })
-      .then((res) => res.json())
-      .then((data) => {
+    .then((res) => res.json())
+    .then((data) => {
         if (data.success) {
-          setLoanPrograms(loanPrograms.filter((program) => program._id !== programId));
+          setLoanPrograms(loanPrograms.filter((program) => program._id!== programId));
         } else {
           alert("Error deleting loan program.");
         }
       })
-      .catch((err) => {
+    .catch((err) => {
         console.error("Error deleting loan program:", err);
         alert("Error deleting loan program.");
       });
   };
 
   const handleTierChange = (tierIndex, field, value) => {
-    setTierData((prevTierData) => {
+    setTierData(prevTierData => { // Update tierData directly
       const updatedTiers = [...prevTierData];
-      updatedTiers[tierIndex] = { ...updatedTiers[tierIndex], [field]: value };
+      updatedTiers[tierIndex] = {...updatedTiers[tierIndex], [field]: value };
       return updatedTiers;
     });
   };
 
   return (
     <div>
-      <h1>Manage Loan Programs for {lender ? lender.name : "Lender"}</h1>
+      <h1>Manage Loan Programs for {lender? lender.name: "Lender"}</h1>
       <select value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)}>
         <option value="">-- Select Program --</option>
         {LOAN_PROGRAMS.map((program) => (
@@ -149,13 +149,6 @@ function ManageLoanPrograms() {
           </option>
         ))}
       </select>
-      <input
-        type="number"
-        value={numTiers}
-        onChange={(e) => setNumTiers(parseInt(e.target.value, 10) || 1)}
-        min="1"
-        style={{ marginLeft: "10px" }}
-      />
       <button onClick={handleAddLoanProgram} style={{ marginLeft: "10px" }}>
         Add Loan Program
       </button>
@@ -179,57 +172,68 @@ function ManageLoanPrograms() {
             {/* Render tierData input fields */}
             {tierData.map((tier, tierIndex) => (
               <div key={tierIndex} style={{ border: "1px solid #ccc", padding: "10px" }}>
-                {/* Render fields based on selectedProgram */}
-                <div>
-                  <label htmlFor="tierName">Tier Name:</label>
-                  <input
-                    type="text"
-                    id="tierName"
-                    name="tierName"
-                    value={tier.tierName || ""}
-                    onChange={(e) => handleTierChange(tierIndex, "tierName", e.target.value)}
-                  />
-                  <br />
-                </div>
+                {/* Conditionally render fields based on selectedProgram */}
+                {selectedProgram === 'Fix and Flip' && (
+                  <div>
+                    <label htmlFor="minFICO">Min FICO:</label>
+                    <input
+                      type="number"
+                      id="minFICO"
+                      name="minFICO"
+                      value={tier.minFICO || ""}
+                      onChange={(e) => handleTierChange(tierIndex, 'minFICO', e.target.value)}
+                    />
+                    <br />
+                    {/*... other input fields for Fix and Flip... */}
+                  </div>
+                )}
+                {/*... similar blocks for other loan program types... */}
               </div>
             ))}
           </div>
         )}
       </div>
       <button onClick={handleSaveLoanProgram} style={{ marginTop: "20px" }}>
-        {editingProgramId ? "Update Loan Program" : "Save Loan Program"}
+        {editingProgramId? "Update Loan Program": "Save Loan Program"}
       </button>
       <br />
 
       {/* Existing Loan Programs List */}
       <h2>Existing Loan Programs</h2>
-      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-        {loanPrograms.length > 0 ? (
+      <div>
+        {loanPrograms.length > 0? (
           loanPrograms.map((program, programIndex) => (
             <div key={programIndex} style={{ border: "1px solid #ccc", padding: "10px" }}>
-              <h3>{program.name}</h3>
-              {program.tiers && program.tiers.length > 0 ? (
-                program.tiers.map((tier, tierIndex) => (
-                  <div key={tierIndex} style={{ border: "1px solid #ccc", padding: "10px" }}>
-                    <div>
-                      <label>Tier Name:</label>
-                      <input
-                        type="text"
-                        value={tier.tierName || ""}
-                        onChange={(e) => handleTierChange(tierIndex, "tierName", e.target.value)}
-                      />
-                      <br />
+              <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+                <h3>{program.name}</h3>
+                {program.tiers && program.tiers.length > 0? (
+                  program.tiers.map((tier, tierIndex) => (
+                    <div key={tierIndex} style={{ border: "1px solid #ccc", padding: "10px" }}>
+                      {/* Conditionally render fields based on program.name */}
+                      {program.name === 'Fix and Flip' && (
+                        <div>
+                          <label>Min FICO:</label>
+                          <input
+                            type="number"
+                            value={tier.minFICO || ""}
+                            onChange={(e) => handleTierChange(tierIndex, 'minFICO', e.target.value)}
+                          />
+                          <br />
+                          {/*... other input fields for Fix and Flip... */}
+                        </div>
+                      )}
+                      {/*... similar blocks for other loan program types... */}
                     </div>
-                  </div>
-                ))
-              ) : (
-                <p>No tiers available</p>
-              )}
-              <button onClick={() => handleEditLoanProgram(program)}>Edit</button>
-              <button onClick={() => handleDeleteLoanProgram(program._id)}>Delete</button>
+                  ))
+                ): (
+                  <p>No tiers available</p>
+                )}
+                <button onClick={() => handleEditLoanProgram(program)}>Edit</button>
+                <button onClick={() => handleDeleteLoanProgram(program._id)}>Delete</button>
+              </div>
             </div>
           ))
-        ) : (
+        ): (
           <p>No loan programs available</p>
         )}
       </div>
