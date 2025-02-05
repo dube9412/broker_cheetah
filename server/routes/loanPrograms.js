@@ -3,35 +3,47 @@ const router = express.Router();
 const LoanProgram = require("../models/LoanProgram");
 // const Tier = require("../models/Tier"); // Comment out the Tier model import
 const Lender = require("../models/Lender");
+const FixAndFlipLoan = require('../models/FixAndFlipLoan'); // Adjust path as needed
 
 // GET all loan programs for a lender
-router.get("/:lenderId/loan-programs", async (req, res) => {
-  try {
-    const lender = await Lender.findById(req.params.lenderId);
-    if (!lender) {
-      return res.status(404).json({ message: "Lender not found" });
+router.get('/loanPrograms', async (req, res) => {
+    const lenderId = req.query.lenderId;
+    const programType = req.query.programType; // Get the program type from the query
+
+    try {
+        let loanPrograms;
+        if (programType === 'Fix and Flip') {
+            loanPrograms = await FixAndFlipLoan.find({ lender: lenderId });
+        } else {
+            // Handle other program types similarly (e.g., DSCR, Ground Up, etc.)
+            loanPrograms = await LoanProgram.find({ lender: lenderId }); // Default if type is not specified
+        }
+        res.json(loanPrograms);
+    } catch (error) {
+        //... error handling
     }
-    const loanPrograms = await LoanProgram.find({ lender: lender._id }); // No need to populate tiers
-    res.json({ loanPrograms: loanPrograms ||[] });
-  } catch (error) {
-    console.error("Error fetching loan programs:", error);
-    res.status(500).json({ message: "Server error" });
-  }
 });
 
 // GET a single loan program (for editing)
-router.get("/:lenderId/loanPrograms/:programId", async (req, res) => {
-  try {
+router.get('/loanPrograms/:programId', async (req, res) => {
     const programId = req.params.programId;
-    const loanProgram = await LoanProgram.findById(programId); // No need to populate tiers
-    if (!loanProgram) {
-      return res.status(404).json({ message: "Loan program not found" });
+    const programType = req.query.programType;
+
+    try {
+        let loanProgram;
+        if (programType === 'Fix and Flip') {
+            loanProgram = await FixAndFlipLoan.findById(programId);
+        } else {
+            loanProgram = await LoanProgram.findById(programId);
+        }
+
+        if (!loanProgram) {
+            return res.status(404).json({ error: 'Loan program not found' });
+        }
+        res.json(loanProgram);
+    } catch (error) {
+        //... error handling
     }
-    res.status(200).json({ loanProgram });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
 });
 
 // POST: Add a loan program (simplified)
