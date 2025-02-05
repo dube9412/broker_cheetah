@@ -255,9 +255,6 @@ function ManageLoanPrograms() {
                   </option>
               ))}
           </select>
-          <button onClick={handleAddLoanProgram} style={{ marginLeft: "10px" }}>
-              Add Loan Program
-          </button>
           <br />
           <div>
               {selectedProgram && (
