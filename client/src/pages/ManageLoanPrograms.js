@@ -40,9 +40,9 @@ function ManageLoanPrograms() {
     const [lender, setLender] = useState(null);
     const [selectedProgram, setSelectedProgram] = useState("");
     const [selectedProgramType, setSelectedProgramType] = useState(null); // New state
-    const [loanPrograms, setLoanPrograms] = useState();
+    const [loanPrograms, setLoanPrograms] = useState([]);
     const [numTiers, setNumTiers] = useState(1);
-    const [tierData, setTierData] = useState();
+    const [tierData, setTierData] = useState([]);
     const [editingProgramId, setEditingProgramId] = useState(null);
 
     useEffect(() => {
@@ -80,12 +80,25 @@ function ManageLoanPrograms() {
 
     const handleProgramTypeSelect = (event) => {
         const programType = event.target.value;
-        setSelectedProgramType(programType); // Update the programType state
-        setSelectedProgram(""); // Reset selected program when type changes
-        setTierData(); // Clear tier data when type changes
-        setNumTiers(1); // Reset numTiers as well
-    };
+        setSelectedProgramType(programType);
 
+        try {
+            const programDetails = LOAN_PROGRAM_CONFIG[programType];
+            if (programDetails) {
+                createInputFields(programDetails);
+                const initialTierData = programDetails.fields.map(field => ({
+                    [field.name]: ''
+                }));
+                setTierData(initialTierData);
+            } else {
+                console.warn("Selected program not found in config.");
+                setTierData();
+            }
+        } catch (error) {
+            console.error("Error handling program type selection:", error);
+            setTierData();
+        }
+    };
     /*const handleAddLoanProgram = () => {
         if (selectedProgram) {
             const initialTierData = Array.from({ length: numTiers }, (_, i) => ({
@@ -100,53 +113,72 @@ function ManageLoanPrograms() {
         }
     };*/
 
-    const handleSaveLoanProgram = () => {
-        const programData = {
-            name: selectedProgram,
-            tiers: tierData,
-        };
-
-        const url = editingProgramId
-        ? `/api/lenders/<span class="math-inline">\{lenderId\}/loan\-programs/</span>{editingProgramId}`
-        : `/api/lenders/${lenderId}/loan-programs`;
-
-        const method = editingProgramId? "PUT": "POST";
-
-        fetch(url, {
-            method: method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(programData),
-        })
-        .then((res) => res.json())
-        .then((data) => {
-                if (data.success) {
-                    setLoanPrograms((prevPrograms) => {
-                        if (method === "PUT") {
-                            return prevPrograms.map((program) =>
-                                program._id === editingProgramId? data.loanProgram: program
-                            );
-                        } else {
-                            return [...prevPrograms, data.loanProgram];
-                        }
-                    });
-                    setSelectedProgram("");
-                    setTierData();
-                    setEditingProgramId(null);
-                } else {
-                    alert("Error saving loan program.");
-                }
-            })
-        .catch((err) => {
-                console.error("Error saving loan program:", err);
-                alert("Error saving loan program.");
+    const handleSaveLoanProgram = async () => {
+        try {
+            // Construct the programData object
+            const programData = {
+                name: selectedProgramType,
+                type: selectedProgramType,
+                tiers: tierData,
+            };
+    
+            // Determine the HTTP method (POST for new, PUT for editing)
+            const method = editingProgramId? 'PUT': 'POST';
+            const url = editingProgramId
+              ? `/api/lenders/${lenderId}/loan-programs/${editingProgramId}`
+              : `/api/lenders/${lenderId}/loan-programs`;
+    
+            // Send the data to the server
+            const response = await fetch(url, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(programData),
             });
+    
+            const data = await response.json();
+    
+            if (data.success) {
+                // Update loanPrograms state based on whether it's a new program or an edit
+                setLoanPrograms(prevPrograms => {
+                    if (method === "PUT") {
+                        return prevPrograms.map(program =>
+                            program._id === editingProgramId? data.loanProgram: program
+                        );
+                    } else {
+                        return [...prevPrograms, data.loanProgram];
+                    }
+                });
+    
+                // Reset the form fields and state
+                setSelectedProgramType(null); // Reset selectedProgramType
+                setTierData();
+                setEditingProgramId(null);
+            } else {
+                // Handle errors and display a message to the user
+                console.error("Error saving loan program:", data.message || "Server error");
+                alert("Error saving loan program. Please check the console for details.");
+            }
+        } catch (error) {
+            console.error("Error saving loan program:", error);
+            alert("Error saving loan program. Please check the console for details.");
+        }
     };
 
-    const handleEditLoanProgram = (program) => {
-        setEditingProgramId(program._id);
-        setSelectedProgram(program.name);
-        setNumTiers(program.tiers.length);
-        setTierData(program.tiers);
+   const handleEditLoanProgram = async (programId) => {
+    try {
+        // Fetch the existing loan program data from the server
+        const response = await fetch(`/api/lenders/${lenderId}/loan-programs/${programId}`);
+        const data = await response.json();
+
+         // Populate input fields with the fetched data
+         setSelectedProgramType(data.loanProgram.type); // Set the selected program type
+         setTierData(data.loanProgram.tiers); // Set the tier data
+         //... set other input fields based on data.loanProgram...
+
+
+        } catch (error) {
+            //... error handling...
+        }
     };
 
     const handleDeleteLoanProgram = (programId) => {
