@@ -55,7 +55,7 @@ function ManageLoanPrograms() {
 
             const fetchPrograms = async () => {
                 try {
-                  const response = await fetch(`/api/lenders/<span class="math-inline">\{lenderId\}/loan\-programs?programType\=</span>{selectedProgramType}`);
+                    const response = await fetch(`/api/lenders/${lenderId}/loan-programs?programType=${selectedProgramType}`);
                   if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                   }

@@ -42,8 +42,13 @@ router.get('/loanPrograms/:programId', async (req, res) => {
         }
         res.json(loanProgram);
     } catch (error) {
-        //... error handling
-    }
+      console.error("Error fetching loan programs:", error); // Log the error object
+      res.status(500).json({ 
+          success: false, 
+          message: "Failed to fetch loan programs", 
+          error: error.message  // Return the error message
+      }); 
+  }
 });
 
 // POST: Add a loan program (simplified)
