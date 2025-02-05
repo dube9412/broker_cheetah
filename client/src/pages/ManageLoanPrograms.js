@@ -86,7 +86,7 @@ function ManageLoanPrograms() {
         setNumTiers(1); // Reset numTiers as well
     };
 
-    const handleAddLoanProgram = () => {
+    /*const handleAddLoanProgram = () => {
         if (selectedProgram) {
             const initialTierData = Array.from({ length: numTiers }, (_, i) => ({
                 tier: i + 1,
@@ -98,7 +98,7 @@ function ManageLoanPrograms() {
             setLoanPrograms([...loanPrograms, newProgram]);
             setSelectedProgram("");
         }
-    };
+    };*/
 
     const handleSaveLoanProgram = () => {
         const programData = {
@@ -184,10 +184,11 @@ function ManageLoanPrograms() {
                 const programDetails = LOAN_PROGRAM_CONFIG[selectedProgramName]; // Get from config
                 if (programDetails) {
                     createInputFields(programDetails);
-                    setTierData([{...programDetails.fields.reduce((acc, field) => {
-                        acc[field.name] = "";
-                        return acc;
-                    }, {}) }]);
+                    // Set initial tierData with values from programDetails.fields
+                    const initialTierData = programDetails.fields.map(field => ({
+                        [field.name]: '' // Set initial value to empty string
+                    }));
+                    setTierData(initialTierData);
                     setNumTiers(1);
                 } else {
                     console.warn("Selected program not found in config.");
@@ -203,11 +204,6 @@ function ManageLoanPrograms() {
             setTierData();
             setNumTiers(1);
         }
-    };
-
-    const fetchLoanProgramDetails = async (programId) => {
-        // No longer needed as we get the details from LOAN_PROGRAM_CONFIG
-        return Promise.resolve(LOAN_PROGRAM_CONFIG[selectedProgram]); // Return from config
     };
 
     function createInputFields(programDetails) {
