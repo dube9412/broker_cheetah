@@ -20,8 +20,13 @@ router.get('/loanPrograms', async (req, res) => {
         }
         res.json(loanPrograms);
     } catch (error) {
-        //... error handling
-    }
+      console.error("Error fetching loan programs:", error);
+      res.status(500).json({ 
+          success: false, 
+          message: "Failed to fetch loan programs", 
+          error: error.message 
+      });
+  }
 });
 
 // GET a single loan program (for editing)
@@ -42,13 +47,8 @@ router.get('/loanPrograms/:programId', async (req, res) => {
         }
         res.json(loanProgram);
     } catch (error) {
-      console.error("Error fetching loan programs:", error); // Log the error object
-      res.status(500).json({ 
-          success: false, 
-          message: "Failed to fetch loan programs", 
-          error: error.message  // Return the error message
-      }); 
-  }
+        //... error handling
+    }
 });
 
 // POST: Add a loan program (simplified)
