@@ -54,22 +54,20 @@ router.get('/loanPrograms/:programId', async (req, res) => {
 // POST: Add a loan program (simplified)
 router.post("/:lenderId/loan-programs", async (req, res) => {
   try {
-    const { name, type } = req.body; // No tiers in the request body
-    const lender = await Lender.findById(req.params.lenderId);
-    if (!lender) {
-      return res.status(404).json({ message: "Lender not found" });
-    }
+      const { name, type, tiers } = req.body; // Access programData from req.body
+      const lenderId = req.params.lenderId;
 
-    const newLoanProgram = new LoanProgram({ lender: lender._id, name, type });
-    await newLoanProgram.save();
+      // Determine the correct model based on type
+      const Model = type === 'Fix and Flip'? FixAndFlipLoan: LoanProgram;
 
-    lender.loanPrograms.push(newLoanProgram._id);
-    await lender.save();
+      const newLoanProgram = new Model({ lender: lenderId, name, type, tiers });
+      await newLoanProgram.save();
 
-    res.status(201).json({ loanProgram: newLoanProgram });
+      //... update lender's loanPrograms array...
+
+      res.status(201).json({ success: true, loanProgram: newLoanProgram });
   } catch (error) {
-    console.error("Error adding loan program:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+      //... error handling...
   }
 });
 
