@@ -22,4 +22,3 @@ const LenderSchema = new mongoose.Schema({
 
 const Lender = mongoose.model("Lender", LenderSchema);
 module.exports = Lender;
-
