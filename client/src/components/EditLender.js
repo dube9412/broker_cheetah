@@ -37,20 +37,17 @@ function EditLender() {
 
     fetch(`/api/lenders/${id}`)
     .then((res) => res.json())
-    .then((data) => {
-        console.log("Fetched lender data:", data); // Debugging log
+    .then((lender) => {  // ✅ NOW WORKS WITH THE CLEANED-UP BACKEND
+        console.log("✅ Fetched lender:", lender);
 
-        // 🛑 FIX: The actual lender data is inside `data.lender`
-        if (!data.success || !data.lender) {
+        if (!lender || !lender._id) {
             console.error("Lender not found.");
             alert("Lender not found.");
             navigate("/dashboard");
             return;
         }
 
-        const lender = data.lender; // ✅ Extract lender object
-
-        // ✅ Ensure all fields are updated correctly
+        // ✅ Update state correctly
         setName(lender.name || "");
         setStates(lender.states || []);
         setBrokersLicenseOnlyStates(lender.brokersLicenseOnlyStates || []);
@@ -69,10 +66,11 @@ function EditLender() {
         setBackgroundLimitations(lender.backgroundLimitations || []);
     })
     .catch((err) => {
-        console.error("Error fetching lender:", err);
+        console.error("❌ Error fetching lender:", err);
         alert("Error fetching lender data.");
         navigate("/dashboard");
     });
+
 
 }, [id, navigate]);
 

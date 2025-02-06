@@ -110,7 +110,7 @@ router.delete("/:id", async (req, res) => {
 // 📌 LOAN PROGRAM MANAGEMENT (Handles loan programs within the lender route)
 
 // 🟢 GET: Retrieve all loan programs for a lender
-router.get("/:id", async (req, res) => {
+/* router.get("/:id", async (req, res) => {
   try {
       const lender = await Lender.findById(req.params.id);
       if (!lender) {
@@ -187,5 +187,70 @@ router.delete("/:id/loan-programs/:programId", async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+
+module.exports = router; 
+
+
+// 🟢 POST: Add a loan program to a lender
+router.post("/:id/loan-programs", async (req, res) => {
+  try {
+    const { name, tiers } = req.body;
+    const lender = await Lender.findById(req.params.id);
+    if (!lender) {
+      return res.status(404).json({ success: false, message: "Lender not found" });
+    }
+
+    const newLoanProgram = new LoanProgram({ lenderId: lender._id, name, tiers });
+    await newLoanProgram.save();
+
+    lender.loanPrograms.push(newLoanProgram._id);
+    await lender.save();
+
+    res.json({ success: true, loanProgram: newLoanProgram });
+  } catch (error) {
+    console.error("Error adding loan program:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// 🔄 PUT: Update an existing loan program
+router.put("/:id/loan-programs/:programId", async (req, res) => {
+  try {
+    const { name, tiers } = req.body;
+    const loanProgram = await LoanProgram.findByIdAndUpdate(
+      req.params.programId,
+      { name, tiers },
+      { new: true }
+    );
+
+    if (!loanProgram) {
+      return res.status(404).json({ success: false, message: "Loan program not found" });
+    }
+
+    res.json({ success: true, loanProgram });
+  } catch (error) {
+    console.error("Error updating loan program:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// 🔴 DELETE: Remove a loan program from a lender
+router.delete("/:id/loan-programs/:programId", async (req, res) => {
+  try {
+    const lender = await Lender.findById(req.params.id);
+    if (!lender) {
+      return res.status(404).json({ success: false, message: "Lender not found" });
+    }
+
+    await LoanProgram.findByIdAndDelete(req.params.programId);
+    lender.loanPrograms = lender.loanPrograms.filter((program) => program.toString() !== req.params.programId);
+    await lender.save();
+
+    res.json({ success: true, message: "Loan program deleted" });
+  } catch (error) {
+    console.error("Error deleting loan program:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+}); */
 
 module.exports = router;
