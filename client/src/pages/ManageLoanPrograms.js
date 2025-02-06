@@ -6,7 +6,7 @@ function ManageLoanPrograms() {
     const navigate = useNavigate();
 
     const [lender, setLender] = useState(null);
-    const [fixAndFlipPrograms, setFixAndFlipPrograms] = useState();
+    const [fixAndFlipPrograms, setFixAndFlipPrograms] = useState([]);
 
     useEffect(() => {
         // Fetch lender details
@@ -25,6 +25,16 @@ function ManageLoanPrograms() {
             try {
                 const response = await fetch(`/api/lenders/${lenderId}/fix-and-flip-programs`);
                 const data = await response.json();
+                console.log("Fetched Fix and Flip Programs:", data); // Log the fetched data
+                const validPrograms = data.filter(program => Array.isArray(program.tiers));
+                setFixAndFlipPrograms(validPrograms);
+                 // Add a check to ensure data.tiers is defined
+            if (data && Array.isArray(data.tiers)) {
+                setFixAndFlipPrograms(data);
+            } else {
+                console.warn("Invalid program data format:", data);
+                setFixAndFlipPrograms(); // Or handle the error differently
+            }
                 setFixAndFlipPrograms(data);
             } catch (error) {
                 console.error("Error fetching Fix and Flip programs:", error);
