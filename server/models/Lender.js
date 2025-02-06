@@ -18,7 +18,11 @@ const LenderSchema = new mongoose.Schema({
   bkFcSsDil: { type: Number, default: null },
   backgroundLimitations: [String],
   loanPrograms: [{ type: mongoose.Schema.Types.ObjectId, ref: "LoanProgram" }],
+
+  // ✅ Fix: Add a reference to Fix and Flip Loan Programs
+  fixAndFlipPrograms: [{ type: mongoose.Schema.Types.ObjectId, ref: "FixAndFlipLoan" }],
 });
 
 const Lender = mongoose.model("Lender", LenderSchema);
 module.exports = Lender;
+

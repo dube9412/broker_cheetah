@@ -8,132 +8,111 @@ function AddFixAndFlip() {
     const [lender, setLender] = useState(null);
     const [programName, setProgramName] = useState('');
     const [numTiers, setNumTiers] = useState(1);
-    const [tierData, setTierData] = useState();
+    // State for each input field in the form
+    const [minFICO, setMinFICO] = useState('');
+    const [minExperience, setMinExperience] = useState('');
+    const [maxLTP, setMaxLTP] = useState('');
+    const [totalLTC, setTotalLTC] = useState('');
+    const [maxARV, setMaxARV] = useState('');
+    const [minLoanAmount, setMinLoanAmount] = useState('');
+    const [maxLoanAmount, setMaxLoanAmount] = useState('');
 
     useEffect(() => {
-        // Fetch lender details (if needed)
+        // Fetch lender details
         const fetchLender = async () => {
             try {
                 const response = await fetch(`/api/lenders/${lenderId}`);
                 const data = await response.json();
                 setLender(data);
             } catch (error) {
-                console.error("Error fetching lender:", error);
+                console.error('Error fetching lender details:', error);
             }
         };
 
         fetchLender();
     }, [lenderId]);
 
-    useEffect(() => {
-        // Initialize tierData with an empty array of tiers
-        const initialTierData = Array.from({ length: numTiers }, (_, i) => ({
-            tierName: `Tier ${i + 1}`,
-            minFICO: '',
-            minExperience: '',
-            maxLTP: '',
-            totalLTC: '',
-            maxARV: '',
-            minLoanAmount: '',
-            maxLoanAmount: '',
-        }));
-        setTierData(initialTierData);
-    }, [numTiers]);
-
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        if (name === 'programName') {
-            setProgramName(value);
-        } else if (name === 'numTiers') {
-            setNumTiers(parseInt(value, 10) || 1);
-        }
-    };
-
-    const handleTierChange = (tierIndex, field, value) => {
-        setTierData(prevTierData => {
-            const updatedTiers = [...prevTierData];
-            updatedTiers[tierIndex][field] = value;
-            return updatedTiers;
-        });
-    };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
-        const programData = {
-            name: programName,
-            lender: lenderId,
-            type: 'Fix and Flip', // Explicitly set the type
-            tiers: tierData,
-        };
-
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        // Add logic to submit the form data to the server
         try {
-            const response = await fetch('/api/loan-programs', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(programData),
+            const response = await fetch(`http://localhost:5000/api/loan-programs/${lenderId}/fix-and-flip-programs`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: programName,  // ✅ Rename 'programName' to 'name'
+                    type: "Fix and Flip", // ✅ Add required 'type'
+                    lender: lenderId, // ✅ Ensure lenderId is included
+                    numTiers,
+                    minFICO,
+                    minExperience,
+                    maxLTP,
+                    totalLTC,
+                    maxARV,
+                    minLoanAmount,
+                    maxLoanAmount
+                })
             });
+            
+            
+            const data = await response.json();
+if (response.ok && data.success) {
+    console.log("✅ Loan program saved successfully:", data);
+    alert("Program added successfully!");
+    navigate(`/manage-loan-programs/${lenderId}`);
+} else {
+    console.error("❌ Failed to add program:", data);
+    alert("Failed to add program.");
+}
 
-            if (response.ok) {
-                // Handle success (e.g., redirect to ManageLoanPrograms page)
-                navigate(`/manage-loan-programs/${lenderId}`);
-            } else {
-                const errorData = await response.json();
-                console.error("Error adding loan program:", errorData.message || "Server error");
-                alert("Error adding loan program. Please check the console for details.");
-            }
         } catch (error) {
-            console.error("Error adding loan program:", error);
-            alert("Error adding loan program. Please check the console for details.");
+            console.error('Error adding program:', error);
+            alert('An error occurred while adding the program');
         }
     };
 
     return (
-        <div>
-            <h1>Add Fix and Flip Loan Program for {lender? lender.name: 'Lender'}</h1>
+        <div style={{ maxWidth: "500px", margin: "0 auto", padding: "20px" }}>
+            <h2 style={{ textAlign: "center" }}>
+                {lender ? `Adding Loan Program for ${lender.name}` : "Loading Lender..."}
+            </h2>
+
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="programName">Program Name:</label>
-                    <input
-                        type="text"
-                        id="programName"
-                        name="programName"
-                        value={programName}
-                        onChange={handleInputChange}
-                        required
-                    />
+                <label>Program Name:</label>
+                <input type="text" value={programName} onChange={(e) => setProgramName(e.target.value)} required style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Number of Tiers:</label>
+                <input type="number" value={numTiers} onChange={(e) => setNumTiers(e.target.value)} required style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Minimum FICO:</label>
+                <input type="number" value={minFICO} onChange={(e) => setMinFICO(e.target.value)} required style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Minimum Experience:</label>
+                <input type="number" value={minExperience} onChange={(e) => setMinExperience(e.target.value)} required style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Maximum LTP:</label>
+                <input type="number" value={maxLTP} onChange={(e) => setMaxLTP(e.target.value)} required style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Total LTC:</label>
+                <input type="number" value={totalLTC} onChange={(e) => setTotalLTC(e.target.value)} required style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Maximum ARV:</label>
+                <input type="number" value={maxARV} onChange={(e) => setMaxARV(e.target.value)} required style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Minimum Loan Amount:</label>
+                <input type="number" value={minLoanAmount} onChange={(e) => setMinLoanAmount(e.target.value)} required style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Maximum Loan Amount:</label>
+                <input type="number" value={maxLoanAmount} onChange={(e) => setMaxLoanAmount(e.target.value)} required style={{ width: "100%", marginBottom: "10px" }} />
+
+                <div style={{ textAlign: "center", marginTop: "20px" }}>
+                    <button type="submit" style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>
+                        Add Program
+                    </button>
+                    <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>
+                        Cancel
+                    </button>
                 </div>
-                <div>
-                    <label htmlFor="numTiers">Number of Tiers:</label>
-                    <input
-                        type="number"
-                        id="numTiers"
-                        name="numTiers"
-                        min="1"
-                        value={numTiers}
-                        onChange={handleInputChange}
-                        required
-                    />
-                </div>
-                {tierData.map((tier, tierIndex) => (
-                    <div key={tierIndex}>
-                        <h3>{tier.tierName}</h3>
-                        {/* Input fields for each tier */}
-                        <div>
-                            <label htmlFor={`minFICO-${tierIndex}`}>Min FICO:</label>
-                            <input
-                                type="number"
-                                id={`minFICO-${tierIndex}`}
-                                name="minFICO"
-                                value={tier.minFICO}
-                                onChange={(e) => handleTierChange(tierIndex, 'minFICO', e.target.value)}
-                                required
-                            />
-                        </div>
-                        {/*... other input fields for the tier... */}
-                    </div>
-                ))}
-                <button type="submit">Save Loan Program</button>
             </form>
         </div>
     );

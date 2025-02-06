@@ -5,6 +5,8 @@ import RequestQuote from "./components/RequestQuote";
 
 // Components
 import NavBar from "./components/NavBar";
+import AddFixAndFlip from "./components/AddFixAndFlip";
+import EditFixAndFlip from "./components/EditFixAndFlip";  // ✅ Import the Edit component For Fix and Flip
 
 // Pages
 import Home from "./pages/Home";
@@ -44,6 +46,10 @@ function App() {
               {/* Admin only route for adding & editing lenders */}
               <Route path="/add-lender" element={<AddLender />} />
               <Route path="/edit-lender/:id" element={<EditLender />} />
+
+              <Route path="/add-fix-and-flip/:lenderId" element={<AddFixAndFlip />} />
+              <Route path="/edit-fix-and-flip/:lenderId/:programId" element={<EditFixAndFlip />} />
+
             </Routes>
           </div>
 
