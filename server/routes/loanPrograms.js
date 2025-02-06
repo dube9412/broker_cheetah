@@ -1,127 +1,104 @@
 const express = require("express");
 const router = express.Router();
-const LoanProgram = require("../models/LoanProgram");
-// const Tier = require("../models/Tier"); // Comment out the Tier model import
+const FixAndFlipLoan = require("../models/FixAndFlipLoan");
 const Lender = require("../models/Lender");
-const FixAndFlipLoan = require('../models/FixAndFlipLoan'); // Adjust path as needed
 
-// GET all loan programs for a lender
-router.get('/loanPrograms', async (req, res) => {
-    const lenderId = req.query.lenderId;
-    const programType = req.query.programType; // Get the program type from the query
-
+// GET all Fix and Flip loan programs for a lender
+router.get("/lenders/:lenderId/fix-and-flip-programs", async (req, res) => {
     try {
-        let loanPrograms;
-        if (programType === 'Fix and Flip') {
-            loanPrograms = await FixAndFlipLoan.find({ lender: lenderId });
-        } else {
-            // Handle other program types similarly (e.g., DSCR, Ground Up, etc.)
-            loanPrograms = await LoanProgram.find({ lender: lenderId }); // Default if type is not specified
-        }
-        res.json(loanPrograms);
+        const lenderId = req.params.lenderId;
+        const fixAndFlipPrograms = await FixAndFlipLoan.find({ lender: lenderId });
+        res.json(fixAndFlipPrograms);
     } catch (error) {
-      console.error("Error fetching loan programs:", error);
-      res.status(500).json({ 
-          success: false, 
-          message: "Failed to fetch loan programs", 
-          error: error.message 
-      });
-  }
+        console.error("Error fetching Fix and Flip programs:", error);
+        res.status(500).json({ message: "Failed to fetch Fix and Flip programs" });
+    }
 });
 
-// GET a single loan program (for editing)
-router.get('/loanPrograms/:programId', async (req, res) => {
-    const programId = req.params.programId;
-    const programType = req.query.programType;
-
+// GET a single Fix and Flip loan program by ID
+router.get("/loan-programs/:programId", async (req, res) => {
     try {
-        let loanProgram;
-        if (programType === 'Fix and Flip') {
-            loanProgram = await FixAndFlipLoan.findById(programId);
-        } else {
-            loanProgram = await LoanProgram.findById(programId);
+        const programId = req.params.programId;
+        const fixAndFlipProgram = await FixAndFlipLoan.findById(programId);
+        if (!fixAndFlipProgram) {
+            return res.status(404).json({ message: "Fix and Flip program not found" });
         }
-
-        if (!loanProgram) {
-            return res.status(404).json({ error: 'Loan program not found' });
-        }
-        res.json(loanProgram);
+        res.json(fixAndFlipProgram);
     } catch (error) {
-        //... error handling
+        console.error("Error fetching Fix and Flip program:", error);
+        res.status(500).json({ message: "Failed to fetch Fix and Flip program" });
     }
 });
 
-// POST: Add a loan program (simplified)
-router.post("/:lenderId/loan-programs", async (req, res) => {
-  try {
-      const { name, type, tiers } = req.body; // Access programData from req.body
-      const lenderId = req.params.lenderId;
+// POST: Add a new Fix and Flip loan program
+router.post("/loan-programs", async (req, res) => {
+    try {
+        const { name, lender, tiers } = req.body;
 
-      // Determine the correct model based on type
-      const Model = type === 'Fix and Flip'? FixAndFlipLoan: LoanProgram;
+        // Create a new Fix and Flip loan program
+        const newProgram = new FixAndFlipLoan({
+            name,
+            lender,
+            tiers,
+        });
 
-      const newLoanProgram = new Model({ lender: lenderId, name, type, tiers });
-      await newLoanProgram.save();
+        // Save the program to the database
+        await newProgram.save();
 
-      //... update lender's loanPrograms array...
+        // Add the program to the lender's loanPrograms array
+        await Lender.findByIdAndUpdate(lender, { $push: { loanPrograms: newProgram._id } });
 
-      res.status(201).json({ success: true, loanProgram: newLoanProgram });
-  } catch (error) {
-      //... error handling...
-  }
-});
-
-// PUT: Update a loan program (simplified)
-router.put("/:lenderId/loan-programs/:programId", async (req, res) => {
-  try {
-    const { name, type } = req.body; // No tiers in the request body
-    const loanProgram = await LoanProgram.findById(req.params.programId);
-    if (!loanProgram) {
-      return res.status(404).json({ message: "Loan program not found" });
+        res.status(201).json({ message: "Fix and Flip program added successfully", program: newProgram });
+    } catch (error) {
+        console.error("Error adding Fix and Flip program:", error);
+        res.status(500).json({ message: "Failed to add Fix and Flip program" });
     }
-
-    loanProgram.name = name;
-    loanProgram.type = type;
-
-    await loanProgram.save();
-
-    res.status(200).json({ loanProgram });
-  } catch (error) {
-    console.error("Error updating loan program:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
 });
 
-// DELETE: Remove a loan program (simplified)
-router.delete("/:lenderId/loan-programs/:programId", async (req, res) => {
-  try {
-    //... (no changes in this route)
-  } catch (error) {
-    //... error handling
-  }
-});
-// Route for rendering the new loan program form with the selected type
-router.get("/:lenderId/loanPrograms/new", async (req, res) => {
-  try {
-    const lenderId = req.params.lenderId;
-    const programType = req.query.type; // Get the selected program type from the query parameter
+// PUT: Update an existing Fix and Flip loan program
+router.put("/loan-programs/:programId", async (req, res) => {
+    try {
+        const programId = req.params.programId;
+        const { name, tiers } = req.body;
 
-    // Render the appropriate template based on the program type
-    switch (programType) {
-      case "Fix and Flip":
-        res.render("fix-and-flip-form", { lenderId, program: null, tiers:[]});
-        break;
-      case "DSCR":
-        res.render("dscr-form", { lenderId, program: null, tiers:[]}); // Assuming you have a dscr-form.ejs template
-        break;
-      //... cases for other loan program types
-      default:
-        // Handle cases where no or invalid type is selected
-        res.redirect(`/lenders/${lenderId}/loanPrograms`); // Or render an error page
+        // Update the Fix and Flip loan program
+        const updatedProgram = await FixAndFlipLoan.findByIdAndUpdate(
+            programId,
+            { name, tiers },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedProgram) {
+            return res.status(404).json({ message: "Fix and Flip program not found" });
+        }
+
+        res.json({ message: "Fix and Flip program updated successfully", program: updatedProgram });
+    } catch (error) {
+        console.error("Error updating Fix and Flip program:", error);
+        res.status(500).json({ message: "Failed to update Fix and Flip program" });
     }
-  } catch (error) {
-    //... error handling
-  }
+});
+
+// DELETE: Delete a Fix and Flip loan program
+router.delete("/loan-programs/:programId", async (req, res) => {
+    try {
+        const programId = req.params.programId;
+
+        // Delete the Fix and Flip loan program
+        const deletedProgram = await FixAndFlipLoan.findByIdAndDelete(programId);
+
+        if (!deletedProgram) {
+            return res.status(404).json({ message: "Fix and Flip program not found" });
+        }
+
+        // Remove the program from the lender's loanPrograms array
+        await Lender.findByIdAndUpdate(deletedProgram.lender, { $pull: { loanPrograms: programId } });
+
+        res.json({ message: "Fix and Flip program deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting Fix and Flip program:", error);
+        res.status(500).json({ message: "Failed to delete Fix and Flip program" });
+    }
 });
 
 module.exports = router;
