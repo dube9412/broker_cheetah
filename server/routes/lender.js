@@ -110,18 +110,21 @@ router.delete("/:id", async (req, res) => {
 // 📌 LOAN PROGRAM MANAGEMENT (Handles loan programs within the lender route)
 
 // 🟢 GET: Retrieve all loan programs for a lender
-router.get("/:id/loan-programs", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const lender = await Lender.findById(req.params.id).populate("loanPrograms");
-    if (!lender) {
-      return res.status(404).json({ success: false, message: "Lender not found" });
-    }
-    res.json({ success: true, loanPrograms: lender.loanPrograms || [] });
+      const lender = await Lender.findById(req.params.id);
+      if (!lender) {
+          console.error("❌ Lender not found:", req.params.id);
+          return res.status(404).json({ message: "Lender not found" });
+      }
+      console.log("✅ Found Lender:", lender);
+      res.json({ success: true, lender }); // 🛑 This response format causes issues!
   } catch (error) {
-    console.error("Error fetching loan programs:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+      console.error("❌ Error fetching lender:", error);
+      res.status(500).json({ message: "Failed to fetch lender" });
   }
 });
+
 
 // 🟢 POST: Add a loan program to a lender
 router.post("/:id/loan-programs", async (req, res) => {

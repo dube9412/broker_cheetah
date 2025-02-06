@@ -114,7 +114,9 @@ function Dashboard() {
                       )}
                     </td>
                     <td>
-                      <Link to={`/edit-lender/${lender._id}`}>Edit</Link> {" | "}
+<Link to={`/edit-lender/${lender._id}`}>
+    <button>Edit</button>
+</Link> {" | "}
                       <button onClick={() => handleDelete(lender._id)}>Delete</button> {" | "}
                       <button onClick={() => navigate(`/manage-loan-programs/${lender._id}`)}>Manage Loan Programs</button>
                     </td>
