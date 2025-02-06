@@ -2,25 +2,33 @@ const mongoose = require("mongoose");
 
 const FixAndFlipLoanSchema = new mongoose.Schema(
     {
-        name: { type: String, required: true }, // Name of the loan program (e.g., "Fix and Flip - Tier 1")
-        lender: { type: mongoose.Schema.Types.ObjectId, ref: "Lender", required: true }, // Reference to the Lender (assuming you have a Lender model)
-        type: { type: String, required: true }, // The type of loan program ("Fix and Flip") - important for querying
-        tiers: [ // Array of tiers (each tier has its own set of fields)
+        name: { type: String, required: true }, 
+        lender: { type: mongoose.Schema.Types.ObjectId, ref: "Lender", required: true }, 
+        type: { type: String, required: true }, 
+
+        // ✅ Ensure all fields exist
+        minFICO: { type: Number, required: false },
+        minExperience: { type: Number, required: false },
+        maxLTP: { type: Number, required: false },
+        totalLTC: { type: Number, required: false },
+        maxARV: { type: Number, required: false },
+        minLoanAmount: { type: Number, required: false },
+        maxLoanAmount: { type: Number, required: false },
+
+        tiers: [ // Optional array for tiered programs
             {
-                tierName: { type: String, required: true }, // Name of the tier (e.g., "Tier 1", "Tier 2")
-                minFICO: { type: Number, required: true },
-                minExperience: { type: Number, required: true },
-                maxLTP: { type: Number, required: true },
-                totalLTC: { type: Number, required: true },
-                maxARV: { type: Number, required: true },
-                minLoanAmount: { type: Number, required: true },
-                maxLoanAmount: { type: Number, required: true },
-                //... other tier-specific fields
+                tierName: { type: String, required: false },
+                minFICO: { type: Number, required: false },
+                minExperience: { type: Number, required: false },
+                maxLTP: { type: Number, required: false },
+                totalLTC: { type: Number, required: false },
+                maxARV: { type: Number, required: false },
+                minLoanAmount: { type: Number, required: false },
+                maxLoanAmount: { type: Number, required: false },
             },
-            // Add more tiers as needed
         ],
     },
-    { timestamps: true }, // Add timestamps for creation and update
+    { timestamps: true }
 );
 
 const FixAndFlipLoan = mongoose.model("FixAndFlipLoan", FixAndFlipLoanSchema);

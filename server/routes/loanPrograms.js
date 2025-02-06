@@ -3,102 +3,139 @@ const router = express.Router();
 const FixAndFlipLoan = require("../models/FixAndFlipLoan");
 const Lender = require("../models/Lender");
 
-// GET all Fix and Flip loan programs for a lender
-router.get("/lenders/:lenderId/fix-and-flip-programs", async (req, res) => {
+// ✅ Debugging: Confirm this file is actually loaded
+console.log("✅ Loan Program Routes File Loaded");
+
+// ✅ GET all Fix and Flip programs for a lender
+router.get("/:lenderId/fix-and-flip-programs", async (req, res) => {
     try {
-        const lenderId = req.params.lenderId;
+        console.log(`🔹 Received GET request for lenderId: ${req.params.lenderId}`);
+        const { lenderId } = req.params;
+
         const fixAndFlipPrograms = await FixAndFlipLoan.find({ lender: lenderId });
+
+        console.log("✅ Found Fix and Flip programs:", fixAndFlipPrograms);
         res.json(fixAndFlipPrograms);
     } catch (error) {
-        console.error("Error fetching Fix and Flip programs:", error);
+        console.error("❌ Error fetching Fix and Flip programs:", error);
         res.status(500).json({ message: "Failed to fetch Fix and Flip programs" });
     }
 });
 
-// GET a single Fix and Flip loan program by ID
-router.get("/loan-programs/:programId", async (req, res) => {
-    try {
-        const programId = req.params.programId;
-        const fixAndFlipProgram = await FixAndFlipLoan.findById(programId);
-        if (!fixAndFlipProgram) {
-            return res.status(404).json({ message: "Fix and Flip program not found" });
-        }
-        res.json(fixAndFlipProgram);
-    } catch (error) {
-        console.error("Error fetching Fix and Flip program:", error);
-        res.status(500).json({ message: "Failed to fetch Fix and Flip program" });
-    }
+router.get("/:programId", async (req, res) => {
+  try {
+      console.log(`🔹 Fetching loan program: ${req.params.programId}`);
+
+      const program = await FixAndFlipLoan.findById(req.params.programId);
+      if (!program) {
+          console.error("❌ Loan program not found:", req.params.programId);
+          return res.status(404).json({ message: "Loan program not found" });
+      }
+
+      console.log("✅ Found loan program:", program);
+      res.json(program);
+  } catch (error) {
+      console.error("❌ Error fetching loan program:", error);
+      res.status(500).json({ message: "Failed to fetch loan program" });
+  }
 });
 
-// POST: Add a new Fix and Flip loan program
-router.post("/loan-programs", async (req, res) => {
-    try {
-        const { name, lender, tiers } = req.body;
 
-        // Create a new Fix and Flip loan program
-        const newProgram = new FixAndFlipLoan({
-            name,
-            lender,
-            tiers,
-        });
+router.put("/:programId", async (req, res) => {
+  try {
+      console.log(`🔹 Updating loan program: ${req.params.programId}`);
 
-        // Save the program to the database
-        await newProgram.save();
+      const updatedProgram = await FixAndFlipLoan.findByIdAndUpdate(
+          req.params.programId,
+          { $set: req.body },  // Update only fields sent in request
+          { new: true, runValidators: true }  // Return updated program & validate
+      );
 
-        // Add the program to the lender's loanPrograms array
-        await Lender.findByIdAndUpdate(lender, { $push: { loanPrograms: newProgram._id } });
+      if (!updatedProgram) {
+          console.error("❌ Loan program not found:", req.params.programId);
+          return res.status(404).json({ message: "Loan program not found" });
+      }
 
-        res.status(201).json({ message: "Fix and Flip program added successfully", program: newProgram });
-    } catch (error) {
-        console.error("Error adding Fix and Flip program:", error);
-        res.status(500).json({ message: "Failed to add Fix and Flip program" });
-    }
+      console.log("✅ Loan program updated:", updatedProgram);
+      res.json({ success: true, program: updatedProgram });
+  } catch (error) {
+      console.error("❌ Error updating loan program:", error);
+      res.status(500).json({ message: "Error updating loan program" });
+  }
 });
 
-// PUT: Update an existing Fix and Flip loan program
-router.put("/loan-programs/:programId", async (req, res) => {
-    try {
-        const programId = req.params.programId;
-        const { name, tiers } = req.body;
+// ✅ POST: Add a Fix and Flip Loan Program
+router.post("/:lenderId/fix-and-flip-programs", async (req, res) => {
+  try {
+      console.log("🔹 Received Fix & Flip Loan Program data:", req.body);
 
-        // Update the Fix and Flip loan program
-        const updatedProgram = await FixAndFlipLoan.findByIdAndUpdate(
-            programId,
-            { name, tiers },
-            { new: true } // Return the updated document
-        );
+      const { lenderId } = req.params;
+      const lender = await Lender.findById(lenderId);
+      if (!lender) {
+          return res.status(404).json({ error: "Lender not found" });
+      }
 
-        if (!updatedProgram) {
-            return res.status(404).json({ message: "Fix and Flip program not found" });
-        }
+      // ✅ Make sure all fields are saved
+      const newProgram = new FixAndFlipLoan({
+          name: req.body.name,
+          lender: lenderId,
+          type: "Fix and Flip",
+          minFICO: req.body.minFICO,
+          minExperience: req.body.minExperience,
+          maxLTP: req.body.maxLTP,
+          totalLTC: req.body.totalLTC,
+          maxARV: req.body.maxARV,
+          minLoanAmount: req.body.minLoanAmount,
+          maxLoanAmount: req.body.maxLoanAmount,
+          tiers: req.body.tiers || [],
+      });
 
-        res.json({ message: "Fix and Flip program updated successfully", program: updatedProgram });
-    } catch (error) {
-        console.error("Error updating Fix and Flip program:", error);
-        res.status(500).json({ message: "Failed to update Fix and Flip program" });
-    }
+      await newProgram.save();
+
+      // ✅ Add reference to lender
+      lender.fixAndFlipPrograms.push(newProgram._id);
+      await lender.save();
+
+      console.log("✅ Fix & Flip Loan Program Saved:", newProgram);
+      res.status(201).json({ success: true, program: newProgram });
+
+  } catch (error) {
+      console.error("❌ Error saving Fix & Flip Loan Program:", error);
+      res.status(500).json({ error: "Server error" });
+  }
 });
 
-// DELETE: Delete a Fix and Flip loan program
-router.delete("/loan-programs/:programId", async (req, res) => {
-    try {
-        const programId = req.params.programId;
+router.delete("/:programId", async (req, res) => {
+  try {
+      console.log(`🔹 Deleting loan program: ${req.params.programId}`);
 
-        // Delete the Fix and Flip loan program
-        const deletedProgram = await FixAndFlipLoan.findByIdAndDelete(programId);
+      // ✅ Find and delete the Fix & Flip Loan Program
+      const deletedProgram = await FixAndFlipLoan.findByIdAndDelete(req.params.programId);
+      if (!deletedProgram) {
+          console.error("❌ Loan program not found:", req.params.programId);
+          return res.status(404).json({ message: "Loan program not found" });
+      }
 
-        if (!deletedProgram) {
-            return res.status(404).json({ message: "Fix and Flip program not found" });
-        }
+      // ✅ Remove reference from lender
+      await Lender.updateOne(
+          { fixAndFlipPrograms: req.params.programId },
+          { $pull: { fixAndFlipPrograms: req.params.programId } }
+      );
 
-        // Remove the program from the lender's loanPrograms array
-        await Lender.findByIdAndUpdate(deletedProgram.lender, { $pull: { loanPrograms: programId } });
+      console.log("✅ Loan program deleted:", deletedProgram);
+      res.json({ success: true, message: "Loan program deleted." });
+  } catch (error) {
+      console.error("❌ Error deleting loan program:", error);
+      res.status(500).json({ message: "Error deleting loan program" });
+  }
+});
 
-        res.json({ message: "Fix and Flip program deleted successfully" });
-    } catch (error) {
-        console.error("Error deleting Fix and Flip program:", error);
-        res.status(500).json({ message: "Failed to delete Fix and Flip program" });
-    }
+
+
+// ✅ Debugging: List Registered Routes
+console.log("✅ Registered Routes in loanPrograms.js:");
+router.stack.forEach((r) => {
+    console.log(`✅ ${Object.keys(r.route.methods).join(", ").toUpperCase()} ${r.route.path}`);
 });
 
 module.exports = router;

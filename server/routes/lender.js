@@ -15,18 +15,22 @@ router.get("/", async (req, res) => {
 });
 
 // 🟢 GET: Retrieve a specific lender by ID
-router.get("/:id", async (req, res) => {
+router.get("/:lenderId", async (req, res) => {
   try {
-    const lender = await Lender.findById(req.params.id).populate("loanPrograms");
-    if (!lender) {
-      return res.status(404).json({ success: false, message: "Lender not found" });
-    }
-    res.json({ success: true, lender });
-  } catch (err) {
-    console.error("Error fetching lender:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+      console.log("🔹 Fetching lender with ID:", req.params.lenderId); // Debugging
+      const lender = await Lender.findById(req.params.lenderId);
+      if (!lender) {
+          console.error("❌ Lender not found:", req.params.lenderId);
+          return res.status(404).json({ message: "Lender not found" });
+      }
+      console.log("✅ Found Lender:", lender);
+      res.json(lender);
+  } catch (error) {
+      console.error("❌ Error fetching lender:", error);
+      res.status(500).json({ message: "Failed to fetch lender" });
   }
 });
+
 
 // 🟢 POST: Create a new lender
 router.post("/", async (req, res) => {

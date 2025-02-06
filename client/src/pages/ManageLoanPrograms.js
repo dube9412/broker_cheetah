@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 
 function ManageLoanPrograms() {
     const { lenderId } = useParams();
+console.log("🔹 Lender ID from URL:", lenderId); // Debugging
     const navigate = useNavigate();
 
     const [lender, setLender] = useState(null);
@@ -23,19 +24,16 @@ function ManageLoanPrograms() {
         // Fetch existing "Fix and Flip" loan programs for the lender
         const fetchFixAndFlipPrograms = async () => {
             try {
-                const response = await fetch(`/api/lenders/${lenderId}/fix-and-flip-programs`);
+                const response = await fetch(`http://localhost:5000/api/loan-programs/${lenderId}/fix-and-flip-programs`);
+
                 const data = await response.json();
-                console.log("Fetched Fix and Flip Programs:", data); // Log the fetched data
-                const validPrograms = data.filter(program => Array.isArray(program.tiers));
-                setFixAndFlipPrograms(validPrograms);
-                 // Add a check to ensure data.tiers is defined
-            if (data && Array.isArray(data.tiers)) {
-                setFixAndFlipPrograms(data);
-            } else {
-                console.warn("Invalid program data format:", data);
-                setFixAndFlipPrograms(); // Or handle the error differently
-            }
-                setFixAndFlipPrograms(data);
+                if (Array.isArray(data)) {
+                    console.log("Fetched Fix and Flip Programs:", data);
+                    setFixAndFlipPrograms(data);
+                } else {
+                    console.warn("Invalid program data format:", data);
+                    setFixAndFlipPrograms([]); // Set to empty array instead of undefined
+                }
             } catch (error) {
                 console.error("Error fetching Fix and Flip programs:", error);
             }
@@ -47,26 +45,30 @@ function ManageLoanPrograms() {
 
     const handleDeleteLoanProgram = async (programId) => {
         try {
-            const response = await fetch(`/api/loan-programs/${programId}`, {
+            console.log(`🔹 Deleting loan program ${programId}`);
+            const response = await fetch(`http://localhost:5000/api/loan-programs/${programId}`, {
                 method: "DELETE",
             });
-
+    
+            const result = await response.json();
             if (response.ok) {
-                // Update the loanPrograms state after deleting
-                setFixAndFlipPrograms(prevPrograms => prevPrograms.filter(program => program._id!== programId));
+                console.log("✅ Loan program deleted:", result);
+                setFixAndFlipPrograms(prevPrograms => prevPrograms.filter(program => program._id !== programId));
             } else {
-                console.error("Error deleting loan program:", response.status, response.statusText);
-                alert("Error deleting loan program. Please check the console for details.");
+                console.error("❌ Error deleting loan program:", result);
+                alert("Failed to delete loan program.");
             }
         } catch (error) {
-            console.error("Error deleting loan program:", error);
-            alert("Error deleting loan program. Please check the console for details.");
+            console.error("❌ Error deleting loan program:", error);
+            alert("An error occurred while deleting.");
         }
     };
+    
 
     return (
         <div>
-            <h1>Manage Loan Programs for {lender? lender.name: 'Lender'}</h1>
+            <h1>Manage Loan Programs for {lender?.name || "Loading..."}</h1>
+
 
             {/* Add Fix and Flip Program Button */}
             <Link to={`/add-fix-and-flip/${lenderId}`}>
@@ -96,6 +98,9 @@ function ManageLoanPrograms() {
             <button onClick={() => navigate("/dashboard")} style={{ marginTop: "20px" }}>
                 Back to Dashboard
             </button>
+            <button onClick={() => navigate("/dashboard")} style={{ padding: "10px 20px", backgroundColor: "#007bff", color: "#fff", border: "none", cursor: "pointer", marginTop: "10px" }}>
+    ← Back to Lender List
+</button>
         </div>
     );
 }
