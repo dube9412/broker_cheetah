@@ -7,6 +7,8 @@ import RequestQuote from "./components/RequestQuote";
 import NavBar from "./components/NavBar";
 import AddFixAndFlip from "./components/AddFixAndFlip";
 import EditFixAndFlip from "./components/EditFixAndFlip";  // ✅ Import the Edit component For Fix and Flip
+import AddDSCR from "./components/AddDSCR";
+import EditDSCR from "./components/EditDSCR";
 
 // Pages
 import Home from "./pages/Home";
@@ -50,6 +52,10 @@ function App() {
               <Route path="/add-fix-and-flip/:lenderId" element={<AddFixAndFlip />} />
               <Route path="/edit-fix-and-flip/:lenderId/:programId" element={<EditFixAndFlip />} />
 
+              {/* ✅ DSCR Loan Routes */}
+              <Route path="/add-dscr-loan/:lenderId" element={<AddDSCR />} />
+              <Route path="/edit-dscr-loan/:lenderId/:programId" element={<EditDSCR />} />
+                      
             </Routes>
           </div>
 
