@@ -130,40 +130,42 @@ router.delete("/:programId", async (req, res) => {
       res.status(500).json({ message: "Error deleting loan program" });
   }
 });
-// ✅ DSCR LOAN PROGRAM ROUTES (NEW)
-// --------------------------------------
+// ========================= DSCR LOAN PROGRAM ROUTES ========================= //
 
-// ✅ GET all DSCR programs for a lender
+// ✅ GET all DSCR loan programs for a lender
 router.get("/:lenderId/dscr-programs", async (req, res) => {
     try {
-        console.log(`🔹 Fetching DSCR programs for lenderId: ${req.params.lenderId}`);
-        const dscrPrograms = await DscrLoan.find({ lender: req.params.lenderId });
+        console.log(`🔹 Fetching DSCR loan programs for lenderId: ${req.params.lenderId}`);
+        const dscrPrograms = await DSCRLoan.find({ lender: req.params.lenderId });
+
+        if (!dscrPrograms) {
+            console.warn("⚠️ No DSCR loan programs found.");
+            return res.status(404).json({ message: "No DSCR loan programs found." });
+        }
 
         console.log("✅ Found DSCR programs:", dscrPrograms);
         res.json(dscrPrograms);
     } catch (error) {
-        console.error("❌ Error fetching DSCR programs:", error);
-        res.status(500).json({ message: "Failed to fetch DSCR programs" });
+        console.error("❌ Error fetching DSCR loan programs:", error);
+        res.status(500).json({ message: "Failed to fetch DSCR loan programs." });
     }
 });
 
-// ✅ GET a single DSCR program by ID
+// ✅ GET a specific DSCR loan program by ID
 router.get("/:programId", async (req, res) => {
     try {
-        console.log(`🔹 Fetching loan program: ${req.params.programId}`);
+        console.log(`🔹 Fetching DSCR loan program: ${req.params.programId}`);
+        const program = await DSCRLoan.findById(req.params.programId);
 
-        // Check if it's a DSCR or Fix & Flip program
-        let program = await FixAndFlipLoan.findById(req.params.programId) || await DscrLoan.findById(req.params.programId);
-        
         if (!program) {
-            console.error("❌ Loan program not found:", req.params.programId);
+            console.error("❌ DSCR Loan Program not found:", req.params.programId);
             return res.status(404).json({ message: "Loan program not found" });
         }
 
-        console.log("✅ Found loan program:", program);
+        console.log("✅ Found DSCR loan program:", program);
         res.json(program);
     } catch (error) {
-        console.error("❌ Error fetching loan program:", error);
+        console.error("❌ Error fetching DSCR loan program:", error);
         res.status(500).json({ message: "Failed to fetch loan program" });
     }
 });
@@ -179,32 +181,30 @@ router.post("/:lenderId/dscr-programs", async (req, res) => {
             return res.status(404).json({ error: "Lender not found" });
         }
 
-        // ✅ Ensure all DSCR fields are saved
-        const newDscrProgram = new DscrLoan({
+        // ✅ Save new DSCR Loan Program
+        const newProgram = new DSCRLoan({
             lender: lenderId,
+            type: "DSCR",
             minFICO: req.body.minFICO,
             experience: req.body.experience,
             maxLTVPurchase: req.body.maxLTVPurchase,
             maxLTVRateTerm: req.body.maxLTVRateTerm,
             maxLTVCashOut: req.body.maxLTVCashOut,
-            minLoanAmount: req.body.minLoanAmount,
-            maxLoanAmount: req.body.maxLoanAmount,
+            loanRange: req.body.loanRange,
             propertyTypes: req.body.propertyTypes || [],
-            propertyUse: req.body.propertyUse,
+            propertyUses: req.body.propertyUses,
             prepaymentPeriod: req.body.prepaymentPeriod,
             dscrRatioMin: req.body.dscrRatioMin
         });
 
-        await newDscrProgram.save();
+        await newProgram.save();
 
         // ✅ Add reference to lender
-        lender.dscrPrograms = lender.dscrPrograms || [];
-        lender.dscrPrograms.push(newDscrProgram._id);
+        lender.dscrPrograms.push(newProgram._id);
         await lender.save();
 
-        console.log("✅ DSCR Loan Program Saved:", newDscrProgram);
-        res.status(201).json({ success: true, program: newDscrProgram });
-
+        console.log("✅ DSCR Loan Program Saved:", newProgram);
+        res.status(201).json({ success: true, program: newProgram });
     } catch (error) {
         console.error("❌ Error saving DSCR Loan Program:", error);
         res.status(500).json({ error: "Server error" });
@@ -214,21 +214,23 @@ router.post("/:lenderId/dscr-programs", async (req, res) => {
 // ✅ PUT: Update a DSCR Loan Program
 router.put("/:programId", async (req, res) => {
     try {
-        console.log(`🔹 Updating loan program: ${req.params.programId}`);
+        console.log(`🔹 Updating DSCR loan program: ${req.params.programId}`);
 
-        // Try updating Fix & Flip first, then DSCR
-        let updatedProgram = await FixAndFlipLoan.findByIdAndUpdate(req.params.programId, { $set: req.body }, { new: true, runValidators: true })
-            || await DscrLoan.findByIdAndUpdate(req.params.programId, { $set: req.body }, { new: true, runValidators: true });
+        const updatedProgram = await DSCRLoan.findByIdAndUpdate(
+            req.params.programId,
+            { $set: req.body }, // Update only fields sent in request
+            { new: true, runValidators: true } // Return updated program & validate
+        );
 
         if (!updatedProgram) {
-            console.error("❌ Loan program not found:", req.params.programId);
+            console.error("❌ DSCR Loan Program not found:", req.params.programId);
             return res.status(404).json({ message: "Loan program not found" });
         }
 
-        console.log("✅ Loan program updated:", updatedProgram);
+        console.log("✅ DSCR Loan Program updated:", updatedProgram);
         res.json({ success: true, program: updatedProgram });
     } catch (error) {
-        console.error("❌ Error updating loan program:", error);
+        console.error("❌ Error updating DSCR Loan Program:", error);
         res.status(500).json({ message: "Error updating loan program" });
     }
 });
@@ -236,12 +238,9 @@ router.put("/:programId", async (req, res) => {
 // ✅ DELETE: Remove a DSCR Loan Program
 router.delete("/:programId", async (req, res) => {
     try {
-        console.log(`🔹 Deleting loan program: ${req.params.programId}`);
+        console.log(`🔹 Deleting DSCR loan program: ${req.params.programId}`);
 
-        // Try deleting Fix & Flip first, then DSCR
-        let deletedProgram = await FixAndFlipLoan.findByIdAndDelete(req.params.programId) 
-            || await DscrLoan.findByIdAndDelete(req.params.programId);
-        
+        const deletedProgram = await DSCRLoan.findByIdAndDelete(req.params.programId);
         if (!deletedProgram) {
             console.error("❌ Loan program not found:", req.params.programId);
             return res.status(404).json({ message: "Loan program not found" });
@@ -253,14 +252,13 @@ router.delete("/:programId", async (req, res) => {
             { $pull: { dscrPrograms: req.params.programId } }
         );
 
-        console.log("✅ Loan program deleted:", deletedProgram);
+        console.log("✅ DSCR Loan Program deleted:", deletedProgram);
         res.json({ success: true, message: "Loan program deleted." });
     } catch (error) {
-        console.error("❌ Error deleting loan program:", error);
+        console.error("❌ Error deleting DSCR Loan Program:", error);
         res.status(500).json({ message: "Error deleting loan program" });
     }
 });
-
 
 // ✅ Debugging: List Registered Routes
 console.log("✅ Registered Routes in loanPrograms.js:");
