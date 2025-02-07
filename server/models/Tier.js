@@ -20,8 +20,14 @@ const FixAndFlipSchema = new mongoose.Schema({
 // DSCR Schema
 const DSCRSchema = new mongoose.Schema({
   ...BaseTierSchema.obj,
-  minDSCRRatio: Number,
-  maxLTV: Number,
+  dscrRatioMin: Number,
+  maxLTVCashOut: Number,
+  maxLTVRateTerm: Number,
+  maxLTVPurchase: Number,
+  propertyTypes: [String],
+  propertyUse: String,
+  prepaymentPeriod: String,
+  loanRange: {min: Number, max: Number},
 });
 
 // Ground Up Construction Schema

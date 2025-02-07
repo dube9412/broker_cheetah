@@ -70,7 +70,7 @@ function AddDSCR() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            console.log("🛠 Submitting DSCR Loan Program:", {
+            /*console.log("🛠 Submitting DSCR Loan Program:", {
                 lender: lenderId,
                 type: "DSCR",
                 tiers,
@@ -92,7 +92,19 @@ function AddDSCR() {
                     propertyTypes,  // ✅ Now being sent
                     propertyUse,
                 })
+            });*/
+
+            const response = await fetch(`http://localhost:5000/api/loan-programs/${lenderId}/dscr-programs`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: "DSCR", // ✅ Fix: Adding the required 'name' field
+                    type: "DSCR", // ✅ No need for "programName"
+                    lender: lenderId, 
+                    tiers // ✅ Sending the entire tiers array
+                }),
             });
+
     
 
             const data = await response.json();
