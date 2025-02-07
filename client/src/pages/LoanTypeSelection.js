@@ -12,10 +12,10 @@ function LoanTypeSelection() {
   return (
     <div>
       <h2>Select a Loan Type</h2>
-      <button onClick={() => handleSelect("fixandflip")}>Fix and Flip</button>
-      <button onClick={() => handleSelect("dscr")}>DSCR</button>
-      <button onClick={() => handleSelect("groundup")}>Ground Up</button>
-      <button onClick={() => handleSelect("stabilizedbridge")}>Stabilized Bridge</button>
+      <button onClick={() => handleSelect("fixandflip")}>Fix and Flip</button> {" | "}
+      <button onClick={() => handleSelect("dscr")}>DSCR</button>{" | "}
+      <button onClick={() => handleSelect("groundup")}>Ground Up</button>{" | "}
+      <button onClick={() => handleSelect("stabilizedbridge")}>Stabilized Bridge</button>{" | "}
     </div>
   );
 }

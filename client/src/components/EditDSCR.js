@@ -56,11 +56,11 @@ function EditDSCR() {
         });
     };
 
-    const handlePropertyTypeChange = (type) => {
+    /*const handlePropertyTypeChange = (type) => {
         setPropertyTypes((prev) =>
             prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
         );
-    };
+    };*/
 
     const handleSave = async () => {
         try {

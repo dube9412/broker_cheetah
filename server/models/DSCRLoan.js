@@ -1,19 +1,42 @@
 const mongoose = require("mongoose");
 
-const DscrLoanSchema = new mongoose.Schema({
+const DscrLoanSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
     lender: { type: mongoose.Schema.Types.ObjectId, ref: "Lender", required: true },
-    minFICO: { type: Number, required: true },
-    experience: { type: Number, required: true },
-    maxLTVPurchase: { type: Number, required: true },
-    maxLTVRateTerm: { type: Number, required: true },
-    maxLTVCashOut: { type: Number, required: true },
-    minLoanAmount: { type: Number, required: true },
-    maxLoanAmount: { type: Number, required: true },
-    propertyTypes: [{ type: String, enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"], required: true }],
-    propertyUse: { type: String, enum: ["Standard Rental", "Short Term Rental", "Vacant"], required: true },
-    prepaymentPeriod: { type: String, required: true },
-    dscrRatioMin: { type: Number, required: true }
-}, { timestamps: true });
+    type: { type: String, required: true},
 
-module.exports = mongoose.model("DscrLoanProgram", DscrLoanSchema);
+    // ✅ Ensure all fields exist
+    minFICO: { type: Number, required: false },
+    experience: { type: Number, required: false },
+    maxLTVPurchase: { type: Number, required: false },
+    maxLTVRateTerm: { type: Number, required: false },
+    maxLTVCashOut: { type: Number, required: false },
+    minLoanAmount: { type: Number, required: false },
+    maxLoanAmount: { type: Number, required: false },
+    propertyTypes: [{ type: String, enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"], required: false }],
+    propertyUse: { type: String, enum: ["Standard Rental", "Short Term Rental", "Vacant"], required: false },
+    prepaymentPeriod: { type: String, required: false },
+    dscrRatioMin: { type: Number, required: false },
 
+    tiers: [ // Optional array for tiered programs
+      {
+        tierName: { type: String, required: false },
+        minFICO: { type: Number, required: false },
+        experience: { type: Number, required: false },
+        maxLTVPurchase: { type: Number, required: false },
+        maxLTVRateTerm: { type: Number, required: false },
+        maxLTVCashOut: { type: Number, required: false },
+        minLoanAmount: { type: Number, required: false },
+        maxLoanAmount: { type: Number, required: false },
+        propertyTypes: [{ type: String, enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"], required: false }],
+        propertyUse: { type: String, enum: ["Standard Rental", "Short Term Rental", "Vacant"], required: false },
+        prepaymentPeriod: { type: String, required: false },
+        dscrRatioMin: { type: Number, required: false }
+      },
+    ],
+  }, { timestamps: true });
+
+const DSCRLoan = mongoose.model("DSCRLoan", DscrLoanSchema);
+
+module.exports = DSCRLoan;
