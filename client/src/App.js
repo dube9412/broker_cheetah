@@ -49,12 +49,15 @@ function App() {
               <Route path="/add-lender" element={<AddLender />} />
               <Route path="/edit-lender/:id" element={<EditLender />} />
 
-              <Route path="/add-fix-and-flip/:lenderId" element={<AddFixAndFlip />} />
-              <Route path="/edit-fix-and-flip/:lenderId/:programId" element={<EditFixAndFlip />} />
+              <Route path="/add-fix-and-flip-program/:lenderId" element={<AddFixAndFlip />} />
+              <Route path="/edit-fix-and-flip-program/:lenderId/:programId" element={<EditFixAndFlip />} />
 
               {/* ✅ DSCR Loan Routes */}
-              <Route path="/add-dscr-loan/:lenderId" element={<AddDSCR />} />
-              <Route path="/edit-dscr-loan/:lenderId/:programId" element={<EditDSCR />} />
+              <Route path="/add-dscr-program/:lenderId" element={<AddDSCR />} />
+              <Route path="/edit-dscr-program/:lenderId/:programId" element={<EditDSCR />} />
+
+             
+
                       
             </Routes>
           </div>

@@ -22,7 +22,7 @@ function EditDSCR() {
         const fetchProgram = async () => {
             try {
                 console.log(`🔹 Fetching DSCR loan program ${programId}`);
-                const response = await fetch(`http://localhost:5000/api/loan-programs/${programId}`);
+                const response = await fetch(`http://localhost:5000/api/dscr/dscr-programs/${programId}`);
                 const data = await response.json();
 
                 if (response.ok && data) {
@@ -56,16 +56,16 @@ function EditDSCR() {
         });
     };
 
-    /*const handlePropertyTypeChange = (type) => {
+    const handlePropertyTypeChange = (type) => {
         setPropertyTypes((prev) =>
             prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
         );
-    };*/
+    };
 
     const handleSave = async () => {
         try {
             console.log(`🔹 Saving DSCR loan program ${programId}`);
-            const response = await fetch(`http://localhost:5000/api/loan-programs/${programId}`, { 
+            const response = await fetch(`http://localhost:5000/api/dscr/dscr-programs/${programId}`, { 
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

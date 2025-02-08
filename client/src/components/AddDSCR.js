@@ -7,6 +7,7 @@ function AddDSCR() {
 
     const [lender, setLender] = useState(null);
     const [numTiers, setNumTiers] = useState(1);
+   // const [dscrRatioMin, setDscrRatioMin] = useState("");
     const [tiers, setTiers] = useState([
         { minFICO: "", minExperience: "", maxLTVPurchase: "", maxLTVRateTerm: "", maxLTVCashOut: "", dscrRatioMin: "" }
     ]);
@@ -63,64 +64,43 @@ function AddDSCR() {
 
     const handlePropertyTypeChange = (type) => {
         setPropertyTypes((prev) =>
-            prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+          prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
         );
-    };
+      };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            /*console.log("🛠 Submitting DSCR Loan Program:", {
-                lender: lenderId,
-                type: "DSCR",
-                tiers,
-                loanRange,
-                prepaymentPeriod,
-                propertyTypes,  // ✅ Now being sent
-                propertyUse,
-            });
-    
-            const response = await fetch(`http://localhost:5000/api/loan-programs/${lenderId}/dscr-programs`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    lender: lenderId,
-                    type: "DSCR",
-                    tiers,
-                    loanRange,
-                    prepaymentPeriod,
-                    propertyTypes,  // ✅ Now being sent
-                    propertyUse,
-                })
-            });*/
-
-            const response = await fetch(`http://localhost:5000/api/loan-programs/${lenderId}/dscr-programs`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: "DSCR", // ✅ Fix: Adding the required 'name' field
-                    type: "DSCR", // ✅ No need for "programName"
-                    lender: lenderId, 
-                    tiers // ✅ Sending the entire tiers array
-                }),
-            });
-
-    
-
-            const data = await response.json();
-            if (response.ok && data.success) {
-                console.log("✅ DSCR Loan Program Saved:", data);
-                alert("Program added successfully!");
-                navigate(`/manage-loan-programs/${lenderId}`);
-            } else {
-                console.error("❌ Failed to add program:", data);
-                alert("Failed to add program.");
-            }
+          const response = await fetch(`http://localhost:5000/api/dscr/${lenderId}/dscr-programs`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: "New DSCR Program", // ✅ Required 'name' field
+              type: "DSCR", // Optional but recommended
+              lender: lenderId,
+              loanRange,
+              propertyTypes,
+              propertyUse,
+              prepaymentPeriod,
+              tiers
+            })
+          });
+      
+          const data = await response.json();
+          if (response.ok) {
+            console.log("✅ DSCR Loan Program Saved:", data);
+            alert("Program added successfully!");
+            navigate(`/manage-loan-programs/${lenderId}`);
+          } else {
+            console.error("❌ Failed to add program:", data);
+            alert("Failed to add program.");
+          }
         } catch (error) {
-            console.error("❌ Error adding program:", error);
-            alert("An error occurred while adding the program.");
+          console.error("❌ Error adding program:", error);
+          alert("An error occurred while adding the program.");
         }
-    };
+      };
+      
 
     return (
         <div style={{ maxWidth: "500px", margin: "0 auto", padding: "20px" }}>
@@ -158,8 +138,13 @@ function AddDSCR() {
                         <input type="number" value={tier.maxLTVCashOut} onChange={(e) => handleTierChange(index, "maxLTVCashOut", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
 
                         <label>DSCR Ratio Min:</label>
-                        <input type="number" value={tier.dscrRatioMin} onChange={(e) => handleTierChange(index, "dscrRatioMin", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
-                    </div>
+                        <input
+                        type="number"
+                        value={tier.dscrRatioMin}
+                        onChange={(e) => handleTierChange(index, "dscrRatioMin", e.target.value)}
+                        style={{ width: "100%", marginBottom: "10px" }}
+                        />  
+                        </div>
                 ))}
 
                 <label>Loan Range:</label>
@@ -171,23 +156,17 @@ function AddDSCR() {
 
                 <label>Property Types:</label>
 <div>
-    {PROPERTY_TYPES.map((type) => (
-        <label key={type} style={{ display: "block" }}>
-            <input
-                type="checkbox"
-                value={type}
-                checked={propertyTypes.includes(type)}
-                onChange={(e) => {
-                    if (e.target.checked) {
-                        setPropertyTypes([...propertyTypes, type]); // ✅ Add type
-                    } else {
-                        setPropertyTypes(propertyTypes.filter((t) => t !== type)); // ✅ Remove type
-                    }
-                }}
-            />
-            {type}
-        </label>
-    ))}
+  {PROPERTY_TYPES.map((type) => (
+    <label key={type}>
+      <input
+        type="checkbox"
+        value={type}
+        checked={propertyTypes.includes(type)}
+        onChange={() => handlePropertyTypeChange(type)} // ✅ Using the function here
+      />
+      {type}
+    </label>
+  ))}
 </div>
 
                 <label>Property Use:</label>
