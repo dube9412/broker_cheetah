@@ -6,6 +6,8 @@ const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const lenderRoutes = require("./routes/lender");
 const loanProgramRoutes = require("./routes/loanPrograms"); 
+const fixAndFlipRoutes = require("./routes/fixAndFlipRoutes");
+const dscrRoutes = require("./routes/dscrRoutes");
 
 const app = express();
 
@@ -22,6 +24,8 @@ mongoose
 app.use("/api/auth", authRoutes);
 app.use("/api/lenders", lenderRoutes);
 app.use("/api/loan-programs", loanProgramRoutes); // ✅ Fixed here
+app.use("/api/fix-and-flip", fixAndFlipRoutes);  // Fix and Flip programs
+app.use("/api/dscr", dscrRoutes);                // DSCR programs
 
 // ✅ Debug: List all available routes after mounting
 app.use((req, res, next) => {
