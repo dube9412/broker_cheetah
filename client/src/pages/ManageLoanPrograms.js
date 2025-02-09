@@ -104,10 +104,31 @@ function ManageLoanPrograms() {
           <h1>Manage Loan Programs for {lender?.name || "Loading..."}</h1>
     
           {/* Loan Programs */}
-          <h2>Loan Programs</h2>
+          <h2>LOAN PROGRAMS</h2>
+          <h3>Residential 1-4</h3>
           <Link to={`/add-fix-and-flip-program/${lenderId}`}>
             <button>Add Fix and Flip Program</button>
           </Link>
+          {" | "}
+          <Link to={`/add-dscr-program/${lenderId}`}>
+            <button>Add DSCR Loan Program</button>
+          </Link>{" | "}
+          <button>Add Ground Up Loan Program</button>{" | "}
+          <button>Add Stabilized Bridge Loan Program</button>{" | "}
+          <button>Add Portfolio Loan</button>{" | "}
+          <br />
+          <h3>Mutli-Family Programs</h3>
+          <button>MF Fix and Flip</button>{" | "}
+            <button>MF DSCR</button>{" | "}
+            <button>MF Ground Up</button>{" | "}
+            <button>MF Stabilized Bridge</button>{" | "}
+            <button>MF Portfolio</button>{" | "}
+            <br />
+            <h3>Commercial Programs</h3>
+            <button>Mixed Use</button>{" | "}
+            <button>General Commercial</button>{" | "}
+            <h2>EXISTING PROGRAMS</h2>
+
           {fixAndFlipPrograms.length > 0 ? (
             <ul>
               {fixAndFlipPrograms.map((program) => (
@@ -116,6 +137,7 @@ function ManageLoanPrograms() {
                   <Link to={`/edit-fix-and-flip-program/${lenderId}/${program._id}`}>
                     <button>Edit</button>
                   </Link>
+                  {" | "}
                   <button onClick={() => handleDeleteLoanProgram(program._id, "Fix and Flip")}>Delete</button>
                 </li>
               ))}
@@ -123,11 +145,7 @@ function ManageLoanPrograms() {
           ) : (
             <p>No existing Fix and Flip loan programs found.</p>
           )}
-    
-             
-          <Link to={`/add-dscr-program/${lenderId}`}>
-            <button>Add DSCR Loan Program</button>
-          </Link>
+
           {dscrPrograms.length > 0 ? (
             <ul>
               {dscrPrograms.map((program) => (
@@ -136,6 +154,7 @@ function ManageLoanPrograms() {
                   <Link to={`/edit-dscr-program/${lenderId}/${program._id}`}>
                     <button>Edit</button>
                   </Link>
+                  {" | "}
                   <button onClick={() => handleDeleteLoanProgram(program._id, "DSCR")}>Delete</button>
                 </li>
               ))}
