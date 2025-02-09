@@ -58,6 +58,31 @@ function Dashboard() {
         <li>
           <Link to="/select-loan-type">Lender Search</Link>
         </li>
+        <button
+  onClick={async () => {
+    if (window.confirm("Are you sure you want to run the data scraper? This may take a few minutes.")) {
+      try {
+        const response = await fetch("http://localhost:5000/api/scraper/run", {
+          method: "POST",
+        });
+
+        if (response.ok) {
+          alert("✅ Scraper is running. Check your console for updates.");
+        } else {
+          const errorData = await response.json();
+          alert(`❌ Error: ${errorData.message || "Something went wrong."}`);
+        }
+      } catch (error) {
+        console.error("❌ Error running the scraper:", error);
+        alert("An error occurred while starting the scraper.");
+      }
+    }
+  }}
+>
+  Run Scraper
+</button>
+
+
         <li>History (coming soon)</li>
         <li>Docs (coming soon)</li>
         <li>Pipeline (coming soon)</li>
