@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const scraperRoutes = require('./routes/scraperRoutes');
 
 // ✅ Import routes correctly
 const authRoutes = require("./routes/auth");
@@ -19,6 +20,9 @@ mongoose
   .connect("mongodb://127.0.0.1:27017/brokerCheetahDB", {})
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
+
+
+  app.use('/api/scraper', scraperRoutes);
 
 // ✅ Load Routes Correctly
 app.use("/api/auth", authRoutes);
