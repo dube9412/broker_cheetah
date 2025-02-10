@@ -1,42 +1,63 @@
-const express = require("express");
-const { MongoClient } = require("mongodb");
+const express = require('express');
 const router = express.Router();
+const User = require('../models/user');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const uri = "mongodb+srv://dube9412:dfTtxTuAi2eSZ3ux@brokercheetahdb.rdbel.mongodb.net/?retryWrites=true&w=majority&appName=BrokerCheetahDB";
+// Keep your JWT secret in an environment variable for security
+const JWT_SECRET = 'YOUR_SECRET_KEY';
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
+// Sign Up
+router.post('/signup', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.json({ success: false, message: 'User already exists.' });
+    }
+    // Hash the password
+    const hashed = await bcrypt.hash(password, 10);
+    // Save user
+    const newUser = new User({ email, password: hashed });
+    await newUser.save();
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Signup error:', error);
+    res.json({ success: false, message: 'Signup error' });
+  }
 });
 
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
+// Login
+// server/routes/auth.js
+router.post('/login', async (req, res) => {
   try {
-    await client.connect();
-    const db = client.db("admin");  // Replace with your actual database name
-    const usersCollection = db.collection("users");  // Assuming you have a 'users' collection
-
-    // Find user by email
-    const user = await usersCollection.findOne({ email });
-
-    if (!user || user.password !== password) {
-      return res.status(401).json({ message: "Invalid credentials" });
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.json({ success: false, message: 'Invalid credentials.' });
     }
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.json({ success: false, message: 'Invalid credentials.' });
+    }
+    // Create JWT token
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
+      expiresIn: '1d'
+    });
 
-    // If successful login, send a success response
-    res.status(200).json({ message: "Login successful" });
+    // Check if this user is the admin email
+    const isAdmin = (email === 'dube9412@gmail.com');
 
-  } catch (err) {
-    console.error("Error during login:", err);
-    res.status(500).json({ message: "Server error" });
-  } finally {
-    await client.close();  // Always close the MongoDB client after use
+    // Return isAdmin in the response
+    res.json({ success: true, token, isAdmin });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.json({ success: false, message: 'Login error' });
   }
 });
 
 module.exports = router;
+
+
+

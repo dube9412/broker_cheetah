@@ -1,65 +1,61 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const scraperRoutes = require('./routes/scraperRoutes');
 
-// Allow MongoDB connection to bypass SSL verification
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";  // Ignore SSL issues (critical for `mongodb+srv`)
-
-const uri = "mongodb+srv://dube9412:dfTtxTuAi2eSZ3ux@brokercheetahdb.rdbel.mongodb.net/?retryWrites=true&w=majority&appName=BrokerCheetahDB";
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
-
-async function run() {
-  try {
-    // Connect the client to the server (optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("✅ Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-
-// Initialize Express
-const app = express();
-
-// Middleware for CORS and JSON parsing
-app.use(cors());
-app.use(express.json());
-
-// Routes (just like before)
-const scraperRoutes = require("./routes/scraperRoutes");
+// ✅ Import routes correctly
 const authRoutes = require("./routes/auth");
 const lenderRoutes = require("./routes/lender");
-const loanProgramRoutes = require("./routes/loanPrograms");
+const loanProgramRoutes = require("./routes/loanPrograms"); 
 const fixAndFlipRoutes = require("./routes/fixAndFlipRoutes");
 const dscrRoutes = require("./routes/dscrRoutes");
 const groundUpRoutes = require("./routes/groundUpRoutes");
 const stabilizedBridgeRoutes = require("./routes/stabilizedBridgeRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
 
-// Register Routes
-app.use("/api/scraper", scraperRoutes);
+const app = express();
+
+app.use(cors());
+origin: ['https://']
+app.use(express.json());
+
+// ✅ Connect to MongoDB
+mongoose
+  .connect("mongodb://127.0.0.1:27017/brokerCheetahDB", {})
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
+
+
+  app.use('/api/scraper', scraperRoutes);
+
+// ✅ Load Routes Correctly
 app.use("/api/auth", authRoutes);
 app.use("/api/lenders", lenderRoutes);
-app.use("/api/loan-programs", loanProgramRoutes);
-app.use("/api/fix-and-flip", fixAndFlipRoutes);
-app.use("/api/dscr", dscrRoutes);
+app.use("/api/loan-programs", loanProgramRoutes); // ✅ Fixed here
+app.use("/api/fix-and-flip", fixAndFlipRoutes);  // Fix and Flip programs
+app.use("/api/dscr", dscrRoutes);                // DSCR programs
 app.use("/api/ground-up", groundUpRoutes);
 app.use("/api/stabilized-bridge", stabilizedBridgeRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 
-// Start Server
-const PORT = process.env.PORT || 8080;  // Changed to 8080 to match Railway's default port
+// ✅ Debug: List all available routes after mounting
+app.use((req, res, next) => {
+    console.log("✅ Route Hit:", req.method, req.originalUrl);
+    next();
+});
+
+// ✅ Log All Available Routes
+console.log("✅ Available Routes:");
+setTimeout(() => {
+    app._router.stack
+        .filter(r => r.route)
+        .forEach(r => {
+            console.log(`✅ ${Object.keys(r.route.methods).join(", ").toUpperCase()} ${r.route.path}`);
+        });
+}, 1000);
+
+// ✅ Start Server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+    console.log(`✅ Server running on port ${PORT}`);
 });
