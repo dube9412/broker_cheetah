@@ -4,10 +4,36 @@ const cors = require("cors");
 const dns = require("dns");  // ✅ Move this to the top!
 
 // ✅ Set DNS to prioritize IPv4 (Google & Cloudflare DNS)
-dns.setServers(["8.8.8.8", "1.1.1.1"]);
-dns.setDefaultResultOrder("ipv4first");  // This ensures DNS works properly.
+/*dns.setServers(["8.8.8.8", "1.1.1.1"]);
+dns.setDefaultResultOrder("ipv4first");  // This ensures DNS works properly.*/
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";  // Ignore SSL issues (critical for `mongodb+srv`).
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://dube9412:dfTtxTuAi2eSZ3ux@brokercheetahdb.rdbel.mongodb.net/?retryWrites=true&w=majority&appName=BrokerCheetahDB";
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
+run().catch(console.dir);
+
+//process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";  // Ignore SSL issues (critical for `mongodb+srv`).
 
 // ✅ Initialize Express
 const app = express();
@@ -15,14 +41,14 @@ const app = express();
 // ✅ Middleware for CORS and JSON parsing
 app.use(cors());
 app.use(express.json());
-
+/*
 // ✅ MongoDB connection string (manual version, bypassing DNS issues)
 const mongoURI = "mongodb://dube9412:dfTtxTuAi2eSZ3ux@brokercheetahdb-shard-00-00.mongodb.net:27017,brokercheetahdb-shard-00-01.mongodb.net:27017,brokercheetahdb-shard-00-02.mongodb.net:27017/?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true&w=majority";
 
 // ✅ Connect to MongoDB
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("✅ MongoDB connected!"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+  .catch((err) => console.error("❌ MongoDB connection error:", err));*/
 
 // ✅ Routes
 const scraperRoutes = require('./routes/scraperRoutes');
