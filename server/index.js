@@ -1,9 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const scraperRoutes = require('./routes/scraperRoutes');
+const dns = require("dns");  // ✅ Move this to the top!
 
-// ✅ Import routes correctly
+// ✅ Set DNS to prioritize IPv4 (Google & Cloudflare DNS)
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
+dns.setDefaultResultOrder("ipv4first");  // This ensures DNS works properly.
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";  // Ignore SSL issues (critical for `mongodb+srv`).
+
+const scraperRoutes = require('./routes/scraperRoutes');
 const authRoutes = require("./routes/auth");
 const lenderRoutes = require("./routes/lender");
 const loanProgramRoutes = require("./routes/loanPrograms"); 
@@ -18,10 +24,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const dns = require('dns');
-dns.setDefaultResultOrder('ipv4first');
-
-console.log(" MONGO_URI: ", process.env.MONGO_URI);
 
 // ✅ Connect to MongoDB
 mongoose
