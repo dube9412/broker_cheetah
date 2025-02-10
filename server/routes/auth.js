@@ -34,7 +34,6 @@ router.post('/signup', async (req, res) => {
 });
 
 // Login
-// server/routes/auth.js
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -44,11 +43,20 @@ router.post('/login', async (req, res) => {
 
     const user = await usersCollection.findOne({ email });
 
-    if (!user || user.password !== password) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {  // updated
       return res.status(401).send('Invalid credentials');
     }
-    // On successful login, send a response (or generate JWT if needed)
-    res.status(200).json({ message: 'Login successful' });
+
+    // Create JWT token
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
+      expiresIn: '1d'
+    });
+
+    // Check if this user is the admin email
+    const isAdmin = (email === 'dube9412@gmail.com');
+
+    // Return isAdmin in the response
+    res.json({ success: true, token, isAdmin });
   } catch (err) {
     console.error('MongoDB Error:', err);
     res.status(500).send('Server error');
@@ -56,15 +64,5 @@ router.post('/login', async (req, res) => {
     await client.close();
   }
 });
-
-    // Check if this user is the admin email
-    const isAdmin = (email === 'dube9412@gmail.com');
-
-    // Return isAdmin in the response
-    res.json({ success: true, token, isAdmin });
-    // Create JWT token
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
-      expiresIn: '1d'
-    });
 
 module.exports = router;
