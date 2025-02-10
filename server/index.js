@@ -21,6 +21,8 @@ app.use(express.json());
 const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
 
+console.log(" MONGO_URI: ", process.env.MONGO_URI);
+
 // ✅ Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
