@@ -1,18 +1,23 @@
 const express = require('express');
-const { MongoClient } = require('mongodb'); //new
+const { MongoClient } = require('mongodb');
 const router = express.Router();
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // Keep your JWT secret in an environment variable for security
-const JWT_SECRET = 'YOUR_SECRET_KEY';
+const JWT_SECRET = process.env.JWT_SECRET;
 
-const mongoURI = process.env.MONGODB_URI;  //new
+const mongoURI = process.env.MONGODB_URI;
 
-const client = new MongoClient(mongoURI);  //new
+const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Sign Up
+async function connectToDatabase() {
+  if (!client.isConnected()) {
+    await client.connect();
+  }
+}
+
 router.post('/signup', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -33,17 +38,16 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
-    await client.connect();  //new
-    const db = client.db("admin");  //new
-    const usersCollection = db.collection("users");  //new
+    await connectToDatabase();
+    const db = client.db("admin");
+    const usersCollection = db.collection("users");
 
     const user = await usersCollection.findOne({ email });
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {  // updated
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).send('Invalid credentials');
     }
 
@@ -60,8 +64,6 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     console.error('MongoDB Error:', err);
     res.status(500).send('Server error');
-  } finally {
-    await client.close();
   }
 });
 

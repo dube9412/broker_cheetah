@@ -3,9 +3,10 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dns = require("dns");  // ✅ Move this to the top!
 
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";  // Ignore SSL issues (critical for `mongodb+srv`).
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://dube9412:dfTtxTuAi2eSZ3ux@brokercheetahdb.rdbel.mongodb.net/?retryWrites=true&w=majority&appName=BrokerCheetahDB";
-
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
@@ -14,7 +15,6 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
-
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -28,7 +28,7 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
+//process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";  // Ignore SSL issues (critical for `mongodb+srv`).
 
 // ✅ Initialize Express
 const app = express();
@@ -36,7 +36,6 @@ const app = express();
 // ✅ Middleware for CORS and JSON parsing
 app.use(cors());
 app.use(express.json());
-
 
 // ✅ Routes
 const scraperRoutes = require('./routes/scraperRoutes');
@@ -77,8 +76,7 @@ setTimeout(() => {
 }, 1000);
 
 // ✅ Start Server
-const PORT = process.env.PORT || 10000;  // Changed to 8080 to match Railway's default port
+const PORT = process.env.PORT || 8080;  // Changed to 8080 to match Railway's default port
 app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);
 });
-
