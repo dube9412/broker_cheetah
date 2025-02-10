@@ -9,6 +9,13 @@ import AddFixAndFlip from "./components/AddFixAndFlip";
 import EditFixAndFlip from "./components/EditFixAndFlip";  // ✅ Import the Edit component For Fix and Flip
 import AddDSCR from "./components/AddDSCR";
 import EditDSCR from "./components/EditDSCR";
+import AddStabilizedBridge from "./components/AddStabilizedBridge";
+import EditStabilizedBridge from "./components/EditStabilizedBridge";
+import AddPortfolio from "./components/AddPortfolio";
+import EditPortfolio from "./components/EditPortfolio";
+import AddGroundUp from "./components/AddGroundUp";
+import EditGroundUp from "./components/EditGroundUp";
+
 
 // Pages
 import Home from "./pages/Home";
@@ -56,6 +63,16 @@ function App() {
               <Route path="/add-dscr-program/:lenderId" element={<AddDSCR />} />
               <Route path="/edit-dscr-program/:lenderId/:programId" element={<EditDSCR />} />
 
+              <Route path="/add-stabilized-bridge-program/:lenderId" element={<AddStabilizedBridge />} /> 
+              <Route path="/edit-stabilized-bridge-program/:lenderId/:programId" element={<EditStabilizedBridge />} /> 
+
+              <Route path="/add-portfolio-program/:lenderId" element={<AddPortfolio />} /> 
+              <Route path="/edit-portfolio-program/:lenderId/:programId" element={<EditPortfolio />} /> 
+
+              <Route path="/add-ground-up-program/:lenderId" element={<AddGroundUp />} /> 
+              <Route path="/edit-ground-up-program/:lenderId/:programId" element={<EditGroundUp />} /> 
+
+              
              
 
                       

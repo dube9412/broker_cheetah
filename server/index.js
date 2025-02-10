@@ -9,6 +9,9 @@ const lenderRoutes = require("./routes/lender");
 const loanProgramRoutes = require("./routes/loanPrograms"); 
 const fixAndFlipRoutes = require("./routes/fixAndFlipRoutes");
 const dscrRoutes = require("./routes/dscrRoutes");
+const groundUpRoutes = require("./routes/groundUpRoutes");
+const stabilizedBridgeRoutes = require("./routes/stabilizedBridgeRoutes");
+const portfolioRoutes = require("./routes/portfolioRoutes");
 
 const app = express();
 
@@ -30,6 +33,9 @@ app.use("/api/lenders", lenderRoutes);
 app.use("/api/loan-programs", loanProgramRoutes); // ✅ Fixed here
 app.use("/api/fix-and-flip", fixAndFlipRoutes);  // Fix and Flip programs
 app.use("/api/dscr", dscrRoutes);                // DSCR programs
+app.use("/api/ground-up", groundUpRoutes);
+app.use("/api/stabilized-bridge", stabilizedBridgeRoutes);
+app.use("/api/portfolio", portfolioRoutes);
 
 // ✅ Debug: List all available routes after mounting
 app.use((req, res, next) => {
