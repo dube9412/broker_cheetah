@@ -26,8 +26,10 @@ app.use(express.json());
 
 
 // ✅ Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+const mongoURI = "mongodb://dube9412:dfTtxTuAi2eSZ3ux@brokercheetahdb-shard-00-00.mongodb.net:27017,brokercheetahdb-shard-00-01.mongodb.net:27017,brokercheetahdb-shard-00-02.mongodb.net:27017/?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true&w=majority";
+
+// Now connect to MongoDB using the mongoURI
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("✅ MongoDB connected!"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
