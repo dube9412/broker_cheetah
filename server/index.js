@@ -89,7 +89,7 @@ setTimeout(() => {
 }, 1000);
 
 // ✅ Start Server
-const PORT = process.env.PORT || 8080;  // Changed to 8080 to match Railway's default port
+const PORT = process.env.PORT || 10000;  // Changed to 8080 to match Railway's default port
 app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);
 });
