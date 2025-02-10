@@ -1,69 +1,41 @@
-const express = require('express');
-const { MongoClient } = require('mongodb');
+const express = require("express");
+const { MongoClient } = require("mongodb");
 const router = express.Router();
-const User = require('../models/user');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 
-// Keep your JWT secret in an environment variable for security
-const JWT_SECRET = process.env.JWT_SECRET;
+const uri = "mongodb+srv://dube9412:dfTtxTuAi2eSZ3ux@brokercheetahdb.rdbel.mongodb.net/?retryWrites=true&w=majority&appName=BrokerCheetahDB";
 
-const mongoURI = process.env.MONGODB_URI;
-
-const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
-
-async function connectToDatabase() {
-  if (!client.isConnected()) {
-    await client.connect();
-  }
-}
-
-router.post('/signup', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.json({ success: false, message: 'User already exists.' });
-    }
-    // Hash the password
-    const hashed = await bcrypt.hash(password, 10);
-    // Save user
-    const newUser = new User({ email, password: hashed });
-    await newUser.save();
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Signup error:', error);
-    res.json({ success: false, message: 'Signup error' });
-  }
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
 });
 
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  try {
-    await connectToDatabase();
-    const db = client.db("admin");
-    const usersCollection = db.collection("users");
 
+  try {
+    await client.connect();
+    const db = client.db("admin");  // Replace with your actual database name
+    const usersCollection = db.collection("users");  // Assuming you have a 'users' collection
+
+    // Find user by email
     const user = await usersCollection.findOne({ email });
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).send('Invalid credentials');
+    if (!user || user.password !== password) {
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Create JWT token
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
-      expiresIn: '1d'
-    });
+    // If successful login, send a success response
+    res.status(200).json({ message: "Login successful" });
 
-    // Check if this user is the admin email
-    const isAdmin = (email === 'dube9412@gmail.com');
-
-    // Return isAdmin in the response
-    res.json({ success: true, token, isAdmin });
   } catch (err) {
-    console.error('MongoDB Error:', err);
-    res.status(500).send('Server error');
+    console.error("Error during login:", err);
+    res.status(500).json({ message: "Server error" });
+  } finally {
+    await client.close();  // Always close the MongoDB client after use
   }
 });
 
