@@ -28,6 +28,10 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+router.get('/login', (req, res) => {
+  res.status(200).json({ message: 'GET request successful' });
+});
+
 // Login
 // server/routes/auth.js
 router.post('/login', async (req, res) => {
