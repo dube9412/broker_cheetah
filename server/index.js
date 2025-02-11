@@ -16,8 +16,17 @@ const portfolioRoutes = require("./routes/portfolioRoutes");
 const app = express();
 
 // ✅ Middleware for CORS and JSON parsing
+// Add CORS middleware here
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'www.brokercheetah.com'); // Replace with your actual domain
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
+
 
 // ✅ Connect to MongoDB
 mongoose
