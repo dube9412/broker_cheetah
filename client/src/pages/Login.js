@@ -1,29 +1,30 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";  // Importing the AuthContext to use the login function
 
 function Login() {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext); // from your AuthProvider
+  const { login } = useAuth();  // Using the login function from AuthContext
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
     })
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data.success) {
           alert("Login successful");
-          // Pass data.isAdmin to your AuthContext login function
-          login(data.isAdmin); 
-          navigate("/dashboard");
+          // Call the login function from AuthContext with token and admin status
+          login(data.token, data.isAdmin);  // Set user as authenticated and store JWT token
+          navigate("/dashboard");  // Navigate to the dashboard
         } else {
-          alert("Login failed");
+          alert("Login failed: " + data.message);
         }
       });
   };
