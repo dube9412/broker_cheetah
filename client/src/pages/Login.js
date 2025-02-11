@@ -1,32 +1,29 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext); // from your AuthProvider
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Send the login request to the backend API
-    fetch("/api/auth/login", { // Use your backend API route
+    fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password })
     })
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         if (data.success) {
-          console.log("Login successful");
-          // You can store the token or user info in localStorage/sessionStorage here if needed
-          localStorage.setItem("token", data.token); // Store JWT token if needed
-
-          // Navigate to the dashboard or home page
+          alert("Login successful");
+          // Pass data.isAdmin to your AuthContext login function
+          login(data.isAdmin); 
           navigate("/dashboard");
         } else {
-          console.log("Login failed:", data.message);
-          alert("Login failed: " + data.message); // Show the error message
+          alert("Login failed");
         }
       });
   };
@@ -62,4 +59,3 @@ function Login() {
 }
 
 export default Login;
-
