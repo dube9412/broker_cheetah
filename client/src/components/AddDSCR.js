@@ -24,7 +24,7 @@ function AddDSCR() {
     useEffect(() => {
         const fetchLender = async () => {
             try {
-                const response = await fetch(`/api/lenders/${lenderId}`);
+                const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${lenderId}`);
                 const data = await response.json();
                 setLender(data);
             } catch (error) {
