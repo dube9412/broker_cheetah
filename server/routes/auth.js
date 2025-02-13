@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // Keep your JWT secret in an environment variable for security
-const JWT_SECRET = 'YOUR_SECRET_KEY';
+const JWT_SECRET =  process.env.JWT_SECRET || 'YOUR_SECRET_KEY';
 
 // Sign Up
 router.post('/signup', async (req, res) => {
