@@ -22,7 +22,7 @@ function AddStabilizedBridge() {
   useEffect(() => {
     const fetchLender = async () => {
       try {
-        const response = await fetch(`/api/lenders/${lenderId}`);
+        const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${lenderId}`);
         const data = await response.json();
         setLender(data);
       } catch (error) {
@@ -71,7 +71,7 @@ function AddStabilizedBridge() {
     };
 
     try {
-      const response = await fetch(`http://localhost:5000/api/stabilized-bridge/${lenderId}/stabilized-bridge-programs`, {
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/stabilized-bridge/${lenderId}/stabilized-bridge-programs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formattedProgram),

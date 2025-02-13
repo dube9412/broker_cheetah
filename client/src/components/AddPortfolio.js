@@ -20,7 +20,7 @@ function AddPortfolio() {
   useEffect(() => {
     const fetchLender = async () => {
       try {
-        const response = await fetch(`/api/lenders/${lenderId}`);
+        const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${lenderId}`);
         const data = await response.json();
         setLender(data);
       } catch (error) {
@@ -70,7 +70,7 @@ function AddPortfolio() {
     };
 
     try {
-      const response = await fetch(`http://localhost:5000/api/portfolio/${lenderId}/portfolio-programs`, {
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/portfolio/${lenderId}/portfolio-programs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formattedProgram),

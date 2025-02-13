@@ -24,7 +24,7 @@ function AddDSCR() {
     useEffect(() => {
         const fetchLender = async () => {
             try {
-                const response = await fetch(`/api/lenders/${lenderId}`);
+                const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${lenderId}`);
                 const data = await response.json();
                 setLender(data);
             } catch (error) {
@@ -71,7 +71,7 @@ function AddDSCR() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-          const response = await fetch(`http://localhost:5000/api/dscr/${lenderId}/dscr-programs`, {
+          const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/dscr/${lenderId}/dscr-programs`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
