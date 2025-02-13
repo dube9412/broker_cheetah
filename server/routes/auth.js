@@ -9,8 +9,9 @@ const JWT_SECRET =  process.env.JWT_SECRET || 'YOUR_SECRET_KEY';
 
 // Sign Up
 router.post('/signup', async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const { email, password } = req.body;
+    
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
