@@ -14,7 +14,7 @@ function EditFixAndFlip() {
         const fetchProgram = async () => {
             try {
                 console.log(`🔹 Fetching loan program ${programId}`);
-                const response = await fetch(`http://localhost:5000/api/fix-and-flip/fix-and-flip-programs/${programId}`);
+                const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/fix-and-flip-programs/${programId}`);
                 const data = await response.json();
     
                 console.log("🔹 API Response:", data); // Debugging line
@@ -63,7 +63,7 @@ function EditFixAndFlip() {
     const handleSave = async () => {
         try {
             console.log(`🔹 Saving loan program ${programId}`);
-            const response = await fetch(`http://localhost:5000/api/fix-and-flip/fix-and-flip-programs/${programId}`, {
+            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/fix-and-flip-programs/${programId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

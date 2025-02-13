@@ -9,7 +9,7 @@ function EditPortfolio() {
   useEffect(() => {
     const fetchProgram = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/portfolio/portfolio-programs/${programId}`);
+        const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/portfolio/portfolio-programs/${programId}`);
         const data = await response.json();
         if (response.ok) setProgram(data);
         else alert("Failed to load the program.");
@@ -27,7 +27,7 @@ function EditPortfolio() {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/portfolio/portfolio-programs/${programId}`, {
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/portfolio/portfolio-programs/${programId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(program),

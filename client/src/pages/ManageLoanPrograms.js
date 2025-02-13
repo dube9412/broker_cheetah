@@ -26,7 +26,7 @@ function ManageLoanPrograms() {
         { stateSetter: setFixAndFlipPrograms, url: `https://broker-cheetah-backend.onrender.com/api/fix-and-flip/${lenderId}/fix-and-flip-programs` },
         { stateSetter: setDscrPrograms, url: `/api/dscr/${lenderId}/dscr-programs` },
         { stateSetter: setStabilizedBridgePrograms, url: `https://broker-cheetah-backend.onrender.com/api/stabilized-bridge/${lenderId}/stabilized-bridge-programs` },
-        { stateSetter: setPortfolioPrograms, url: `https://broker-cheetah-backend.onrender.com/api/portfolio/${lenderId}/portfolio-programs` },
+        { stateSetter: setPortfolioPrograms, url: `/api/portfolio/${lenderId}/portfolio-programs` },
         { stateSetter: setGroundUpPrograms, url: `https://broker-cheetah-backend.onrender.com/api/ground-up/${lenderId}/ground-up-programs` },
       ];
 
@@ -84,9 +84,9 @@ function ManageLoanPrograms() {
       <div>
         <Link to={`https://broker-cheetah-backend.onrender.com/add-fix-and-flip-program/${lenderId}`}><button>Add Fix and Flip Program</button></Link>
         {" | "}
-        <Link to={`https://broker-cheetah-backend.onrender.com/add-dscr-program/${lenderId}`}><button>Add DSCR Loan Program</button></Link>
+        <Link to={`/add-dscr-program/${lenderId}`}><button>Add DSCR Loan Program</button></Link>
         {" | "}
-        <Link to={`https://broker-cheetah-backend.onrender.com/add-ground-up-program/${lenderId}`}><button>Add Ground Up Loan Program</button></Link>
+        <Link to={`/add-ground-up-program/${lenderId}`}><button>Add Ground Up Loan Program</button></Link>
         {" | "}
         <Link to={`https://broker-cheetah-backend.onrender.com/add-portfolio-program/${lenderId}`}><button>Add Portfolio Loan</button></Link>
         {" | "}

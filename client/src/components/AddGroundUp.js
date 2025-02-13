@@ -21,7 +21,7 @@ function AddGroundUp() {
   useEffect(() => {
     const fetchLender = async () => {
       try {
-        const response = await fetch(`/api/lenders/${lenderId}`);
+        const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${lenderId}`);
         const data = await response.json();
         setLender(data);
       } catch (error) {
@@ -69,7 +69,7 @@ function AddGroundUp() {
     };
 
     try {
-      const response = await fetch(`http://localhost:5000/api/ground-up/${lenderId}/ground-up-programs`, {
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/ground-up/${lenderId}/ground-up-programs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formattedProgram),
