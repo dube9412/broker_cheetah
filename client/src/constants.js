@@ -1,1 +1,1 @@
-export const API_URL = "https://broker-cheetah-backend.onrender.com/api";
+export const API_URL = "https://broker-cheetah-backend.onrender.com/";
