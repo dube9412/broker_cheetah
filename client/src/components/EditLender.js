@@ -37,7 +37,7 @@ function EditLender() {
         return;
     }
 
-    fetch(`/api/lenders/${id}`)
+    fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${id}`)
     .then((res) => res.json())
     .then((lender) => {  // ✅ NOW WORKS WITH THE CLEANED-UP BACKEND
         console.log("✅ Fetched lender:", lender);
@@ -100,7 +100,7 @@ function EditLender() {
       backgroundLimitations,
     };
 
-    fetch(`/api/lenders/${id}`, {
+    fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedLenderData),
