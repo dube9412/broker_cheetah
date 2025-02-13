@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { API_URL } from '../constants';
 
 function ManageLoanPrograms() {
   const { lenderId } = useParams();
@@ -15,7 +16,7 @@ function ManageLoanPrograms() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/lenders/${lenderId}`);
+        const response = await fetch(`${API_URL}/api/lenders/${lenderId}`);
         const lenderData = await response.json();
         setLender(lenderData);
       } catch (error) {
@@ -23,11 +24,11 @@ function ManageLoanPrograms() {
       }
 
       const programEndpoints = [
-        { stateSetter: setFixAndFlipPrograms, url: `http://localhost:5000/api/fix-and-flip/${lenderId}/fix-and-flip-programs` },
-        { stateSetter: setDscrPrograms, url: `http://localhost:5000/api/dscr/${lenderId}/dscr-programs` },
-        { stateSetter: setStabilizedBridgePrograms, url: `http://localhost:5000/api/stabilized-bridge/${lenderId}/stabilized-bridge-programs` },
-        { stateSetter: setPortfolioPrograms, url: `http://localhost:5000/api/portfolio/${lenderId}/portfolio-programs` },
-        { stateSetter: setGroundUpPrograms, url: `http://localhost:5000/api/ground-up/${lenderId}/ground-up-programs` },
+        { stateSetter: setFixAndFlipPrograms, url: `${API_URL}/api/fix-and-flip/${lenderId}/fix-and-flip-programs` },
+        { stateSetter: setDscrPrograms, url: `${API_URL}/api/dscr/${lenderId}/dscr-programs` },
+        { stateSetter: setStabilizedBridgePrograms, url: `${API_URL}/api/stabilized-bridge/${lenderId}/stabilized-bridge-programs` },
+        { stateSetter: setPortfolioPrograms, url: `${API_URL}/api/portfolio/${lenderId}/portfolio-programs` },
+        { stateSetter: setGroundUpPrograms, url: `${API_URL}/api/ground-up/${lenderId}/ground-up-programs` },
       ];
 
       for (const { stateSetter, url } of programEndpoints) {
@@ -59,7 +60,7 @@ function ManageLoanPrograms() {
       const loanType = loanTypeMapping[type];
       if (!loanType) throw new Error(`Unknown loan program type: ${type}`);
 
-      const response = await fetch(`/api/${loanType}/${programId}`, { method: "DELETE" });
+      const response = await fetch(`${API_URL}/api/${loanType}/${programId}`, { method: "DELETE" });
 
       if (response.ok) {
         alert(`${type} loan program deleted successfully.`);

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StatesCheckboxList from "./StatesCheckboxList";
+import { API_URL } from "../constants";
 
 const BACKGROUND_LIMITATIONS_OPTIONS = ["Financial Crimes", "Felony Convictions"];
 
@@ -45,7 +46,7 @@ function AddLender() {
       backgroundLimitations,
     };
 
-    fetch("/api/lenders", {
+    fetch("${API_URL}/api/lenders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(lenderData),
