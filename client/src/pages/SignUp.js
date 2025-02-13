@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_URL } from "../constants";
 
 function SignUp() {
   const navigate = useNavigate();
@@ -9,7 +8,7 @@ function SignUp() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch("${API_URL}/api/auth/signup", {
+    fetch("https://broker-cheetah-backend.onrender.com/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })

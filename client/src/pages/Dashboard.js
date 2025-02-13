@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { API_URL } from "../constants";
 
 function Dashboard() {
   const [lenders, setLenders] = useState([]);
@@ -10,7 +9,7 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("/api/lenders")
+    fetch("https://broker-cheetah-backend.onrender.com/api/lenders")
       .then((res) => res.json())
       .then((data) => {
         console.log("Fetched lenders:", data);
@@ -28,7 +27,7 @@ function Dashboard() {
     console.log("Attempting to delete lender ID:", id);
 
     try {
-      const response = await fetch(`/api/lenders/${id}`, { method: "DELETE" });
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${id}`, { method: "DELETE" });
       const data = await response.json();
 
       if (data.success) {
@@ -63,7 +62,7 @@ function Dashboard() {
   onClick={async () => {
     if (window.confirm("Are you sure you want to run the data scraper? This may take a few minutes.")) {
       try {
-        const response = await fetch("${API_URL}/api/scraper/run", {
+        const response = await fetch("https://broker-cheetah-backend.onrender.com/api/scraper/run", {
           method: "POST",
         });
 
@@ -144,7 +143,7 @@ function Dashboard() {
     <button>Edit</button>
 </Link> {" | "}
                       <button onClick={() => handleDelete(lender._id)}>Delete</button> {" | "}
-                      <button onClick={() => navigate(`/manage-loan-programs/${lender._id}`)}>Manage Loan Programs</button>
+                      <button onClick={() => navigate(`https://broker-cheetah-backend.onrender.com/manage-loan-programs/${lender._id}`)}>Manage Loan Programs</button>
                     </td>
                   </tr>
                 ))
