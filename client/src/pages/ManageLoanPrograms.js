@@ -23,11 +23,11 @@ function ManageLoanPrograms() {
       }
 
       const programEndpoints = [
-        { stateSetter: setFixAndFlipPrograms, url: `/api/fix-and-flip/${lenderId}/fix-and-flip-programs` },
-        { stateSetter: setDscrPrograms, url: `/api/dscr/${lenderId}/dscr-programs` },
-        { stateSetter: setStabilizedBridgePrograms, url: `/api/stabilized-bridge/${lenderId}/stabilized-bridge-programs` },
-        { stateSetter: setPortfolioPrograms, url: `/api/portfolio/${lenderId}/portfolio-programs` },
-        { stateSetter: setGroundUpPrograms, url: `/api/ground-up/${lenderId}/ground-up-programs` },
+        { stateSetter: setFixAndFlipPrograms, url: `https://broker-cheetah-backend.onrender.com/api/fix-and-flip/${lenderId}/fix-and-flip-programs` },
+        { stateSetter: setDscrPrograms, url: `https://broker-cheetah-backend.onrender.com/api/dscr/${lenderId}/dscr-programs` },
+        { stateSetter: setStabilizedBridgePrograms, url: `https://broker-cheetah-backend.onrender.com/api/stabilized-bridge/${lenderId}/stabilized-bridge-programs` },
+        { stateSetter: setPortfolioPrograms, url: `https://broker-cheetah-backend.onrender.com/api/portfolio/${lenderId}/portfolio-programs` },
+        { stateSetter: setGroundUpPrograms, url: `https://broker-cheetah-backend.onrender.com/api/ground-up/${lenderId}/ground-up-programs` },
       ];
 
       for (const { stateSetter, url } of programEndpoints) {
