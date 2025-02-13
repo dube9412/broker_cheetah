@@ -59,7 +59,7 @@ function ManageLoanPrograms() {
       const loanType = loanTypeMapping[type];
       if (!loanType) throw new Error(`Unknown loan program type: ${type}`);
 
-      const response = await fetch(`${API_URL}/api/${loanType}/${programId}`, { method: "DELETE" });
+      const response = await fetch(`/api/${loanType}/${programId}`, { method: "DELETE" });
 
       if (response.ok) {
         alert(`${type} loan program deleted successfully.`);
