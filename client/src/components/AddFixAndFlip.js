@@ -12,7 +12,7 @@ function AddFixAndFlip() {
     useEffect(() => {
         const fetchLender = async () => {
             try {
-                const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${lenderId}`);
+                const response = await fetch(`/api/lenders/${lenderId}`);
                 const data = await response.json();
                 setLender(data);
             } catch (error) {
@@ -54,7 +54,7 @@ function AddFixAndFlip() {
         e.preventDefault();
 
         try {
-            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/${lenderId}/fix-and-flip-programs`, {
+            const response = await fetch(`/api/fix-and-flip/${lenderId}/fix-and-flip-programs`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

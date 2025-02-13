@@ -23,11 +23,11 @@ function ManageLoanPrograms() {
       }
 
       const programEndpoints = [
-        { stateSetter: setFixAndFlipPrograms, url: `https://broker-cheetah-backend.onrender.com/api/fix-and-flip/${lenderId}/fix-and-flip-programs` },
+        { stateSetter: setFixAndFlipPrograms, url: `/api/fix-and-flip/${lenderId}/fix-and-flip-programs` },
         { stateSetter: setDscrPrograms, url: `/api/dscr/${lenderId}/dscr-programs` },
-        { stateSetter: setStabilizedBridgePrograms, url: `https://broker-cheetah-backend.onrender.com/api/stabilized-bridge/${lenderId}/stabilized-bridge-programs` },
+        { stateSetter: setStabilizedBridgePrograms, url: `/api/stabilized-bridge/${lenderId}/stabilized-bridge-programs` },
         { stateSetter: setPortfolioPrograms, url: `/api/portfolio/${lenderId}/portfolio-programs` },
-        { stateSetter: setGroundUpPrograms, url: `https://broker-cheetah-backend.onrender.com/api/ground-up/${lenderId}/ground-up-programs` },
+        { stateSetter: setGroundUpPrograms, url: `/api/ground-up/${lenderId}/ground-up-programs` },
       ];
 
       for (const { stateSetter, url } of programEndpoints) {
@@ -82,15 +82,15 @@ function ManageLoanPrograms() {
       <h2>LOAN PROGRAMS</h2>
       <h3>Residential 1-4</h3>
       <div>
-        <Link to={`https://broker-cheetah-backend.onrender.com/add-fix-and-flip-program/${lenderId}`}><button>Add Fix and Flip Program</button></Link>
+        <Link to={`/add-fix-and-flip-program/${lenderId}`}><button>Add Fix and Flip Program</button></Link>
         {" | "}
         <Link to={`/add-dscr-program/${lenderId}`}><button>Add DSCR Loan Program</button></Link>
         {" | "}
         <Link to={`/add-ground-up-program/${lenderId}`}><button>Add Ground Up Loan Program</button></Link>
         {" | "}
-        <Link to={`https://broker-cheetah-backend.onrender.com/add-portfolio-program/${lenderId}`}><button>Add Portfolio Loan</button></Link>
+        <Link to={`/add-portfolio-program/${lenderId}`}><button>Add Portfolio Loan</button></Link>
         {" | "}
-        <Link to={`https://broker-cheetah-backend.onrender.com/add-stabilized-bridge-program/${lenderId}`}><button>Add Stabilized Bridge Loan Program</button></Link>
+        <Link to={`m/add-stabilized-bridge-program/${lenderId}`}><button>Add Stabilized Bridge Loan Program</button></Link>
       </div>
 
       <h3>Mutli-Family Programs</h3>
@@ -109,7 +109,7 @@ function ManageLoanPrograms() {
   {[...fixAndFlipPrograms, ...dscrPrograms, ...groundUpPrograms, ...portfolioPrograms, ...stabilizedBridgePrograms].map((program) => (
     <li key={program._id}>
       <strong>{program.name}</strong>
-      <Link to={`https://broker-cheetah-backend.onrender.com/edit-${program.type.toLowerCase().replace(/ /g, "-")}-program/${lenderId}/${program._id}`}>
+      <Link to={`/edit-${program.type.toLowerCase().replace(/ /g, "-")}-program/${lenderId}/${program._id}`}>
         <button>Edit</button>
       </Link>
       {" | "}
