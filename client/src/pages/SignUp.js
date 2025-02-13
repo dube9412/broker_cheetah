@@ -8,7 +8,7 @@ function SignUp() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch("https://broker-cheetah-backend.onrender.com/api/signup", {
+    fetch("https://broker-cheetah-backend.onrender.com/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
