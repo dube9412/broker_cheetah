@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { API_URL } from "../constants";
 
 function Dashboard() {
   const [lenders, setLenders] = useState([]);
@@ -62,7 +63,7 @@ function Dashboard() {
   onClick={async () => {
     if (window.confirm("Are you sure you want to run the data scraper? This may take a few minutes.")) {
       try {
-        const response = await fetch("http://localhost:5000/api/scraper/run", {
+        const response = await fetch("${API_URL}/api/scraper/run", {
           method: "POST",
         });
 
