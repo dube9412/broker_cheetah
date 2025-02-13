@@ -143,7 +143,7 @@ function Dashboard() {
     <button>Edit</button>
 </Link> {" | "}
                       <button onClick={() => handleDelete(lender._id)}>Delete</button> {" | "}
-                      <button onClick={() => navigate(`https://broker-cheetah-backend.onrender.com/manage-loan-programs/${lender._id}`)}>Manage Loan Programs</button>
+                      <button onClick={() => navigate(`/manage-loan-programs/${lender._id}`)}>Manage Loan Programs</button>
                     </td>
                   </tr>
                 ))
