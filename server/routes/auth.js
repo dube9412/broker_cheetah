@@ -17,9 +17,9 @@ router.post('/signup', async (req, res) => {
       return res.json({ success: false, message: 'User already exists.' });
     }
     // Hash the password
-    const hashed = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     // Save user
-    const newUser = new User({ email, password: hashed });
+    const newUser = new User({ email, password: hashedPassword });
     await newUser.save();
     res.json({ success: true });
   } catch (error) {
@@ -31,8 +31,9 @@ router.post('/signup', async (req, res) => {
 // Login
 // server/routes/auth.js
 router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const { email, password } = req.body;
+  
     const user = await User.findOne({ email });
     if (!user) {
       return res.json({ success: false, message: 'Invalid credentials.' });
