@@ -63,7 +63,9 @@ function AdminDashboard() {
   onClick={async () => {
     if (window.confirm('Are you sure you want to run the scraper? This may take a few minutes.')) {
       try {
-        const response = await fetch('https://broker-cheetah-backend.onrender.com/api/scraper/run');
+        const response = await fetch('https://broker-cheetah-backend.onrender.com/api/scraper/run',{
+        method: 'POST'
+        });
         if (response.ok) {
           const blob = await response.blob();
           const url = window.URL.createObjectURL(blob);
