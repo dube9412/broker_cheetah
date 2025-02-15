@@ -15,7 +15,7 @@ function AddDSCR() {
     const [loanRange, setLoanRange] = useState({ min: "", max: "" });
     const [prepaymentPeriod, setPrepaymentPeriod] = useState("");
     const [propertyTypes, setPropertyTypes] = useState([]);
-    const [propertyUse, setPropertyUse] = useState([]);
+    const [propertyUse, setPropertyUse] = useState("");
 
     // ✅ Options for Property Type Selection
     const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
@@ -85,7 +85,7 @@ function AddDSCR() {
               lender: lenderId,
               loanRange: formattedLoanRange,
               propertyTypes,
-              propertyUse,
+              propertyUse: propertyUse || undefined,
               prepaymentPeriod,
               tiers,
             }),
