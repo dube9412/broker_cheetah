@@ -20,7 +20,8 @@ function Login() {
         if (data.success) {
           alert("Login successful");
           // Pass data.isAdmin to your AuthContext login function
-          login(data.isAdmin); 
+          login(data.role === "admin", data.role === "superadmin");
+
           navigate("/dashboard");
         } else {
           alert("Login failed");

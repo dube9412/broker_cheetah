@@ -5,7 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 function Dashboard() {
   const [lenders, setLenders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { isAdmin } = useContext(AuthContext);
+  const { isAdmin, isSuperAdmin } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -91,7 +91,7 @@ function Dashboard() {
       </ul>
 
       {/* Show Lender Table ONLY for Admins */}
-      {isAdmin && (
+      {(isAdmin || isSuperAdmin) && (
         <>
           <h3>Lenders</h3>
           <table border="1" cellPadding="6" style={{ marginTop: "1rem" }}>

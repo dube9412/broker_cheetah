@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 function NavBar() {
-  const { isLoggedIn, isAdmin, logout } = useContext(AuthContext);
+  const { isLoggedIn, isAdmin, isSuperAdmin, logout } = useContext(AuthContext);
 
   const handleLogout = () => {
     logout();
@@ -19,10 +19,10 @@ function NavBar() {
           <Link to="/dashboard" style={{ marginRight: "1rem" }}>
             Home (Dashboard)
           </Link>
-          {isAdmin && (
-            <Link to="/add-lender" style={{ marginRight: "1rem" }}>
-              Add Lender (Admin Only)
-            </Link>
+          {(isAdmin || isSuperAdmin) && (
+  <Link to="/add-lender" style={{ marginRight: "1rem" }}>
+    Add Lender (Admin Only)
+  </Link>
           )}
           <Link to="/select-loan-type" style={{ marginRight: "1rem" }}>
             Lender Search
