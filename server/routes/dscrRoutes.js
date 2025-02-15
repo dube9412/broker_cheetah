@@ -50,36 +50,53 @@ router.post("/:lenderId/dscr-programs", async (req, res) => {
     console.log("🔹 Received DSCR Loan Program data:", req.body);
     const { lenderId } = req.params;
 
+    // Ensure the lender exists
     const lender = await Lender.findById(lenderId);
     if (!lender) {
       console.error("❌ Lender not found:", lenderId);
       return res.status(404).json({ message: "Lender not found" });
     }
 
+    // Convert loanRange to numbers if necessary
+    const { min, max } = req.body.loanRange;
+    const loanRange = {
+      min: parseInt(min, 10) || 0,
+      max: parseInt(max, 10) || 0,
+    };
+
+    // Validate loanRange
+    if (loanRange.min >= loanRange.max) {
+      return res.status(400).json({ message: "Minimum loan range must be less than the maximum." });
+    }
+
+    // Create a new DSCR loan program
     const newProgram = new DSCRLoan({
       name: req.body.name,
       lender: lenderId,
       type: "DSCR",
-      loanRange: req.body.loanRange,
+      loanRange,
       propertyTypes: req.body.propertyTypes || [],
       propertyUse: req.body.propertyUse,
       prepaymentPeriod: req.body.prepaymentPeriod,
       tiers: req.body.tiers || [],
     });
 
+    // Save the new program
     await newProgram.save();
 
-    // ✅ Add reference to the lender
+    // Add reference to the lender's DSCR programs
     lender.dscrPrograms.push(newProgram._id);
     await lender.save();
 
     console.log("✅ DSCR Loan Program Saved:", newProgram);
     res.status(201).json({ success: true, program: newProgram });
+
   } catch (error) {
-    console.error("❌ Error saving DSCR Loan Program:", error);
+    console.error("❌ Server error while saving DSCR Loan Program:", error);
     res.status(500).json({ message: "Server error while saving loan program" });
   }
 });
+
 
 // ✅ PUT: Update a DSCR Loan Program
 router.put("/dscr-programs/:programId", async (req, res) => {
