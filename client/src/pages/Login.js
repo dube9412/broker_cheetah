@@ -4,13 +4,13 @@ import { AuthContext } from "../context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext); // from your AuthProvider
+  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch('https://broker-cheetah-backend.onrender.com/api/auth/login',{
+    fetch("https://broker-cheetah-backend.onrender.com/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
@@ -19,13 +19,25 @@ function Login() {
       .then(data => {
         if (data.success) {
           alert("Login successful");
-          // Pass data.isAdmin to your AuthContext login function
+          
+          // Pass role-based flags to AuthContext
           login(data.role === "admin", data.role === "superadmin");
-
-          navigate("/dashboard");
+          
+          // Redirect based on role
+          if (data.role === "superadmin") {
+            navigate("/admin-dashboard");
+          } else if (data.role === "admin") {
+            navigate("/admin-dashboard");
+          } else {
+            navigate("/dashboard");
+          }
         } else {
           alert("Login failed");
         }
+      })
+      .catch(err => {
+        console.error("Login error:", err);
+        alert("An error occurred during login.");
       });
   };
 
@@ -60,3 +72,4 @@ function Login() {
 }
 
 export default Login;
+
