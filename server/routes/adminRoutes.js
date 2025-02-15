@@ -53,6 +53,25 @@ router.post("/suspend", async (req, res) => {
       res.status(500).json({ message: "Failed to suspend user" });
     }
   });
+
+  router.post("/reactivate", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      if (user.role !== "suspended") {
+        return res.status(400).json({ message: "User is not suspended" });
+      }
+      user.role = "user";
+      await user.save();
+      res.status(200).json({ success: true, message: "User reactivated successfully" });
+    } catch (error) {
+      console.error("❌ Error reactivating user:", error);
+      res.status(500).json({ message: "Failed to reactivate user" });
+    }
+  });
   
   // ✅ Demote an admin back to a regular user (Admin Only)
   router.post("/demote", async (req, res) => {
