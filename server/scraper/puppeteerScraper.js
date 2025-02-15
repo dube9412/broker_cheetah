@@ -5,7 +5,11 @@ const Lender = require("../models/Lender");
 
 async function runScraper() {
   console.log("🔹 Connecting to MongoDB...");
-  await mongoose.connect("mongodb://127.0.0.1:27017/brokerCheetahDB");
+  await mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  
   console.log("✅ MongoDB connected");
 
   const browser = await puppeteer.launch({ headless: true });

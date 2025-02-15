@@ -59,6 +59,27 @@ function AdminDashboard() {
         <button onClick={() => navigate('/add-lender')} style={{ marginRight: '10px' }}>Add Lender</button>
         <button onClick={() => navigate('/dashboard')} style={{ marginRight: '10px' }}>Go to User Dashboard</button>
         <button onClick={() => navigate('/select-loan-type')}>Loan Search</button>
+             <button
+                onClick={async () => {
+                    if (window.confirm('Are you sure you want to run the data scraper? This may take a few minutes.')) {
+                    try {
+                        const response = await fetch('https://broker-cheetah-backend.onrender.com/api/scraper/run', { method: 'POST' });
+                        if (response.ok) {
+                        alert('✅ Scraper is running. Check your console for updates.');
+                        } else {
+                        const errorData = await response.json();
+                        alert(`❌ Error: ${errorData.message || 'Something went wrong.'}`);
+                        }
+                    } catch (error) {
+                        console.error('❌ Error running the scraper:', error);
+                        alert('An error occurred while starting the scraper.');
+                    }
+                    }
+                }}
+                >
+                Run Scraper
+                </button>
+
       </div>
 
       <AdminUserList />
