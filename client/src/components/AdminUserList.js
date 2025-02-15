@@ -44,7 +44,7 @@ function AdminUserList() {
       alert('An error occurred while promoting the user.');
     }
   };
-  
+
   const handleSuspend = async (userId) => {
     if (!window.confirm('Are you sure you want to suspend this user?')) return;
     try {
@@ -63,6 +63,27 @@ function AdminUserList() {
     } catch (error) {
       console.error('Error suspending user:', error);
       alert('An error occurred while suspending the user.');
+    }
+  };
+
+  const handleReactivate = async (userId) => {
+    if (!window.confirm('Are you sure you want to reactivate this user?')) return;
+    try {
+      const response = await fetch('https://broker-cheetah-backend.onrender.com/api/admin/reactivate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert('User reactivated successfully.');
+        setUsers(users.map(user => user._id === userId ? { ...user, role: 'user' } : user));
+      } else {
+        alert(`Failed to reactivate user: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error reactivating user:', error);
+      alert('An error occurred while reactivating the user.');
     }
   };
 
@@ -129,15 +150,18 @@ function AdminUserList() {
                 <td>
                   {user.role !== 'superadmin' && (
                     <>
-                      {user.role !== 'admin' && user.role !== 'suspended' && (
+                      {user.role === 'user' && (
                         <button onClick={() => handlePromote(user._id)}>Promote to Admin</button>
-                      )} {' | '}
-                      {user.role !== 'suspended' && (
+                      )}
+                      {user.role === 'user' && (
                         <button onClick={() => handleSuspend(user._id)}>Suspend User</button>
-                      )} {' | '}
+                      )}
+                      {user.role === 'suspended' && (
+                        <button onClick={() => handleReactivate(user._id)}>Reactivate User</button>
+                      )}
                       {user.role === 'admin' && (
                         <button onClick={() => handleDemote(user._id)}>Demote to User</button>
-                      )} {' | '}
+                      )}
                       <button onClick={() => handleDelete(user._id)}>Delete</button>
                     </>
                   )}
