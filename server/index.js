@@ -4,6 +4,7 @@ const cors = require("cors");
 const scraperRoutes = require("./routes/scraperRoutes");
 
 // ✅ Import routes correctly
+const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/auth");
 const lenderRoutes = require("./routes/lender");
 const loanProgramRoutes = require("./routes/loanPrograms"); 
@@ -36,6 +37,7 @@ mongoose
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // ✅ API Routes
+app.use("/api/admin", adminRoutes);
 app.use("/api/scraper", scraperRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/lenders", lenderRoutes);
