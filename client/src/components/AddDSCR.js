@@ -68,22 +68,27 @@ function AddDSCR() {
         );
       };
 
-    const handleSubmit = async (e) => {
+      const handleSubmit = async (e) => {
         e.preventDefault();
+        const formattedLoanRange = {
+          min: parseInt(loanRange.min) || 0,
+          max: parseInt(loanRange.max) || 0,
+        };
+      
         try {
           const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/dscr/${lenderId}/dscr-programs`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              name: "New DSCR Program", // ✅ Required 'name' field
-              type: "DSCR", // Optional but recommended
+              name: "New DSCR Program",
+              type: "DSCR",
               lender: lenderId,
-              loanRange,
+              loanRange: formattedLoanRange,
               propertyTypes,
               propertyUse,
               prepaymentPeriod,
-              tiers
-            })
+              tiers,
+            }),
           });
       
           const data = await response.json();
@@ -93,13 +98,14 @@ function AddDSCR() {
             navigate(`/manage-loan-programs/${lenderId}`);
           } else {
             console.error("❌ Failed to add program:", data);
-            alert("Failed to add program.");
+            alert(`Failed to add program: ${data.message}`);
           }
         } catch (error) {
           console.error("❌ Error adding program:", error);
           alert("An error occurred while adding the program.");
         }
       };
+      
       
 
     return (
