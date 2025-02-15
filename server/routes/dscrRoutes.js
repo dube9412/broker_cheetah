@@ -58,12 +58,17 @@ router.post("/:lenderId/dscr-programs", async (req, res) => {
     }
 
     // Convert loanRange to numbers if necessary
-    const { min, max } = req.body.loanRange;
-    const loanRange = {
-      min: parseInt(min, 10) || 0,
-      max: parseInt(max, 10) || 0,
-    };
+    const { min, max } = req.body.loanRange || {};
+if (min !== undefined && max !== undefined) {
+  if (min >= max) {
+    return res.status(400).json({ message: "Minimum loan range must be less than the maximum." });
+  }
+}
 
+const loanRange = {
+  min: min ? parseInt(min) : undefined,
+  max: max ? parseInt(max) : undefined,
+};
     // Validate loanRange
     if (loanRange.min >= loanRange.max) {
       return res.status(400).json({ message: "Minimum loan range must be less than the maximum." });

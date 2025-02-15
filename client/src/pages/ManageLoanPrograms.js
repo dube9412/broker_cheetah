@@ -12,16 +12,26 @@ function ManageLoanPrograms() {
   const [portfolioPrograms, setPortfolioPrograms] = useState([]);
   const [groundUpPrograms, setGroundUpPrograms] = useState([]);
 
+   // ✅ Add the fetchPrograms function here:
+   const fetchPrograms = async (url, stateSetter) => {
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        const data = await response.json();
+        stateSetter(Array.isArray(data) ? data : []);
+      } else if (response.status === 404) {
+        console.warn(`⚠️ No programs found for ${url}`);
+        stateSetter([]); // Handle 404 without throwing an error
+      } else {
+        console.error(`❌ Error fetching programs from ${url}:`, response.status);
+      }
+    } catch (error) {
+      console.error(`❌ Error fetching programs from ${url}:`, error);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${lenderId}`);
-        const lenderData = await response.json();
-        setLender(lenderData);
-      } catch (error) {
-        console.error("Error fetching lender details:", error);
-      }
-
       const programEndpoints = [
         { stateSetter: setFixAndFlipPrograms, url: `https://broker-cheetah-backend.onrender.com/api/fix-and-flip/${lenderId}/fix-and-flip-programs` },
         { stateSetter: setDscrPrograms, url: `https://broker-cheetah-backend.onrender.com/api/dscr/${lenderId}/dscr-programs` },
@@ -31,19 +41,13 @@ function ManageLoanPrograms() {
       ];
 
       for (const { stateSetter, url } of programEndpoints) {
-        try {
-          const response = await fetch(url);
-          const data = await response.json();
-          stateSetter(Array.isArray(data) ? data : []);
-        } catch (error) {
-          console.error(`Error fetching programs from ${url}:`, error);
-        }
+        await fetchPrograms(url, stateSetter);
       }
     };
 
     fetchData();
   }, [lenderId]);
-
+  
   const handleDeleteLoanProgram = async (programId, type) => {
     if (!window.confirm(`Are you sure you want to delete this ${type} loan program?`)) return;
 

@@ -71,8 +71,8 @@ function AddDSCR() {
       const handleSubmit = async (e) => {
         e.preventDefault();
         const formattedLoanRange = {
-          min: parseInt(loanRange.min) || 0,
-          max: parseInt(loanRange.max) || 0,
+          min: loanRange.min ? parseInt(loanRange.min) : undefined,
+          max: loanRange.max ? parseInt(loanRange.max) : undefined,
         };
       
         try {
