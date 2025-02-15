@@ -20,9 +20,14 @@ function NavBar() {
             Home (Dashboard)
           </Link>
           {(isAdmin || isSuperAdmin) && (
-  <Link to="/add-lender" style={{ marginRight: "1rem" }}>
-    Add Lender (Admin Only)
-  </Link>
+            <>
+              <Link to="/admin-dashboard" style={{ marginRight: "1rem" }}>
+                Admin Dashboard
+              </Link>
+              <Link to="/add-lender" style={{ marginRight: "1rem" }}>
+                Add Lender (Admin Only)
+              </Link>
+            </>
           )}
           <Link to="/select-loan-type" style={{ marginRight: "1rem" }}>
             Lender Search
