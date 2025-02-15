@@ -127,7 +127,7 @@ router.put("/dscr-programs/:programId", async (req, res) => {
 });
 
 // ✅ DELETE: Remove a DSCR Loan Program
-router.delete("/:programId", async (req, res) => {
+router.delete("/dscr-programs/:programId", async (req, res) => {
   try {
     const deletedProgram = await DSCRLoan.findByIdAndDelete(req.params.programId);
     if (!deletedProgram) {
