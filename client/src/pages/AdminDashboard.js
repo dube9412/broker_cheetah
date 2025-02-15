@@ -63,22 +63,23 @@ function AdminDashboard() {
   onClick={async () => {
     if (window.confirm('Are you sure you want to run the scraper? This may take a few minutes.')) {
       try {
-        const response = await fetch('https://broker-cheetah-backend.onrender.com/api/scraper/run',{
-        method: 'POST'
+        const response = await fetch('https://broker-cheetah-backend.onrender.com/api/scraper/run', {
+          method: 'POST'
         });
+
         if (response.ok) {
           const blob = await response.blob();
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', 'scrapedData.csv');  // Name of the downloaded file
+          link.setAttribute('download', 'scrapedData.csv');
           document.body.appendChild(link);
           link.click();
           link.remove();
           alert('✅ Scraper completed. Your file is downloading.');
         } else {
-          const errorData = await response.json();
-          alert(`❌ Error: ${errorData.message || 'Something went wrong.'}`);
+          console.log(`❌ Error: ${response.status} - ${response.statusText}`);
+          alert(`❌ Error: ${response.statusText || 'Something went wrong.'}`);
         }
       } catch (error) {
         console.error('❌ Error running the scraper:', error);
@@ -89,6 +90,7 @@ function AdminDashboard() {
 >
   Run Scraper
 </button>
+
 
 
 
