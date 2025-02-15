@@ -19,6 +19,7 @@ async function runScraper() {
   // Ensure Puppeteer launches correctly in Render environment
   const browser = await puppeteer.launch({
     headless: true,
+    executablePath: process.env.CHROME_BIN || puppeteer.executablePath(),
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
