@@ -30,34 +30,31 @@ router.post('/signup', async (req, res) => {
 });
 
 // Login
-// server/routes/auth.js
+// Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
-  
     const user = await User.findOne({ email });
     if (!user) {
       return res.json({ success: false, message: 'Invalid credentials.' });
     }
+
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       return res.json({ success: false, message: 'Invalid credentials.' });
     }
-    // Create JWT token
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
-      expiresIn: '1d'
-    });
 
-    // Check if this user is the admin email
-    const isAdmin = (email === 'dube9412@gmail.com');
+    // Create JWT token with role
+    const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
 
-    // Return isAdmin in the response
-    res.json({ success: true, token, isAdmin });
+    // Return the role in the response for client-side control
+    res.json({ success: true, token, role: user.role });
   } catch (error) {
     console.error('Login error:', error);
     res.json({ success: false, message: 'Login error' });
   }
 });
+
 
 module.exports = router;
 
