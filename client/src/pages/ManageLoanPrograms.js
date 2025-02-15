@@ -47,37 +47,38 @@ function ManageLoanPrograms() {
 
     fetchData();
   }, [lenderId]);
-  
+
   const handleDeleteLoanProgram = async (programId, type) => {
-    if (!window.confirm(`Are you sure you want to delete this ${type} loan program?`)) return;
+  if (!window.confirm(`Are you sure you want to delete this ${type} loan program?`)) return;
 
-    try {
-      const loanTypeMapping = {
-        "Fix and Flip": "fix-and-flip-programs",
-        "DSCR": "dscr-programs",
-        "Ground Up": "ground-up-programs",
-        "Portfolio": "portfolio-programs",
-        "Stabilized Bridge": "stabilized-bridge-programs"
-      };
+  try {
+    const loanTypeMapping = {
+      "Fix and Flip": "fix-and-flip-programs",
+      "DSCR": "dscr-programs",
+      "Ground Up": "ground-up-programs",
+      "Portfolio": "portfolio-programs",
+      "Stabilized Bridge": "stabilized-bridge-programs"
+    };
 
-      const loanType = loanTypeMapping[type];
-      if (!loanType) throw new Error(`Unknown loan program type: ${type}`);
+    const loanType = loanTypeMapping[type];
+    if (!loanType) throw new Error(`Unknown loan program type: ${type}`);
 
-      const response = await fetch(`/api/${loanType}/${programId}`, { method: "DELETE" });
+    const response = await fetch(`/api/${loanType}/${programId}`, { method: "DELETE" });
 
-      if (response.ok) {
-        alert(`${type} loan program deleted successfully.`);
-        window.location.reload(); // Refresh to show updated programs
-      } else {
-        const errorData = await response.json();
-        console.error("❌ Error deleting loan program:", errorData);
-        alert(`Failed to delete ${type} loan program: ${errorData.message || "Unknown error"}`);
-      }
-    } catch (error) {
-      console.error("❌ Error deleting loan program:", error);
-      alert("An error occurred while deleting the loan program.");
+    if (response.ok) {
+      alert(`${type} loan program deleted successfully.`);
+      window.location.reload(); // Refresh to show updated programs
+    } else {
+      const errorData = await response.json().catch(() => ({}));  // ✅ Handle empty or no response
+      console.error("❌ Error deleting loan program:", errorData);
+      alert(`Failed to delete ${type} loan program: ${errorData.message || "Unknown error"}`);
     }
-  };
+  } catch (error) {
+    console.error("❌ Error deleting loan program:", error);
+    alert("An error occurred while deleting the loan program.");
+  }
+};
+
 
   return (
     <div>

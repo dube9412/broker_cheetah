@@ -129,27 +129,23 @@ router.put("/dscr-programs/:programId", async (req, res) => {
 // ✅ DELETE: Remove a DSCR Loan Program
 router.delete("/dscr-programs/:programId", async (req, res) => {
   try {
-    console.log(`🔹 Deleting DSCR loan program: ${req.params.programId}`);
-
     const deletedProgram = await DSCRLoan.findByIdAndDelete(req.params.programId);
     if (!deletedProgram) {
-      console.error("❌ DSCR Loan Program not found:", req.params.programId);
       return res.status(404).json({ message: "Loan program not found" });
     }
 
-    // ✅ Remove reference from the lender
     await Lender.updateOne(
       { dscrPrograms: req.params.programId },
       { $pull: { dscrPrograms: req.params.programId } }
     );
 
-    console.log("✅ DSCR Loan Program deleted:", deletedProgram);
-    res.json({ success: true, message: "Loan program deleted." });
+    res.status(200).json({ success: true, message: "Loan program deleted." });  // ✅ Always return a JSON response
   } catch (error) {
     console.error("❌ Error deleting DSCR Loan Program:", error);
     res.status(500).json({ message: "Failed to delete loan program" });
   }
 });
+
 
 // ✅ Debugging: List Registered Routes
 console.log("✅ Registered Routes in DSCR Routes:");
