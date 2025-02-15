@@ -1,12 +1,13 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, AuthContext } from "./context/AuthContext";
 import RequestQuote from "./components/RequestQuote";
+import { useContext } from "react";
 
 // Components
 import NavBar from "./components/NavBar";
 import AddFixAndFlip from "./components/AddFixAndFlip";
-import EditFixAndFlip from "./components/EditFixAndFlip";  // ✅ Import the Edit component For Fix and Flip
+import EditFixAndFlip from "./components/EditFixAndFlip";
 import AddDSCR from "./components/AddDSCR";
 import EditDSCR from "./components/EditDSCR";
 import AddStabilizedBridge from "./components/AddStabilizedBridge";
@@ -16,12 +17,12 @@ import EditPortfolio from "./components/EditPortfolio";
 import AddGroundUp from "./components/AddGroundUp";
 import EditGroundUp from "./components/EditGroundUp";
 
-
 // Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import LoanTypeSelection from "./pages/LoanTypeSelection";
 import FixAndFlipSearch from "./pages/FixAndFlipSearch";
 import ManageLoanPrograms from "./pages/ManageLoanPrograms";
@@ -30,13 +31,21 @@ import ManageLoanPrograms from "./pages/ManageLoanPrograms";
 import AddLender from "./components/AddLender";
 import EditLender from "./components/EditLender";
 
+// Protected Admin Route
+const ProtectedAdminRoute = ({ children }) => {
+  const { isAdmin, isSuperAdmin } = useContext(AuthContext);
+  if (!isAdmin && !isSuperAdmin) {
+    return <Navigate to="/" />;
+  }
+  return children;
+};
+
 function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="min-h-screen bg-gray-50">
           <NavBar />
-
           <div className="container mx-auto p-6">
             <Routes>
               <Route path="/" element={<Home />} />
@@ -47,38 +56,36 @@ function App() {
 
               {/* Loan type & search */}
               <Route path="/select-loan-type" element={<LoanTypeSelection />} />
-              <Route path="/search/fixandflip" element={<FixAndFlipSearch />} /> 
+              <Route path="/search/fixandflip" element={<FixAndFlipSearch />} />
+
+              {/* Admin Dashboard */}
+              <Route
+                path="/admin-dashboard"
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminDashboard />
+                  </ProtectedAdminRoute>
+                }
+              />
 
               {/* Request Quote */}
               <Route path="/request-quote/:lenderId" element={<RequestQuote />} />
-  
-              {/* Admin only route for adding & editing lenders */}
+
+              {/* Admin only routes for adding & editing lenders */}
               <Route path="/add-lender" element={<AddLender />} />
               <Route path="/edit-lender/:id" element={<EditLender />} />
-
               <Route path="/add-fix-and-flip-program/:lenderId" element={<AddFixAndFlip />} />
               <Route path="/edit-fix-and-flip-program/:lenderId/:programId" element={<EditFixAndFlip />} />
-
-              {/* ✅ DSCR Loan Routes */}
               <Route path="/add-dscr-program/:lenderId" element={<AddDSCR />} />
               <Route path="/edit-dscr-program/:lenderId/:programId" element={<EditDSCR />} />
-
-              <Route path="/add-stabilized-bridge-program/:lenderId" element={<AddStabilizedBridge />} /> 
-              <Route path="/edit-stabilized-bridge-program/:lenderId/:programId" element={<EditStabilizedBridge />} /> 
-
-              <Route path="/add-portfolio-program/:lenderId" element={<AddPortfolio />} /> 
-              <Route path="/edit-portfolio-program/:lenderId/:programId" element={<EditPortfolio />} /> 
-
-              <Route path="/add-ground-up-program/:lenderId" element={<AddGroundUp />} /> 
-              <Route path="/edit-ground-up-program/:lenderId/:programId" element={<EditGroundUp />} /> 
-
-              
-             
-
-                      
+              <Route path="/add-stabilized-bridge-program/:lenderId" element={<AddStabilizedBridge />} />
+              <Route path="/edit-stabilized-bridge-program/:lenderId/:programId" element={<EditStabilizedBridge />} />
+              <Route path="/add-portfolio-program/:lenderId" element={<AddPortfolio />} />
+              <Route path="/edit-portfolio-program/:lenderId/:programId" element={<EditPortfolio />} />
+              <Route path="/add-ground-up-program/:lenderId" element={<AddGroundUp />} />
+              <Route path="/edit-ground-up-program/:lenderId/:programId" element={<EditGroundUp />} />
             </Routes>
           </div>
-
           <footer className="bg-blue-700 text-white p-4 text-center shadow-inner">
             &copy; {new Date().getFullYear()} Broker Cheetah. All rights reserved.
           </footer>
@@ -89,3 +96,4 @@ function App() {
 }
 
 export default App;
+
