@@ -86,8 +86,11 @@ router.post("/:lenderId/dscr-programs", async (req, res) => {
     await newProgram.save();
 
     // Add reference to the lender's DSCR programs
-    lender.dscrPrograms.push(newProgram._id);
-    await lender.save();
+if (!lender.dscrPrograms) {
+  lender.dscrPrograms = [];  // ✅ Initialize if undefined
+}
+lender.dscrPrograms.push(newProgram._id);
+await lender.save();
 
     console.log("✅ DSCR Loan Program Saved:", newProgram);
     res.status(201).json({ success: true, program: newProgram });
