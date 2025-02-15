@@ -107,7 +107,7 @@ router.put("/fix-and-flip-programs/:programId", async (req, res) => {
 });
 
 // ✅ DELETE: Remove a Fix and Flip Loan Program
-router.delete("/:programId", async (req, res) => {
+router.delete("/fix-and-flip-programs/:programId", async (req, res) => {
   try {
     console.log(`🔹 Deleting Fix and Flip loan program: ${req.params.programId}`);
 
