@@ -34,6 +34,46 @@ router.post("/promote", async (req, res) => {
   }
 });
 
+// ✅ Suspend a user (Admin Only)
+router.post("/suspend", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      if (user.role === "superadmin") {
+        return res.status(403).json({ message: "Cannot suspend a superadmin" });
+      }
+      user.role = "suspended";
+      await user.save();
+      res.status(200).json({ success: true, message: "User suspended successfully" });
+    } catch (error) {
+      console.error("❌ Error suspending user:", error);
+      res.status(500).json({ message: "Failed to suspend user" });
+    }
+  });
+  
+  // ✅ Demote an admin back to a regular user (Admin Only)
+  router.post("/demote", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      if (user.role !== "admin") {
+        return res.status(400).json({ message: "Only admins can be demoted" });
+      }
+      user.role = "user";
+      await user.save();
+      res.status(200).json({ success: true, message: "User demoted successfully" });
+    } catch (error) {
+      console.error("❌ Error demoting user:", error);
+      res.status(500).json({ message: "Failed to demote user" });
+    }
+  });
+
 // ✅ Delete or Suspend a user (Admin Only)
 router.delete("/:userId", async (req, res) => {
   try {
