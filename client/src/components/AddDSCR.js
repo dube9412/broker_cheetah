@@ -183,8 +183,13 @@ function AddDSCR() {
                     </label>
                 ))}
 
-                <button type="submit">Add DSCR Loan Program</button>
-            </form>
+            <button style={{ backgroundColor: 'green', color: 'white', padding: '10px 20px' }}>
+            Add DSCR Loan Program
+            </button>
+            <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button" style={{ padding: '10px 20px', backgroundColor: 'red', color: 'white' }}>
+            Cancel
+            </button>
+          </form>
         </div>
     );
 }
