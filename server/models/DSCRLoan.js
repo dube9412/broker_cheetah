@@ -7,8 +7,8 @@ const DscrLoanSchema = new mongoose.Schema(
     type: { type: String, required: true, default: "DSCR" },
     
     loanRange: {
-      min: { type: Number, required: true },  // Ensure this is a number
-      max: { type: Number, required: true },  // Ensure this is a number
+      min: { type: Number, required: false },  // Ensure this is a number
+      max: { type: Number, required: false },  // Ensure this is a number
     },
 
     propertyTypes: [{ type: String, enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"], required: false }],
