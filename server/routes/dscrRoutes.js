@@ -73,6 +73,8 @@ const loanRange = {
     if (loanRange.min >= loanRange.max) {
       return res.status(400).json({ message: "Minimum loan range must be less than the maximum." });
     }
+    const propertyUse = Array.isArray(req.body.propertyUse) ? req.body.propertyUse[0] : req.body.propertyUse || undefined;
+
 
     // Create a new DSCR loan program
     const newProgram = new DSCRLoan({
@@ -81,7 +83,7 @@ const loanRange = {
       type: "DSCR",
       loanRange,
       propertyTypes: req.body.propertyTypes || [],
-      propertyUse: req.body.propertyUse,
+      propertyUse,
       prepaymentPeriod: req.body.prepaymentPeriod,
       tiers: req.body.tiers || [],
     });
