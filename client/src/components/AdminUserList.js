@@ -5,25 +5,20 @@ function AdminUserList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch('https://broker-cheetah-backend.onrender.com/api/admin/users');
-        if (!response.ok) {
-          throw new Error(`Error fetching users: ${response.statusText}`);
-        }
-        const data = await response.json();
-        setUsers(data);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-        setError('Failed to fetch users. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, []);
+ useEffect(() => {
+  const fetchUsers = async () => {
+    console.log('Fetching users from API...');
+    try {
+      const response = await fetch('https://broker-cheetah-backend.onrender.com/api/admin/users');
+      console.log('Response status:', response.status);
+      const data = await response.json();
+      console.log('Fetched users:', data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
+  fetchUsers();
+}, []);
 
   if (loading) return <div>Loading users...</div>;
   if (error) return <div>{error}</div>;
