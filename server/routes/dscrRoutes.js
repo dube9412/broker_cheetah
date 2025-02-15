@@ -65,9 +65,9 @@ if (min !== undefined && max !== undefined) {
   }
 }
 
-const loanRange = {
-  min: min ? parseInt(min) : undefined,
-  max: max ? parseInt(max) : undefined,
+const loanRange = {};
+if (min) loanRange.min = parseInt(min);
+if (max) loanRange.max = parseInt(max);
 };
     // Validate loanRange
     if (loanRange.min >= loanRange.max) {
