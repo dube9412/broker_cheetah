@@ -24,6 +24,27 @@ function AdminUserList() {
     fetchUsers();
   }, []);
 
+  const handlePromote = async (userId) => {
+    if (!window.confirm('Are you sure you want to promote this user to admin?')) return;
+    try {
+      const response = await fetch('https://broker-cheetah-backend.onrender.com/api/admin/promote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert('User promoted to admin successfully.');
+        setUsers(users.map(user => user._id === userId ? { ...user, role: 'admin' } : user));
+      } else {
+        alert(`Failed to promote user: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error promoting user:', error);
+      alert('An error occurred while promoting the user.');
+    }
+  };
+  
   const handleSuspend = async (userId) => {
     if (!window.confirm('Are you sure you want to suspend this user?')) return;
     try {
