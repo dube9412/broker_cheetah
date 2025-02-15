@@ -27,6 +27,7 @@ async function runScraper() {
       "--disable-gpu",
     ],
   });
+  console.log("✅ Puppeteer launched");
 
   const csvPath = "detailedLenderData.csv";  // Save CSV locally
   try {
