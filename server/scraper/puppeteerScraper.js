@@ -4,7 +4,7 @@ const { createObjectCsvWriter } = require("csv-writer");
 const Lender = require("../models/Lender");
 
 async function runScraper() {
-  console.log("🔹 Connecting to MongoDB...");
+  console.log("🔹 runScraper function started...");
   if (!process.env.MONGO_URI) {
     console.error("❌ MONGO_URI is not set. Please check your environment variables.");
     process.exit(1);
@@ -77,6 +77,7 @@ async function runScraper() {
 
     await csvWriter.writeRecords(scrapedData);
     console.log("✅ Data saved to detailedLenderData.csv");
+    console.log("✅ Scraper completed successfully.");
     return csvPath;
   } catch (err) {
     console.error("❌ Error:", err.message);

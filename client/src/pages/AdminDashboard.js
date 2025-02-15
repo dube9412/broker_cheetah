@@ -59,33 +59,35 @@ function AdminDashboard() {
         <button onClick={() => navigate('/add-lender')} style={{ marginRight: '10px' }}>Add Lender</button>
         <button onClick={() => navigate('/dashboard')} style={{ marginRight: '10px' }}>Go to User Dashboard</button>
         <button onClick={() => navigate('/select-loan-type')}>Loan Search</button>
-                    <button
-                        onClick={async () => {
-                            if (window.confirm('Are you sure you want to run the scraper? This may take a few minutes.')) {
-                            try {
-                                const response = await fetch('https://broker-cheetah-backend.onrender.com/api/scraper/run');
-                                if (response.ok) {
-                                const blob = await response.blob();
-                                const url = window.URL.createObjectURL(blob);
-                                const link = document.createElement('a');
-                                link.href = url;
-                                link.setAttribute('download', 'scrapedData.csv');
-                                document.body.appendChild(link);
-                                link.click();
-                                link.remove();
-                                } else {
-                                const errorData = await response.json();
-                                alert(`❌ Error: ${errorData.message || 'Something went wrong.'}`);
-                                }
-                            } catch (error) {
-                                console.error('❌ Error running the scraper:', error);
-                                alert('An error occurred while starting the scraper.');
-                            }
-                            }
-                        }}
-                        >
-                        Run Scraper
-                    </button>
+        <button
+  onClick={async () => {
+    if (window.confirm('Are you sure you want to run the scraper? This may take a few minutes.')) {
+      try {
+        const response = await fetch('https://broker-cheetah-backend.onrender.com/api/scraper/run');
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'scrapedData.csv');  // Name of the downloaded file
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          alert('✅ Scraper completed. Your file is downloading.');
+        } else {
+          const errorData = await response.json();
+          alert(`❌ Error: ${errorData.message || 'Something went wrong.'}`);
+        }
+      } catch (error) {
+        console.error('❌ Error running the scraper:', error);
+        alert('An error occurred while starting the scraper.');
+      }
+    }
+  }}
+>
+  Run Scraper
+</button>
+
 
 
       </div>
