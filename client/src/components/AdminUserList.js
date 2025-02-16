@@ -147,6 +147,7 @@ function AdminUserList() {
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td>{new Date(user.createdAt).toLocaleString()}</td>
+                <td>{user.marketingOptIn ? "✅ Yes" : "❌ No"}</td>
                 <td>
                   {user.role !== 'superadmin' && (
                     <>
@@ -166,6 +167,7 @@ function AdminUserList() {
                     </>
                   )}
                 </td>
+                
               </tr>
             ))
           ) : (
