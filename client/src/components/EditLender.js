@@ -31,7 +31,8 @@ function EditLender() {
     if (!id) {
       console.error("EditLender: No ID provided in URL");
       alert("Invalid lender ID.");
-      navigate("/dashboard");
+      navigate(isAdmin || isSuperAdmin ? "/admin-dashboard" : "/dashboard");
+
       return;
     }
 
@@ -43,7 +44,8 @@ function EditLender() {
         if (!lender || !lender._id) {
           console.error("Lender not found.");
           alert("Lender not found.");
-          navigate("/dashboard");
+          navigate(isAdmin || isSuperAdmin ? "/admin-dashboard" : "/dashboard");
+
           return;
         }
 
@@ -67,7 +69,8 @@ function EditLender() {
       .catch((err) => {
         console.error("❌ Error fetching lender:", err);
         alert("Error fetching lender data.");
-        navigate("/dashboard");
+        navigate(isAdmin || isSuperAdmin ? "/admin-dashboard" : "/dashboard");
+
       });
   }, [id, navigate]);
 
@@ -101,7 +104,8 @@ function EditLender() {
       .then((data) => {
         if (data.success) {
           alert("Lender updated successfully!");
-          navigate("/dashboard");
+          navigate(isAdmin || isSuperAdmin ? "/admin-dashboard" : "/dashboard");
+
         } else {
           alert("Error updating lender.");
         }
@@ -212,7 +216,8 @@ function EditLender() {
           </button>
           <button
             type="button"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate(isAdmin || isSuperAdmin ? "/admin-dashboard" : "/dashboard")
+            }
             style={{
               padding: "10px 20px",
               backgroundColor: "#dc3545",

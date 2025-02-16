@@ -54,7 +54,8 @@ function AddLender() {
       .then((data) => {
         if (data.success) {
           alert("Lender added successfully!");
-          navigate("/dashboard");
+          navigate(isAdmin || isSuperAdmin ? "/admin-dashboard" : "/dashboard");
+
         } else {
           alert("Error adding lender.");
         }
@@ -141,7 +142,7 @@ function AddLender() {
                 <button type="submit" style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>
                     Add Lender
                 </button>
-                <button onClick={() => navigate("/dashboard")} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>
+                <button onClick={() => navigate(isAdmin || isSuperAdmin ? "/admin-dashboard" : "/dashboard")} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>
                     Cancel
                 </button>
             </div>
