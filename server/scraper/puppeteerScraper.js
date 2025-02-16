@@ -25,7 +25,8 @@ async function runScraper() {
   // Ensure Puppeteer launches correctly in Render environment
   const browser = await puppeteer.launch({
     headless: true,
-    executablePath: process.env.CHROME_BIN || '/usr/bin/chromium',
+    executablePath: '/usr/bin/chromium',
+
     args: [
       '--no-sandbox',
       '--headless',
