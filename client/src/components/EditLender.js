@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import StatesCheckboxList from "./StatesCheckboxList";
-//not a change
-
 
 const BACKGROUND_LIMITATIONS_OPTIONS = ["Financial Crimes", "Felony Convictions"];
 
@@ -31,25 +29,24 @@ function EditLender() {
     console.log("Lender ID from URL:", id);
 
     if (!id) {
-        console.error("EditLender: No ID provided in URL");
-        alert("Invalid lender ID.");
-        navigate("/dashboard");
-        return;
+      console.error("EditLender: No ID provided in URL");
+      alert("Invalid lender ID.");
+      navigate("/dashboard");
+      return;
     }
 
     fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${id}`)
-    .then((res) => res.json())
-    .then((lender) => {  // ✅ NOW WORKS WITH THE CLEANED-UP BACKEND
+      .then((res) => res.json())
+      .then((lender) => {
         console.log("✅ Fetched lender:", lender);
 
         if (!lender || !lender._id) {
-            console.error("Lender not found.");
-            alert("Lender not found.");
-            navigate("/dashboard");
-            return;
+          console.error("Lender not found.");
+          alert("Lender not found.");
+          navigate("/dashboard");
+          return;
         }
 
-        // ✅ Update state correctly
         setName(lender.name || "");
         setStates(lender.states || []);
         setBrokersLicenseOnlyStates(lender.brokersLicenseOnlyStates || []);
@@ -66,18 +63,13 @@ function EditLender() {
         setAssumable(lender.assumable || false);
         setBkFcSsDil(lender.bkFcSsDil || "");
         setBackgroundLimitations(lender.backgroundLimitations || []);
-    })
-    .catch((err) => {
+      })
+      .catch((err) => {
         console.error("❌ Error fetching lender:", err);
         alert("Error fetching lender data.");
         navigate("/dashboard");
-    });
-
-
-}, [id, navigate]);
-
-
-  
+      });
+  }, [id, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -121,7 +113,7 @@ function EditLender() {
   };
 
   return (
-    <div>
+    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
       <h2>Edit Lender</h2>
       <form onSubmit={handleSubmit}>
         <label>Lender Name: <input value={name} onChange={(e) => setName(e.target.value)} required /></label>
@@ -185,8 +177,8 @@ function EditLender() {
 
         <label>Background Limitations:</label>
         <div>
-        {BACKGROUND_LIMITATIONS_OPTIONS.map((option) => (
-            <label key={option}>
+          {BACKGROUND_LIMITATIONS_OPTIONS.map((option) => (
+            <label key={option} style={{ marginRight: "10px" }}>
               <input
                 type="checkbox"
                 value={option}
@@ -202,12 +194,40 @@ function EditLender() {
             </label>
           ))}
         </div>
-        <br/>
+        <br />
 
-        <button type="submit">Save Changes</button>
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <button
+            type="submit"
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#28a745",
+              color: "#fff",
+              border: "none",
+              cursor: "pointer",
+              marginRight: "10px",
+            }}
+          >
+            Save Changes
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard")}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#dc3545",
+              color: "#fff",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );
 }
 
 export default EditLender;
+
