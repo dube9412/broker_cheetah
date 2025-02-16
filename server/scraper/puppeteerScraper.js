@@ -25,13 +25,13 @@ async function runScraper() {
   // Ensure Puppeteer launches correctly in Render environment
   const browser = await puppeteer.launch({
     headless: true,
-    executablePath: process.env.CHROME_BIN || puppeteer.executablePath(),
+    executablePath: process.env.CHROME_BIN || '/usr/bin/chromium',
     args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-accelerated-2d-canvas",
-      "--disable-gpu",
+      '--no-sandbox',
+      '--headless',
+      '--disable-gpu',
+      '--disable-dev-shm-usage',
+      '--disable-setuid-sandbox'
     ],
   });
   console.log("✅ Puppeteer launched");
