@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import StatesCheckboxList from "./StatesCheckboxList";
+import { AuthContext } from "../context/AuthContext";
 
 const BACKGROUND_LIMITATIONS_OPTIONS = ["Financial Crimes", "Felony Convictions"];
 
@@ -23,6 +24,7 @@ function EditLender() {
   const [assumable, setAssumable] = useState(false);
   const [bkFcSsDil, setBkFcSsDil] = useState("");
   const [backgroundLimitations, setBackgroundLimitations] = useState([]);
+  const { isAdmin, isSuperAdmin } = useContext(AuthContext);
 
   useEffect(() => {
     console.log("EditLender Mounted");

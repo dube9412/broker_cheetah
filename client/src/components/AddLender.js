@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StatesCheckboxList from "./StatesCheckboxList";
+import { AuthContext } from "../context/AuthContext";
+
 
 const BACKGROUND_LIMITATIONS_OPTIONS = ["Financial Crimes", "Felony Convictions"];
 
@@ -22,6 +24,7 @@ function AddLender() {
   const [assumable, setAssumable] = useState(false);
   const [bkFcSsDil, setBkFcSsDil] = useState("");
   const [backgroundLimitations, setBackgroundLimitations] = useState([]);
+  const { isAdmin, isSuperAdmin } = useContext(AuthContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
