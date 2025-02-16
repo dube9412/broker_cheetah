@@ -112,4 +112,20 @@ router.delete("/:userId", async (req, res) => {
   }
 });
 
+router.post("/toggle-optin", async (req, res) => {
+  try {
+    const { userId, marketingOptIn } = req.body;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.marketingOptIn = marketingOptIn;
+    await user.save();
+    res.status(200).json({ success: true, message: "Marketing opt-in status updated" });
+  } catch (error) {
+    console.error("Error updating opt-in status:", error);
+    res.status(500).json({ message: "Failed to update opt-in status" });
+  }
+});
+
+
 module.exports = router;

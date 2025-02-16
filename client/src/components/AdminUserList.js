@@ -125,6 +125,27 @@ function AdminUserList() {
     }
   };
 
+  const handleToggleOptIn = async (userId) => {
+    try {
+      const user = users.find((u) => u._id === userId);
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/admin/toggle-optin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, marketingOptIn: !user.marketingOptIn })
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert('Marketing opt-in status updated.');
+        setUsers(users.map((u) => (u._id === userId ? { ...u, marketingOptIn: !u.marketingOptIn } : u)));
+      } else {
+        alert(`Failed to update opt-in status: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error updating marketing opt-in:', error);
+      alert('An error occurred while updating the opt-in status.');
+    }
+  };
+
   if (loading) return <div>Loading users...</div>;
   if (error) return <div>{error}</div>;
 
@@ -137,6 +158,7 @@ function AdminUserList() {
             <th>Email</th>
             <th>Role</th>
             <th>Created At</th>
+            <th>OptIn</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -147,7 +169,13 @@ function AdminUserList() {
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td>{new Date(user.createdAt).toLocaleString()}</td>
-                <td>{user.marketingOptIn ? "✅ Yes" : "❌ No"}</td>
+                <td>
+                <input
+                    type="checkbox"
+                    checked={user.marketingOptIn || false}
+                    onChange={() => handleToggleOptIn(user._id)}
+                />
+                </td>
                 <td>
                   {user.role !== 'superadmin' && (
                     <>
