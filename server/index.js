@@ -1,7 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const scraperRoutes = require("./routes/scraperRoutes");
+const scraperRoutes = process.env.HOST_ENV !== "render" ? require("./routes/scraperRoutes") : null;
+
+
 
 // ✅ Import routes correctly
 const adminRoutes = require("./routes/adminRoutes");
@@ -42,7 +44,9 @@ mongoose
 
 // ✅ API Routes
 app.use("/api/admin", adminRoutes);
-app.use("/api/scraper", scraperRoutes);
+if (scraperRoutes) {
+  app.use("/api/scraper", scraperRoutes);
+}
 app.use("/api/auth", authRoutes);
 app.use("/api/lenders", lenderRoutes);
 app.use("/api/loan-programs", loanProgramRoutes);
