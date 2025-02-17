@@ -23,6 +23,7 @@ const LenderSchema = new mongoose.Schema({
   fixAndFlipPrograms: [{ type: mongoose.Schema.Types.ObjectId, ref: "FixAndFlipLoan" }],
 });
 
-const Lender = mongoose.models.Lender || mongoose.model("Lender", lenderSchema);
+const Lender = mongoose.models.Lender || mongoose.model("Lender", LenderSchema);
+
 module.exports = Lender;
 
