@@ -14,5 +14,10 @@
     "mongodb": "^6.13.0",
     "mongoose": "^8.10.0",
     "playwright": "^1.50.1"
-  }
+  },
+  "devDependencies": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
