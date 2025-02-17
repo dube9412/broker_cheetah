@@ -1,60 +1,67 @@
-const { chromium } = require("playwright");
-const mongoose = require("mongoose");
-const Lender = require("../models/Lender");
+// Playwright Scraper - Pulls Lender Websites from Database
+const { chromium } = require('playwright');
+const fs = require('fs');
+const mongoose = require('mongoose');
 
-async function runScraper() {
-  console.log("🔹 Starting Playwright Scraper...");
-
-  if (!process.env.MONGO_URI) {
-    console.error("❌ MONGO_URI is not set. Check your environment variables.");
-    process.exit(1);
-  }
-
-  await mongoose.connect(process.env.MONGO_URI, {
+// Connect to MongoDB
+mongoose.connect("mongodb://127.0.0.1:27017/brokerCheetahDB", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  });
-  console.log("✅ MongoDB Connected");
+}).then(() => console.log("✅ MongoDB Connected"))
+  .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
-  const browser = await chromium.launch({
-    headless: true,
-    executablePath: process.env.CHROME_BIN || "/usr/bin/chromium",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+// Define lender schema
+const Lender = mongoose.model("Lender", new mongoose.Schema({
+    name: String,
+    website: String
+}));
 
-  console.log("✅ Playwright Launched");
+(async () => {
+    const browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage();
 
-  try {
-    const lenders = await Lender.find({ website: { $exists: true, $ne: "" } });
-    console.log(`🔹 Found ${lenders.length} lenders with websites`);
+    // Fetch lender websites from MongoDB
+    const lenders = await Lender.find({});
+    const lenderWebsites = lenders.map(lender => lender.website);
 
-    for (const lender of lenders) {
-      const page = await browser.newPage();
-      const website = lender.website.startsWith("http") ? lender.website : `https://${lender.website}`;
-      console.log(`🔹 Visiting ${website} for ${lender.name}`);
+    let scrapedData = [];
 
-      try {
-        await page.goto(website, { waitUntil: "domcontentloaded", timeout: 30000 });
+    for (const site of lenderWebsites) {
+        try {
+            await page.goto(site, { waitUntil: 'domcontentloaded' });
 
-        const loanType = await page.$eval(".loan-type-selector", el => el.innerText).catch(() => "N/A");
-        const stateAvailability = await page.$eval(".state-selector", el => el.innerText).catch(() => "N/A");
+            // Extract basic lender info
+            const lenderName = await page.textContent('.lender-name-selector');
+            const lenderWebsite = site;
+            
+            // Find subpage links
+            const subPages = await page.$$eval('a', links => 
+                links.map(link => link.href).filter(href => href.includes('loan-program'))
+            );
+            
+            let loanPrograms = [];
 
-        console.log(`✅ Scraped ${lender.name}: Loan Type - ${loanType}, States - ${stateAvailability}`);
-      } catch (err) {
-        console.error(`❌ Error scraping ${website}:`, err.message);
-      } finally {
-        await page.close();
-      }
+            for (const subPage of subPages) {
+                await page.goto(subPage, { waitUntil: 'domcontentloaded' });
+                const programName = await page.textContent('.program-title-selector');
+                const rate = await page.textContent('.rate-selector');
+                
+                loanPrograms.push({ programName, rate });
+            }
+
+            scrapedData.push({ lenderName, lenderWebsite, loanPrograms });
+        } catch (error) {
+            console.error(`❌ Error scraping ${site}:`, error);
+        }
     }
-  } catch (err) {
-    console.error("❌ Scraper Error:", err.message);
-    throw err;
-  } finally {
+
+    // Save to JSON file
+    fs.writeFileSync('scraped_data.json', JSON.stringify(scrapedData, null, 2), 'utf8');
+    console.log('✅ Data saved to scraped_data.json');
+
     await browser.close();
     mongoose.connection.close();
-    console.log("🔹 Scraper finished, MongoDB connection closed.");
-  }
-}
+})();
 
-module.exports = runScraper;
+
 
