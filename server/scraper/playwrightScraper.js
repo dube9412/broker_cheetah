@@ -17,7 +17,13 @@ const Lender = mongoose.model("Lender", new mongoose.Schema({
 }));
 
 (async () => {
-    const browser = await chromium.launch({ headless: true });
+    const browser = await chromium.launch({
+        headless: true,
+        executablePath: process.env.PLAYWRIGHT_BROWSERS_PATH 
+            ? `${process.env.PLAYWRIGHT_BROWSERS_PATH}/chromium/chrome-linux/chrome`
+            : undefined
+    });
+    
     const page = await browser.newPage();
 
     // Fetch lender websites from MongoDB
