@@ -1,7 +1,7 @@
 // Playwright Scraper - Pulls Lender Websites from Database
 const { chromium } = require('playwright');
 const fs = require('fs');
-const mongoose = require('mongoose');
+/*const mongoose = require('mongoose');
 
 // Connect to MongoDB
 mongoose.connect("mongodb://127.0.0.1:27017/brokerCheetahDB", {
@@ -14,7 +14,12 @@ mongoose.connect("mongodb://127.0.0.1:27017/brokerCheetahDB", {
 const Lender = mongoose.model("Lender", new mongoose.Schema({
     name: String,
     website: String
-}));
+}));*/
+
+const lenderWebsites = [
+    "https://www.civicfs.com",
+    "https://www.limaone.com"
+];
 
 (async () => {
     const browser = await chromium.launch({
@@ -27,9 +32,9 @@ const Lender = mongoose.model("Lender", new mongoose.Schema({
     const page = await browser.newPage();
 
     // Fetch lender websites from MongoDB
-    const lenders = await Lender.find({});
+    /*const lenders = await Lender.find({});
     const lenderWebsites = lenders.map(lender => lender.website);
-
+*/
     let scrapedData = [];
 
     for (const site of lenderWebsites) {
