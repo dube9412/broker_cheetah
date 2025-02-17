@@ -3,78 +3,58 @@ const mongoose = require("mongoose");
 const Lender = require("../models/Lender");
 
 async function runScraper() {
-  console.log("🔹 Starting Playwright scraper...");
+  console.log("🔹 Starting Playwright Scraper...");
 
   if (!process.env.MONGO_URI) {
     console.error("❌ MONGO_URI is not set. Check your environment variables.");
-    return;
+    process.exit(1);
   }
 
   await mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
-  console.log("✅ MongoDB connected");
+  console.log("✅ MongoDB Connected");
 
-  // Launch browser
   const browser = await chromium.launch({
     headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-accelerated-2d-canvas",
-      "--disable-gpu",
-    ],
+    executablePath: process.env.CHROME_BIN || "/usr/bin/chromium",
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
-  console.log("✅ Playwright launched");
+
+  console.log("✅ Playwright Launched");
 
   try {
     const lenders = await Lender.find({ website: { $exists: true, $ne: "" } });
     console.log(`🔹 Found ${lenders.length} lenders with websites`);
 
-    let scrapedData = [];
-
     for (const lender of lenders) {
-      const context = await browser.newContext();
-      const page = await context.newPage();
+      const page = await browser.newPage();
       const website = lender.website.startsWith("http") ? lender.website : `https://${lender.website}`;
       console.log(`🔹 Visiting ${website} for ${lender.name}`);
 
       try {
         await page.goto(website, { waitUntil: "domcontentloaded", timeout: 30000 });
 
-        // Scrape basic data
-        const loanType = await page.textContent(".loan-type-selector").catch(() => "N/A");
-        const stateAvailability = await page.textContent(".state-selector").catch(() => "N/A");
+        const loanType = await page.$eval(".loan-type-selector", el => el.innerText).catch(() => "N/A");
+        const stateAvailability = await page.$eval(".state-selector", el => el.innerText).catch(() => "N/A");
 
-        scrapedData.push({
-          lenderName: lender.name,
-          website: lender.website,
-          loanType,
-          stateAvailability,
-          maxLTV: "N/A",  // Placeholder
-          minFICO: "N/A",  // Placeholder
-        });
-
-        console.log(`✅ Scraped data for ${lender.name}`);
+        console.log(`✅ Scraped ${lender.name}: Loan Type - ${loanType}, States - ${stateAvailability}`);
       } catch (err) {
         console.error(`❌ Error scraping ${website}:`, err.message);
       } finally {
         await page.close();
       }
     }
-
-    console.log("✅ Scraper completed successfully.");
-    return scrapedData;
   } catch (err) {
-    console.error("❌ Error:", err.message);
+    console.error("❌ Scraper Error:", err.message);
     throw err;
   } finally {
     await browser.close();
     mongoose.connection.close();
-    console.log("🔹 Scraper finished and MongoDB connection closed");
+    console.log("🔹 Scraper finished, MongoDB connection closed.");
   }
 }
 
 module.exports = runScraper;
+
