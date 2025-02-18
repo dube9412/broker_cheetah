@@ -16,6 +16,7 @@ import AddPortfolio from "./components/AddPortfolio";
 import EditPortfolio from "./components/EditPortfolio";
 import AddGroundUp from "./components/AddGroundUp";
 import EditGroundUp from "./components/EditGroundUp";
+import HardMoneyClass from "./components/HardMoneyClass";
 
 // Pages
 import Home from "./pages/Home";
@@ -53,6 +54,8 @@ function App() {
               <Route path="/signup" element={<SignUp />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/manage-loan-programs/:lenderId" element={<ManageLoanPrograms />} />
+              <Route path="/hard-money-class" element={<HardMoneyClass />} />
+
 
               {/* Loan type & search */}
               <Route path="/select-loan-type" element={<LoanTypeSelection />} />

@@ -11,6 +11,7 @@ function Dashboard() {
         <li>
           <Link to="/select-loan-type">Lender Search</Link>
         </li>
+        <li><Link to="/hard-money-class"><button>Hard Money Lending Class</button></Link></li>
         <li>History (coming soon)</li>
         <li>Docs (coming soon)</li>
         <li>Pipeline (coming soon)</li>
