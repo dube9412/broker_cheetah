@@ -44,7 +44,7 @@ function ManageLoanPrograms() {
         await fetchPrograms(url, stateSetter);
       }
     };
-
+    fetchLender();
     fetchData();
   }, [lenderId]);
 
