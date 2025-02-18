@@ -64,36 +64,63 @@ function ManageLoanPrograms() {
   }, [lenderId]);
 
   // ✅ DELETE Function for Loan Programs
-  const handleDeleteLoanProgram = async (programId, type) => {
-    if (!window.confirm(`Are you sure you want to delete this ${type} loan program?`)) return;
-
+  const handleDeleteLoanProgram = async (programId, programType) => {
     try {
-      const loanTypeMapping = {
-        "Fix and Flip": "fix-and-flip-programs",
-        "DSCR": "dscr-programs",
-        "Ground Up": "ground-up-programs",
-        "Portfolio": "portfolio-programs",
-        "Stabilized Bridge": "stabilized-bridge-programs"
-      };
+        // ✅ Map programType to the correct API endpoint dynamically
+        const loanTypeMapping = {
+            "Fix and Flip": "fix-and-flip-programs",
+            "DSCR": "dscr-programs",
+            "Ground Up": "ground-up-programs",
+            "Portfolio": "portfolio-programs",
+            "Stabilized Bridge": "stabilized-bridge-programs"
+        };
 
-      const loanType = loanTypeMapping[type];
-      if (!loanType) throw new Error(`Unknown loan program type: ${type}`);
+        const baseUrl = loanTypeMapping[programType];
+        if (!baseUrl) {
+            console.error(`❌ Unknown loan program type: ${programType}`);
+            alert(`Unknown loan program type: ${programType}`);
+            return;
+        }
 
-      const response = await fetch(`/api/${loanType}/${programId}`, { method: "DELETE" });
+        // ✅ Construct DELETE request URL
+        const url = `/api/${baseUrl}/${programId}`;
 
-      if (response.ok) {
-        alert(`${type} loan program deleted successfully.`);
-        window.location.reload();
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        console.error("❌ Error deleting loan program:", errorData);
-        alert(`Failed to delete ${type} loan program: ${errorData.message || "Unknown error"}`);
-      }
+        // ✅ Send DELETE request
+        const response = await fetch(url, { method: "DELETE" });
+
+        if (response.ok) {
+            // ✅ Successfully deleted → Remove from state
+            alert(`${programType} loan program deleted successfully.`);
+            switch (programType) {
+                case "Fix and Flip":
+                    setFixAndFlipPrograms(prev => prev.filter(program => program._id !== programId));
+                    break;
+                case "DSCR":
+                    setDscrPrograms(prev => prev.filter(program => program._id !== programId));
+                    break;
+                case "Ground Up":
+                    setGroundUpPrograms(prev => prev.filter(program => program._id !== programId));
+                    break;
+                case "Portfolio":
+                    setPortfolioPrograms(prev => prev.filter(program => program._id !== programId));
+                    break;
+                case "Stabilized Bridge":
+                    setStabilizedBridgePrograms(prev => prev.filter(program => program._id !== programId));
+                    break;
+                default:
+                    console.warn(`⚠️ No state update needed for ${programType}`);
+            }
+        } else {
+            // ❌ Handle error response
+            const errorData = await response.json().catch(() => ({}));
+            console.error("❌ Error deleting loan program:", errorData.message || response.status);
+            alert(`Error deleting loan program: ${errorData.message || "Unknown error"}`);
+        }
     } catch (error) {
-      console.error("❌ Error deleting loan program:", error);
-      alert("An error occurred while deleting the loan program.");
+        console.error("❌ Error deleting loan program:", error);
+        alert("An error occurred while deleting the loan program.");
     }
-  };
+};
 
   return (
     <div>
