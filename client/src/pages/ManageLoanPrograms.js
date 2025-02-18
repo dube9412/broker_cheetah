@@ -66,59 +66,61 @@ function ManageLoanPrograms() {
   // ✅ DELETE Function for Loan Programs
   const handleDeleteLoanProgram = async (programId, programType) => {
     try {
-        // ✅ Map programType to the correct API endpoint dynamically
-        const loanTypeMapping = {
-            "Fix and Flip": "fix-and-flip-programs",
-            "DSCR": "dscr-programs",
-            "Ground Up": "ground-up-programs",
-            "Portfolio": "portfolio-programs",
-            "Stabilized Bridge": "stabilized-bridge-programs"
-        };
-
-        const baseUrl = loanTypeMapping[programType];
-        if (!baseUrl) {
-            console.error(`❌ Unknown loan program type: ${programType}`);
-            alert(`Unknown loan program type: ${programType}`);
-            return;
+        // Determine the correct endpoint based on programType
+        let endpoint;
+        switch (programType) {
+            case 'Fix and Flip':
+                endpoint = `/api/fix-and-flip-programs/${programId}`;
+                break;
+            case 'DSCR':
+                endpoint = `/api/dscr-programs/${programId}`;
+                break;
+            case 'Ground Up':
+                endpoint = `/api/ground-up-programs/${programId}`;
+                break;
+            case 'Stabilized Bridge':
+                endpoint = `/api/stabilized-bridge-programs/${programId}`;
+                break;
+            case 'Portfolio':
+                endpoint = `/api/portfolio-programs/${programId}`;
+                break;
+            default:
+                console.error("Unknown program type:", programType);
+                alert("Error deleting loan program. Unknown program type.");
+                return;
         }
 
-        // ✅ Construct DELETE request URL
-        const url = `/api/${baseUrl}/${programId}`;
-
-        // ✅ Send DELETE request
-        const response = await fetch(url, { method: "DELETE" });
+        const response = await fetch(endpoint, {
+            method: "DELETE",
+        });
 
         if (response.ok) {
-            // ✅ Successfully deleted → Remove from state
-            alert(`${programType} loan program deleted successfully.`);
+            // Update the state to remove the deleted program
             switch (programType) {
-                case "Fix and Flip":
-                    setFixAndFlipPrograms(prev => prev.filter(program => program._id !== programId));
+                case 'Fix and Flip':
+                    setFixAndFlipPrograms(prevPrograms => prevPrograms.filter(program => program._id!== programId));
                     break;
-                case "DSCR":
-                    setDscrPrograms(prev => prev.filter(program => program._id !== programId));
+                case 'DSCR':
+                    setDscrPrograms(prevPrograms => prevPrograms.filter(program => program._id!== programId));
                     break;
-                case "Ground Up":
-                    setGroundUpPrograms(prev => prev.filter(program => program._id !== programId));
+                case 'Ground Up':
+                    setGroundUpPrograms(prevPrograms => prevPrograms.filter(program => program._id!== programId));
                     break;
-                case "Portfolio":
-                    setPortfolioPrograms(prev => prev.filter(program => program._id !== programId));
+                case 'Stabilized Bridge':
+                    setStabilizedBridgePrograms(prevPrograms => prevPrograms.filter(program => program._id!== programId));
                     break;
-                case "Stabilized Bridge":
-                    setStabilizedBridgePrograms(prev => prev.filter(program => program._id !== programId));
+                case 'Portfolio':
+                    setPortfolioPrograms(prevPrograms => prevPrograms.filter(program => program._id!== programId));
                     break;
-                default:
-                    console.warn(`⚠️ No state update needed for ${programType}`);
             }
         } else {
-            // ❌ Handle error response
-            const errorData = await response.json().catch(() => ({}));
-            console.error("❌ Error deleting loan program:", errorData.message || response.status);
-            alert(`Error deleting loan program: ${errorData.message || "Unknown error"}`);
+            const errorData = await response.json();
+            console.error("Error deleting loan program:", errorData.message || response.status);
+            alert("Error deleting loan program. Please check the console for details.");
         }
     } catch (error) {
-        console.error("❌ Error deleting loan program:", error);
-        alert("An error occurred while deleting the loan program.");
+        console.error("Error deleting loan program:", error);
+        alert("Error deleting loan program. Please check the console for details.");
     }
 };
 
