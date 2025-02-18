@@ -61,6 +61,7 @@ function ManageLoanPrograms() {
     fetchLender();
     fetchData();
   }, [lenderId]);
+  }, [lenderId]);
 
   const handleDeleteLoanProgram = async (programId, type) => {
   if (!window.confirm(`Are you sure you want to delete this ${type} loan program?`)) return;
