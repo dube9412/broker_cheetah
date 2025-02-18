@@ -162,7 +162,13 @@ function ManageLoanPrograms() {
               <button>Edit</button>
             </Link>
             {" | "}
-            <button onClick={() => handleDeleteLoanProgram(program._id, program.type)}>Delete</button>
+            <button onClick={() => {
+    console.log(`Attempting to delete: ${program._id}, Type: ${program.type}`);
+    handleDeleteLoanProgram(program._id, program.type);
+}}>
+    Delete
+</button>
+
           </li>
         ))}
       </ul>
