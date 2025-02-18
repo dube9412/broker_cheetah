@@ -29,6 +29,20 @@ function ManageLoanPrograms() {
       console.error(`❌ Error fetching programs from ${url}:`, error);
     }
   };
+  useEffect(() => {
+    const fetchLender = async () => {
+        try {
+            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${lenderId}`);
+            if (response.ok) {
+                const data = await response.json();
+                setLender(data);
+            } else {
+                console.error(`❌ Failed to fetch lender: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("❌ Error fetching lender:", error);
+        }
+    };
 
   useEffect(() => {
     const fetchData = async () => {
