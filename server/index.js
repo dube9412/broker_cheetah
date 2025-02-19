@@ -58,8 +58,8 @@ app.use("/api/portfolio", portfolioRoutes);
 
 // ✅ Debug: List all available routes after mounting
 app.use((req, res, next) => {
-  console.log("✅ Route Hit:", req.method, req.originalUrl);
-  next();
+  console.log(`🔹 Incoming Request: ${req.method} ${req.originalUrl}`);
+    next();
 });
 
 // ✅ Log all available routes in the application

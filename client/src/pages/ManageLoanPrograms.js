@@ -65,64 +65,32 @@ function ManageLoanPrograms() {
 
   // ✅ DELETE Function for Loan Programs
   const handleDeleteLoanProgram = async (programId, programType) => {
+    if (!window.confirm("Are you sure you want to delete this loan program?")) return;
+
     try {
-        // Determine the correct endpoint based on programType
-        let endpoint;
-        switch (programType) {
-            case 'Fix and Flip':
-                endpoint = `/api/fix-and-flip-programs/${programId}`;
-                break;
-            case 'DSCR':
-                endpoint = `/api/dscr-programs/${programId}`;
-                break;
-            case 'Ground Up':
-                endpoint = `/api/ground-up-programs/${programId}`;
-                break;
-            case 'Stabilized Bridge':
-                endpoint = `/api/stabilized-bridge-programs/${programId}`;
-                break;
-            case 'Portfolio':
-                endpoint = `/api/portfolio-programs/${programId}`;
-                break;
-            default:
-                console.error("Unknown program type:", programType);
-                alert("Error deleting loan program. Unknown program type.");
-                return;
-        }
+        console.log(`🔹 Attempting to delete: ${programId}, Type: ${programType}`);
+
+        const endpoint = `/api/fix-and-flip-programs/${programId}`;
 
         const response = await fetch(endpoint, {
             method: "DELETE",
         });
 
         if (response.ok) {
-            // Update the state to remove the deleted program
-            switch (programType) {
-                case 'Fix and Flip':
-                    setFixAndFlipPrograms(prevPrograms => prevPrograms.filter(program => program._id!== programId));
-                    break;
-                case 'DSCR':
-                    setDscrPrograms(prevPrograms => prevPrograms.filter(program => program._id!== programId));
-                    break;
-                case 'Ground Up':
-                    setGroundUpPrograms(prevPrograms => prevPrograms.filter(program => program._id!== programId));
-                    break;
-                case 'Stabilized Bridge':
-                    setStabilizedBridgePrograms(prevPrograms => prevPrograms.filter(program => program._id!== programId));
-                    break;
-                case 'Portfolio':
-                    setPortfolioPrograms(prevPrograms => prevPrograms.filter(program => program._id!== programId));
-                    break;
-            }
+            console.log("✅ Loan program deleted.");
+            alert("Loan program deleted successfully.");
+            window.location.reload(); // Refresh page after deletion
         } else {
-            const errorData = await response.json();
-            console.error("Error deleting loan program:", errorData.message || response.status);
-            alert("Error deleting loan program. Please check the console for details.");
+            const errorData = await response.json().catch(() => ({}));
+            console.error("❌ Error deleting loan program:", errorData.message || response.status);
+            alert(`Failed to delete loan program: ${errorData.message || "Unknown error"}`);
         }
     } catch (error) {
-        console.error("Error deleting loan program:", error);
-        alert("Error deleting loan program. Please check the console for details.");
+        console.error("❌ Error deleting loan program:", error);
+        alert("An error occurred while deleting the loan program.");
     }
 };
+
 
   return (
     <div>
