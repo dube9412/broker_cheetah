@@ -127,23 +127,32 @@ router.put("/dscr-programs/:programId", async (req, res) => {
 });
 
 // ✅ DELETE: Remove a DSCR Loan Program
-router.delete("/dscr-programs/:programId", async (req, res) => {
-  try {
-    const deletedProgram = await DSCRLoan.findByIdAndDelete(req.params.programId);
-    if (!deletedProgram) {
-      return res.status(404).json({ message: "Loan program not found" });
+const mongoose = require("mongoose");
+
+router.delete("/:lenderId/dscr-programs/:programId", async (req, res) => {
+    console.log("🛠️ DELETE Request Received for DSCR ID:", req.params.programId, "from Lender:", req.params.lenderId);
+
+    try {
+        const programId = new mongoose.Types.ObjectId(req.params.programId); // Force conversion to ObjectId
+
+        console.log("🔎 Checking if program exists in MongoDB...");
+        const program = await DSCRLoan.findById(programId);
+
+        if (!program) {
+            console.error("❌ Loan program not found in DB:", req.params.programId);
+            return res.status(404).json({ error: "Loan program not found in database" });
+        }
+
+        console.log("✅ Loan program found. Proceeding with deletion:", program);
+        await DSCRLoan.findByIdAndDelete(programId);
+
+        console.log("✅ Loan program successfully deleted.");
+        return res.status(200).json({ success: true, message: "Loan program deleted." });
+
+    } catch (error) {
+        console.error("❌ Error deleting DSCR Loan Program:", error);
+        return res.status(500).json({ error: "Server error while deleting loan program" });
     }
-
-    await Lender.updateOne(
-      { dscrPrograms: req.params.programId },
-      { $pull: { dscrPrograms: req.params.programId } }
-    );
-
-    res.status(200).json({ success: true, message: "Loan program deleted." });  // ✅ Always return a JSON response
-  } catch (error) {
-    console.error("❌ Error deleting DSCR Loan Program:", error);
-    res.status(500).json({ message: "Failed to delete loan program" });
-  }
 });
 
 

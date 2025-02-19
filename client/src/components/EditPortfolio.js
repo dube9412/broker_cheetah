@@ -43,6 +43,31 @@ function EditPortfolio() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this loan program?")) return;
+
+    try {
+        console.log(`🔹 Deleting loan program: ${programId}`);
+
+        const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/portfolio/${lenderId}/portfolio-programs/${programId}`, {
+            method: "DELETE",
+        });
+
+        if (response.ok) {
+            console.log("✅ Loan program deleted.");
+            alert("Loan program deleted successfully.");
+            navigate(`/manage-loan-programs/${lenderId}`);
+        } else {
+            const errorData = await response.json().catch(() => ({}));  
+            console.error("❌ Error deleting loan program:", errorData.message || response.status);
+            alert(`Failed to delete loan program: ${errorData.message || "Unknown error"}`);
+        }
+    } catch (error) {
+        console.error("❌ Error deleting loan program:", error);
+        alert("An error occurred while deleting the loan program.");
+    }
+};
+
   if (!program) return <p>Loading...</p>;
 
   return (
@@ -61,7 +86,10 @@ function EditPortfolio() {
         <label>Portfolio DSCR Minimum:</label>
         <input type="number" name="portfolioDscrMin" value={program.portfolioDscrMin} onChange={handleChange} />
 
-        <button onClick={handleSave} style={{ marginTop: "10px" }}>Save Changes</button>
+        <button onClick={handleSave} style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>Save Changes</button>
+        <button onClick={handleDelete} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>   Delete Loan Program </button>{" | "}
+        <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>Cancel</button>
+            
       </form>
     </div>
   );
