@@ -107,36 +107,34 @@ router.put("/fix-and-flip-programs/:programId", async (req, res) => {
 });
 
 // ✅ DELETE: Remove a Fix and Flip Loan Program
-router.delete("/fix-and-flip-programs/:programId", async (req, res) => {
-  try {
-      console.log("🛠️ DELETE Request Received:", req.params.programId);
+const mongoose = require("mongoose");
 
-      // Convert ID to ObjectId for safety
-      const programId = new mongoose.Types.ObjectId(req.params.programId);
+router.delete("/:lenderId/fix-and-flip-programs/:programId", async (req, res) => {
+    console.log("🛠️ DELETE Request Received for Fix and Flip ID:", req.params.programId, "from Lender:", req.params.lenderId);
 
-      // Attempt to find the program before deletion
-      const program = await FixAndFlipLoan.findById(programId);
-      if (!program) {
-          console.error("❌ Loan program not found:", req.params.programId);
-          return res.status(404).json({ error: "Loan program not found" });
-      }
+    try {
+        const programId = new mongoose.Types.ObjectId(req.params.programId); // Force conversion to ObjectId
 
-      // Delete the program
-      await FixAndFlipLoan.findByIdAndDelete(programId);
-      console.log("✅ Loan program successfully deleted.");
+        console.log("🔎 Checking if program exists in MongoDB...");
+        const program = await FixAndFlipLoan.findById(programId);
 
-      // ✅ Remove reference from the lender
-    await Lender.updateOne(
-      { fixAndFlipPrograms: req.params.programId },
-      { $pull: { fixAndFlipPrograms: req.params.programId } }
-    );
+        if (!program) {
+            console.error("❌ Loan program not found in DB:", req.params.programId);
+            return res.status(404).json({ error: "Loan program not found in database" });
+        }
 
-      return res.status(200).json({ success: true, message: "Loan program deleted." });
-  } catch (error) {
-      console.error("❌ Error deleting loan program:", error);
-      return res.status(500).json({ error: "Server error while deleting loan program" });
-  }
+        console.log("✅ Loan program found. Proceeding with deletion:", program);
+        await FixAndFlipLoan.findByIdAndDelete(programId);
+
+        console.log("✅ Loan program successfully deleted.");
+        return res.status(200).json({ success: true, message: "Loan program deleted." });
+
+    } catch (error) {
+        console.error("❌ Error deleting Fix and Flip Loan Program:", error);
+        return res.status(500).json({ error: "Server error while deleting loan program" });
+    }
 });
+
     
 
   
