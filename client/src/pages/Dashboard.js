@@ -12,6 +12,7 @@ function Dashboard() {
           <Link to="/select-loan-type">Lender Search</Link>
         </li>
         <li><Link to="/hard-money-class"><button>Hard Money Lending Class</button></Link></li>
+        <Link to="/fix-and-flip-calculator"><button className="bg-blue-500 text-white px-4 py-2 rounded">Fix & Flip Calculator</button></Link>
         <li>History (coming soon)</li>
         <li>Docs (coming soon)</li>
         <li>Pipeline (coming soon)</li>

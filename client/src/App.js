@@ -55,7 +55,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/manage-loan-programs/:lenderId" element={<ManageLoanPrograms />} />
               <Route path="/hard-money-class" element={<HardMoneyClass />} />
-
+              <Route path="/fix-and-flip-calculator" element={<FixAndFlipCalculator />} />
 
               {/* Loan type & search */}
               <Route path="/select-loan-type" element={<LoanTypeSelection />} />

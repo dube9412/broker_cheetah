@@ -105,29 +105,33 @@ router.put("/ground-up-programs/:programId", async (req, res) => {
 });
 
 // ✅ DELETE: Remove a Ground Up Loan Program
-router.delete("/ground-up-programs/:programId", async (req, res) => {
-  try {
-    console.log(`🔹 Deleting Ground Up Loan Program: ${req.params.programId}`) ;
+const mongoose = require("mongoose");
 
-    const deletedProgram = await GroundUpLoan.findByIdAndDelete(req.params.programId);
-    if (!deletedProgram) {
-      
-    console.error("❌ Error deleting Ground Up program:", error);
-    res.status(500).json({ message: "Failed to delete program." });
-  }
+router.delete("/:lenderId/ground-up-programs/:programId", async (req, res) => {
+    console.log("🛠️ DELETE Request Received for Ground Up ID:", req.params.programId, "from Lender:", req.params.lenderId);
 
-  await Lender.updateOne(
-    { groundUpPrograms: req.params.programId },
-    { $pull: { groundUpPrograms: req.params.programId } }
-  );
+    try {
+        const programId = new mongoose.Types.ObjectId(req.params.programId); // Force conversion to ObjectId
 
-  console.log("✅ Ground Up Loan Program deleted:", deletedProgram);
-  res.json({ success: true, message: "Loan program deleted." });
-  } catch (error) {
-    console.error("❌ Error deleting Ground Up program:", error);
-    res.status(500).json({ message: "Failed to delete program." });
-  }
-}); 
+        console.log("🔎 Checking if program exists in MongoDB...");
+        const program = await GroundUpLoan.findById(programId);
+
+        if (!program) {
+            console.error("❌ Loan program not found in DB:", req.params.programId);
+            return res.status(404).json({ error: "Loan program not found in database" });
+        }
+
+        console.log("✅ Loan program found. Proceeding with deletion:", program);
+        await GroundUpLoan.findByIdAndDelete(programId);
+
+        console.log("✅ Loan program successfully deleted.");
+        return res.status(200).json({ success: true, message: "Loan program deleted." });
+
+    } catch (error) {
+        console.error("❌ Error deleting DSCR Loan Program:", error);
+        return res.status(500).json({ error: "Server error while deleting loan program" });
+    }
+});
 
 
 module.exports = router;
