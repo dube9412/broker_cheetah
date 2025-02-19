@@ -27,6 +27,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import LoanTypeSelection from "./pages/LoanTypeSelection";
 import FixAndFlipSearch from "./pages/FixAndFlipSearch";
 import ManageLoanPrograms from "./pages/ManageLoanPrograms";
+import FixAndFlipCalculator from "./pages/FixAndFlipCalculator";
 
 // Admin-only
 import AddLender from "./components/AddLender";
