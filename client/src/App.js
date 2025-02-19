@@ -27,7 +27,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import LoanTypeSelection from "./pages/LoanTypeSelection";
 import FixAndFlipSearch from "./pages/FixAndFlipSearch";
 import ManageLoanPrograms from "./pages/ManageLoanPrograms";
-import FixAndFlipCalculator from "./pages/FixAndFlipCalculator";
+import FixAndFlipCalc from "./pages/FixAndFlipCalc";
 
 // Admin-only
 import AddLender from "./components/AddLender";
@@ -56,7 +56,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/manage-loan-programs/:lenderId" element={<ManageLoanPrograms />} />
               <Route path="/hard-money-class" element={<HardMoneyClass />} />
-              <Route path="/fix-and-flip-calculator" element={<FixAndFlipCalculator />} />
+              <Route path="/fix-and-flip-calculator" element={<FixAndFlipCalc />} />
 
               {/* Loan type & search */}
               <Route path="/select-loan-type" element={<LoanTypeSelection />} />
