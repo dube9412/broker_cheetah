@@ -70,11 +70,26 @@ function ManageLoanPrograms() {
     try {
         console.log(`🔹 Attempting to delete: ${programId}, Type: ${programType}`);
 
-        const endpoint = `/api/fix-and-flip/${lenderId}/fix-and-flip-programs/${programId}`;
-
-        const response = await fetch(endpoint, {
-            method: "DELETE",
-        });
+        const loanTypeMapping = {
+          "Fix and Flip": "fix-and-flip",
+          "DSCR": "dscr",
+          "Ground Up": "ground-up",
+          "Portfolio": "portfolio",
+          "Stabilized Bridge": "stabilized-bridge"
+      };
+      
+      const loanTypePath = loanTypeMapping[programType]; // Convert program type to correct API path
+      
+      if (!loanTypePath) {
+          console.error("❌ Unknown loan program type:", programType);
+          alert("Error deleting loan program. Unknown program type.");
+          return;
+      }
+      
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/${loanTypePath}/${lenderId}/${loanTypePath}-programs/${programId}`, {
+          method: "DELETE",
+      });
+      
 
         if (response.ok) {
             console.log("✅ Loan program deleted.");
