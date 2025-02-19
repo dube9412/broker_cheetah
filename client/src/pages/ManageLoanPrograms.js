@@ -70,7 +70,7 @@ function ManageLoanPrograms() {
     try {
         console.log(`🔹 Attempting to delete: ${programId}, Type: ${programType}`);
 
-        const endpoint = `/api/fix-and-flip-programs/${programId}`;
+        const endpoint = `/api/fix-and-flip/${lenderId}/fix-and-flip-programs/${programId}`;
 
         const response = await fetch(endpoint, {
             method: "DELETE",

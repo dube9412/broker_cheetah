@@ -50,11 +50,11 @@ if (scraperRoutes) {
 app.use("/api/auth", authRoutes);
 app.use("/api/lenders", lenderRoutes);
 app.use("/api/loan-programs", loanProgramRoutes);
-app.use("/api/fix-and-flip-programs", fixAndFlipRoutes); 
-app.use("/api/dscr-programs", dscrRoutes);                
-app.use("/api/ground-up-programs", groundUpRoutes);
-app.use("/api/stabilized-bridge-programs", stabilizedBridgeRoutes);
-app.use("/api/portfolio-programs", portfolioRoutes);
+app.use("/api/fix-and-flip", fixAndFlipRoutes); 
+app.use("/api/dscr", dscrRoutes);                
+app.use("/api/ground-up", groundUpRoutes);
+app.use("/api/stabilized-bridge", stabilizedBridgeRoutes);
+app.use("/api/portfolio", portfolioRoutes);
 
 // ✅ Debug: List all available routes after mounting
 app.use((req, res, next) => {
