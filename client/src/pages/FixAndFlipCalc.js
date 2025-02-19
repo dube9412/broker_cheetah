@@ -33,8 +33,8 @@ function FixAndFlipCalculator() {
     const totalInvestment = loanAmount + closingCosts; // B23
     const profit = inputs.targetSalePrice - totalInvestment; // B25
     const profitMargin = (profit / inputs.targetSalePrice) * 100; // B26
-    const totalLTC = totalInvestment / (inputs.purchasePrice + totalInvestment); // C16
-    const arv = totalInvestment / inputs.targetSalePrice; // C17
+    const totalLTC = (totalInvestment / (inputs.purchasePrice + totalInvestment)) * 100; // C16
+    const arv = (totalInvestment / inputs.targetSalePrice) * 100; // C17
 
     return (
         <div className="container mx-auto p-5">
@@ -70,8 +70,8 @@ function FixAndFlipCalculator() {
             <p>Total Investment: ${totalInvestment.toLocaleString()}</p>
             <p>Profit: ${profit.toLocaleString()}</p>
             <p>Profit Margin: {profitMargin.toFixed(2)}%</p>
-            <p>Total LTC: {totalLTC.toFixed(2)} (Must be <= {inputs.totalLoanToCost}%)</p>
-            <p>ARV: {arv.toFixed(2)} (Must be <= {inputs.arvLimit}%)</p>
+            <p>Total LTC: {totalLTC.toFixed(2)}% (Must be &le; {inputs.totalLoanToCost}%)</p>
+            <p>ARV: {arv.toFixed(2)}% (Must be &le; {inputs.arvLimit}%)</p>
         </div>
     );
 }
