@@ -93,7 +93,7 @@ function EditFixAndFlip() {
         try {
             console.log(`🔹 Deleting loan program: ${programId}`);
     
-            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip-programs/${programId}`, {
+            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/${lenderId}/fix-and-flip-programs/${programId}`, {
                 method: "DELETE",
             });
     
@@ -170,10 +170,7 @@ function EditFixAndFlip() {
 
             <div style={{ textAlign: "center", marginTop: "20px" }}>
                 <button onClick={handleSave} style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>Save Changes</button>
-                <button onClick={handleDelete} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>
-    Delete Loan Program
-</button>
-
+                <button onClick={handleDelete} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>   Delete Loan Program </button>{" | "}
                 <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>Cancel</button>
             </div>
         </div>
