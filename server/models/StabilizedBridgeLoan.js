@@ -1,24 +1,26 @@
 const mongoose = require("mongoose");
 
 const StabilizedBridgeLoanSchema = new mongoose.Schema({
+  name: { type: String, required: true },
   lender: { type: mongoose.Schema.Types.ObjectId, ref: "Lender", required: true },
-  name: { type: String, default: "Stabilized Bridge Loan" },
-  maxLTV: Number,
-  minLoanAmount: Number,
-  maxLoanAmount: Number,
-  minDSCR: Number,
-  loanTerm: Number,
-  interestRateRange: String,
-  stateAvailability: [String],
-  propertyTypesAllowed: [String],
-  prepaymentPenalty: String,
+  type: { type: String, required: true, default: "Stabilized Bridge" },
+  loanRange: {
+    min: { type: Number, required: false },
+    max: { type: Number, required: false },
+  },
+  propertyTypes: [{ type: String, enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"], required: false }],
+  termMonths: { type: Number, required: false },
   tiers: [
     {
-      minFICO: Number,
-      maxLTV: Number,
-      minDSCR: Number,
-    },
+      minFICO: { type: Number, required: false },
+      maxLTV: { type: Number, required: false },
+      minExperience: { type: Number, required: false },      
+      minDSCR: { type: Number, required: false },
+    }
   ],
-});
+},
+{ timestamps: true }
+);
 
-module.exports = mongoose.model("StabilizedBridgeLoan", StabilizedBridgeLoanSchema);
+const StabilizedBridgeLoan = mongoose.model("StabilizedBridgeLoan", StabilizedBridgeLoanSchema);
+module.exports = StabilizedBridgeLoan;
