@@ -30,6 +30,7 @@ import ManageLoanPrograms from "./pages/ManageLoanPrograms";
 import FixAndFlipCalc from "./pages/FixAndFlipCalc";
 import HardMoneyClass from "./pages/HardMoneyClass";
 import LessonPage from "./pages/LessonPage";
+import lessons from "./data/lessons";
 import Module1 from "./pages/modules/Module1";
 import Module2 from "./pages/modules/Module2";
 import Module3 from "./pages/modules/Module3";
@@ -63,9 +64,9 @@ function App() {
               <Route path="/manage-loan-programs/:lenderId" element={<ManageLoanPrograms />} />
               <Route path="/hard-money-class" element={<HardMoneyClass />} />
               <Route path="/hard-money-class/:lessonId" element={<LessonPage />} />
-              <Route path="/module1" element={<Module1 />} />
-              <Route path="/module2" element={<Module2 />} />
-              <Route path="/module3" element={<Module3 />} />
+              {lessons.map((lesson) => (
+    <Route key={lesson.id} path={`/hard-money-class/${lesson.id}`} element={<ModulePage lesson={lesson} />} />
+  ))}
               <Route path="/fix-and-flip-calculator" element={<FixAndFlipCalc />} />
 
               {/* Loan type & search */}
