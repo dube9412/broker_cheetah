@@ -16,7 +16,7 @@ import AddPortfolio from "./components/AddPortfolio";
 import EditPortfolio from "./components/EditPortfolio";
 import AddGroundUp from "./components/AddGroundUp";
 import EditGroundUp from "./components/EditGroundUp";
-import HardMoneyClass from "./components/HardMoneyClass";
+
 
 // Pages
 import Home from "./pages/Home";
@@ -28,6 +28,12 @@ import LoanTypeSelection from "./pages/LoanTypeSelection";
 import FixAndFlipSearch from "./pages/FixAndFlipSearch";
 import ManageLoanPrograms from "./pages/ManageLoanPrograms";
 import FixAndFlipCalc from "./pages/FixAndFlipCalc";
+import HardMoneyClass from "./pages/HardMoneyClass";
+import LessonPage from "./pages/LessonPage";
+import Module1 from "./pages/modules/Module1";
+import Module2 from "./pages/modules/Module2";
+import Module3 from "./pages/modules/Module3";
+
 
 // Admin-only
 import AddLender from "./components/AddLender";
@@ -56,6 +62,10 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/manage-loan-programs/:lenderId" element={<ManageLoanPrograms />} />
               <Route path="/hard-money-class" element={<HardMoneyClass />} />
+              <Route path="/hard-money-class/:lessonId" element={<LessonPage />} />
+              <Route path="/module1" element={<Module1 />} />
+              <Route path="/module2" element={<Module2 />} />
+              <Route path="/module3" element={<Module3 />} />
               <Route path="/fix-and-flip-calculator" element={<FixAndFlipCalc />} />
 
               {/* Loan type & search */}

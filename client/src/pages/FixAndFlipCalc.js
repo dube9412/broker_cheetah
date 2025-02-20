@@ -4,6 +4,7 @@ function FixAndFlipCalculator() {
     const [inputs, setInputs] = useState({
         timeToSold: 0, // B3
         purchasePrice: 0, // B4
+        rehabCosts: 0, // B5
         targetSalePrice: 0, // B6
         loanToCost: 90, // E3 (Displayed as whole number, math done internally)
         rehabPercentage: 1, // E4
@@ -24,17 +25,34 @@ function FixAndFlipCalculator() {
         setInputs({ ...inputs, [name]: parseFloat(value) || 0 });
     };
 
-    // Calculations
-    const loanAmount = inputs.purchasePrice * (inputs.loanToCost / 100); // B8
-    const cashToClose = inputs.purchasePrice * ((100 - inputs.loanToCost) / 100); // B10
-    const originationFee = loanAmount * (inputs.origination / 100); // B11
-    const transferTaxAmount = loanAmount * (inputs.transferTax / 100); // B12
-    const closingCosts = cashToClose + originationFee + transferTaxAmount; // B14
-    const totalInvestment = loanAmount + closingCosts; // B23
-    const profit = inputs.targetSalePrice - totalInvestment; // B25
-    const profitMargin = (profit / inputs.targetSalePrice) * 100; // B26
-    const totalLTC = (totalInvestment / (inputs.purchasePrice + totalInvestment)) * 100; // C16
-    const arv = (totalInvestment / inputs.targetSalePrice) * 100; // C17
+    // Function to calculate loan amount
+    const calculateLoanAmount = () => {
+        const loanToCostAmount = (inputs.purchasePrice + inputs.rehabCosts) * (inputs.loanToCost / 100);
+        const loanToArvAmount = inputs.targetSalePrice * (inputs.arvLimit / 100);
+        return Math.min(loanToCostAmount, loanToArvAmount);
+    };
+
+    // Function to calculate total investment
+    const calculateTotalInvestment = () => {
+        return (
+            inputs.purchasePrice +
+            inputs.rehabCosts +
+            calculateLoanAmount() * (inputs.origination / 100) +
+            inputs.purchasePrice * (inputs.transferTax / 100) +
+            (((calculateLoanAmount() * inputs.interestRate) / 12) * inputs.timeToSold) +
+            (inputs.utilitiesPerMonth * inputs.timeToSold)
+        );
+    };
+
+    // Function to calculate profit
+    const calculateProfit = () => {
+        return inputs.targetSalePrice - calculateTotalInvestment();
+    };
+
+    // Function to calculate ROI
+    const calculateROI = () => {
+        return (calculateProfit() / calculateTotalInvestment()) * 100;
+    };
 
     return (
         <div className="container mx-auto p-5">
@@ -49,6 +67,10 @@ function FixAndFlipCalculator() {
                     <input type="number" name="purchasePrice" value={inputs.purchasePrice} onChange={handleChange} className="border p-2 w-full" />
                 </div>
                 <div>
+                    <label>Rehab Costs ($)</label>
+                    <input type="number" name="rehabCosts" value={inputs.rehabCosts} onChange={handleChange} className="border p-2 w-full" />
+                </div>
+                <div>
                     <label>Target Sale Price ($)</label>
                     <input type="number" name="targetSalePrice" value={inputs.targetSalePrice} onChange={handleChange} className="border p-2 w-full" />
                 </div>
@@ -56,25 +78,16 @@ function FixAndFlipCalculator() {
                     <label>Loan to Cost (%)</label>
                     <input type="number" name="loanToCost" value={inputs.loanToCost} onChange={handleChange} className="border p-2 w-full" />
                 </div>
-                <div>
-                    <label>Interest Rate (%)</label>
-                    <input type="number" name="interestRate" value={inputs.interestRate} onChange={handleChange} className="border p-2 w-full" />
-                </div>
             </div>
             <h2 className="text-lg font-bold mt-5">Results</h2>
-            <p>Loan Amount: ${loanAmount.toLocaleString()}</p>
-            <p>Cash to Close: ${cashToClose.toLocaleString()}</p>
-            <p>Origination Fee: ${originationFee.toLocaleString()}</p>
-            <p>Transfer Tax: ${transferTaxAmount.toLocaleString()}</p>
-            <p>Closing Costs: ${closingCosts.toLocaleString()}</p>
-            <p>Total Investment: ${totalInvestment.toLocaleString()}</p>
-            <p>Profit: ${profit.toLocaleString()}</p>
-            <p>Profit Margin: {profitMargin.toFixed(2)}%</p>
-            <p>Total LTC: {totalLTC.toFixed(2)}% (Must be &le; {inputs.totalLoanToCost}%)</p>
-            <p>ARV: {arv.toFixed(2)}% (Must be &le; {inputs.arvLimit}%)</p>
+            <p>Loan Amount: ${calculateLoanAmount().toLocaleString()}</p>
+            <p>Total Investment: ${calculateTotalInvestment().toLocaleString()}</p>
+            <p>Profit: ${calculateProfit().toLocaleString()}</p>
+            <p>ROI: {calculateROI().toFixed(2)}%</p>
         </div>
     );
 }
 
 export default FixAndFlipCalculator;
+
 
