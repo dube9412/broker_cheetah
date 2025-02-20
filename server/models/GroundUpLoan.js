@@ -1,26 +1,28 @@
 const mongoose = require("mongoose");
 
 const GroundUpLoanSchema = new mongoose.Schema({
+  name: { type: String, required: true },
   lender: { type: mongoose.Schema.Types.ObjectId, ref: "Lender", required: true },
-  name: { type: String, default: "Ground Up Construction Loan" },
-  minFICO: { type: Number, required: true },
-  experienceRequired: { type: Number, required: true },  // More explicit name
-  maxLTV: { type: Number, required: true },
-  maxLTC: { type: Number },
-  minLoanAmount: { type: Number, required: true },
-  maxLoanAmount: { type: Number },
-  termMonths: { type: Number, required: true },
-  constructionBudget: { type: mongoose.Schema.Types.Decimal128 },
-  propertyTypesAllowed: { type: [String], default: [] },  // Default to an empty array
-  tiers: [
+  type: { type: String, required: true, default: "Ground Up" },
+  loanRange: {
+    min: { type: Number, required: false },
+    max: { type: Number, required: false },
+  },
+  propertyTypes: [{ type: String, enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"], required: false }],
+  termMonths: { type: Number, required: false },
+  constructionBudget: { type: Number, required: false },
+   tiers: [
     {
-      minFICO: Number,
-      maxLTV: Number,
-      maxLTC: Number,
-      experience: Number,  // Consider `experienceMonths` for consistency
-    },
+      minFICO: { type: Number, required: false },
+      minExperience: { type: Number, required: false },
+      maxLTV: { type: Number, required: false },
+      maxLTC: { type: Number, required: false },
+      },
   ],
-});
+},
+{ timestamps: true }
+);
 
-module.exports = mongoose.model("GroundUpLoan", GroundUpLoanSchema);
+const GroundUpLoan = mongoose.model("GroundUpLoan", GroundUpLoanSchema);
+module.exports = GroundUpLoan;
 

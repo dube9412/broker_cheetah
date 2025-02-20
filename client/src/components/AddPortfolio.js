@@ -7,15 +7,13 @@ function AddPortfolio() {
   const [lender, setLender] = useState(null);
   const [numTiers, setNumTiers] = useState(1); // Default to 1 tier
   const [tiers, setTiers] = useState([{ minFICO: "", maxLTV: "", maxPortfolioSize: "" }]);
-  const [program, setProgram] = useState({
-    name: "Portfolio Loan",
-    minLoanAmount: "",
-    maxLoanAmount: "",
-    minFICO: "",
-    loanTerm: "",
-    maxPortfolioSize: "",
-    propertyTypesAllowed: "",
-  });
+  const [loanRange, setLoanRange] = useState({ min: "", max: "" });
+  const [propertyTypes, setPropertyTypes] = useState([]);
+  const [loanTerm, setLoanTerm] = useState("");
+
+  const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
+
+ 
 
   useEffect(() => {
     const fetchLender = async () => {
@@ -30,11 +28,6 @@ function AddPortfolio() {
     fetchLender();
   }, [lenderId]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProgram((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleNumTiersChange = (e) => {
     const newNumTiers = parseInt(e.target.value) || 1;
     setNumTiers(newNumTiers);
@@ -42,7 +35,7 @@ function AddPortfolio() {
       const newTiers = [...prevTiers];
       if (newNumTiers > prevTiers.length) {
         for (let i = prevTiers.length; i < newNumTiers; i++) {
-          newTiers.push({ minFICO: "", maxLTV: "", maxPortfolioSize: "" });
+          newTiers.push({ minFICO: "", maxLTV: "", minExperience: "", maxPortfolioSize: "" });
         }
       } else {
         newTiers.length = newNumTiers;
@@ -59,21 +52,32 @@ function AddPortfolio() {
     });
   };
 
+  const handlePropertyTypeChange = (type) => {
+    setPropertyTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formattedProgram = {
-      ...program,
-      propertyTypesAllowed: program.propertyTypesAllowed
-        ? program.propertyTypesAllowed.split(",").map((type) => type.trim())
-        : [],
-      tiers,
+    const formattedLoanRange = {
+      min: loanRange.min ? parseInt(loanRange.min) : undefined,
+      max: loanRange.max ? parseInt(loanRange.max) : undefined,
     };
 
     try {
       const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/portfolio/${lenderId}/portfolio-programs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formattedProgram),
+        body: JSON.stringify({
+          name: "Portfolio Loan Program",
+          type: "portfolio",
+          lender: lenderId,
+          loanRange: formattedLoanRange,
+          propertyTypes: propertyTypes,
+          loanTerm,
+          tiers,
+        }),
       });
 
       const data = await response.json();
@@ -96,25 +100,7 @@ function AddPortfolio() {
       </h2>
 
       <form onSubmit={handleSubmit}>
-        <label>Minimum Loan Amount:</label>
-        <input type="number" name="minLoanAmount" value={program.minLoanAmount} onChange={handleChange} style={{ width: "100%", marginBottom: "10px" }} />
-
-        <label>Maximum Loan Amount:</label>
-        <input type="number" name="maxLoanAmount" value={program.maxLoanAmount} onChange={handleChange} style={{ width: "100%", marginBottom: "10px" }} />
-
-        <label>Minimum FICO:</label>
-        <input type="number" name="minFICO" value={program.minFICO} onChange={handleChange} style={{ width: "100%", marginBottom: "10px" }} />
-
-        <label>Loan Term (Months):</label>
-        <input type="number" name="loanTerm" value={program.loanTerm} onChange={handleChange} style={{ width: "100%", marginBottom: "10px" }} />
-
-        <label>Maximum Portfolio Size:</label>
-        <input type="number" name="maxPortfolioSize" value={program.maxPortfolioSize} onChange={handleChange} style={{ width: "100%", marginBottom: "10px" }} />
-
-        <label>Property Types Allowed (comma-separated):</label>
-        <input type="text" name="propertyTypesAllowed" value={program.propertyTypesAllowed} onChange={handleChange} style={{ width: "100%", marginBottom: "20px" }} />
-
-        <label>Number of Tiers:</label>
+      <label>Number of Tiers:</label>
         <select value={numTiers} onChange={handleNumTiersChange} style={{ width: "100%", marginBottom: "10px" }}>
           {[1, 2, 3, 4, 5, 6].map((num) => (
             <option key={num} value={num}>
@@ -132,10 +118,34 @@ function AddPortfolio() {
             <label>Maximum LTV (%):</label>
             <input type="number" value={tier.maxLTV} onChange={(e) => handleTierChange(index, "maxLTV", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
 
+            <label>Minimum Experience (in months):</label>
+            <input type="number" value={tier.minExperience} onChange={(e) => handleTierChange(index, "minExperience", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
             <label>Maximum Portfolio Size:</label>
             <input type="number" value={tier.maxPortfolioSize} onChange={(e) => handleTierChange(index, "maxPortfolioSize", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
           </div>
         ))}
+        <label>Loan Range:</label>
+          <input type="number" value={loanRange.min} onChange={(e) => setLoanRange({ ...loanRange, min: e.target.value })} style={{ width: "45%", marginRight: "10px" }} />
+          <input type="number" value={loanRange.max} onChange={(e) => setLoanRange({ ...loanRange, max: e.target.value })} style={{ width: "45%" }} />
+        <label>Property Types:</label>
+        <div>
+  {PROPERTY_TYPES.map((type) => (
+    <label key={type}>
+      <input
+        type="checkbox"
+        value={type}
+        checked={propertyTypes.includes(type)}
+        onChange={() => handlePropertyTypeChange(type)} // ✅ Using the function here
+      />
+      {type}
+    </label>
+  ))}
+</div>
+<label>Loan Term:</label>
+        <input type="text" value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+        <br />
+
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <button type="submit" style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>

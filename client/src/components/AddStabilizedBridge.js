@@ -7,17 +7,12 @@ function AddStabilizedBridge() {
   const [lender, setLender] = useState(null);
   const [numTiers, setNumTiers] = useState(1);
   const [tiers, setTiers] = useState([{ minFICO: "", maxLTV: "", minDSCR: "" }]);
-  const [program, setProgram] = useState({
-    name: "Stabilized Bridge Loan",
-    minLoanAmount: "",
-    maxLoanAmount: "",
-    minDSCR: "",
-    loanTerm: "",
-    interestRateRange: "",
-    stateAvailability: "",
-    propertyTypesAllowed: "",
-    prepaymentPenalty: "",
-  });
+  
+  const [loanRange, setLoanRange] = useState({ min: "", max: "" });
+  const [propertyTypes, setPropertyTypes] = useState([]);
+  const [loanTerm, setLoanTerm] = useState("");
+
+  const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
 
   useEffect(() => {
     const fetchLender = async () => {
@@ -32,11 +27,6 @@ function AddStabilizedBridge() {
     fetchLender();
   }, [lenderId]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProgram((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleNumTiersChange = (e) => {
     const newNumTiers = parseInt(e.target.value) || 1;
     setNumTiers(newNumTiers);
@@ -44,7 +34,7 @@ function AddStabilizedBridge() {
       const newTiers = [...prevTiers];
       if (newNumTiers > prevTiers.length) {
         for (let i = prevTiers.length; i < newNumTiers; i++) {
-          newTiers.push({ minFICO: "", maxLTV: "", minDSCR: "" });
+          newTiers.push({ minFICO: "", maxLTV: "", minExperience: "", minDSCR: "" });
         }
       } else {
         newTiers.length = newNumTiers;
@@ -61,20 +51,32 @@ function AddStabilizedBridge() {
     });
   };
 
+  const handlePropertyTypeChange = (type) => {
+    setPropertyTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formattedProgram = {
-      ...program,
-      stateAvailability: program.stateAvailability ? program.stateAvailability.split(",").map((state) => state.trim()) : [],
-      propertyTypesAllowed: program.propertyTypesAllowed ? program.propertyTypesAllowed.split(",").map((type) => type.trim()) : [],
-      tiers,
+    const formattedLoanRange = {
+      min: loanRange.min ? parseInt(loanRange.min) : undefined,
+      max: loanRange.max ? parseInt(loanRange.max) : undefined,
     };
 
     try {
       const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/stabilized-bridge/${lenderId}/stabilized-bridge-programs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formattedProgram),
+        body: JSON.stringify({
+          name: "New Stabilized Bridge Program",
+          type: "stabilized-bridge",
+          lender: lenderId,
+          loanRange: formattedLoanRange,
+          loanTerm: parseInt(loanTerm),
+          propertyTypes,
+          tiers,
+        }),
       });
 
       const data = await response.json();
@@ -97,31 +99,7 @@ function AddStabilizedBridge() {
       </h2>
 
       <form onSubmit={handleSubmit}>
-        <label>Minimum Loan Amount:</label>
-        <input type="number" name="minLoanAmount" value={program.minLoanAmount} onChange={handleChange} style={{ width: "100%", marginBottom: "10px" }} />
-
-        <label>Maximum Loan Amount:</label>
-        <input type="number" name="maxLoanAmount" value={program.maxLoanAmount} onChange={handleChange} style={{ width: "100%", marginBottom: "10px" }} />
-
-        <label>Minimum DSCR:</label>
-        <input type="number" name="minDSCR" value={program.minDSCR} onChange={handleChange} style={{ width: "100%", marginBottom: "10px" }} />
-
-        <label>Loan Term (Months):</label>
-        <input type="number" name="loanTerm" value={program.loanTerm} onChange={handleChange} style={{ width: "100%", marginBottom: "10px" }} />
-
-        <label>Interest Rate Range:</label>
-        <input type="text" name="interestRateRange" value={program.interestRateRange} onChange={handleChange} style={{ width: "100%", marginBottom: "10px" }} />
-
-        <label>State Availability (comma-separated):</label>
-        <input type="text" name="stateAvailability" value={program.stateAvailability} onChange={handleChange} style={{ width: "100%", marginBottom: "10px" }} />
-
-        <label>Property Types Allowed (comma-separated):</label>
-        <input type="text" name="propertyTypesAllowed" value={program.propertyTypesAllowed} onChange={handleChange} style={{ width: "100%", marginBottom: "10px" }} />
-
-        <label>Prepayment Penalty:</label>
-        <input type="text" name="prepaymentPenalty" value={program.prepaymentPenalty} onChange={handleChange} style={{ width: "100%", marginBottom: "20px" }} />
-
-        <label>Number of Tiers:</label>
+      <label>Number of Tiers:</label>
         <select value={numTiers} onChange={handleNumTiersChange} style={{ width: "100%", marginBottom: "10px" }}>
           {[1, 2, 3, 4, 5, 6].map((num) => (
             <option key={num} value={num}>
@@ -139,10 +117,35 @@ function AddStabilizedBridge() {
             <label>Maximum LTV (%):</label>
             <input type="number" value={tier.maxLTV} onChange={(e) => handleTierChange(index, "maxLTV", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
 
+            <label>Minimum Experience (in months):</label>
+            <input type="number" value={tier.minExperience} onChange={(e) => handleTierChange(index, "minExperience", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
             <label>Minimum DSCR:</label>
             <input type="number" value={tier.minDSCR} onChange={(e) => handleTierChange(index, "minDSCR", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
           </div>
         ))}
+        <label>Loan Range:</label>
+          <input type="number" value={loanRange.min} onChange={(e) => setLoanRange({ ...loanRange, min: e.target.value })} placeholder="Min Loan Amount" style={{ width: "100%" }} />
+          <input type="number" value={loanRange.max} onChange={(e) => setLoanRange({ ...loanRange, max: e.target.value })} placeholder="Max Loan Amount" style={{ width: "100%" }} />
+        <label>Property Types:</label>
+        <div>
+  {PROPERTY_TYPES.map((type) => (
+    <label key={type}>
+      <input
+        type="checkbox"
+        value={type}
+        checked={propertyTypes.includes(type)}
+        onChange={() => handlePropertyTypeChange(type)} // ✅ Using the function here
+      />
+      {type}
+    </label>
+  ))}
+</div>
+<label>Loan Term (in months):</label>
+<input type="number" value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+        <br />
+
+       
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <button type="submit" style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>
