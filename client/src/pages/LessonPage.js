@@ -1,6 +1,8 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import lessons from "../data/lessons";
+
+// Import actual module components
 import Module1 from "../pages/modules/Module1";
 import Module2 from "../pages/modules/Module2";
 import Module3 from "../pages/modules/Module3";
@@ -9,14 +11,15 @@ import Module5 from "../pages/modules/Module5";
 import Module6 from "../pages/modules/Module6";
 import Module7 from "../pages/modules/Module7";
 
+// Match lesson IDs to module components
 const moduleComponents = {
-  "module-1": Module1,
-  "module-2": Module2,
-  "module-3": Module3,
-  "module-4": Module4,
-  "module-5": Module5,
-  "module-6": Module6,
-  "module-7": Module7,
+  "Module1": Module1,
+  "Module2": Module2,
+  "Module3": Module3,
+  "Module4": Module4,
+  "Module5": Module5,
+  "Module6": Module6,
+  "Module7": Module7,
 };
 
 function LessonPage() {
@@ -40,4 +43,5 @@ function LessonPage() {
 }
 
 export default LessonPage;
+
 
