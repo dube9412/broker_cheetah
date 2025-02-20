@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import lessons from "../data/lessons";
 import resources from "../data/resources";
 
 function HardMoneyClass() {
@@ -11,13 +10,13 @@ function HardMoneyClass() {
       
       <h2 className="text-xl font-bold mt-6">Modules</h2>
       <ul className="list-disc ml-6">
-        {lessons.map((lesson, index) => (
-          <li key={index} className="mb-2">
-            <Link to={`/hard-money-class/${lesson.id}`} className="text-blue-500 hover:underline">
-              {lesson.title}
-            </Link>
-          </li>
-        ))}
+        <li><Link to="/hard-money-class/module-1" className="text-blue-500 hover:underline">📖 Introduction to Hard Money Lending</Link></li>
+        <li><Link to="/hard-money-class/module-2" className="text-blue-500 hover:underline">🏡 Loan Types & When to Use Them</Link></li>
+        <li><Link to="/hard-money-class/module-3" className="text-blue-500 hover:underline">💰 How to Get a Loan Quote</Link></li>
+        <li><Link to="/hard-money-class/module-4" className="text-blue-500 hover:underline">📑 Submitting a Loan Package</Link></li>
+        <li><Link to="/hard-money-class/module-5" className="text-blue-500 hover:underline">🔍 Understanding the Lender Process</Link></li>
+        <li><Link to="/hard-money-class/module-6" className="text-blue-500 hover:underline">📢 Marketing Yourself as a Loan Broker</Link></li>
+        <li><Link to="/hard-money-class/module-7" className="text-blue-500 hover:underline">📊 Loan Calculations & Deal Structuring</Link></li>
       </ul>
       
       <h2 className="text-xl font-bold mt-6">Downloadable Resources</h2>

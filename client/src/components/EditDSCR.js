@@ -188,6 +188,14 @@ function EditDSCR() {
             <label>Prepayment Period (PPP):</label>
             <input type="text" value={prepaymentPeriod} onChange={(e) => setPrepaymentPeriod(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
 
+            <label>Property Types:</label>
+            {PROPERTY_TYPES.map((type) => (
+                <label key={type}>
+                    <input type="checkbox" checked={propertyTypes.includes(type)} onChange={() => handlePropertyTypeChange(type)} />
+                    {type}
+                </label>
+            ))}
+
             <label>Property Use:</label>
             {PROPERTY_USES.map((use) => (
                 <label key={use}>

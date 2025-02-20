@@ -60,14 +60,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/manage-loan-programs/:lenderId" element={<ManageLoanPrograms />} />
               <Route path="/hard-money-class" element={<HardMoneyClass />} />
-              <Route path="/hard-money-class" element={<HardMoneyClass />} />
-        {lessons.map((lesson) => (
-          <Route
-            key={lesson.id}
-            path={`/hard-money-class/${lesson.id}`}
-            element={<LessonPage lesson={lesson} />} // ✅ Pass lesson as prop
-          />
-        ))}
+              <Route path="/hard-money-class/:lessonId" element={<LessonPage />} />
               <Route path="/fix-and-flip-calculator" element={<FixAndFlipCalc />} />
 
               {/* Loan type & search */}
