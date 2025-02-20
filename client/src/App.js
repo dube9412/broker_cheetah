@@ -31,9 +31,6 @@ import FixAndFlipCalc from "./pages/FixAndFlipCalc";
 import HardMoneyClass from "./pages/HardMoneyClass";
 import LessonPage from "./pages/LessonPage";
 import lessons from "./data/lessons";
-import Module1 from "./pages/modules/Module1";
-import Module2 from "./pages/modules/Module2";
-import Module3 from "./pages/modules/Module3";
 
 
 // Admin-only
@@ -65,7 +62,7 @@ function App() {
               <Route path="/hard-money-class" element={<HardMoneyClass />} />
               <Route path="/hard-money-class/:lessonId" element={<LessonPage />} />
               {lessons.map((lesson) => (
-    <Route key={lesson.id} path={`/hard-money-class/${lesson.id}`} element={<ModulePage lesson={lesson} />} />
+    <Route key={lesson.id} path={`/hard-money-class/${lesson.id}`} element={<LessonPage lesson={lesson} />} />
   ))}
               <Route path="/fix-and-flip-calculator" element={<FixAndFlipCalc />} />
 
