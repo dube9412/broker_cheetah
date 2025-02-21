@@ -14,10 +14,6 @@ function Module2() {
         <li>🔹 DSCR Loans</li>
         <li>🔹 Ground-Up Construction Loans</li>
       </ul>
-
-      <Link to="/hard-money-class" className="text-blue-500 hover:underline mt-6 block">
-        ← Back to Class
-      </Link>
     </div>
   );
 }

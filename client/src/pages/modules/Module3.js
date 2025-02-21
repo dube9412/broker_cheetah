@@ -13,10 +13,6 @@ function Module3() {
         <li>🔹 Know Your Credit Score & Experience Level</li>
         <li>🔹 Gather Documents (Purchase Contract, Scope of Work)</li>
       </ul>
-
-      <Link to="/hard-money-class" className="text-blue-500 hover:underline mt-6 block">
-        ← Back to Class
-      </Link>
     </div>
   );
 }
