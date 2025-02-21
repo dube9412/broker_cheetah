@@ -160,8 +160,11 @@ function EditGroundUp() {
       <label>Construction Budget:</label>
       <input type="number" value={constructionBudget} onChange={(e) => setConstructionBudget(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
 
-      <button onClick={handleSave} className="bg-green-500 text-white px-4 py-2">Save Changes</button>
-      <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 ml-2">Delete Loan Program</button>
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <button onClick={handleSave} style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>Save Changes</button>
+        <button onClick={handleDelete} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>Delete Loan Program</button>{" | "}
+        <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>Cancel</button>
+      </div>
     </div>
   );
 }

@@ -2,61 +2,61 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 function Module1() {
-  const [expanded, setExpanded] = useState(null);
-  const toggleSection = (section) => setExpanded(expanded === section ? null : section);
+  const [openSection, setOpenSection] = useState(null);
+
+  const toggleSection = (section) => {
+    setOpenSection(openSection === section ? null : section);
+  };
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">📖 Introduction to Hard Money Lending</h1>
-      
-      {/* ✅ YouTube Video Placeholder */}
-      <div className="mb-6">
-        <p className="font-bold">🎥 Video Overview (Coming Soon)</p>
-        <div className="bg-gray-300 w-full h-48 flex items-center justify-center">
-          <p className="text-gray-600">[VIDEO PLACEHOLDER]</p>
-        </div>
-      </div>
+      <h1 className="text-2xl font-bold mb-4">📖 Loan Types & When to Use Them</h1>
+      <p className="mb-4">
+        Understanding loan types is **critical** in hard money lending. Each serves a different purpose based on the **property type, investor goals, and required terms**.
+      </p>
 
-      {/* ✅ Expandable Sections */}
-      <div className="space-y-4">
-        <div>
-          <button onClick={() => toggleSection("what-is-hard-money")} className="text-blue-500 hover:underline">
-            🔹 What is Hard Money?
+      {[
+        {
+          title: "Fix and Flip 🏚️ → 🏡",
+          content: "Short-term (usually 12 months). Used for purchasing and rehabbing a property. Any exit strategy is acceptable (sell, refi, rent, etc.).",
+        },
+        {
+          title: "Ground Up Construction 🏗️",
+          content: "Designed for **building new properties**, NOT buying land. Usually 18-month terms with required exit plans (sale or rent).",
+        },
+        {
+          title: "Stabilized Bridge 🌉",
+          content: "Short-term extension loans for **stabilized properties** (no major rehab needed). Used when waiting for DSCR refi or property sale.",
+        },
+        {
+          title: "DSCR (Debt Service Coverage Ratio) 🏠💰",
+          content: "**For rental properties** with little to no income documentation required. Uses the rental income to qualify. Typically a **30-year mortgage**.",
+        },
+        {
+          title: "BRRR (Buy, Rehab, Refi, Repeat) 🔄",
+          content: "A strategy where investors **buy distressed properties, rehab them, then refinance into a DSCR loan** to pull cash out and keep reinvesting.",
+        },
+      ].map((section, index) => (
+        <div key={index} className="border-b py-4">
+          <button
+            onClick={() => toggleSection(index)}
+            className="text-blue-500 font-bold hover:underline w-full text-left"
+          >
+            {section.title}
           </button>
-          {expanded === "what-is-hard-money" && (
-            <p className="mt-2 p-4 border border-gray-300 rounded">
-              Hard money lending is a type of short-term financing secured by real estate. It is commonly used by real estate investors who need quick funding for fix-and-flip projects.
-            </p>
-          )}
+          {openSection === index && <p className="mt-2">{section.content}</p>}
         </div>
+      ))}
+      <div className="mt-6">
+  <h2 className="text-xl font-bold">🎥 Video Lesson</h2>
+  <p>Coming soon! This video will cover {lesson.title} in detail.</p>
+  <div className="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-600">
+    Video Placeholder
+  </div>
+</div>
 
-        <div>
-          <button onClick={() => toggleSection("vs-traditional-loans")} className="text-blue-500 hover:underline">
-            🔹 How Hard Money Differs from Traditional Loans
-          </button>
-          {expanded === "vs-traditional-loans" && (
-            <p className="mt-2 p-4 border border-gray-300 rounded">
-              Unlike traditional loans, hard money loans are based on property value rather than borrower credit. They have higher interest rates and shorter terms.
-            </p>
-          )}
-        </div>
-
-        <div>
-          <button onClick={() => toggleSection("private-lenders")} className="text-blue-500 hover:underline">
-            🔹 The Role of Private Lenders
-          </button>
-          {expanded === "private-lenders" && (
-            <p className="mt-2 p-4 border border-gray-300 rounded">
-              Private lenders fund hard money loans. They focus on asset value and deal potential rather than borrower financials.
-            </p>
-          )}
-        </div>
-      </div>
-
-      <Link to="/hard-money-class" className="text-blue-500 hover:underline mt-6 block">
-        ← Back to Class
-      </Link>
     </div>
+    
   );
 }
 

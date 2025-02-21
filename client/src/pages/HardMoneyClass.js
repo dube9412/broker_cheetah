@@ -10,13 +10,13 @@ function HardMoneyClass() {
       
       <h2 className="text-xl font-bold mt-6">Modules</h2>
       <ul className="list-disc ml-6">
-        <li><Link to="/hard-money-class/module-1" className="text-blue-500 hover:underline">📖 Introduction to Hard Money Lending</Link></li>
-        <li><Link to="/hard-money-class/module-2" className="text-blue-500 hover:underline">🏡 Loan Types & When to Use Them</Link></li>
-        <li><Link to="/hard-money-class/module-3" className="text-blue-500 hover:underline">💰 How to Get a Loan Quote</Link></li>
+        <li><Link to="/hard-money-class/module-1" className="text-blue-500 hover:underline">📖 Introduction to Hard Money Loans and Types of them</Link></li>
+        <li><Link to="/hard-money-class/module-2" className="text-blue-500 hover:underline">🏡 Getting & Analyzing a Quote</Link></li>
+        <li><Link to="/hard-money-class/module-3" className="text-blue-500 hover:underline">💰 General Application Info</Link></li>
         <li><Link to="/hard-money-class/module-4" className="text-blue-500 hover:underline">📑 Submitting a Loan Package</Link></li>
         <li><Link to="/hard-money-class/module-5" className="text-blue-500 hover:underline">🔍 Understanding the Lender Process</Link></li>
-        <li><Link to="/hard-money-class/module-6" className="text-blue-500 hover:underline">📢 Marketing Yourself as a Loan Broker</Link></li>
-        <li><Link to="/hard-money-class/module-7" className="text-blue-500 hover:underline">📊 Loan Calculations & Deal Structuring</Link></li>
+        <li><Link to="/hard-money-class/module-6" className="text-blue-500 hover:underline">📢 Marketing & Client Acquisition</Link></li>
+        <li><Link to="/hard-money-class/module-7" className="text-blue-500 hover:underline">📊 Glossary, Acronyms, and Client Sensitivities</Link></li>
       </ul>
       
       <h2 className="text-xl font-bold mt-6">Downloadable Resources</h2>
