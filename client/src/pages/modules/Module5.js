@@ -26,13 +26,7 @@ function Module5() {
       <h2 className="text-xl font-bold mt-6">✅ What Happens at Closing?</h2>
       <p>Once the **CTC** is issued, the lender wires funds to the title company, which distributes payments to all parties.</p>
 
-      <div className="mt-6">
-  <h2 className="text-xl font-bold">🎥 Video Lesson</h2>
-  <p>Coming soon! This video will cover {lesson?.title || "this topic"} in detail.</p>
-  <div className="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-600">
-    Video Placeholder
-  </div>
-</div>
+    
     </div>
   );
 }
