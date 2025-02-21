@@ -47,13 +47,7 @@ function Module1() {
           {openSection === index && <p className="mt-2">{section.content}</p>}
         </div>
       ))}
-     <div className="mt-6">
-  <h2 className="text-xl font-bold">🎥 Video Lesson</h2>
-  <p>Coming soon! This video will cover {lesson?.title || "this topic"} in detail.</p>
-  <div className="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-600">
-    Video Placeholder
-  </div>
-</div>
+     
 
     </div>
     

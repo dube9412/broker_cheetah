@@ -24,13 +24,7 @@ function Module2() {
       </ul>
 
       <p className="mt-4">🔹 *Your ability to analyze quotes correctly will set you apart as a broker!*</p>
-      <div className="mt-6">
-  <h2 className="text-xl font-bold">🎥 Video Lesson</h2>
-  <p>Coming soon! This video will cover {lesson?.title || "this topic"} in detail.</p>
-  <div className="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-600">
-    Video Placeholder
-  </div>
-</div>
+     
       
     </div>
   );
