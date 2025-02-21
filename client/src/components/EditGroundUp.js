@@ -63,7 +63,7 @@ const handlePropertyTypeChange = (type) => {
   const handleSave = async () => {
     try {
       console.log('Saving Ground Up program${programId}');
-      const response = await fetch (`https://broker-cheetah-backend.onrender.com/api/ground-up/ground-up-programs/${programId}`m {
+      const response = await fetch (`https://broker-cheetah-backend.onrender.com/api/ground-up/ground-up-programs/${programId}`, {
         headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     ...program,

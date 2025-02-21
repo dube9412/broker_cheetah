@@ -3,10 +3,7 @@ import { Link } from "react-router-dom";
 
 function Module1() {
   const [expanded, setExpanded] = useState(null);
-
-  const toggleSection = (section) => {
-    setExpanded(expanded === section ? null : section);
-  };
+  const toggleSection = (section) => setExpanded(expanded === section ? null : section);
 
   return (
     <div className="container mx-auto p-6">
@@ -23,10 +20,7 @@ function Module1() {
       {/* ✅ Expandable Sections */}
       <div className="space-y-4">
         <div>
-          <button 
-            onClick={() => toggleSection("what-is-hard-money")} 
-            className="text-blue-500 hover:underline"
-          >
+          <button onClick={() => toggleSection("what-is-hard-money")} className="text-blue-500 hover:underline">
             🔹 What is Hard Money?
           </button>
           {expanded === "what-is-hard-money" && (
@@ -37,10 +31,7 @@ function Module1() {
         </div>
 
         <div>
-          <button 
-            onClick={() => toggleSection("vs-traditional-loans")} 
-            className="text-blue-500 hover:underline"
-          >
+          <button onClick={() => toggleSection("vs-traditional-loans")} className="text-blue-500 hover:underline">
             🔹 How Hard Money Differs from Traditional Loans
           </button>
           {expanded === "vs-traditional-loans" && (
@@ -51,10 +42,7 @@ function Module1() {
         </div>
 
         <div>
-          <button 
-            onClick={() => toggleSection("private-lenders")} 
-            className="text-blue-500 hover:underline"
-          >
+          <button onClick={() => toggleSection("private-lenders")} className="text-blue-500 hover:underline">
             🔹 The Role of Private Lenders
           </button>
           {expanded === "private-lenders" && (
