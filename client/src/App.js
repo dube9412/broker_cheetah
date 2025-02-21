@@ -16,7 +16,8 @@ import AddPortfolio from "./components/AddPortfolio";
 import EditPortfolio from "./components/EditPortfolio";
 import AddGroundUp from "./components/AddGroundUp";
 import EditGroundUp from "./components/EditGroundUp";
-import OneClickQuotePage from "./components/OneClickQuotePage";
+import OneClickQuoteModal from "./components/OneClickQuoteModal";
+
 
 
 // Pages
@@ -63,7 +64,7 @@ function App() {
               <Route path="/hard-money-class" element={<HardMoneyClass />} />
               <Route path="/hard-money-class/:lessonId" element={<LessonPage />} />
               <Route path="/fix-and-flip-calculator" element={<FixAndFlipCalc />} />
-              <Route path="/one-click-quote" element={<OneClickQuotePage />} />
+              <Route path="/one-click-quote" element={<OneClickQuoteModal />} />
 
               {/* Loan type & search */}
               <Route path="/select-loan-type" element={<LoanTypeSelection />} />
