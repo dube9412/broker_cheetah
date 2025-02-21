@@ -1,61 +1,37 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 
 function Module2() {
-  const [expanded, setExpanded] = useState(null);
-  const toggleSection = (section) => setExpanded(expanded === section ? null : section);
-
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">🏡 Loan Types & When to Use Them</h1>
+      <h1 className="text-2xl font-bold mb-4">📊 Getting & Analyzing Loan Quotes</h1>
 
-      {/* ✅ YouTube Video Placeholder */}
-      <div className="mb-6">
-        <p className="font-bold">🎥 Video Overview (Coming Soon)</p>
-        <div className="bg-gray-300 w-full h-48 flex items-center justify-center">
-          <p className="text-gray-600">[VIDEO PLACEHOLDER]</p>
-        </div>
-      </div>
+      <h2 className="text-xl font-semibold mt-4">1️⃣ Getting a Quote</h2>
+      <p>To get a loan quote, you'll need basic **borrower & property information**:</p>
+      <ul className="list-disc ml-6">
+        <li>✔️ Borrower **credit score & experience**</li>
+        <li>✔️ Assets available for closing</li>
+        <li>✔️ Property details (address, condition, rehab cost, etc.)</li>
+        <li>✔️ **Loan type & leverage request**</li>
+      </ul>
 
-      {/* ✅ Expandable Sections */}
-      <div className="space-y-4">
-        <div>
-          <button onClick={() => toggleSection("fix-and-flip")} className="text-blue-500 hover:underline">
-            🔹 Fix & Flip Loans
-          </button>
-          {expanded === "fix-and-flip" && (
-            <p className="mt-2 p-4 border border-gray-300 rounded">
-              Fix & Flip loans are short-term loans designed for investors buying properties to renovate and resell for a profit. These loans typically cover the purchase price and renovation costs.
-            </p>
-          )}
-        </div>
+      <h2 className="text-xl font-semibold mt-4">2️⃣ Analyzing Loan Quotes</h2>
+      <p>Quotes come in various formats (emails, PDFs). Your job is to:</p>
+      <ul className="list-disc ml-6">
+        <li>✔️ Compare **rate, fees, leverage, and lender requirements**</li>
+        <li>✔️ Prioritize lenders based on client **sensitivities**</li>
+        <li>✔️ Present the best **3 options** to the client, guiding them to the right choice</li>
+      </ul>
 
-        <div>
-          <button onClick={() => toggleSection("dscr-loans")} className="text-blue-500 hover:underline">
-            🔹 DSCR Loans (Debt Service Coverage Ratio)
-          </button>
-          {expanded === "dscr-loans" && (
-            <p className="mt-2 p-4 border border-gray-300 rounded">
-              DSCR loans are used for rental properties. They qualify based on rental income rather than borrower income, making them ideal for investors with multiple properties.
-            </p>
-          )}
-        </div>
-
-        <div>
-          <button onClick={() => toggleSection("ground-up-construction")} className="text-blue-500 hover:underline">
-            🔹 Ground-Up Construction Loans
-          </button>
-          {expanded === "ground-up-construction" && (
-            <p className="mt-2 p-4 border border-gray-300 rounded">
-              These loans fund new construction projects from start to finish. They are typically interest-only until project completion.
-            </p>
-          )}
-        </div>
-      </div>
-
-      <Link to="/hard-money-class" className="text-blue-500 hover:underline mt-6 block">
-        ← Back to Class
-      </Link>
+      <p className="mt-4">🔹 *Your ability to analyze quotes correctly will set you apart as a broker!*</p>
+      <div className="mt-6">
+  <h2 className="text-xl font-bold">🎥 Video Lesson</h2>
+  <p>Coming soon! This video will cover {lesson.title} in detail.</p>
+  <div className="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-600">
+    Video Placeholder
+  </div>
+</div>
+      
     </div>
   );
 }

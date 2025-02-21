@@ -1,58 +1,40 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 
 function Module4() {
-  const [expanded, setExpanded] = useState(null);
-  const toggleSection = (section) => setExpanded(expanded === section ? null : section);
-
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">📑 Submitting a Loan Package</h1>
+      <h1 className="text-2xl font-bold mb-4">📤 Submitting a Loan</h1>
+      <p>WAIT. On your computer, create a folder that is for lending. In your email, do the same. Create a
+      folder with your client’s name and create TWO subfolders; one for things provided to you and one for
+      things you sent to the lender.</p>
 
-      {/* ✅ YouTube Video Placeholder */}
-      <div className="mb-6">
-        <p className="font-bold">🎥 Video Overview (Coming Soon)</p>
-        <div className="bg-gray-300 w-full h-48 flex items-center justify-center">
-          <p className="text-gray-600">[VIDEO PLACEHOLDER]</p>
-        </div>
-      </div>
+      <h2 className="text-xl font-bold mt-6">📂 Organization Before Submission</h2>
+      <p>Some lenders, like any ROC company, use an **online portal** (NEW SCHOOL).  
+      Other lenders, like **Lima One**, do most everything via email to a specific link but also have a portal (OLD SCHOOL).</p>
 
-      {/* ✅ Expandable Sections */}
-      <div className="space-y-4">
-        <div>
-          <button onClick={() => toggleSection("loan-documents")} className="text-blue-500 hover:underline">
-            🔹 Required Documents for a Loan Package
-          </button>
-          {expanded === "loan-documents" && (
-            <p className="mt-2 p-4 border border-gray-300 rounded">
-              A complete loan package should include:
-              <ul className="list-disc ml-6">
-                <li>Loan Application</li>
-                <li>Purchase Agreement</li>
-                <li>Scope of Work (if rehab is involved)</li>
-                <li>Proof of Funds</li>
-              </ul>
-            </p>
-          )}
-        </div>
-
-        <div>
-          <button onClick={() => toggleSection("how-to-submit")} className="text-blue-500 hover:underline">
-            🔹 How to Submit a Loan Package
-          </button>
-          {expanded === "how-to-submit" && (
-            <p className="mt-2 p-4 border border-gray-300 rounded">
-              Most lenders accept submissions via email or their portal. Ensure everything is **organized** and **complete** to avoid delays.
-            </p>
-          )}
-        </div>
-      </div>
-
-      <Link to="/hard-money-class" className="text-blue-500 hover:underline mt-6 block">
-        ← Back to Class
-      </Link>
+      <h2 className="text-xl font-bold mt-6">📋 Steps for Submission</h2>
+      <ol className="list-decimal ml-6">
+        <li>**Get a rep** (Call them, yes, it’s that easy).</li>
+        <li>Ask rep for a **submission packet** for the loan type you need.</li>
+        <li>Fill out **as much as you can** before sending it to the borrower.</li>
+        <li>Gather all required documents: **ID, Company Docs, Asset Statements, Contracts, etc.**</li>
+        <li>Submit the package to the lender’s designated contact.</li>
+        <li>Follow up **constantly** to ensure the loan progresses.</li>
+        <li>Monitor for **Clear to Close (CTC)** and ensure title & lender communicate.</li>
+        <li>Get **PAID**. The lender doesn’t distribute the funds—**Title does!**</li>
+      </ol>
+      <div className="mt-6">
+  <h2 className="text-xl font-bold">🎥 Video Lesson</h2>
+  <p>Coming soon! This video will cover {lesson.title} in detail.</p>
+  <div className="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-600">
+    Video Placeholder
+  </div>
+</div>
+      
     </div>
   );
 }
 
 export default Module4;
+

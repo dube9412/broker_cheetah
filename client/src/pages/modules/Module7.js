@@ -1,72 +1,48 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 
 function Module7() {
-  const [expanded, setExpanded] = useState(null);
-  const toggleSection = (section) => setExpanded(expanded === section ? null : section);
-
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">📊 Loan Calculations & Deal Structuring</h1>
+      <h1 className="text-2xl font-bold mb-4">📖 Loan Glossary & Acronyms</h1>
+      <p>Understanding key lending terms will make navigating loans much easier.</p>
 
-      {/* ✅ YouTube Video Placeholder */}
-      <div className="mb-6">
-        <p className="font-bold">🎥 Video Overview (Coming Soon)</p>
-        <div className="bg-gray-300 w-full h-48 flex items-center justify-center">
-          <p className="text-gray-600">[VIDEO PLACEHOLDER]</p>
-        </div>
-      </div>
+      <h2 className="text-xl font-bold mt-6">💡 Common Lending Terms</h2>
+      <ul className="list-disc ml-6">
+        <li><strong>AIV</strong> – As-is Value</li>
+        <li><strong>LA or ILA</strong> – Loan Amount or Initial Loan Amount</li>
+        <li><strong>ARV</strong> – After Repair Value</li>
+        <li><strong>MV</strong> – Market Value</li>
+        <li><strong>LTC</strong> – Loan to Cost</li>
+        <li><strong>LTV</strong> – Loan to Value</li>
+        <li><strong>BRRR</strong> – Buy, Rehab, Rent, Refinance</li>
+        <li><strong>DSCR</strong> – Debt Service Coverage Ratio</li>
+        <li><strong>PPP</strong> – Prepayment Penalty</li>
+        <li><strong>CTC</strong> – Clear to Close</li>
+        <li><strong>EOI</strong> – Evidence of Insurance</li>
+      </ul>
 
-      {/* ✅ Expandable Sections */}
-      <div className="space-y-4">
-        <div>
-          <button onClick={() => toggleSection("loan-amount")} className="text-blue-500 hover:underline">
-            🔹 How to Calculate Loan Amount
-          </button>
-          {expanded === "loan-amount" && (
-            <p className="mt-2 p-4 border border-gray-300 rounded">
-              Loan amount is determined by **Loan-to-Cost (LTC)** and **Loan-to-ARV (After Repair Value)**.
-              <ul className="list-disc ml-6">
-                <li>Loan to Cost (LTC) = (Loan Amount) ÷ (Purchase Price + Rehab)</li>
-                <li>Loan to ARV = (Loan Amount) ÷ (After Repair Value)</li>
-              </ul>
-              The lower of these two numbers is the **max loan amount** a lender will approve.
-            </p>
-          )}
-        </div>
+      <h2 className="text-xl font-bold mt-6">🧐 Client Sensitivities to Consider</h2>
+      <p>Understanding a client’s **top concern** is crucial for placing their loan.</p>
+      <ul className="list-disc ml-6">
+        <li>**Interest Rate**</li>
+        <li>**Origination Fees**</li>
+        <li>**Loan Term**</li>
+        <li>**LTC / LTV Caps**</li>
+        <li>**Draw Process**</li>
+        <li>**Prepayment Penalties**</li>
+      </ul>
 
-        <div>
-          <button onClick={() => toggleSection("holding-costs")} className="text-blue-500 hover:underline">
-            🔹 Understanding Holding Costs
-          </button>
-          {expanded === "holding-costs" && (
-            <p className="mt-2 p-4 border border-gray-300 rounded">
-              Holding costs include **loan interest, property taxes, utilities, and maintenance**. They are typically calculated as:
-              <br />
-              <strong>Holding Costs = (Loan Amount × Interest Rate / 12) × Time Held</strong>
-            </p>
-          )}
-        </div>
-
-        <div>
-          <button onClick={() => toggleSection("profit-calculation")} className="text-blue-500 hover:underline">
-            🔹 How to Calculate Profit
-          </button>
-          {expanded === "profit-calculation" && (
-            <p className="mt-2 p-4 border border-gray-300 rounded">
-              Profit is determined by subtracting all costs from the final sale price:
-              <br />
-              <strong>Profit = Sale Price - (Purchase Price + Rehab + Closing Costs + Holding Costs + Selling Costs)</strong>
-            </p>
-          )}
-        </div>
-      </div>
-
-      <Link to="/hard-money-class" className="text-blue-500 hover:underline mt-6 block">
-        ← Back to Class
-      </Link>
+      <div className="mt-6">
+  <h2 className="text-xl font-bold">🎥 Video Lesson</h2>
+  <p>Coming soon! This video will cover {lesson.title} in detail.</p>
+  <div className="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-600">
+    Video Placeholder
+  </div>
+</div>
     </div>
   );
 }
 
 export default Module7;
+
