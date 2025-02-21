@@ -184,7 +184,7 @@ function EditDSCR() {
             <label>Loan Range:</label>
             <input type="text" value={loanRange.min} onChange={(e) => setLoanRange({ ...loanRange, min: e.target.value })} placeholder="Min" style={{ width: "48%", marginRight: "4%" }} />
             <input type="text" value={loanRange.max} onChange={(e) => setLoanRange({ ...loanRange, max: e.target.value })} placeholder="Max" style={{ width: "48%" }} />
-
+<br/>
             <label>Prepayment Period (PPP):</label>
             <input type="text" value={prepaymentPeriod} onChange={(e) => setPrepaymentPeriod(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
 
@@ -195,7 +195,7 @@ function EditDSCR() {
                     {type}
                 </label>
             ))}
-
+<br/>
             <label>Property Use:</label>
             {PROPERTY_USES.map((use) => (
                 <label key={use}>
@@ -203,7 +203,7 @@ function EditDSCR() {
                     {use}
                 </label>
             ))}
-
+<br/>
 <button onClick={handleSave} style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>Save Changes</button>
             <button onClick={handleDelete} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>   Delete Loan Program </button>{" | "}
             <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>Cancel</button>
