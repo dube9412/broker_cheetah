@@ -10,7 +10,8 @@ function AddFixAndFlip() {
     const [tiers, setTiers] = useState([{ minFICO: "", minExperience: "", maxLTP: "", totalLTC: "", maxARV: "", maxRehab: "" }]);
 
     const [loanRange, setLoanRange] = useState({ min: "", max: "" });
-    const [propertyUse, setPropertyUse] = useState("");
+    const [propertyTypes, setPropertyTypes] = useState([]);
+      
 
     const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
    
