@@ -9,6 +9,13 @@ function EditFixAndFlip() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [tiers, setTiers] = useState([]);
+    const [numTiers, setNumTiers] = useState(1);
+    const [loanRange, setLoanRange] = useState({ min: "", max: "" });
+    const [propertyTypes, setPropertyTypes] = useState([]);
+
+    const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
+   
+
 
     useEffect(() => {
         const fetchProgram = async () => {
@@ -26,6 +33,8 @@ function EditFixAndFlip() {
                         type: data.type ?? "",
                         lender: data.lender ?? lenderId,
                     });
+                    setLoanRange({ min: data.loanRange?.min || "", max: data.loanRange?.max || "" });
+
 
                     setTiers(data.tiers ?? []); // ✅ Load tiers into state
                 } else {
@@ -43,6 +52,12 @@ function EditFixAndFlip() {
         fetchProgram();
     }, [programId, lenderId]);
 
+    useEffect(() => {
+        if (tiers.length) {
+          setNumTiers(tiers.length);
+        }
+      }, [tiers]);
+
     const handleTierChange = (index, field, value) => {
         setTiers((prevTiers) => {
             const updatedTiers = [...prevTiers];
@@ -50,6 +65,28 @@ function EditFixAndFlip() {
             return updatedTiers;
         });
     };
+    const handlePropertyTypeChange = (type) => {
+        setPropertyTypes((prev) =>
+          prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+        );
+      };
+   
+
+const handleNumTiersChange = (e) => {
+  const newNumTiers = parseInt(e.target.value, 10);
+  setNumTiers(newNumTiers);
+
+  setTiers((prevTiers) => {
+    const updatedTiers = [...prevTiers];
+
+    while (updatedTiers.length < newNumTiers) {
+      updatedTiers.push({ minFICO: "", minExperience: "", maxLTP: "", totalLTC: "", maxARV: "", maxRehab: "" });
+    }
+
+    return updatedTiers.slice(0, newNumTiers);
+  });
+};
+
     
 
     const handleInputChange = (e) => {
@@ -69,6 +106,8 @@ function EditFixAndFlip() {
                 body: JSON.stringify({
                     ...program,
                     tiers, // ✅ Ensure tiers are included in the update
+                    loanRange, 
+                    propertyTypes
                 }),
             });
 
@@ -129,7 +168,7 @@ function EditFixAndFlip() {
                         </option>
                     ))}
                 </select>
-                
+
             {/* Render tier inputs dynamically */}
             {tiers.map((tier, index) => (
                 <div key={index} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
