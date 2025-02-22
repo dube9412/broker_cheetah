@@ -121,6 +121,15 @@ function EditFixAndFlip() {
         <div style={{ maxWidth: "500px", margin: "0 auto", padding: "20px" }}>
             <h2 style={{ textAlign: "center" }}>Editing Loan Program for {program.name}</h2>
 
+            <label>Number of Tiers:</label>
+                <select value={numTiers} onChange={handleNumTiersChange} style={{ width: "100%", marginBottom: "10px" }}>
+                    {[1, 2, 3, 4, 5, 6, 7].map((num) => (
+                        <option key={num} value={num}>
+                            {num}
+                        </option>
+                    ))}
+                </select>
+                
             {/* Render tier inputs dynamically */}
             {tiers.map((tier, index) => (
                 <div key={index} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
@@ -165,8 +174,30 @@ function EditFixAndFlip() {
                         onChange={(e) => handleTierChange(index, "maxARV", e.target.value)} 
                         style={{ width: "100%", marginBottom: "10px" }} 
                     />
+                     <label>Maximum Rehab $:</label>
+                        <input type="number" value={tier.maxRehab} onChange={(e) => handleTierChange(index, "maxRehab", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+                   
                 </div>
             ))}
+
+<label>Loan Range:</label>
+                <input type="text" value={loanRange.min} onChange={(e) => setLoanRange({ ...loanRange, min: e.target.value })} placeholder="Min" style={{ width: "48%", marginRight: "4%" }} />
+                <input type="text" value={loanRange.max} onChange={(e) => setLoanRange({ ...loanRange, max: e.target.value })} placeholder="Max" style={{ width: "48%" }} />
+
+                <label>Property Types:</label>
+<div>
+  {PROPERTY_TYPES.map((type) => (
+    <label key={type}>
+      <input
+        type="checkbox"
+        value={type}
+        checked={propertyTypes.includes(type)}
+        onChange={() => handlePropertyTypeChange(type)} // ✅ Using the function here
+      />
+      {type}
+    </label>
+  ))}
+</div>
 
             <div style={{ textAlign: "center", marginTop: "20px" }}>
                 <button onClick={handleSave} style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>Save Changes</button>

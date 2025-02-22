@@ -7,8 +7,14 @@ function AddFixAndFlip() {
 
     const [lender, setLender] = useState(null);
     const [numTiers, setNumTiers] = useState(1); // Default to 1 tier
-    const [tiers, setTiers] = useState([{ minFICO: "", minExperience: "", maxLTP: "", totalLTC: "", maxARV: "" }]);
+    const [tiers, setTiers] = useState([{ minFICO: "", minExperience: "", maxLTP: "", totalLTC: "", maxARV: "", maxRehab: "" }]);
 
+    const [loanRange, setLoanRange] = useState({ min: "", max: "" });
+    const [propertyUse, setPropertyUse] = useState("");
+
+    const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
+   
+        
     useEffect(() => {
         const fetchLender = async () => {
             try {
@@ -50,8 +56,18 @@ function AddFixAndFlip() {
         });
     };
 
+    const handlePropertyTypeChange = (type) => {
+        setPropertyTypes((prev) =>
+          prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+        );
+      };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const formattedLoanRange = {
+            min: loanRange.min ? parseInt(loanRange.min) : undefined,
+            max: loanRange.max ? parseInt(loanRange.max) : undefined,
+          };
 
         try {
             const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/${lenderId}/fix-and-flip-programs`, {
@@ -61,6 +77,8 @@ function AddFixAndFlip() {
                     name: "Fix and Flip", // ✅ Fix: Adding the required 'name' field
                     type: "Fix and Flip", // ✅ No need for "programName"
                     lender: lenderId, 
+                    loanRange: formattedLoanRange,
+              propertyTypes,
                     tiers // ✅ Sending the entire tiers array
                 }),
             });
@@ -91,7 +109,7 @@ function AddFixAndFlip() {
 
                 <label>Number of Tiers:</label>
                 <select value={numTiers} onChange={handleNumTiersChange} style={{ width: "100%", marginBottom: "10px" }}>
-                    {[1, 2, 3, 4, 5, 6].map((num) => (
+                    {[1, 2, 3, 4, 5, 6, 7].map((num) => (
                         <option key={num} value={num}>
                             {num}
                         </option>
@@ -116,8 +134,30 @@ function AddFixAndFlip() {
 
                         <label>Maximum ARV:</label>
                         <input type="number" value={tier.maxARV} onChange={(e) => handleTierChange(index, "maxARV", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
+                        <label>Maximum Rehab $:</label>
+                        <input type="number" value={tier.maxRehab} onChange={(e) => handleTierChange(index, "maxRehab", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
                     </div>
                 ))}
+
+<label>Loan Range:</label>
+                <input type="text" value={loanRange.min} onChange={(e) => setLoanRange({ ...loanRange, min: e.target.value })} placeholder="Min" style={{ width: "48%", marginRight: "4%" }} />
+                <input type="text" value={loanRange.max} onChange={(e) => setLoanRange({ ...loanRange, max: e.target.value })} placeholder="Max" style={{ width: "48%" }} />
+
+                <label>Property Types:</label>
+<div>
+  {PROPERTY_TYPES.map((type) => (
+    <label key={type}>
+      <input
+        type="checkbox"
+        value={type}
+        checked={propertyTypes.includes(type)}
+        onChange={() => handlePropertyTypeChange(type)} // ✅ Using the function here
+      />
+      {type}
+    </label>
+  ))}
+</div>
 
                 <div style={{ textAlign: "center", marginTop: "20px" }}>
                     <button type="submit" style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>
