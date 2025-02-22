@@ -65,6 +65,11 @@ router.post("/:lenderId/fix-and-flip-programs", async (req, res) => {
       maxLTP: req.body.maxLTP,
       totalLTC: req.body.totalLTC,
       maxARV: req.body.maxARV,
+      minLoanAmount: req.body.minLoanAmount,
+        maxLoanAmount: req.body.maxLoanAmount,
+        StylePropertyMap: Array.isArray(req.body.StylePropertyMap) ? req.body.StylePropertyMap : [],
+        propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
+        maxRehab: req.body.maxRehab,
       tiers: req.body.tiers || [],
     });
 
