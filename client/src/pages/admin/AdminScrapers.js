@@ -19,7 +19,7 @@ const AdminScrapers = () => {
         const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin/scrapers");
         const data = await response.json();
         if (response.ok) {
-          setScrapers(data.scrapers);
+          setScrapers(Array.isArray(data.scrapers) ? data.scrapers : []);
         } else {
           console.error("Failed to fetch scrapers:", data.message);
         }
