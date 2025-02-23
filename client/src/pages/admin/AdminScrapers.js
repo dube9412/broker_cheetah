@@ -58,13 +58,15 @@ const AdminScrapers = () => {
   return (
     <div className="admin-dashboard" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <nav className="admin-nav" style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
-        <button onClick={() => navigate("/admin")} className="nav-button">Admin Home</button>
+        <button onClick={() => navigate("/admin-dashboard")} className="nav-button">Admin Home</button>
         <button onClick={() => navigate("/admin/users")} className="nav-button">Users</button>
         <button onClick={() => navigate("/admin/lenders")} className="nav-button">Lenders</button>
         <button onClick={() => navigate("/admin/lender-users")} className="nav-button">Lender Users</button>
         <button onClick={() => navigate("/admin/help-tickets")} className="nav-button">Help Tickets</button>
         <button onClick={() => navigate("/admin/analytics")} className="nav-button">Analytics</button>
-      </nav>
+        <button onClick={() => navigate("/admin/json-import")} className="nav-button">JSON Import</button>
+        <button onClick={() => navigate("/admin/import-data")} className="nav-button">Import Data</button>
+        </nav>
       
       <h1 style={{ textAlign: "center", color: "#333" }}>Admin Scrapers</h1>
       <p style={{ textAlign: "center", fontSize: "1.1em" }}>Run and manage scrapers for lender data.</p>

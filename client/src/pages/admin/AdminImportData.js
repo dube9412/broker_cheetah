@@ -32,6 +32,17 @@ const AdminImportData = () => {
   };
 
   return (
+    <div className="admin-dashboard" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+      <nav className="admin-nav" style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
+        <button onClick={() => navigate("/admin-dashboard")} className="nav-button">Admin Home</button>
+        <button onClick={() => navigate("/admin/users")} className="nav-button">Users</button>
+        <button onClick={() => navigate("/admin/lenders")} className="nav-button">Lenders</button>
+        <button onClick={() => navigate("/admin/lender-users")} className="nav-button">Lender Users</button>
+        <button onClick={() => navigate("/admin/help-tickets")} className="nav-button">Help Tickets</button>
+        <button onClick={() => navigate("/admin/analytics")} className="nav-button">Analytics</button>
+        <button onClick={() => navigate("/admin/scraper-tools")} className="nav-button">Help Tickets</button>
+        <button onClick={() => navigate("/admin/json-import")} className="nav-button">JSON Import</button>
+        </nav>
     <div style={{ padding: "20px" }}>
       <h1>Import Data</h1>
       <input type="file" onChange={handleFileUpload} />
@@ -40,6 +51,7 @@ const AdminImportData = () => {
       ) : (
         <p>No data found.</p>
       )}
+    </div>
     </div>
   );
 };
