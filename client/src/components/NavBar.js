@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import logo from "../assets/Broker Cheetah 2.png";
+import logo from "../assets/logo.png";
 import "./NavBar.css";
 
 function NavBar() {
