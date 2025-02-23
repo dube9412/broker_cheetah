@@ -2,6 +2,8 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import logo from "../assets/logo.png";
+import "./NavBar.css";
+
 
 function NavBar() {
   const { isLoggedIn, isAdmin, isSuperAdmin, logout } = useContext(AuthContext);
@@ -20,14 +22,42 @@ function NavBar() {
   };
 
   return (
-    <nav style={{ backgroundColor: "#000", color: "gold", padding: "10px", textAlign: "center" }}>
+    <nav
+      style={{
+        width: "100%",
+        backgroundColor: "#000",
+        color: "gold",
+        padding: "10px",
+        textAlign: "center",
+        boxSizing: "border-box",
+      }}
+    >
       {/* Logo and Title */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "10px" }}>
-        <img src={logo} alt="Broker Cheetah" style={{ height: "60px", width: "auto", marginRight: "15px" }} />
-        <span style={{ fontSize: "2rem", fontWeight: "bold", fontFamily: "Georgia, serif" }}>Broker Cheetah</span>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: "10px",
+        }}
+      >
+        <img
+          src={logo}
+          alt="Broker Cheetah"
+          style={{ height: "60px", width: "auto", marginRight: "15px" }}
+        />
+        <span
+          style={{
+            fontSize: "2rem",
+            fontWeight: "bold",
+            fontFamily: "Georgia, serif",
+          }}
+        >
+          Broker Cheetah
+        </span>
       </div>
 
-      {/* Main Navbar Links */}
+      {/* Navbar Links */}
       {isLoggedIn ? (
         <>
           <div
@@ -50,7 +80,12 @@ function NavBar() {
             <Link to="/select-loan-type" style={{ color: "gold", textDecoration: "none" }}>
               Lender Search
             </Link>
-            <button
+            
+          </div>
+
+          {/* Logout Button on its own line */}
+          <div style={{ marginTop: "10px" }}>
+          <button
               onClick={handleShare}
               style={{
                 backgroundColor: "gold",
@@ -63,10 +98,6 @@ function NavBar() {
             >
               Share
             </button>
-          </div>
-
-          {/* Logout Button on Separate Line */}
-          <div style={{ marginTop: "10px" }}>
             <button
               onClick={handleLogout}
               style={{
