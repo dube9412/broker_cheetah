@@ -33,7 +33,7 @@ import AdminHelpTickets from "./pages/admin/AdminHelpTickets";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminScrapers from "./pages/admin/AdminScrapers";
 import AdminJSONTools from "./pages/admin/AdminJSONTools";
-import AdminImportData from ".pages/admin/AdminImportData.js";
+import AdminImportData from "./pages/admin/AdminImportData.js";
 import LoanTypeSelection from "./pages/LoanTypeSelection";
 import FixAndFlipSearch from "./pages/FixAndFlipSearch";
 import ManageLoanPrograms from "./pages/ManageLoanPrograms";
