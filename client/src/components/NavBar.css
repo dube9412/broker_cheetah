@@ -1,16 +1,65 @@
-nav {
-    width: 100%;
-    box-sizing: border-box;
-  }
-  
-  @media (max-width: 600px) {
-    nav div {
-      flex-direction: column !important;
-      align-items: center;
-    }
-  
-    nav img {
-      margin-bottom: 10px;
-    }
-  }
+/* NavBar.css */
+
+.navbar-container {
+  width: 100%;
+  background-color: black; /* Full-width black background */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center everything horizontally */
+}
+
+.logo-container {
+  width: 100%; /* Forces full width */
+  max-width: 1200px; /* Optional: sets max-width to avoid overly wide on large screens */
+  display: flex;
+  justify-content: center; /* Centers logo horizontally */
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.logo-container img {
+  width: 80px; /* Set fixed width for logo */
+  height: auto;
+}
+
+.logo-container h1 {
+  color: gold;
+  font-family: 'Georgia', serif; /* Adjust to your preferred fancy font */
+  margin-left: 10px;
+  font-size: 1.8rem;
+}
+
+.nav-links {
+  width: 100%; /* Ensure full width */
+  display: flex;
+  justify-content: center; /* Center navbar links */
+  background-color: black;
+  padding: 10px 0;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.nav-links a,
+.nav-links button {
+  color: gold;
+  text-decoration: none;
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.nav-links button:hover,
+.nav-links a:hover {
+  color: white;
+}
+
+.logout-container {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
   
