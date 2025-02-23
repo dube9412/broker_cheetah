@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import HelpTickets from "../../assets/HelpTickets"; // ❌ This might be wrong
+
 
 const AdminHelpTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -101,4 +103,3 @@ const AdminHelpTickets = () => {
 };
 
 export default AdminHelpTickets;
-
