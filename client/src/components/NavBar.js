@@ -1,100 +1,100 @@
 import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import logo from "../assets/logo.png"; // Ensure the correct path to the logo
+import logo from "../assets/Broker Cheetah 2.png";
 
-const NavBar = () => {
+function NavBar() {
   const { isLoggedIn, isAdmin, isSuperAdmin, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
-    window.location.href = "/"; // Force reload to home
+    window.location.href = "/";
+  };
+
+  const handleShare = () => {
+    const subject = encodeURIComponent("Check out Broker Cheetah!");
+    const body = encodeURIComponent(
+      "Hey, check out Broker Cheetah, a powerful lending platform: https://brokercheetah.com"
+    );
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
   };
 
   return (
-    <header style={headerStyle}>
-      {/* Top Section - Logo & Title */}
-      <div style={headerTop}>
-        <img src={logo} alt="Broker Cheetah Logo" style={logoStyle} onClick={() => navigate("/")} />
-        <h1 style={titleStyle}>Broker Cheetah</h1>
+    <nav style={{ backgroundColor: "#000", color: "gold", padding: "10px", textAlign: "center" }}>
+      {/* Logo and Title */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "10px" }}>
+        <img src={logo} alt="Broker Cheetah" style={{ height: "60px", width: "auto", marginRight: "15px" }} />
+        <span style={{ fontSize: "2rem", fontWeight: "bold", fontFamily: "Georgia, serif" }}>Broker Cheetah</span>
       </div>
 
-      {/* Navigation Bar */}
-      <nav style={navStyle}>
-        {isLoggedIn ? (
-          <>
-            <Link to="/dashboard" style={navLink}>Dashboard</Link>
-            <Link to="/select-loan-type" style={navLink}>Lender Search</Link>
+      {/* Main Navbar Links */}
+      {isLoggedIn ? (
+        <>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: "15px",
+              marginBottom: "10px",
+            }}
+          >
+            <Link to="/dashboard" style={{ color: "gold", textDecoration: "none" }}>
+              Dashboard
+            </Link>
             {(isAdmin || isSuperAdmin) && (
-              <Link to="/admin-dashboard" style={navLink}>Admin Dashboard</Link>
+              <Link to="/admin-dashboard" style={{ color: "gold", textDecoration: "none" }}>
+                Admin Dashboard
+              </Link>
             )}
-            <button onClick={handleLogout} style={logoutButton}>Logout</button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" style={navLink}>Login</Link>
-            <Link to="/signup" style={navLink}>Sign Up</Link>
-          </>
-        )}
-      </nav>
-    </header>
+            <Link to="/select-loan-type" style={{ color: "gold", textDecoration: "none" }}>
+              Lender Search
+            </Link>
+            <button
+              onClick={handleShare}
+              style={{
+                backgroundColor: "gold",
+                color: "#000",
+                padding: "5px 10px",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              Share
+            </button>
+          </div>
+
+          {/* Logout Button on Separate Line */}
+          <div style={{ marginTop: "10px" }}>
+            <button
+              onClick={handleLogout}
+              style={{
+                backgroundColor: "#555",
+                color: "gold",
+                padding: "5px 10px",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              Logout
+            </button>
+          </div>
+        </>
+      ) : (
+        <div style={{ display: "flex", justifyContent: "center", gap: "15px" }}>
+          <Link to="/login" style={{ color: "gold", textDecoration: "none" }}>
+            Login
+          </Link>
+          <Link to="/signup" style={{ color: "gold", textDecoration: "none" }}>
+            Sign Up
+          </Link>
+        </div>
+      )}
+    </nav>
   );
-};
-
-// 🔹 Styles (Gold on Black)
-const headerStyle = {
-  background: "#000",
-  paddingBottom: "10px",
-  borderBottom: "3px solid gold",
-  textAlign: "center",
-};
-
-const headerTop = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: "10px 0",
-};
-
-const logoStyle = {
-  height: "60px",
-  marginRight: "15px",
-  cursor: "pointer",
-};
-
-const titleStyle = {
-  fontSize: "2rem",
-  color: "gold",
-  fontFamily: "'Cinzel', serif", // Fancy font
-  margin: 0,
-};
-
-const navStyle = {
-  display: "flex",
-  justifyContent: "center",
-  padding: "10px 0",
-  gap: "15px",
-};
-
-const navLink = {
-  color: "gold",
-  textDecoration: "none",
-  fontSize: "1.2rem",
-  fontWeight: "bold",
-  padding: "5px 10px",
-};
-
-const logoutButton = {
-  background: "gold",
-  color: "black",
-  border: "none",
-  padding: "5px 10px",
-  cursor: "pointer",
-  fontSize: "1.2rem",
-  fontWeight: "bold",
-  borderRadius: "5px",
-};
+}
 
 export default NavBar;
 
