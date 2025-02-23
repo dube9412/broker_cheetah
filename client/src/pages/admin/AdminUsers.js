@@ -52,7 +52,7 @@ const AdminUsers = () => {
       if (response.ok) {
         alert(`User ${action}d successfully.`);
         setUsers((prevUsers) =>
-          prevUsers.map((user) => (user._id === userId ? { ...user, role: data.newRole || user.role } : user))
+          prevUsers.map((user) => user._id === userId ? { ...user, role: data.newRole || user.role } : user)
         );
       } else {
         alert(`Failed to ${action} user: ${data.message}`);
