@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import logo from "../assets/Broker Cheetah 2.png";
 import "./NavBar.css";
-import logo from "../assets/logo.png";
 
 function NavBar() {
   const { isLoggedIn, isAdmin, isSuperAdmin, logout } = useContext(AuthContext);
@@ -12,6 +12,14 @@ function NavBar() {
     window.location.href = "/";
   };
 
+  const handleShare = () => {
+    const subject = encodeURIComponent("Check out Broker Cheetah!");
+    const body = encodeURIComponent(
+      "Hey, check out Broker Cheetah: https://brokercheetah.com"
+    );
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  };
+
   return (
     <div className="navbar-container">
       <div className="logo-container">
@@ -19,38 +27,31 @@ function NavBar() {
         <h1>Broker Cheetah</h1>
       </div>
 
-      <nav className="nav-links">
-        {isLoggedIn ? (
-          <>
+      {isLoggedIn ? (
+        <>
+          <nav className="nav-links">
             <Link to="/dashboard">Dashboard</Link>
             {(isAdmin || isSuperAdmin) && (
               <Link to="/admin-dashboard">Admin Dashboard</Link>
             )}
             <Link to="/select-loan-type">Lender Search</Link>
-            <button onClick={() => {
-              const subject = encodeURIComponent("Check out Broker Cheetah!");
-              const body = encodeURIComponent("Hey, I found this great site for lender searches: https://brokercheetah.com");
-              window.location.href = `mailto:?subject=${subject}&body=${body}`;
-            }}>
-              Share
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/login">Login</Link>
-            <Link to="/signup">Sign Up</Link>
-          </>
-        )}
-      </nav>
+            <button onClick={handleShare}>Share</button>
+          </nav>
 
-      {isLoggedIn && (
-        <div className="logout-container">
-          <button onClick={handleLogout}>Logout</button>
-        </div>
+          <div className="logout-container">
+            <button onClick={handleLogout}>Logout</button>
+          </div>
+        </>
+      ) : (
+        <nav className="nav-links">
+          <Link to="/login">Login</Link>
+          <Link to="/signup">Sign Up</Link>
+        </nav>
       )}
     </div>
   );
 }
 
 export default NavBar;
+
 

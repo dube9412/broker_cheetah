@@ -1,65 +1,86 @@
 /* NavBar.css */
-
 .navbar-container {
-  width: 100%;
-  background-color: black; /* Full-width black background */
-  display: flex;
-  flex-direction: row;
-  align-items: center; /* Center everything horizontally */
-}
-
-.logo-container {
-  width: 100%; /* Forces full width */
-  max-width: 1200px; /* Optional: sets max-width to avoid overly wide on large screens */
-  display: flex;
-  justify-content: center; /* Centers logo horizontally */
-  align-items: center;
-  padding: 10px 20px;
-}
-
-.logo-container img {
-  width: 80px; /* Set fixed width for logo */
-  height: auto;
-}
-
-.logo-container h1 {
-  color: gold;
-  font-family: 'Georgia', serif; /* Adjust to your preferred fancy font */
-  margin-left: 10px;
-  font-size: 1.8rem;
-}
-
-.nav-links {
-  width: 100%; /* Ensure full width */
-  display: flex;
-  justify-content: center; /* Center navbar links */
-  background-color: black;
-  padding: 10px 0;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.nav-links a,
-.nav-links button {
-  color: gold;
-  text-decoration: none;
-  padding: 8px 12px;
-  font-size: 1rem;
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
-.nav-links button:hover,
-.nav-links a:hover {
-  color: white;
-}
-
-.logout-container {
-  margin-top: 10px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
+    width: 100vw; /* Force navbar to fill full viewport width */
+    background-color: black;
+    color: gold;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  
+  .logo-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto; /* center horizontally */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .logo-container img {
+    height: 60px;
+    width: auto;
+  }
+  
+  .logo-container h1 {
+    font-size: 1.8rem;
+    font-family: 'Georgia', serif;
+    margin-left: 10px;
+  }
+  
+  .nav-links {
+    max-width: 1200px;
+    margin: 10px auto 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .nav-links a, 
+  .nav-links button {
+    color: gold;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  
+  .logout-container {
+    max-width: 1200px;
+    margin: 10px auto 0 auto;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .logout-container button {
+    background-color: #555;
+    color: gold;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  /* Ensure full responsiveness on smaller screens */
+  @media (max-width: 768px) {
+    .logo-container,
+    .nav-links,
+    .logout-container {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .logo-container h1 {
+      margin-top: 10px;
+      margin-left: 0;
+      text-align: center;
+    }
+  
+    .nav-links,
+    .logout-container {
+      gap: 10px;
+    }
+  }
   
