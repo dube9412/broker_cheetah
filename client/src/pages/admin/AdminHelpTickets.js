@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import HelpTickets from "../../assets/HelpTickets"; // ❌ This might be wrong
 
-
-const AdminHelpTickets = () => {
-  const [tickets, setTickets] = useState([]);
+const AdminScrapers = () => {
+  const [scrapers, setScrapers] = useState([]);
   const [loading, setLoading] = useState(true);
   const { isAdmin, isSuperAdmin } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -16,90 +14,87 @@ const AdminHelpTickets = () => {
       return;
     }
 
-    const fetchTickets = async () => {
+    const fetchScrapers = async () => {
       try {
-        const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin/help-tickets");
+        const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin/scrapers");
         const data = await response.json();
         if (response.ok) {
-          setTickets(data.tickets);
+          setScrapers(Array.isArray(data.scrapers) ? data.scrapers : []);
         } else {
-          console.error("Failed to fetch help tickets:", data.message);
+          console.error("Failed to fetch scrapers:", data.message);
         }
       } catch (error) {
-        console.error("Error fetching help tickets:", error);
+        console.error("Error fetching scrapers:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchTickets();
+    fetchScrapers();
   }, [isAdmin, isSuperAdmin, navigate]);
 
-  const handleResolve = async (id) => {
-    if (!window.confirm("Are you sure you want to mark this ticket as resolved?")) return;
+  const handleRunScraper = async (id) => {
+    if (!window.confirm("Are you sure you want to run this scraper? This may take a few minutes.")) return;
     try {
-      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/admin/help-tickets/${id}/resolve`, {
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/admin/scrapers/${id}/run`, {
         method: "POST",
       });
       if (response.ok) {
-        alert("Help ticket resolved successfully.");
-        setTickets((prevTickets) => prevTickets.map((ticket) => (ticket._id === id ? { ...ticket, status: "Resolved" } : ticket)));
+        alert("Scraper started successfully.");
       } else {
-        alert("Failed to resolve help ticket.");
+        alert("Failed to start scraper.");
       }
     } catch (error) {
-      console.error("Error resolving help ticket:", error);
-      alert("An error occurred while resolving the help ticket.");
+      console.error("Error starting scraper:", error);
+      alert("An error occurred while starting the scraper.");
     }
   };
 
-  if (loading) return <div>Loading help tickets...</div>;
+  if (loading) return <div className="loading">Loading scrapers...</div>;
 
   return (
-    <div style={{ padding: "20px" }}>
-      <nav style={{ marginBottom: "20px" }}>
-        <button onClick={() => navigate("/admin")}>Admin Home</button>
-        <button onClick={() => navigate("/admin/users")} style={{ marginLeft: "10px" }}>Users</button>
-        <button onClick={() => navigate("/admin/lenders")} style={{ marginLeft: "10px" }}>Lenders</button>
-        <button onClick={() => navigate("/admin/lender-users")} style={{ marginLeft: "10px" }}>Lender Users</button>
-        <button onClick={() => navigate("/admin/help-tickets")} style={{ marginLeft: "10px" }}>Help Tickets</button>
-        <button onClick={() => navigate("/admin/analytics")} style={{ marginLeft: "10px" }}>Analytics</button>
+    <div className="admin-dashboard" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+      <nav className="admin-nav" style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
+        <button onClick={() => navigate("/admin")} className="nav-button">Admin Home</button>
+        <button onClick={() => navigate("/admin/users")} className="nav-button">Users</button>
+        <button onClick={() => navigate("/admin/lenders")} className="nav-button">Lenders</button>
+        <button onClick={() => navigate("/admin/lender-users")} className="nav-button">Lender Users</button>
+        <button onClick={() => navigate("/admin/help-tickets")} className="nav-button">Help Tickets</button>
+        <button onClick={() => navigate("/admin/analytics")} className="nav-button">Analytics</button>
       </nav>
       
-      <h1>Admin Help Tickets</h1>
-      <p>View and manage user help requests.</p>
+      <h1 style={{ textAlign: "center", color: "#333" }}>Admin Scrapers</h1>
+      <p style={{ textAlign: "center", fontSize: "1.1em" }}>Run and manage scrapers for lender data.</p>
 
-      <table border="1" cellPadding="6" style={{ marginTop: "1rem" }}>
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Issue</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tickets.length > 0 ? (
-            tickets.map((ticket) => (
-              <tr key={ticket._id}>
-                <td>{ticket.userEmail}</td>
-                <td>{ticket.issue}</td>
-                <td>{ticket.status}</td>
-                <td>
-                  {ticket.status !== "Resolved" && (
-                    <button onClick={() => handleResolve(ticket._id)}>Resolve</button>
-                  )}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="4">No help tickets found.</td>
+      <div className="scraper-table-container" style={{ display: "flex", justifyContent: "center" }}>
+        <table border="1" cellPadding="6" className="scraper-table" style={{ width: "80%", textAlign: "left", borderCollapse: "collapse" }}>
+          <thead>
+            <tr style={{ background: "#007BFF", color: "white" }}>
+              <th>Scraper Name</th>
+              <th>Description</th>
+              <th>Actions</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {scrapers.length > 0 ? (
+              scrapers.map((scraper) => (
+                <tr key={scraper._id}>
+                  <td>{scraper.name}</td>
+                  <td>{scraper.description}</td>
+                  <td>
+                    <button onClick={() => handleRunScraper(scraper._id)} className="run-button">Run Scraper</button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" style={{ textAlign: "center", padding: "10px", fontSize: "1.2em" }}>No scrapers available.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
 
-export default AdminHelpTickets;
+export default AdminScrapers;
