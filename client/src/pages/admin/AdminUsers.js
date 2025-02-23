@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import AdminNav from "../../components/AdminNav";
+
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -8,6 +10,8 @@ const AdminUsers = () => {
   const [error, setError] = useState(null);
   const { isAdmin, isSuperAdmin } = useContext(AuthContext);
   const navigate = useNavigate();
+  
+  <AdminNav />
 
   // Redirect unauthorized users
   useEffect(() => {
