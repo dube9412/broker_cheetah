@@ -64,7 +64,7 @@ const AdminScrapers = () => {
         <button onClick={() => navigate("/admin/lender-users")} className="nav-button">Lender Users</button>
         <button onClick={() => navigate("/admin/help-tickets")} className="nav-button">Help Tickets</button>
         <button onClick={() => navigate("/admin/analytics")} className="nav-button">Analytics</button>
-        <button onClick={() => navigate("/admin/json-import")} className="nav-button">JSON Import</button>
+        <button onClick={() => navigate("/admin/json-tools")} className="nav-button">JSON Tools</button>
         <button onClick={() => navigate("/admin/import-data")} className="nav-button">Import Data</button>
         </nav>
       
