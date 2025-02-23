@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 import AdminNav from "../../components/AdminNav";
 
 const AdminImportData = () => {
   const [data, setData] = useState([]);
   const [file, setFile] = useState(null);
+  const { isAdmin, isSuperAdmin } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   <AdminNav />
+
+   useEffect(() => {
+      if (!isAdmin && !isSuperAdmin) {
+        navigate("/dashboard");
+        return;
+      }
+    }, [isAdmin, isSuperAdmin, navigate]);
 
 
   useEffect(() => {
