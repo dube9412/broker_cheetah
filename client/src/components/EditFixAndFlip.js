@@ -244,6 +244,7 @@ const handleNumTiersChange = (e) => {
                 <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>Cancel</button>
             </div>
         </div>
+    
     );
 }
 

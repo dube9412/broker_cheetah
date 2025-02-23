@@ -26,6 +26,13 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminLenders from "./pages/admin/AdminLenders"; 
+import AdminLenderUsers from "./pages/admin/AdminLenderUsers";
+import HelpTickets from "./pages/admin/HelpTickets";
+import Analytics from "./pages/admin/Analytics";
+import Scrapers from "./pages/admin/Scrapers";
+import JSONTools from "./pages/admin/JSONTools";
 import LoanTypeSelection from "./pages/LoanTypeSelection";
 import FixAndFlipSearch from "./pages/FixAndFlipSearch";
 import ManageLoanPrograms from "./pages/ManageLoanPrograms";
@@ -61,6 +68,13 @@ function App() {
               <Route path="/signup" element={<SignUp />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/manage-loan-programs/:lenderId" element={<ManageLoanPrograms />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/lenders" element={<AdminLenders />} />
+              <Route path="/admin/lender-users" element={<AdminLenderUsers />} />
+              <Route path="/admin/help-tickets" element={<HelpTickets />} />
+              <Route path="/admin/analytics" element={<Analytics />} />
+              <Route path="/admin/scrapers" element={<Scrapers />} />
+              <Route path="/admin/json-tools" element={<JSONTools />} />
               <Route path="/hard-money-class" element={<HardMoneyClass />} />
               <Route path="/hard-money-class/:lessonId" element={<LessonPage />} />
               <Route path="/fix-and-flip-calculator" element={<FixAndFlipCalc />} />
