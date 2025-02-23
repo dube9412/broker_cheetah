@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import AdminNav from "../../components/AdminNav";
 
 const AdminAnalytics = () => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const { isAdmin, isSuperAdmin } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  <AdminNav />
+
 
   useEffect(() => {
     if (!isAdmin && !isSuperAdmin) {
