@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
+const adminController = require('../controllers/adminController');
 
 // ✅ GET all users (Admin Only)
 router.get("/users", async (req, res) => {
@@ -126,6 +127,8 @@ router.post("/toggle-optin", async (req, res) => {
     res.status(500).json({ message: "Failed to update opt-in status" });
   }
 });
+
+router.post('/assign-lender', adminController.assignLenderToUser);
 
 const HelpTicket = require("../models/HelpTicket");
 
