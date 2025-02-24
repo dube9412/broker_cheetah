@@ -3,12 +3,11 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const scraperRoutes = process.env.HOST_ENV !== "render" ? require("./routes/scraperRoutes") : null;
 
-
-
 // ✅ Import routes correctly
 const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/auth");
 const lenderRoutes = require("./routes/lender");
+const lenderAuthRoutes = require("./routes/lenderAuth");
 const loanProgramRoutes = require("./routes/loanPrograms"); 
 const fixAndFlipRoutes = require("./routes/fixAndFlipRoutes");
 const dscrRoutes = require("./routes/dscrRoutes");
@@ -50,6 +49,7 @@ if (scraperRoutes) {
 }
 app.use("/api/auth", authRoutes);
 app.use("/api/lenders", lenderRoutes);
+app.use("/api/lender/auth", lenderAuthRoutes);
 app.use("/api/loan-programs", loanProgramRoutes);
 app.use("/api/fix-and-flip", fixAndFlipRoutes); 
 app.use("/api/dscr", dscrRoutes);                
