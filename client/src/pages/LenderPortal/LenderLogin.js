@@ -1,9 +1,9 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
+import React, { useState, useContext } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { LenderAuthContext } from "../../context/LenderAuthContext";
 
 const LenderLogin = () => {
-  const { login } = useContext(AuthContext);
+  const { loginLender } = useContext(LenderAuthContext);
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -12,22 +12,20 @@ const LenderLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("https://broker-cheetah-backend.onrender.com/api/auth/login", {
+      const res = await fetch("https://broker-cheetah-backend.onrender.com/api/lender/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      
+
       const data = await res.json();
-      
-      if (data.success && data.role === "lender") {
-        login({
+
+      if (data.success) {
+        loginLender({
           email,
-          role: data.role,
-          lenderId: data.lenderId,
-          isAdmin: false,
-          isSuperAdmin: false,
+          lenderUserId: data.lenderUserId,
         });
+
         navigate("/lender/dashboard");
       } else {
         alert("Login failed: Unauthorized or invalid credentials.");
@@ -58,9 +56,13 @@ const LenderLogin = () => {
         />
         <button type="submit">Login</button>
       </form>
-      <p>Don't have an account? <Link to="/lender/signup">Sign Up</Link></p>
+      <p>
+        Don't have an account? <Link to="/lender/signup">Sign Up</Link>
+      </p>
     </div>
   );
 };
 
 export default LenderLogin;
+
+

@@ -43,8 +43,7 @@ router.post('/login', async (req, res) => {
     res.json({ 
       success: true, 
       token, 
-      role: user.role, 
-      lenderId: user.lenderId || null, 
+      role: user.role,  
       isAdmin: user.role === 'admin' || user.role === 'superadmin', 
       isSuperAdmin: user.role === 'superadmin' 
     });
@@ -53,24 +52,6 @@ router.post('/login', async (req, res) => {
     res.json({ success: false, message: 'Login error' });
   }
 });
-
-router.post('/signup-lender', async (req, res) => {
-  try {
-    const { email, password, name } = req.body;
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.json({ success: false, message: 'User already exists.' });
-    }
-    const hashed = await bcrypt.hash(password, 10);
-    const newUser = new User({ email, password: hashed, role: "lender", name });
-    await newUser.save();
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Signup error:', error);
-    res.json({ success: false, message: 'Signup error' });
-  }
-});
-
 
 
 
