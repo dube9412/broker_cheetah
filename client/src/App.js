@@ -46,7 +46,8 @@ import LenderProtectedRoutes from './components/LenderProtectedRoutes';
 import LenderDashboard from './pages/LenderPortal/LenderDashboard';
 import LenderDocuments from './pages/LenderPortal/LenderDocuments';
 import LenderLogin from './pages/LenderPortal/LenderLogin'; // Optional if separate login
-import LenderSignup from '.pages/LenderPortal/LenderSignup';
+import LenderSignup from './pages/LenderPortal/LenderSignup';
+
 
 
 
