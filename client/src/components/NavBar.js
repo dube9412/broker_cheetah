@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { LenderAuthContext } from "../context/LenderAuthContext";
 import logo from "../assets/logo.png";
+import "./NavBar.css"; // ✅ Keeping the CSS
 
 function NavBar() {
   const { isLoggedIn, isAdmin, isSuperAdmin, logout } = useContext(AuthContext);
@@ -57,6 +58,7 @@ function NavBar() {
 }
 
 export default NavBar;
+
 
 
 
