@@ -42,6 +42,8 @@ import HardMoneyClass from "./pages/HardMoneyClass";
 import LessonPage from "./pages/LessonPage";
 import LenderDocuments from './pages/LenderPortal/LenderDocuments';
 import LenderProtectedRoutes from './components/LenderProtectedRoutes';
+import NotFound from './pages/NotFound';
+
 
 
 import lessons from "./data/lessons";

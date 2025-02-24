@@ -11,13 +11,14 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
 
-  const login = (adminFlag, superAdminFlag) => {
+  const login = (userData) => {
     setIsLoggedIn(true);
-    setIsAdmin(adminFlag);
-    setIsSuperAdmin(superAdminFlag);
+    setIsAdmin(userData.isAdmin);
+    setIsSuperAdmin(userData.isSuperAdmin);
     setIsLender(userData.role === 'lender');
     setUser(userData);
   };
+  
 
   const logout = () => {
     setIsLoggedIn(false);
