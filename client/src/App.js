@@ -40,6 +40,10 @@ import ManageLoanPrograms from "./pages/ManageLoanPrograms";
 import FixAndFlipCalc from "./pages/FixAndFlipCalc";
 import HardMoneyClass from "./pages/HardMoneyClass";
 import LessonPage from "./pages/LessonPage";
+import LenderDocuments from './pages/LenderPortal/LenderDocuments';
+import LenderProtectedRoutes from './components/LenderProtectedRoutes';
+
+
 import lessons from "./data/lessons";
 
 
@@ -68,6 +72,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/dashboard" element={<Dashboard />} />
+
               <Route path="/manage-loan-programs/:lenderId" element={<ManageLoanPrograms />} />
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/lenders" element={<AdminLenders />} />
@@ -112,6 +117,15 @@ function App() {
               <Route path="/edit-portfolio-program/:lenderId/:programId" element={<EditPortfolio />} />
               <Route path="/add-ground-up-program/:lenderId" element={<AddGroundUp />} />
               <Route path="/edit-ground-up-program/:lenderId/:programId" element={<EditGroundUp />} />
+
+              {/* Lender Portal Routes (Lender only) */}
+  <Route path="/lender/*" element={<LenderProtectedRoutes />}>
+    <Route path="documents" element={<LenderDocuments />} />
+    {/* other lender routes here */}
+  </Route>
+
+  {/* Fallback Route */}
+  <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
           <footer className="bg-blue-700 text-white p-4 text-center shadow-inner">
