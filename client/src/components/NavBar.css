@@ -1,6 +1,6 @@
 /* NavBar.css */
 .navbar-container {
-    width: 100vw; /* Force navbar to fill full viewport width */
+    width: 100%; /* Force navbar to fill full viewport width */
     background-color: black;
     color: gold;
     padding: 10px;
@@ -8,8 +8,7 @@
   }
   
   .logo-container {
-    max-width: 1200px;
-    width: 100%;
+    width: 95%;
     margin: 0 auto; /* center horizontally */
     display: flex;
     align-items: center;
@@ -28,7 +27,7 @@
   }
   
   .nav-links {
-    max-width: 1200px;
+    max-width: 100%;
     margin: 10px auto 0 auto;
     display: flex;
     flex-wrap: wrap;
@@ -48,7 +47,7 @@
   }
   
   .logout-container {
-    max-width: 1200px;
+    max-width: 100%;
     margin: 10px auto 0 auto;
     display: flex;
     justify-content: center;

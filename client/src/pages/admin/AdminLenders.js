@@ -7,6 +7,8 @@ const AdminLenders = () => {
   const [lenders, setLenders] = useState([]);
   const [loading, setLoading] = useState(true);
   const { isAdmin, isSuperAdmin } = useContext(AuthContext);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc"); // or "desc"
   const navigate = useNavigate();
 
   <AdminNav />
@@ -53,6 +55,19 @@ const AdminLenders = () => {
     }
   };
 
+   // Filter and sort lenders based on user input
+   const filteredLenders = useMemo(() => {
+    return lenders
+      .filter(lender =>
+        lender.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .sort((a, b) =>
+        sortOrder === "asc"
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name)
+      );
+  }, [lenders, searchTerm, sortOrder]);
+
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -74,9 +89,25 @@ const AdminLenders = () => {
       <div style={{ marginBottom: "20px" }}>
         <h2>Actions</h2>
         <button onClick={() => navigate("/add-lender")} style={{ marginRight: "10px" }}>Add Lender</button>
-        <button onClick={() => navigate("/dashboard")} style={{ marginRight: "10px" }}>Go to User Dashboard</button>
-        <button onClick={() => navigate("/select-loan-type")}>Loan Search</button>
       </div>
+      {/* Search Field */}
+      <input
+        type="text"
+        placeholder="Search by name..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ padding: '8px', width: '200px', marginBottom: '20px' }}
+      />
+
+      {/* Sort Dropdown */}
+      <select
+        value={sortOrder}
+        onChange={(e) => setSortOrder(e.target.value)}
+        style={{ padding: '8px', marginLeft: '10px' }}
+      >
+        <option value="asc">Name: A-Z</option>
+        <option value="desc">Name: Z-A</option>
+      </select>
 
       <h3>Lenders</h3>
       <table border="1" cellPadding="6" style={{ marginTop: "1rem" }}>
