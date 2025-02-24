@@ -14,52 +14,45 @@ const [selectedLenderIds, setSelectedLenderIds] = useState({});
 
   <AdminNav />
 
-
   useEffect(() => {
     if (!isAdmin && !isSuperAdmin) {
       navigate("/dashboard");
       return;
     }
-
-    useEffect(() => {
-      if (!isAdmin && !isSuperAdmin) {
-        navigate("/dashboard");
-        return;
+    
+    const fetchLenderUsers = async () => {
+      try {
+        const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin/lender-users");
+        const data = await response.json();
+        if (response.ok) {
+          setLenderUsers(data.lenderUsers);
+        } else {
+          console.error("Failed to fetch lender users:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching lender users:", error);
+      } finally {
+        setLoading(false);
       }
-    
-      const fetchLenderUsers = async () => {
-        try {
-          const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin/lender-users");
-          const data = await response.json();
-          if (response.ok) {
-            setLenderUsers(data.lenderUsers);
-          } else {
-            console.error("Failed to fetch lender users:", data.message);
-          }
-        } catch (error) {
-          console.error("Error fetching lender users:", error);
-        } finally {
-          setLoading(false);
+    };
+  
+    const fetchLenders = async () => {
+      try {
+        const res = await fetch("https://broker-cheetah-backend.onrender.com/api/lenders");
+        const data = await res.json();
+        if (res.ok) {
+          setLenders(data.lenders);
+        } else {
+          console.error("Failed to fetch lenders:", data.message);
         }
-      };
-    
-      const fetchLenders = async () => {
-        try {
-          const res = await fetch("https://broker-cheetah-backend.onrender.com/api/lenders");
-          const data = await res.json();
-          if (res.ok) {
-            setLenders(data.lenders);
-          } else {
-            console.error("Failed to fetch lenders:", data.message);
-          }
-        } catch (error) {
-          console.error("Error fetching lenders:", error);
-        }
-      };
-    
-      fetchLenderUsers();
-      fetchLenders();
-    }, [isAdmin, isSuperAdmin, navigate]);
+      } catch (error) {
+        console.error("Error fetching lenders:", error);
+      }
+    };
+  
+    fetchLenderUsers();
+    fetchLenders();
+  }, [isAdmin, isSuperAdmin, navigate]);
     
 
   const handleApprove = async (id) => {
