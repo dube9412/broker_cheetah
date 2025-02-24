@@ -15,6 +15,7 @@ const dscrRoutes = require("./routes/dscrRoutes");
 const groundUpRoutes = require("./routes/groundUpRoutes");
 const stabilizedBridgeRoutes = require("./routes/stabilizedBridgeRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
+const documentRoutes = require('./routes/documentRoutes');
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use("/api/dscr", dscrRoutes);
 app.use("/api/ground-up", groundUpRoutes);
 app.use("/api/stabilized-bridge", stabilizedBridgeRoutes);
 app.use("/api/portfolio", portfolioRoutes);
+app.use('/api/documents', documentRoutes);
 
 // ✅ Debug: List all available routes after mounting
 app.use((req, res, next) => {

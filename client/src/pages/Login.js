@@ -20,19 +20,25 @@ function Login() {
         if (data.success) {
           alert("Login successful");
           
-          // Pass role-based flags to AuthContext
-          login(data.role === "admin", data.role === "superadmin");
-          
-          // Redirect based on role
-          if (data.role === "superadmin") {
+          // ✅ Pass full role data clearly into your AuthContext
+          login({
+            email: email,
+            isAdmin: data.isAdmin,
+            isSuperAdmin: data.isSuperAdmin,
+            role: data.role,
+            lenderId: data.lenderId
+          });
+  
+          // ✅ Redirect clearly based on role
+          if (data.role === "superadmin" || data.role === "admin") {
             navigate("/admin-dashboard");
-          } else if (data.role === "admin") {
-            navigate("/admin-dashboard");
+          } else if (data.role === "lender") {
+            navigate("/lender/documents"); // <-- direct lenders to their new portal
           } else {
-            navigate("/dashboard");
+            navigate("/dashboard"); // regular user/broker
           }
         } else {
-          alert("Login failed");
+          alert("Login failed: " + data.message);
         }
       })
       .catch(err => {
@@ -40,6 +46,7 @@ function Login() {
         alert("An error occurred during login.");
       });
   };
+  
 
   return (
     <div>
