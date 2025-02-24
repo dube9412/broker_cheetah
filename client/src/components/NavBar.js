@@ -36,8 +36,8 @@ function NavBar() {
             {/* ✅ Admins & Superadmins get Admin Dashboard */}
             {(isAdmin || isSuperAdmin) && <Link to="/admin-dashboard">Admin Dashboard</Link>}
             
-            {/* ✅ Show Lender Portal link for Lenders, Admins, and Superadmins */}
-            {(isLenderLoggedIn || isAdmin || isSuperAdmin) && <Link to="/lender/dashboard">Lender Portal</Link>}
+            {/* ✅ Lender Portal ONLY for lenders */}
+            {isLenderLoggedIn && <Link to="/lender/dashboard">Lender Portal</Link>}
             
             <Link to="/select-loan-type">Lender Search</Link>
             <button onClick={handleShare}>Share</button>
@@ -58,6 +58,7 @@ function NavBar() {
 }
 
 export default NavBar;
+
 
 
 
