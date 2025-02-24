@@ -1,10 +1,8 @@
-import React, { createContext, useState, useContext } from "react";
-import { AuthContext } from "./AuthContext"; // Import main auth context
+import React, { createContext, useState } from "react";
 
 export const LenderAuthContext = createContext();
 
 export function LenderAuthProvider({ children }) {
-  const { isAdmin, isSuperAdmin } = useContext(AuthContext); // ✅ Include Superadmins
   const [isLenderLoggedIn, setIsLenderLoggedIn] = useState(false);
   const [lenderUser, setLenderUser] = useState(null);
   const [lenderUserId, setLenderUserId] = useState(null);
@@ -24,7 +22,7 @@ export function LenderAuthProvider({ children }) {
   return (
     <LenderAuthContext.Provider
       value={{
-        isLenderLoggedIn: isLenderLoggedIn || isAdmin || isSuperAdmin, // ✅ Superadmins get access too
+        isLenderLoggedIn, // ✅ Only tracks lender logins now
         lenderUser,
         lenderUserId,
         loginLender,
@@ -35,4 +33,5 @@ export function LenderAuthProvider({ children }) {
     </LenderAuthContext.Provider>
   );
 }
+
 
