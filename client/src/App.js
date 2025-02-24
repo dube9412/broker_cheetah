@@ -40,13 +40,17 @@ import ManageLoanPrograms from "./pages/ManageLoanPrograms";
 import FixAndFlipCalc from "./pages/FixAndFlipCalc";
 import HardMoneyClass from "./pages/HardMoneyClass";
 import LessonPage from "./pages/LessonPage";
-import LenderDocuments from './pages/LenderPortal/LenderDocuments';
+
+
 import LenderProtectedRoutes from './components/LenderProtectedRoutes';
+import LenderDashboard from './pages/LenderPortal/LenderDashboard';
+import LenderDocuments from './pages/LenderPortal/LenderDocuments';
+import LenderLogin from './pages/LenderPortal/LenderLogin'; // Optional if separate login
+import LenderSignup from '.pages/LenderPortal/LenderSignup';
+
+
+
 import NotFound from './pages/NotFound';
-
-
-
-import lessons from "./data/lessons";
 
 
 // Admin-only
@@ -74,6 +78,13 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/dashboard" element={<Dashboard />} />
+
+              <Route path="/lender/login" element={<LenderLogin />} />
+              <Route path="/lender/signup" element={<LenderSignup />} />
+
+
+              {/* Lender-specific login (optional but recommended) */}
+  <Route path="/lender/login" element={<LenderLogin />} />
 
               <Route path="/manage-loan-programs/:lenderId" element={<ManageLoanPrograms />} />
               <Route path="/admin/users" element={<AdminUsers />} />
@@ -120,12 +131,14 @@ function App() {
               <Route path="/add-ground-up-program/:lenderId" element={<AddGroundUp />} />
               <Route path="/edit-ground-up-program/:lenderId/:programId" element={<EditGroundUp />} />
 
-              {/* Lender Portal Routes (Lender only) */}
+             {/* Lender Portal (protected) */}
   <Route path="/lender/*" element={<LenderProtectedRoutes />}>
+    <Route path="dashboard" element={<LenderDashboard />} />
     <Route path="documents" element={<LenderDocuments />} />
-    {/* other lender routes here */}
+    
+    {/* more lender-specific routes later */}
   </Route>
-
+  
   {/* Fallback Route */}
   <Route path="*" element={<NotFound />} />
             </Routes>
