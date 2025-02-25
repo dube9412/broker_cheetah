@@ -8,9 +8,10 @@ function NavBar() {
   const { isLoggedIn, isAdmin, isSuperAdmin, logout } = useContext(AuthContext);
 
   useEffect(() => {
-    console.log("Navbar: User changed:", user);
-  }, [user]); // ✅ Ensure navbar updates when user changes
+    console.log("Navbar: Auth state changed:", { isLoggedIn, isAdmin, isSuperAdmin });
+  }, [isLoggedIn, isAdmin, isSuperAdmin]); 
   
+
   const handleLogout = () => {
     logout();
     window.location.href = "/";
