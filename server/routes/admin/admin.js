@@ -1,9 +1,9 @@
 // routes/admin/admin.js (CORRECT and COMPLETE - Admin Actions for Lender Users)
 const express = require('express');
 const router = express.Router();
-const LenderUser = require('../models/LenderUser'); // Path to LenderUser
-const Lender = require('../models/Lender'); // Path to Lender model
-const verifyToken = require('../middleware/verifyToken');
+const LenderUser = require('../../models/LenderUser'); // Path to LenderUser
+const Lender = require('../../models/Lender'); // Path to Lender model
+const verifyToken = require('../../middleware/verifyToken');
 
 // GET all lender users (with optional filtering)
 router.get('/lender-users', verifyToken, async (req, res) => {
