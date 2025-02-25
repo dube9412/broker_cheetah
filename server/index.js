@@ -21,21 +21,19 @@ const app = express();
 
 // ✅ Enable CORS for your frontend (Vercel domain)
 const corsOptions = {
-  origin: 'https://www.brokercheetah.com', // Allow requests from this frontend domain, change on new builds
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: 'https://www.brokercheetah.com', // Allow requests from this frontend domain, change on new builds
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 // ✅ Middleware for CORS and JSON parsing
 app.use(cors(corsOptions));  // Corrected order
 app.use(express.json());
 
-
 // ✅ Connect to MongoDB
 mongoose.connect("mongodb+srv://dube9412:ReGuLaRoLdPaSsWoRd@brokercheetahdb.rdbel.mongodb.net/?retryWrites=true&w=majority&appName=BrokerCheetahDB", {})
   .then(() => console.log("✅ MongoDB connected"))
-.catch((err) => console.error("❌ MongoDB connection error:", err));
-
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // ✅ API Routes
 app.use("/api/admin", adminRoutes);         // Admin routes (including lender user management by admins)
@@ -52,25 +50,26 @@ app.use("/api/portfolio", portfolioRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/lender-users', lenderUserRoutes); // Individual lender *user* data (for LenderDashboard)
 if (scraperRoutes) {
-  app.use("/api/scraper", scraperRoutes);
+  app.use("/api/scraper", scraperRoutes);
 }
 app.use('/uploads', express.static('uploads'));//serve logo
 
 // ✅ Debug: List all available routes after mounting
 app.use((req, res, next) => {
-  console.log(`🔹 Incoming Request: ${req.method} ${req.originalUrl}`);
-    next();
+  console.log(`🔹 Incoming Request: ${req.method} ${req.originalUrl}`);
+  next();
 });
 
 // ✅ Log all available routes in the application
 console.log("✅ Available Routes:");
 setTimeout(() => {
-  app._router.stack
-    .filter(r => r.route)
-    .forEach(r => {
-      console.log(`✅ ${Object.keys(r.route.methods).join(", ").toUpperCase()} ${r.route.path}`);
-    });
+  app._router.stack
+    .filter(r => r.route)
+    .forEach(r => {
+      console.log(`✅ ${Object.keys(r.route.methods).join(", ").toUpperCase()} ${r.route.path}`);
+    });
 }, 1000);
+
 // ✅ Start the server
 const PORT = process.env.PORT || 5000; // Use 5000 as a fallback
 app.listen(PORT, () => {

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const LenderUser = require("../models/LenderUser");
+const LenderUser = require("../models/LenderUser"); // Ensure the case matches the file name
 
 // GET all lender users (Admin Only)
 router.get("/", async (req, res) => {

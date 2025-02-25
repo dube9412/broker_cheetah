@@ -1,7 +1,7 @@
 // routes/lenderUsers.js (For INDIVIDUAL LENDER USER actions - NOT ADMIN)
 const express = require('express');
 const router = express.Router();
-const LenderUser = require('../models/LenderUser');
+const LenderUser = require('../models/LenderUser'); // Ensure the case matches the file name
 const verifyToken = require('../middleware/verifyToken');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
@@ -35,12 +35,12 @@ router.put('/:lenderUserId', verifyToken, async (req, res) => {
         if (req.user.role !== 'lender' || req.user.lenderUserId !== req.params.lenderUserId) {
             return res.status(403).json({ success: false, message: 'Unauthorized' });
         }
-			//Prevent user from updating sensitive information.
-            const updates = { ...req.body };
-            delete updates.approved;
-            delete updates.lenderId;
-            delete updates.suspended;
-            delete updates.role;
+        // Prevent user from updating sensitive information.
+        const updates = { ...req.body };
+        delete updates.approved;
+        delete updates.lenderId;
+        delete updates.suspended;
+        delete updates.role;
         const updatedLenderUser = await LenderUser.findByIdAndUpdate(
             req.params.lenderUserId,
             updates, // Only update allowed fields
@@ -88,6 +88,5 @@ router.post('/:lenderUserId/upload-logo', verifyToken, upload.single('logo'), as
         res.status(500).json({ success: false, message: 'Server error during logo upload' });
     }
 });
-
 
 module.exports = router;
