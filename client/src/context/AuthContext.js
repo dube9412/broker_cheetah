@@ -1,67 +1,23 @@
-// src/context/LenderAuthContext.js
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState } from "react";
 
-export const LenderAuthContext = createContext();
 export const AuthContext = createContext();
 
-export const LenderAuthProvider = ({ children }) => {
-  const [isLenderLoggedIn, setIsLenderLoggedIn] = useState(false);
-  const [lenderUser, setLenderUser] = useState(null); // You might not need this
-  const [lenderUserId, setLenderUserId] = useState(null);
-
-  // Restore login state from localStorage
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token"); // Correct key
-    const storedLenderUserId = localStorage.getItem("lenderUserId");
-
-    if (storedToken && storedLenderUserId) {
-      setIsLenderLoggedIn(true);
-      setLenderUserId(storedLenderUserId);
-    }
-  }, []);
-
-    const loginLender = (data) => {
-        setIsLenderLoggedIn(true);
-        setLenderUserId(data.lenderUserId); // Assuming data contains lenderUserId
-
-        // Store in localStorage
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('lenderUserId', data.lenderUserId);
-
-    };
-
-    const logoutLender = () => {
-        setIsLenderLoggedIn(false);
-        setLenderUser(null);
-        setLenderUserId(null);
-
-        // Clear localStorage
-        localStorage.removeItem('token');
-        localStorage.removeItem('lenderUserId');
-    };
-
-    return (
-        <LenderAuthContext.Provider
-            value={{
-                isLenderLoggedIn,
-                lenderUser, // Probably not needed on the dashboard
-                lenderUserId,
-                loginLender,
-                logoutLender,
-            }}
-        >
-            {children}
-        </LenderAuthContext.Provider>
-    );
-};
-
 export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+
+  const login = (userData) => {
+    console.log("Logging in user:", userData); // Debug log
+    setUser(userData); // ✅ Make sure this function exists
+  };
+
+  const logout = () => {
+    setUser(null);
+  };
+
   return (
-    <AuthContext.Provider
-      value={{
-      }}
-    >
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
