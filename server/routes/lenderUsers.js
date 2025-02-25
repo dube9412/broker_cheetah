@@ -1,7 +1,7 @@
 // routes/lenderUsers.js (For INDIVIDUAL LENDER USER actions - NOT ADMIN)
 const express = require('express');
 const router = express.Router();
-const LenderUser = require('../models/lenderUser');
+const LenderUser = require('../models/LenderUser');
 const verifyToken = require('../middleware/verifyToken');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
@@ -70,7 +70,7 @@ router.post('/:lenderUserId/upload-logo', verifyToken, upload.single('logo'), as
             return res.status(400).json({ success: false, message: 'No file uploaded' });
         }
 
-        const logoUrl = ${req.protocol}://${req.get('host')}/uploads/${req.file.filename};
+        const logoUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
 
         const updatedLenderUser = await LenderUser.findByIdAndUpdate(
             req.params.lenderUserId,
