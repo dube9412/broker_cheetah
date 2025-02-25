@@ -2,6 +2,7 @@
 import React, { createContext, useState, useEffect } from "react";
 
 export const LenderAuthContext = createContext();
+export const AuthContext = createContext();
 
 export const LenderAuthProvider = ({ children }) => {
   const [isLenderLoggedIn, setIsLenderLoggedIn] = useState(false);
@@ -52,4 +53,15 @@ export const LenderAuthProvider = ({ children }) => {
             {children}
         </LenderAuthContext.Provider>
     );
+};
+
+export const AuthProvider = ({ children }) => {
+  return (
+    <AuthContext.Provider
+      value={{
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
