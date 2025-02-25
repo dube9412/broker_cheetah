@@ -15,6 +15,7 @@ const groundUpRoutes = require("./routes/groundUpRoutes");
 const stabilizedBridgeRoutes = require("./routes/stabilizedBridgeRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
 const documentRoutes = require('./routes/documentRoutes');
+const lenderUserRoutes = require('./routes/lenderUsers'); // *** ADD THIS ***
 
 const app = express();
 
@@ -49,7 +50,7 @@ if (scraperRoutes) {
 }
 app.use("/api/auth", authRoutes);
 app.use("/api/lenders", lenderRoutes);
-app.use("/api/lender/auth", lenderAuthRoutes);
+app.use("/api/lender", lenderAuthRoutes);
 app.use("/api/loan-programs", loanProgramRoutes);
 app.use("/api/fix-and-flip", fixAndFlipRoutes); 
 app.use("/api/dscr", dscrRoutes);                
@@ -57,6 +58,8 @@ app.use("/api/ground-up", groundUpRoutes);
 app.use("/api/stabilized-bridge", stabilizedBridgeRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use('/api/documents', documentRoutes);
+app.use('/api/lender-users', lenderUserRoutes); // *** ADD THIS *** - Lender user data
+
 
 // ✅ Debug: List all available routes after mounting
 app.use((req, res, next) => {
