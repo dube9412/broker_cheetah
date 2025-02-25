@@ -1,14 +1,24 @@
-const User = require('../models/user');
+const LenderUser = require("../models/lenderUser");
 
-// Assign lender to user explicitly
+// ✅ Assign a lender to a lender user
 exports.assignLenderToUser = async (req, res) => {
   const { userId, lenderId } = req.body;
+
   try {
-    await User.findByIdAndUpdate(userId, { role: 'lender', lenderId });
+    const lenderUser = await LenderUser.findById(userId);
+    if (!lenderUser) {
+      return res.status(404).json({ message: "Lender user not found." });
+    }
+
+    lenderUser.lenderId = lenderId; // ✅ Assign the lender ID
+    await lenderUser.save();
+
     res.status(200).json({ success: true, message: "Lender assigned successfully." });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("❌ Error assigning lender:", error);
+    res.status(500).json({ success: false, message: "Failed to assign lender." });
   }
 };
+
 
   

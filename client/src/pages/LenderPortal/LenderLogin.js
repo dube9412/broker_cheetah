@@ -26,16 +26,21 @@ const LenderLogin = () => {
           lenderUserId: data.lenderUserId,
         });
 
-        navigate("/lender/dashboard");
-      } else {
-        alert("Login failed: Unauthorized or invalid credentials.");
+         // ✅ Redirect based on assignment status
+         if (!data.lenderUserId) {
+            navigate("/lender/awaiting-approval"); // Redirect to awaiting assignment page
+          } else {
+            navigate("/lender/dashboard"); // Proceed to dashboard if assigned
+          }
+        } else {
+          alert("Login failed: Unauthorized or invalid credentials.");
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("Error during login.");
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Error during login.");
-    }
-  };
-
+    };
+    
   return (
     <div className="lender-login" style={{ padding: "20px" }}>
       <h2>Lender Login</h2>
