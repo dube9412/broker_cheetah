@@ -6,6 +6,8 @@ const adminRoutes = require("./routes/admin/admin"); //  Admin routes
 const authRoutes = require("./routes/auth");        // General user/admin auth
 const lenderRoutes = require('./routes/lenders');   // Lender *companies*
 const lenderAuthRoutes = require("./routes/lenderAuth"); // Lender *user* auth
+const lenderUserRoutes = require('./routes/lenderUsers'); // Individual lender *user* data
+const adminLenderUserRoutes = require("./routes/adminLenderUserRoutes");
 const loanProgramRoutes = require("./routes/loanPrograms");
 const fixAndFlipRoutes = require("./routes/fixAndFlipRoutes");
 const dscrRoutes = require("./routes/dscrRoutes");
@@ -13,7 +15,6 @@ const groundUpRoutes = require("./routes/groundUpRoutes");
 const stabilizedBridgeRoutes = require("./routes/stabilizedBridgeRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
 const documentRoutes = require('./routes/documentRoutes');
-const lenderUserRoutes = require('./routes/lenderUsers'); // Individual lender *user* data
 const scraperRoutes = process.env.HOST_ENV !== "render" ? require("./routes/scraperRoutes") : null;//added for render
 
 const app = express();
@@ -44,7 +45,8 @@ mongoose
 app.use("/api/admin", adminRoutes);         // Admin routes (including lender user management by admins)
 app.use("/api/auth", authRoutes);           // General user/admin auth
 app.use("/api/lenders", lenderRoutes);  // Lender *companies* (list of lenders)
-app.use("/api/lender", lenderAuthRoutes);    // Lender *user* signup/login
+app.use("/api/lender-auth", lenderAuthRoutes);    // Lender *user* signup/login
+app.use("/api/admin-lender-users", adminLenderUserRoutes); // Admin actions for lender users
 app.use("/api/loan-programs", loanProgramRoutes);
 app.use("/api/fix-and-flip", fixAndFlipRoutes);
 app.use("/api/dscr", dscrRoutes);
