@@ -4,6 +4,10 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+ const isLoggedIn = !!user; // ✅ Boolean for login state
+  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
+  const isSuperAdmin = user?.role === "superadmin";
+
 
   useEffect(() => {
     // ✅ Restore login state from localStorage
@@ -24,13 +28,13 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("userRole", userData.role);
   };
 
-  const logout = () => {s
+  const logout = () => {setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("userRole");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoggedIn, isAdmin, isSuperAdmin, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
