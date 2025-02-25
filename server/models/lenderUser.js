@@ -7,6 +7,8 @@ const lenderUserSchema = new mongoose.Schema({
   phone: { type: String, required: false },
   company: { type: String, required: false },
   role: { type: String, default: "lender" },
+  approved: { type: Boolean, default: false }, //user account approval
+  lenderId: { type: String, default: null }, //additional added line
   createdAt: { type: Date, default: Date.now },
 });
 

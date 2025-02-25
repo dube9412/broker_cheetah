@@ -1,67 +1,75 @@
-const express = require("express");
+// routes/lenderAuth.js (CORRECT - For Lender User Login/Signup)
+const express = require('express');
 const router = express.Router();
-const LenderUser = require("../models/lenderUser");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const LenderUser = require('./models/LenderUser'); // Corrected relative path
 
-const JWT_SECRET = process.env.JWT_SECRET || "YOUR_SECRET_KEY";
+// Lender User Signup Route
+router.post('/signup', async (req, res) => {
+    try {
+        const { name, email, password, phone, company } = req.body;
 
-// ✅ Lender Signup Route
-router.post("/signup", async (req, res) => {
-  try {
-    const { name, email, password, phone, company } = req.body;
+        const existingUser = await LenderUser.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: "Lender user already exists." });
+        }
 
-    const existingLender = await LenderUser.findOne({ email });
-    if (existingLender) {
-      return res.status(400).json({ success: false, message: "Lender user already exists." });
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newLenderUser = new LenderUser({
+            name,
+            email,
+            password: hashedPassword,
+            phone,
+            company,
+            // approved and lenderId are handled by defaults (false and null) in the LenderUser schema
+        });
+
+        await newLenderUser.save();
+        res.status(201).json({ success: true, message: "Lender user account created successfully! Awaiting assignment." }); // 201 Created
+    } catch (error) {
+        console.error("Lender User Signup Error:", error);
+        res.status(500).json({ success: false, message: "Signup error" });
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newLenderUser = new LenderUser({
-      name,
-      email,
-      password: hashedPassword,
-      phone,
-      company,
-    });
-
-    await newLenderUser.save();
-
-    res.json({ success: true, message: "Lender account created successfully!" });
-  } catch (error) {
-    console.error("Lender Signup Error:", error);
-    res.status(500).json({ success: false, message: "Signup error" });
-  }
 });
 
-// ✅ Lender Login Route
-router.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const lenderUser = await LenderUser.findOne({ email });
+// Lender User Login Route
+router.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const lenderUser = await LenderUser.findOne({ email });
 
-    if (!lenderUser) {
-      return res.status(400).json({ success: false, message: "Invalid credentials." });
+        if (!lenderUser) {
+            return res.status(401).json({ success: false, message: 'Invalid credentials.' });
+        }
+
+        // *** CRITICAL: CHECK FOR APPROVED STATUS ***
+        if (!lenderUser.approved) {
+            return res.status(403).json({ success: false, message: 'Account awaiting admin approval.' });
+        }
+
+        const isMatch = await bcrypt.compare(password, lenderUser.password);
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: 'Invalid credentials.' });
+        }
+
+        const token = jwt.sign({ lenderUserId: lenderUser._id, role: "lender" }, process.env.JWT_SECRET, { expiresIn: "1d" });
+
+        // *** CRITICAL: INCLUDE approved AND lenderId IN RESPONSE ***
+        res.json({
+            success: true,
+            token,
+            lenderUserId: lenderUser._id,
+            role: 'lender',
+            approved: lenderUser.approved, //  Essential for frontend logic
+            lenderId: lenderUser.lenderId, //  Essential; might be null
+        });
+
+    } catch (error) {
+        console.error("Lender User Login Error:", error);
+        res.status(500).json({ success: false, message: "Login error" });
     }
-
-    const match = await bcrypt.compare(password, lenderUser.password);
-    if (!match) {
-      return res.status(400).json({ success: false, message: "Invalid credentials." });
-    }
-
-    const token = jwt.sign({ lenderUserId: lenderUser._id, role: "lender" }, JWT_SECRET, { expiresIn: "1d" });
-
-    res.json({
-      success: true,
-      token,
-      lenderUserId: lenderUser._id,
-      role: "lender",
-    });
-  } catch (error) {
-    console.error("Lender Login Error:", error);
-    res.status(500).json({ success: false, message: "Login error" });
-  }
 });
 
 module.exports = router;

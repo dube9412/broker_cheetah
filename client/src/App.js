@@ -30,7 +30,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminLenders from "./pages/admin/AdminLenders"; 
 import AdminLenderUsers from "./pages/admin/AdminLenderUsers";
-import LenderAwaitingApproval from "./pages/LenderPortal/LenderAwaitingApproval";
+import LenderAwaitingAssignment from './pages/LenderPortal/LenderAwaitingAssignment'; //Import
 import AdminLenderApprovals from "./pages/admin/AdminLenderApprovals";
 import AdminHelpTickets from "./pages/admin/AdminHelpTickets";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
@@ -91,7 +91,7 @@ function App() {
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/lenders" element={<AdminLenders />} />
               <Route path="/admin/lender-users" element={<AdminLenderUsers />} />
-              <Route path="/lender/awaiting-approval" element={<LenderAwaitingApproval />} />
+              <Route path="/lender/awaiting-assignment" element={<LenderAwaitingAssignment />} />
               <Route
                   path="/admin/lender-approvals"
                   element={
