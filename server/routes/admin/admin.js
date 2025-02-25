@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const LenderUser = require('../../models/lenderUser'); // Path to LenderUser
-const Lender = require('../../models/Lender'); // Path to Lender model.
+const Lender = require('../../models/Lender'); // Path to Lender model
 const verifyToken = require('../../middleware/verifyToken');
 
 // GET all lender users (with optional filtering)
@@ -24,7 +24,7 @@ router.get('/lender-users', verifyToken, async (req, res) => {
                 query.suspended = false;
             }
         }
-        //search
+        //Search
         if(req.query.search){
             query.$or = [
                 { name: { $regex: req.query.search, $options: 'i' } }, // Case-insensitive search
@@ -33,16 +33,18 @@ router.get('/lender-users', verifyToken, async (req, res) => {
         }
 
         const lenderUsers = await LenderUser.find(query).select('-password'); // Exclude password
-        //get lender names
+
+        // Fetch all lenders (for populating lenderName)
         const lenders = await Lender.find();
+
+        // Map lender users to include lenderName
         const lenderUsersWithLenderName = lenderUsers.map(user => {
             const lender = lenders.find(l => l._id.toString() === user.lenderId);
             return {
-                ...user.toObject(),
-                lenderName: lender ? lender.name : 'N/A'
-            }
+                ...user.toObject(), // Convert to plain JavaScript object
+                lenderName: lender ? lender.name : 'N/A', // Add lenderName
+            };
         });
-
 
         res.json(lenderUsersWithLenderName);
 
@@ -87,7 +89,7 @@ router.post('/lender-users/:id/suspend', verifyToken, async (req, res) => {
             req.params.id,
             { suspended: true },
             { new: true }
-        ).select('-password');;
+        ).select('-password');
 
         if (!updatedUser) {
             return res.status(404).json({ success: false, message: 'Lender user not found' });
