@@ -17,6 +17,9 @@ function Login() {
     })
       .then(res => {
         if (!res.ok) {
+          if (res.status === 404) {
+            throw new Error('Endpoint not found');
+          }
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         return res.json();
@@ -48,7 +51,7 @@ function Login() {
       })
       .catch(err => {
         console.error("Login error:", err);
-        alert("An error occurred during login.");
+        alert("An error occurred during login: " + err.message);
       });
   };
   
