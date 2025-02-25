@@ -2,9 +2,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 // ✅ Import routes correctly
-const adminRoutes = require("./routes/admin/admin"); //  Admin routes
+const adminRoutes = require("./routes/adminRoutes"); //  Admin routes
 const authRoutes = require("./routes/auth");        // General user/admin auth
-const lenderRoutes = require('./routes/lenders');   // Lender *companies*
+const lenderRoutes = require('./routes/lender');   // Lender *companies*
 const lenderAuthRoutes = require("./routes/lenderAuth"); // Lender *user* auth
 const lenderUserRoutes = require('./routes/lenderUsers'); // Individual lender *user* data
 const adminLenderUserRoutes = require("./routes/adminLenderUserRoutes");
