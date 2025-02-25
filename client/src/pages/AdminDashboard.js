@@ -13,6 +13,7 @@ const AdminDashboard = () => {
         <button onClick={() => navigate("/admin/users")} className="admin-button">Manage Users</button>
         <button onClick={() => navigate("/admin/lenders")} className="admin-button">Manage Lenders</button>
         <button onClick={() => navigate("/admin/lender-users")} className="admin-button">Lender Users</button>
+        <button onClick={() => navigate("/admin/lender-approvals")}> Approve Lender Edits </button>
         <button onClick={() => navigate("/admin/help-tickets")} className="admin-button">Help Tickets</button>
         <button onClick={() => navigate("/admin/analytics")} className="admin-button">Analytics</button>
         <button onClick={() => navigate("/admin/scrapers")} className="admin-button">Scraper Tools</button>

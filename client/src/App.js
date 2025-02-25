@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
+import { LenderAuthProvider } from "./context/LenderAuthContext"; // ✅ Import LenderAuthProvider
 import RequestQuote from "./components/RequestQuote";
 import { useContext } from "react";
 
@@ -29,6 +30,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminLenders from "./pages/admin/AdminLenders"; 
 import AdminLenderUsers from "./pages/admin/AdminLenderUsers";
+import AdminLenderApprovals from "./pages/admin/AdminLenderApprovals";
 import AdminHelpTickets from "./pages/admin/AdminHelpTickets";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminScrapers from "./pages/admin/AdminScrapers";
@@ -70,27 +72,32 @@ const ProtectedAdminRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          <NavBar />
-          <div className="container mx-auto p-6">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+      <LenderAuthProvider> {/* ✅ Add LenderAuthProvider here */}
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            <NavBar />
+            <div className="container mx-auto p-6">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/dashboard" element={<Dashboard />} />
 
-              <Route path="/lender/login" element={<LenderLogin />} />
-              <Route path="/lender/signup" element={<LenderSignup />} />
-
-
-              {/* Lender-specific login (optional but recommended) */}
-  <Route path="/lender/login" element={<LenderLogin />} />
+                <Route path="/lender/login" element={<LenderLogin />} />
+                <Route path="/lender/signup" element={<LenderSignup />} />
 
               <Route path="/manage-loan-programs/:lenderId" element={<ManageLoanPrograms />} />
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/lenders" element={<AdminLenders />} />
               <Route path="/admin/lender-users" element={<AdminLenderUsers />} />
+              <Route
+                  path="/admin/lender-approvals"
+                  element={
+                    <ProtectedAdminRoute>
+                      <AdminLenderApprovals />
+                    </ProtectedAdminRoute>
+                  }
+                />
               <Route path="/admin/help-tickets" element={<AdminHelpTickets />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/scrapers" element={<AdminScrapers />} />
@@ -149,6 +156,7 @@ function App() {
           </footer>
         </div>
       </Router>
+      </LenderAuthProvider>
     </AuthProvider>
   );
 }
