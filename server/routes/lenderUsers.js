@@ -15,13 +15,13 @@ router.get('/:lenderUserId', verifyToken, async (req, res) => {
             return res.status(403).json({ success: false, message: 'Unauthorized' });
         }
 
-        const lenderUser = await LenderUser.findById(req.params.lenderUserId).select('-password');
+        const LenderUser = await LenderUser.findById(req.params.lenderUserId).select('-password');
 
-        if (!lenderUser) {
+        if (!LenderUser) {
             return res.status(404).json({ success: false, message: 'Lender user not found' });
         }
 
-        res.json(lenderUser);
+        res.json(LenderUser);
     } catch (error) {
         console.error("Error fetching lender user:", error);
         res.status(500).json({ success: false, message: "Server error" });
