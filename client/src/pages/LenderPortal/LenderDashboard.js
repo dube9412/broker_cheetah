@@ -55,7 +55,6 @@ const LenderDashboard = () => {
     };
 
     const handleSubmitEdits = async () => {
-        // No need to get lenderUserId from localStorage; it's in context
         const token = localStorage.getItem('token');
 
         try {
@@ -66,7 +65,7 @@ const LenderDashboard = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify( pendingEdits ),
+                body: JSON.stringify(pendingEdits),
             });
             const data = await response.json();
             if (response.ok) {
@@ -83,7 +82,6 @@ const LenderDashboard = () => {
     };
 
     const handleLogoUpload = async (e) => {
-        // No need to get lenderUserId from localStorage; it's in context
         const token = localStorage.getItem('token');
         const file = e.target.files[0];
         setLogo(file);
@@ -165,7 +163,7 @@ const LenderDashboard = () => {
                     </div>
 
                     <div className="lender-actions">
-                        <button onClick={() => navigate(/lender/loan-programs/${lenderUserInfo.lenderId})}>
+                        <button onClick={() => navigate(`/lender/loan-programs/${lenderUserInfo.lenderId}`)}>
                             Manage Loan Programs
                         </button>
                         <button onClick={() => navigate("/lender/documents")}>

@@ -15,7 +15,7 @@ const LenderSignup = () => {
         e.preventDefault();
         try {
             // *** REVERTED TO HARDCODED URL ***
-            const res = await fetch("https://broker-cheetah-backend.onrender.com/api/lender/signup", {
+            const res = await fetch("https://broker-cheetah-backend.onrender.com/api/lender-users/signup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, email, password, phone, company }),
