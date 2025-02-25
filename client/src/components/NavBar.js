@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import logo from "../assets/logo.png";
@@ -7,6 +7,10 @@ import "./NavBar.css";
 function NavBar() {
   const { isLoggedIn, isAdmin, isSuperAdmin, logout } = useContext(AuthContext);
 
+  useEffect(() => {
+    console.log("Navbar: User changed:", user);
+  }, [user]); // ✅ Ensure navbar updates when user changes
+  
   const handleLogout = () => {
     logout();
     window.location.href = "/";
