@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const adminController = require('../controllers/adminController');
+const LenderUser = require("../models/lenderUser");
 
 // ✅ GET all users (Admin Only)
 router.get("/users", async (req, res) => {
@@ -128,7 +129,7 @@ router.post("/toggle-optin", async (req, res) => {
   }
 });
 
-router.post('/assign-lender', adminController.assignLenderToUser);
+router.post('/assign-lender', adminController.assignLenderToUser);  //THIS RIGHT HERE HAS NO FUCKING CODE UNDER IT.  SHOULDN'T IT
 
 const HelpTicket = require("../models/HelpTicket");
 
