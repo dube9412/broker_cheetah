@@ -15,20 +15,21 @@ function Login() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     })
-      .then(res => {
-        if (!res.ok) {
-          if (res.status === 404) {
-            throw new Error('Endpoint not found');
-          }
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => {
+        console.log("Login API Response:", data); // ✅ Log response
+  
         if (data.success) {
           alert("Login successful");
-          
-          // ✅ Pass full role data clearly into your AuthContext
+          console.log("Storing user:", {
+            email: email,
+            isAdmin: data.isAdmin,
+            isSuperAdmin: data.isSuperAdmin,
+            role: data.role,
+            lenderId: data.lenderId
+          });
+  
+          // ✅ Ensure login function updates AuthContext
           login({
             email: email,
             isAdmin: data.isAdmin,
@@ -37,13 +38,16 @@ function Login() {
             lenderId: data.lenderId
           });
   
-          // ✅ Redirect clearly based on role
+          // ✅ Check if navigation is actually happening
           if (data.role === "superadmin" || data.role === "admin") {
+            console.log("Redirecting to Admin Dashboard...");
             navigate("/admin-dashboard");
           } else if (data.role === "lender") {
-            navigate("/lender/documents"); // <-- direct lenders to their new portal
+            console.log("Redirecting to Lender Dashboard...");
+            navigate("/lender/documents");
           } else {
-            navigate("/dashboard"); // regular user/broker
+            console.log("Redirecting to User Dashboard...");
+            navigate("/dashboard");
           }
         } else {
           alert("Login failed: " + data.message);
