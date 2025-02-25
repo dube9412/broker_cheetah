@@ -1,4 +1,3 @@
-// models/LenderUser.js (Add suspended field)
 const mongoose = require("mongoose");
 
 const lenderUserSchema = new mongoose.Schema({

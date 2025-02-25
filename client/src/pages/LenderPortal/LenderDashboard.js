@@ -23,9 +23,9 @@ const LenderDashboard = () => {
         const fetchLenderUserInfo = async () => {
             try {
                 // *** HARDCODED URL ***
-                const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}`, {
+                const response = await fetch(https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}, {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': Bearer ${token},
                     },
                 });
                 const data = await response.json();
@@ -60,11 +60,11 @@ const LenderDashboard = () => {
 
         try {
             // *** HARDCODED URL ***
-            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}`, {
+            const response = await fetch(https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}, {
                 method: 'PUT', // Or PATCH
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': Bearer ${token},
                 },
                 body: JSON.stringify( pendingEdits ),
             });
@@ -94,10 +94,10 @@ const LenderDashboard = () => {
 
         try {
             // *** HARDCODED URL ***
-            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}/upload-logo`, {
+            const response = await fetch(https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}/upload-logo, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': Bearer ${token},
                 },
                 body: formData,
             });
@@ -165,7 +165,7 @@ const LenderDashboard = () => {
                     </div>
 
                     <div className="lender-actions">
-                        <button onClick={() => navigate(`/lender/loan-programs/${lenderUserInfo.lenderId}`)}>
+                        <button onClick={() => navigate(/lender/loan-programs/${lenderUserInfo.lenderId})}>
                             Manage Loan Programs
                         </button>
                         <button onClick={() => navigate("/lender/documents")}>
