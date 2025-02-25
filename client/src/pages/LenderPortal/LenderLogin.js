@@ -1,4 +1,4 @@
-// LenderLogin.js (CORRECTED)
+// LenderLogin.js (TEMPORARY HARDCODED URL)
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -6,13 +6,14 @@ const LenderLogin = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState(''); // State for error messages
+    const [error, setError] = useState(''); // Use state for error messages
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(''); // Clear previous errors
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/lender/login`, {
+            // *** TEMPORARILY HARDCODE THE URL ***
+            const response = await fetch('https://broker-cheetah-backend.onrender.com/api/lender/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

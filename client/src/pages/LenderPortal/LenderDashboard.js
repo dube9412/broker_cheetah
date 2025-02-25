@@ -1,5 +1,5 @@
-// src/pages/LenderPortal/LenderDashboard.js (CORRECTED - with Context)
-import React, { useState, useEffect, useContext } from 'react'; // Import useContext
+// src/pages/LenderPortal/LenderDashboard.js (HARDCODED URLS - FOR IMMEDIATE FIX)
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LenderAuthContext } from '../../context/LenderAuthContext'; // Import context
 
@@ -13,19 +13,19 @@ const LenderDashboard = () => {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        const token = localStorage.getItem('token'); // Still get token from localStorage
+        const token = localStorage.getItem('token');
 
         if (!token || !lenderUserId) {
-            // No need to check isLenderLoggedIn here; presence of token and ID is sufficient
             navigate('/lender/login');
             return;
         }
 
         const fetchLenderUserInfo = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/lender-users/${lenderUserId}`, {
+                // *** HARDCODED URL ***
+                const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`, // Use the token from localStorage
+                        'Authorization': `Bearer ${token}`,
                     },
                 });
                 const data = await response.json();
@@ -34,7 +34,7 @@ const LenderDashboard = () => {
                 } else {
                     console.error('Error fetching lender user info:', data.message);
                     if (response.status === 401 || response.status === 403) {
-                        logoutLender(); // Logout if unauthorized
+                        logoutLender();
                         navigate('/lender/login');
                     }
                 }
@@ -44,7 +44,7 @@ const LenderDashboard = () => {
         };
 
         fetchLenderUserInfo();
-    }, [navigate, lenderUserId, logoutLender]); // Add logoutLender to dependency array
+    }, [navigate, lenderUserId, logoutLender]);
 
 
     const handleEditChange = (e) => {
@@ -57,8 +57,10 @@ const LenderDashboard = () => {
     const handleSubmitEdits = async () => {
         // No need to get lenderUserId from localStorage; it's in context
         const token = localStorage.getItem('token');
+
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/lender-users/${lenderUserId}`, {
+            // *** HARDCODED URL ***
+            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}`, {
                 method: 'PUT', // Or PATCH
                 headers: {
                     'Content-Type': 'application/json',
@@ -91,7 +93,8 @@ const LenderDashboard = () => {
         formData.append('logo', file);
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/lender-users/${lenderUserId}/upload-logo`, {
+            // *** HARDCODED URL ***
+            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}/upload-logo`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -162,7 +165,7 @@ const LenderDashboard = () => {
                     </div>
 
                     <div className="lender-actions">
-                         <button onClick={() => navigate(`/lender/loan-programs/${lenderUserInfo.lenderId}`)}>
+                        <button onClick={() => navigate(`/lender/loan-programs/${lenderUserInfo.lenderId}`)}>
                             Manage Loan Programs
                         </button>
                         <button onClick={() => navigate("/lender/documents")}>
@@ -180,4 +183,3 @@ const LenderDashboard = () => {
 };
 
 export default LenderDashboard;
-  
