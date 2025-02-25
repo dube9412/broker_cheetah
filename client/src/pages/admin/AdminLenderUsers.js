@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import AdminNav from "../../components/AdminNav";
 
 const AdminLenderUsers = () => {
     const [lenderUsers, setLenderUsers] = useState([]);

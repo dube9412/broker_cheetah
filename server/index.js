@@ -1,7 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require('dotenv').config();
 // ✅ Import routes correctly
 const adminRoutes = require("./routes/admin/admin"); //  Admin routes
 const authRoutes = require("./routes/auth");        // General user/admin auth
