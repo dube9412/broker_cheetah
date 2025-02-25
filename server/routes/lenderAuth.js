@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const LenderUser = require('./models/LenderUser'); // Corrected relative path
+const LenderUser = require('../../models/LenderUser'); // CORRECTED PATH
 
 // Lender User Signup Route
 router.post('/signup', async (req, res) => {
@@ -23,7 +23,7 @@ router.post('/signup', async (req, res) => {
             password: hashedPassword,
             phone,
             company,
-            // approved and lenderId are handled by defaults (false and null) in the LenderUser schema
+            // approved and lenderId are handled by defaults (false and null)
         });
 
         await newLenderUser.save();
@@ -44,7 +44,7 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid credentials.' });
         }
 
-        // *** CRITICAL: CHECK FOR APPROVED STATUS ***
+        // *** CHECK FOR APPROVED STATUS ***
         if (!lenderUser.approved) {
             return res.status(403).json({ success: false, message: 'Account awaiting admin approval.' });
         }
@@ -56,14 +56,14 @@ router.post('/login', async (req, res) => {
 
         const token = jwt.sign({ lenderUserId: lenderUser._id, role: "lender" }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
-        // *** CRITICAL: INCLUDE approved AND lenderId IN RESPONSE ***
+        // *** INCLUDE approved AND lenderId IN RESPONSE ***
         res.json({
             success: true,
             token,
             lenderUserId: lenderUser._id,
             role: 'lender',
-            approved: lenderUser.approved, //  Essential for frontend logic
-            lenderId: lenderUser.lenderId, //  Essential; might be null
+            approved: lenderUser.approved, //  Essential
+            lenderId: lenderUser.lenderId, //  Essential (might be null)
         });
 
     } catch (error) {
