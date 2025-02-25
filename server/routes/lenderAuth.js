@@ -38,32 +38,32 @@ router.post('/signup', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const lenderUser = await LenderUser.findOne({ email });
+        const LenderUser = await LenderUser.findOne({ email });
 
-        if (!lenderUser) {
+        if (!LenderUser) {
             return res.status(401).json({ success: false, message: 'Invalid credentials.' });
         }
 
         // *** CHECK FOR APPROVED STATUS ***
-        if (!lenderUser.approved) {
+        if (!LenderUser.approved) {
             return res.status(403).json({ success: false, message: 'Account awaiting admin approval.' });
         }
 
-        const isMatch = await bcrypt.compare(password, lenderUser.password);
+        const isMatch = await bcrypt.compare(password, LenderUser.password);
         if (!isMatch) {
             return res.status(401).json({ success: false, message: 'Invalid credentials.' });
         }
 
-        const token = jwt.sign({ lenderUserId: lenderUser._id, role: "lender" }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        const token = jwt.sign({ lenderUserId: LenderUser._id, role: "lender" }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
         // *** INCLUDE approved AND lenderId IN RESPONSE ***
         res.json({
             success: true,
             token,
-            lenderUserId: lenderUser._id,
+            lenderUserId: LenderUser._id,
             role: 'lender',
-            approved: lenderUser.approved, //  Essential
-            lenderId: lenderUser.lenderId, //  Essential (might be null)
+            approved: LenderUser.approved, //  Essential
+            lenderId: LenderUser.lenderId, //  Essential (might be null)
         });
 
     } catch (error) {
