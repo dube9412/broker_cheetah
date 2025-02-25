@@ -34,8 +34,7 @@ app.use(express.json());
 // ✅ Connect to MongoDB
 mongoose.connect("mongodb+srv://dube9412:ReGuLaRoLdPaSsWoRd@brokercheetahdb.rdbel.mongodb.net/?retryWrites=true&w=majority&appName=BrokerCheetahDB", {})
   .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
-nsole.error("❌ MongoDB connection error:", err));
+.catch((err) => console.error("❌ MongoDB connection error:", err));
 
 
 // ✅ API Routes
