@@ -26,7 +26,7 @@ const LenderSignup = () => {
                 alert("Signup successful! Your account is awaiting account assignment.");
                 navigate("/lender/login");
             } else {
-                alert(Signup failed: ${data.message});
+                alert(`Signup failed: ${data.message}`);
             }
         } catch (error) {
             console.error("Signup error:", error);
