@@ -1,9 +1,9 @@
-// routes/lenderAuth.js (CORRECT - For Lender User Login/Signup)
+// routes/lenderAuth.js (VERIFIED CORRECT)
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const LenderUser = require('../models/lenderUser'); // ABSOLUTELY CORRECT PATH
+const LenderUser = require('../models/lenderUser'); // VERIFIED CORRECT PATH
 
 // Lender User Signup Route
 router.post('/signup', async (req, res) => {
