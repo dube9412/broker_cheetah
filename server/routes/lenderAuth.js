@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const LenderUser = require('../models/lenderUser'); // VERIFIED CORRECT PATH
+const LenderUser = require('../models/LenderUser'); // VERIFIED CORRECT PATH
 
 // Lender User Signup Route
 router.post('/signup', async (req, res) => {
