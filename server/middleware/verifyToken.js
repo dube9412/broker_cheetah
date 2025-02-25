@@ -1,22 +1,21 @@
-// middleware/verifyToken.js (NEW FILE)
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 function verifyToken(req, res, next) {
     const authHeader = req.headers.authorization;
 
-    if (authHeader) {
-        const token = authHeader.split(' ')[1]; // Bearer <token>
-
-        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-            if (err) {
-                return res.status(403).json({ success: false, message: 'Invalid token.' }); // Forbidden
-            }
-            req.user = user; // Attach the decoded user to the request object
-            next();
-        });
-    } else {
-        res.status(401).json({ success: false, message: 'Unauthorized.' }); // Unauthorized
+    if (!authHeader) {
+        return res.status(401).json({ success: false, message: "Unauthorized: No token provided." });
     }
+
+    const token = authHeader.split(" ")[1];
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({ success: false, message: "Invalid token." });
+        }
+        req.user = user;
+        next();
+    });
 }
 
 module.exports = verifyToken;
