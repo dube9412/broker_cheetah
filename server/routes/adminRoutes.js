@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const adminController = require('../controllers/adminController');
-const LenderUser = require("../models/lenderUser");
+const LenderUser = require("../models/LenderUser");
 
 // ✅ GET all users (Admin Only)
 router.get("/users", async (req, res) => {

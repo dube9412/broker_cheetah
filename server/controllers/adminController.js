@@ -1,4 +1,4 @@
-const LenderUser = require("../models/lenderUser");
+const LenderUser = require("../models/LenderUser");
 
 // ✅ Assign a lender to a lender user
 exports.assignLenderToUser = async (req, res) => {
