@@ -1,8 +1,8 @@
 // routes/lenderUsers.js (NEW FILE)
 const express = require('express');
 const router = express.Router();
-const LenderUser = require('./models/LenderUser');
-const verifyToken = require('./middleware/verifyToken'); // You'll need this middleware
+const LenderUser = require('../models/lenderUser');
+const verifyToken = require('../middleware/verifyToken'); // You'll need this middleware
 const multer = require('multer'); //For the image upload
 const upload = multer({ dest: 'uploads/' }); // Temporary storage for uploads
 
