@@ -1,23 +1,22 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { LenderAuthContext } from "../context/LenderAuthContext";
 import logo from "../assets/logo.png";
-import "./NavBar.css"; // ✅ Keeping the CSS
+import "./NavBar.css";
 
 function NavBar() {
   const { isLoggedIn, isAdmin, isSuperAdmin, logout } = useContext(AuthContext);
-  const { isLenderLoggedIn, logoutLender } = useContext(LenderAuthContext);
 
   const handleLogout = () => {
     logout();
-    logoutLender();
     window.location.href = "/";
   };
 
   const handleShare = () => {
     const subject = encodeURIComponent("Check out Broker Cheetah!");
-    const body = encodeURIComponent("Hey, check out Broker Cheetah: https://brokercheetah.com");
+    const body = encodeURIComponent(
+      "Hey, check out Broker Cheetah: https://brokercheetah.com"
+    );
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
   };
 
@@ -32,13 +31,9 @@ function NavBar() {
         <>
           <nav className="nav-links">
             <Link to="/dashboard">Dashboard</Link>
-            
-            {/* ✅ Admins & Superadmins get Admin Dashboard */}
-            {(isAdmin || isSuperAdmin) && <Link to="/admin-dashboard">Admin Dashboard</Link>}
-            
-            {/* ✅ Lender Portal ONLY for lenders */}
-            {isLenderLoggedIn && <Link to="/lender/dashboard">Lender Portal</Link>}
-            
+            {(isAdmin || isSuperAdmin) && (
+              <Link to="/admin-dashboard">Admin Dashboard</Link>
+            )}
             <Link to="/select-loan-type">Lender Search</Link>
             <button onClick={handleShare}>Share</button>
           </nav>
@@ -58,8 +53,5 @@ function NavBar() {
 }
 
 export default NavBar;
-
-
-
 
 

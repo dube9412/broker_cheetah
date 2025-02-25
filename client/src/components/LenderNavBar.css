@@ -1,0 +1,28 @@
+.lender-navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #004080; /* Dark blue */
+    color: white;
+    padding: 15px 20px;
+  }
+  
+  .logo-container img {
+    height: 40px;
+  }
+  
+  .lender-nav-links {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .lender-nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .lender-nav-links a:hover {
+    text-decoration: underline;
+  }
+  
