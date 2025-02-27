@@ -20,7 +20,7 @@ const AdminScrapers = () => {
 
     const fetchScrapers = async () => {
       try {
-        const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin/scrapers");
+        const response = await fetch("https://broker-cheetah-backend.onrender.com/api/scrapers");
         const data = await response.json();
         if (response.ok) {
           setScrapers(Array.isArray(data.scrapers) ? data.scrapers : []);
@@ -39,7 +39,7 @@ const AdminScrapers = () => {
   const handleRunScraper = async (id) => {
     if (!window.confirm("Are you sure you want to run this scraper? This may take a few minutes.")) return;
     try {
-      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/admin/scrapers/${id}/run`, {
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/scrapers/${id}/run`, {
         method: "POST",
       });
       if (response.ok) {
