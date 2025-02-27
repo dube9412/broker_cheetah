@@ -44,8 +44,10 @@ const [message, setMessage] = useState(""); // Stores success/error messages
                 const response = await fetch("https://broker-cheetah-backend.onrender.com/api/lenders");
                 const data = await response.json();
                 console.log("Lenders API Response:", data); // ✅ Debugging line
-                if (response.ok) {
-                    setLenders(data);
+                
+                if (response.ok && Array.isArray(data.lenders)) {
+                    console.log("✅ Lenders Data in Frontend:", data.lenders); // <-- Debugging Line
+                    setLenders(data.lenders);
                 } else {
                     console.error("Error fetching lenders:", data.message);
                 }
