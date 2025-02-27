@@ -39,15 +39,16 @@ router.post("/signup", async (req, res) => {
     }
 });
 
-
-// Lender User Login Route
 // Lender User Login Route
 router.post('/login', async (req, res) => {
     try {
+        console.log("🔍 Login Attempt:", req.body); // ✅ Log email and password input
+
         const { email, password } = req.body;
         const lenderUser = await LenderUser.findOne({ email });
 
         if (!lenderUser) {
+            console.log("❌ User not found in DB");
             return res.status(401).json({ success: false, message: 'Invalid credentials.' });
         }
 
@@ -55,8 +56,10 @@ router.post('/login', async (req, res) => {
         if (!lenderUser.approved) {
             return res.status(403).json({ success: false, message: 'Account awaiting admin approval.' });
         }
+        console.log("✅ Found user:", lenderUser.email);
 
         const isMatch = await bcrypt.compare(password, lenderUser.password);
+        console.log("🔍 Password Match:", isMatch);
         if (!isMatch) {
             return res.status(401).json({ success: false, message: 'Invalid credentials.' });
         }
