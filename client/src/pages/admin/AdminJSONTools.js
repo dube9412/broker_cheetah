@@ -45,7 +45,7 @@ const AdminJSONTools = () => {
       return;
     }
     try {
-      const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin/import-json", {
+      const response = await fetch("https://broker-cheetah-backend.onrender.com/api/import-json", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(jsonData),

@@ -263,7 +263,7 @@ const [message, setMessage] = useState(""); // Stores success/error messages
                >
                    <option value="">Select Lender</option>
                    {Array.isArray(lenders) && lenders.length > 0 ? (
-    lenders.map(lender => (
+    [...lenders].sort((a, b) => a.name.localeCompare(b.name)).map(lender => (
         <option key={lender._id} value={lender._id}>{lender.name}</option>
     ))
 ) : (
