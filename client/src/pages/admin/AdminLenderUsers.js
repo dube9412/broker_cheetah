@@ -43,6 +43,7 @@ const [message, setMessage] = useState(""); // Stores success/error messages
             try {
                 const response = await fetch("https://broker-cheetah-backend.onrender.com/api/lenders");
                 const data = await response.json();
+                console.log("Lenders API Response:", data); // ✅ Debugging line
                 if (response.ok) {
                     setLenders(data);
                 } else {
@@ -196,9 +197,6 @@ const [message, setMessage] = useState(""); // Stores success/error messages
             setMessage("Error assigning lender.");
         }
     };
-    
-    
-   
 
     if (loading) return <div>Loading lender users...</div>;
 
