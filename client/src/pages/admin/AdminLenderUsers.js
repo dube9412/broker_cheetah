@@ -262,9 +262,14 @@ const [message, setMessage] = useState(""); // Stores success/error messages
                    onChange={(e) => setSelectedLender({ ...selectedLender, [user._id]: e.target.value })}
                >
                    <option value="">Select Lender</option>
-                   {lenders.map(lender => (
-                       <option key={lender._id} value={lender._id}>{lender.name}</option>
-                   ))}
+                   {Array.isArray(lenders) && lenders.length > 0 ? (
+    lenders.map(lender => (
+        <option key={lender._id} value={lender._id}>{lender.name}</option>
+    ))
+) : (
+    <option disabled>Loading lenders...</option> // Fallback in case lenders are not loaded
+)}
+
                </select>
                
                 )}
