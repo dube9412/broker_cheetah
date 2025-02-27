@@ -17,7 +17,7 @@ const AdminLenderUsers = () => {
         const fetchLenderUsers = async () => {
             setLoading(true);
             try {
-                const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin/admin-lender-users");
+                const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin-lender-users");
                 const data = await response.json();
                 if (response.ok) {
                     setLenderUsers(data);
