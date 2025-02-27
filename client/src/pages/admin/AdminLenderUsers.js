@@ -79,8 +79,9 @@ const AdminLenderUsers = () => {
               </tr>
           </thead>
           <tbody>
-              {lenderUsers.length > 0 ? (
-                  lenderUsers.map((user) => (
+          {lenderUsers.filter(user => user.approved === false || user.approved === undefined).length > 0 ? (
+    lenderUsers.filter(user => user.approved === false || user.approved === undefined).map((user) => (
+
                       <tr key={user._id}>
                           <td>{user.name}</td>
                           <td>{user.email}</td>
