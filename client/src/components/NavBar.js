@@ -74,8 +74,8 @@ function NavBar() {
                        boxShadow: "2px 2px 10px rgba(0,0,0,0.1)",
                        zIndex: "1000"
                    }}>
-                <Link to="/lender-login" style={{ display: "block", padding: "5px" }}>Lender Login</Link>
-                <Link to="/lender-signup" style={{ display: "block", padding: "5px" }}>Lender Signup</Link>
+                <Link to="/lender/login" style={{ display: "block", padding: "5px" }}>Lender Login</Link>
+                <Link to="/lender/signup" style={{ display: "block", padding: "5px" }}>Lender Signup</Link>
               </div>
             )}
           </div>
