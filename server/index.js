@@ -50,7 +50,7 @@ app.use("/api/stabilized-bridge", stabilizedBridgeRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use('/api/documents', documentRoutes);
 if (scraperRoutes) {
-  app.use("/api/scraper", scraperRoutes);
+  app.use("/api/scrapers", scraperRoutes);
 }
 app.use('/uploads', express.static('uploads'));//serve logo
 
