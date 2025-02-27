@@ -144,6 +144,41 @@ const AdminLenderUsers = () => {
         }
     };
 
+    const handleAssignLender = async (userId) => {
+        if (!selectedLender[userId]) {
+            alert("Please select a lender before assigning.");
+            return;
+        }
+    
+        try {
+            const response = await fetch(
+                `https://broker-cheetah-backend.onrender.com/api/admin-lender-users/assign-lender`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId, lenderId: selectedLender[userId] }),
+                }
+            );
+            const data = await response.json();
+            if (response.ok) {
+                setMessage("Lender assigned successfully.");
+                setLenderUsers(prev =>
+                    prev.map(user =>
+                        user._id === userId
+                            ? { ...user, lenderId: selectedLender[userId], lenderName: lenders.find(l => l._id === selectedLender[userId])?.name || "N/A" }
+                            : user
+                    )
+                );
+            } else {
+                setMessage("Error assigning lender.");
+            }
+        } catch (error) {
+            console.error("Assign Lender Error:", error);
+            setMessage("Error assigning lender.");
+        }
+    };
+   
+
     if (loading) return <div>Loading lender users...</div>;
 
     return (
@@ -195,29 +230,38 @@ const AdminLenderUsers = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {lenderUsers.filter(user => user.approved).length > 0 ? (
-                        lenderUsers.filter(user => user.approved).map((user) => (
-                            <tr key={user._id}>
-                                <td>{user.name}</td>
-                                <td>{user.email}</td>
-                                <td>{user.lenderName || "N/A"}</td>
-                                <td>{user.suspended ? "Suspended" : "Active"}</td>
-                                <td>
-                                    {user.suspended ? (
-                                        <button onClick={() => handleReactivate(user._id)}>Reactivate</button>
-                                    ) : (
-                                        <button onClick={() => handleSuspend(user._id)}>Suspend</button>
-                                    )}
-                                    <button onClick={() => handleDelete(user._id)} style={{ marginLeft: "10px" }}>Delete</button>
-                                </td>
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="5">No active lender users.</td>
-                        </tr>
-                    )}
-                </tbody>
+    {lenderUsers.filter(user => user.approved).map((user) => (
+        <tr key={user._id}>
+            <td>{user.name}</td>
+            <td>{user.email}</td>
+            <td>
+                {user.lenderId ? user.lenderName : (
+                    <select
+                        onChange={(e) => setSelectedLender({ ...selectedLender, [user._id]: e.target.value })}
+                    >
+                        <option value="">Select Lender</option>
+                        {lenders.map(lender => (
+                            <option key={lender._id} value={lender._id}>{lender.name}</option>
+                        ))}
+                    </select>
+                )}
+            </td>
+            <td>{user.suspended ? "Suspended" : "Active"}</td>
+            <td>
+                {user.lenderId ? null : (
+                    <button onClick={() => handleAssignLender(user._id)}>Assign Lender</button>
+                )}
+                {user.suspended ? (
+                    <button onClick={() => handleReactivate(user._id)}>Reactivate</button>
+                ) : (
+                    <button onClick={() => handleSuspend(user._id)}>Suspend</button>
+                )}
+                <button onClick={() => handleDelete(user._id)}>Delete</button>
+            </td>
+        </tr>
+    ))}
+</tbody>
+
             </table>
         </div>
     );

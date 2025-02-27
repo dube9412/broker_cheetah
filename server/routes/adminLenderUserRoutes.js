@@ -88,5 +88,31 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+// POST - Assign a lender to a lender user.
+router.post('/assign-lender', async (req, res) => {
+  try {
+      const { userId, lenderId } = req.body;
+
+      if (!userId || !lenderId) {
+          return res.status(400).json({ success: false, message: 'Both userId and lenderId are required.' });
+      }
+
+      const updatedUser = await LenderUser.findByIdAndUpdate(
+          userId,
+          { lenderId },
+          { new: true }
+      ).select('-password');
+
+      if (!updatedUser) {
+          return res.status(404).json({ success: false, message: 'Lender user not found' });
+      }
+
+      res.json({ success: true, message: 'Lender assigned successfully', user: updatedUser });
+  } catch (error) {
+      console.error("Error assigning lender:", error);
+      res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 
 module.exports = router;
