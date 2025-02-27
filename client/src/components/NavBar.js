@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import logo from "../assets/logo.png";
@@ -6,6 +6,7 @@ import "./NavBar.css";
 
 function NavBar() {
   const { isLoggedIn, isAdmin, isSuperAdmin, logout } = useContext(AuthContext);
+  const [showLenderDropdown, setShowLenderDropdown] = useState(false); // State for lender dropdown
 
   useEffect(() => {
     console.log("Navbar: Auth state changed:", { isLoggedIn, isAdmin, isSuperAdmin });
@@ -51,6 +52,33 @@ function NavBar() {
         <nav className="nav-links">
           <Link to="/login">Login</Link>
           <Link to="/signup">Sign Up</Link>
+
+          {/* Lender Dropdown */}
+          <div 
+            className="dropdown"
+            onMouseEnter={() => setShowLenderDropdown(true)}
+            onMouseLeave={() => setShowLenderDropdown(false)}
+            style={{ display: "inline-block", position: "relative", marginLeft: "10px" }}
+          >
+            <span style={{ cursor: "pointer", fontWeight: "bold" }}>Lender ▼</span>
+
+            {showLenderDropdown && (
+              <div className="dropdown-content" 
+                   style={{ 
+                       position: "absolute", 
+                       top: "100%", 
+                       left: "0", 
+                       backgroundColor: "#fff", 
+                       border: "1px solid #ccc", 
+                       padding: "10px",
+                       boxShadow: "2px 2px 10px rgba(0,0,0,0.1)",
+                       zIndex: "1000"
+                   }}>
+                <Link to="/lender-login" style={{ display: "block", padding: "5px" }}>Lender Login</Link>
+                <Link to="/lender-signup" style={{ display: "block", padding: "5px" }}>Lender Signup</Link>
+              </div>
+            )}
+          </div>
         </nav>
       )}
     </div>
@@ -58,5 +86,6 @@ function NavBar() {
 }
 
 export default NavBar;
+
 
 
