@@ -41,6 +41,7 @@ app.use("/api/auth", authRoutes);           // General user/admin auth
 app.use("/api/lenders", lenderRoutes);  // Lender *companies* (list of lenders)
 app.use("/api/lender-auth", lenderAuthRoutes);    // Lender *user* signup/login
 app.use("/api/admin-lender-users", adminLenderUserRoutes); // Admin actions for lender users
+app.use('/api/lender-users', lenderUserRoutes); // Individual lender *user* data (for LenderDashboard)
 app.use("/api/loan-programs", loanProgramRoutes);
 app.use("/api/fix-and-flip", fixAndFlipRoutes);
 app.use("/api/dscr", dscrRoutes);
@@ -48,7 +49,6 @@ app.use("/api/ground-up", groundUpRoutes);
 app.use("/api/stabilized-bridge", stabilizedBridgeRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use('/api/documents', documentRoutes);
-app.use('/api/lender-users', lenderUserRoutes); // Individual lender *user* data (for LenderDashboard)
 if (scraperRoutes) {
   app.use("/api/scraper", scraperRoutes);
 }

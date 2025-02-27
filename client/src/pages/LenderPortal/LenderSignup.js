@@ -15,13 +15,15 @@ const LenderSignup = () => {
         e.preventDefault();
         try {
             // *** REVERTED TO HARDCODED URL ***
-            const res = await fetch("https://broker-cheetah-backend.onrender.com/api/lender-users/signup", {
+            const response = await fetch("https://broker-cheetah-backend.onrender.com/api/lender-auth/signup", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                },
                 body: JSON.stringify({ name, email, password, phone, company }),
             });
 
-            const data = await res.json();
+            const data = await response.json();
             if (data.success) {
                 alert("Signup successful! Your account is awaiting account assignment.");
                 navigate("/lender/login");
