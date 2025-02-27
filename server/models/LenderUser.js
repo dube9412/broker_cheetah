@@ -8,9 +8,9 @@ const lenderUserSchema = new mongoose.Schema({
     company: { type: String },
     role: { type: String, default: "lender" },
     approved: { type: Boolean, default: false },
-    lenderId: { type: String, default: null }, // Or ObjectId if referencing Lenders
-    suspended: { type: Boolean, default: false }, // ADD THIS
-    createdAt: { type: Date, default: Date.now },
+    lenderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Lender', default: null }, // Reference to assigned lender
+    suspended: { type: Boolean, default: false },
+    createdAt: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model("LenderUser", lenderUserSchema);

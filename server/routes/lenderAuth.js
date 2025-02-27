@@ -41,41 +41,42 @@ router.post("/signup", async (req, res) => {
 
 
 // Lender User Login Route
+// Lender User Login Route
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const LenderUser = await LenderUser.findOne({ email });
+        const lenderUser = await LenderUser.findOne({ email });
 
-        if (!LenderUser) {
+        if (!lenderUser) {
             return res.status(401).json({ success: false, message: 'Invalid credentials.' });
         }
 
         // *** CHECK FOR APPROVED STATUS ***
-        if (!LenderUser.approved) {
+        if (!lenderUser.approved) {
             return res.status(403).json({ success: false, message: 'Account awaiting admin approval.' });
         }
 
-        const isMatch = await bcrypt.compare(password, LenderUser.password);
+        const isMatch = await bcrypt.compare(password, lenderUser.password);
         if (!isMatch) {
             return res.status(401).json({ success: false, message: 'Invalid credentials.' });
         }
 
-        const token = jwt.sign({ lenderUserId: LenderUser._id, role: "lender" }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        const token = jwt.sign({ lenderUserId: lenderUser._id, role: "lender" }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
-        // *** INCLUDE approved AND lenderId IN RESPONSE ***
         res.json({
             success: true,
             token,
-            lenderUserId: LenderUser._id,
+            lenderUserId: lenderUser._id,
             role: 'lender',
-            approved: LenderUser.approved, //  Essential
-            lenderId: LenderUser.lenderId, //  Essential (might be null)
+            approved: lenderUser.approved, // Essential
+            lenderId: lenderUser.lenderId, // Essential (might be null)
         });
 
     } catch (error) {
         console.error("Lender User Login Error:", error);
-        res.status(500).json({ success: false, message: "Login error" });
+        res.status(500).json({ success: false, message: "Login error", error: error.message });
     }
 });
+
 
 module.exports = router;
