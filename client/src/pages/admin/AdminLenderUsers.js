@@ -39,7 +39,7 @@ const AdminLenderUsers = () => {
 
         try {
             const response = await fetch(
-                `https://broker-cheetah-backend.onrender.com/api/admin/lender-users/${id}/approve`,
+                `https://broker-cheetah-backend.onrender.com/api/admin-lender-users/${id}/approve`,
                 {
                     method: "POST",
                 }
