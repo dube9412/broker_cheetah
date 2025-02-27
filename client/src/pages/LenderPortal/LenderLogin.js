@@ -13,7 +13,7 @@ const LenderLogin = () => {
         setError(''); // Clear previous errors
         try {
             // *** TEMPORARILY HARDCODE THE URL ***
-            const response = await fetch('https://broker-cheetah-backend.onrender.com/api/lender-users/login', {
+            const response = await fetch('https://broker-cheetah-backend.onrender.com/api/lender-auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
