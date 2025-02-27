@@ -22,6 +22,8 @@ const LenderLogin = () => {
             });
 
             const data = await response.json();
+            console.log("✅ Lender Login Response:", data);
+
 
             if (response.ok && data.success) {
                 localStorage.setItem('token', data.token);
