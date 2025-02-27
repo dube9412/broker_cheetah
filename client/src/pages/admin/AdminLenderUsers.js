@@ -7,6 +7,10 @@ const AdminLenderUsers = () => {
     const [loading, setLoading] = useState(true);
     const { isAdmin, isSuperAdmin } = useContext(AuthContext);
     const navigate = useNavigate();
+    const [selectedLender, setSelectedLender] = useState({}); // Stores selected lenders for assignment
+const [lenders, setLenders] = useState([]); // Stores available lenders
+const [message, setMessage] = useState(""); // Stores success/error messages
+
 
     useEffect(() => {
         if (!isAdmin && !isSuperAdmin) {
@@ -33,6 +37,25 @@ const AdminLenderUsers = () => {
 
         fetchLenderUsers();
     }, [isAdmin, isSuperAdmin, navigate]);
+
+    useEffect(() => {
+        const fetchLenders = async () => {
+            try {
+                const response = await fetch("https://broker-cheetah-backend.onrender.com/api/lenders");
+                const data = await response.json();
+                if (response.ok) {
+                    setLenders(data);
+                } else {
+                    console.error("Error fetching lenders:", data.message);
+                }
+            } catch (error) {
+                console.error("API Error:", error);
+            }
+        };
+    
+        fetchLenders();
+    }, []);
+    
 
     const handleApprove = async (id) => {
         if (!window.confirm("Are you sure you want to approve this lender user?")) return;
@@ -146,37 +169,35 @@ const AdminLenderUsers = () => {
 
     const handleAssignLender = async (userId) => {
         if (!selectedLender[userId]) {
-            alert("Please select a lender before assigning.");
+            setMessage("Please select a lender before assigning.");
             return;
         }
     
         try {
-            const response = await fetch(
-                `https://broker-cheetah-backend.onrender.com/api/admin-lender-users/assign-lender`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userId, lenderId: selectedLender[userId] }),
-                }
-            );
-            const data = await response.json();
+            const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin-lender-users/assign-lender", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId, lenderId: selectedLender[userId] }),
+            });
+            const data = await response.json(); // ✅ Use data
+    
             if (response.ok) {
-                setMessage("Lender assigned successfully.");
-                setLenderUsers(prev =>
-                    prev.map(user =>
-                        user._id === userId
-                            ? { ...user, lenderId: selectedLender[userId], lenderName: lenders.find(l => l._id === selectedLender[userId])?.name || "N/A" }
-                            : user
+                setMessage(`Lender assigned successfully: ${data.message || "Updated"}`); // ✅ Show response message
+                setLenderUsers(prevUsers =>
+                    prevUsers.map(user =>
+                        user._id === userId ? { ...user, lenderId: selectedLender[userId], lenderName: data.lenderName } : user
                     )
                 );
             } else {
-                setMessage("Error assigning lender.");
+                setMessage(`Error assigning lender: ${data.message}`);
             }
         } catch (error) {
-            console.error("Assign Lender Error:", error);
+            console.error("Assign error:", error);
             setMessage("Error assigning lender.");
         }
     };
+    
+    
    
 
     if (loading) return <div>Loading lender users...</div>;
@@ -184,6 +205,7 @@ const AdminLenderUsers = () => {
     return (
         <div className="admin-dashboard" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
             <h1>Admin Lender Users</h1>
+            {message && <p style={{ color: "green", fontWeight: "bold" }}>{message}</p>}
             <p>Manage and approve lender users.</p>
 
             <h2>Pending Lender Users</h2>
@@ -236,14 +258,15 @@ const AdminLenderUsers = () => {
             <td>{user.email}</td>
             <td>
                 {user.lenderId ? user.lenderName : (
-                    <select
-                        onChange={(e) => setSelectedLender({ ...selectedLender, [user._id]: e.target.value })}
-                    >
-                        <option value="">Select Lender</option>
-                        {lenders.map(lender => (
-                            <option key={lender._id} value={lender._id}>{lender.name}</option>
-                        ))}
-                    </select>
+                   <select
+                   onChange={(e) => setSelectedLender({ ...selectedLender, [user._id]: e.target.value })}
+               >
+                   <option value="">Select Lender</option>
+                   {lenders.map(lender => (
+                       <option key={lender._id} value={lender._id}>{lender.name}</option>
+                   ))}
+               </select>
+               
                 )}
             </td>
             <td>{user.suspended ? "Suspended" : "Active"}</td>
