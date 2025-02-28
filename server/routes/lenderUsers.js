@@ -9,10 +9,11 @@ const upload = multer({ dest: 'uploads/' });
 // Get *own* lender user info (PROTECTED)
 router.get('/:lenderUserId', verifyToken, async (req, res) => {
     try {
+        console.log("🔍 Fetching lender user:", req.params.lenderUserId);
         // This route is for a lender user to get THEIR OWN information.
         // The verifyToken middleware has already decoded the JWT and attached the user info to req.user.
         if (req.user.role !== 'lender' || req.user.lenderUserId !== req.params.lenderUserId) {
-            return res.status(403).json({ success: false, message: 'Unauthorized' });
+            return res.status(403).json({ success: false, message: "Unauthorized: You can only access your own account." });
         }
 
         const LenderUser = await LenderUser.findById(req.params.lenderUserId).select('-password');
