@@ -26,8 +26,11 @@ const LenderLogin = () => {
 
 
             if (response.ok && data.success) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('lenderUserId', data.lenderUserId);
+                // ✅ Store token and user details
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("lenderUserId", data.lenderUserId);
+                localStorage.setItem("role", "lender");  // ✅ Ensure role is stored
+                loginLender(data); // ✅ Update context
 
                 if (data.approved) {
                     if (data.lenderId) {

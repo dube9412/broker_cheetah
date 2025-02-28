@@ -22,11 +22,12 @@ export const LenderAuthProvider = ({ children }) => {
     const loginLender = (data) => {
         setIsLenderLoggedIn(true);
         setLenderUserId(data.lenderUserId); // Assuming data contains lenderUserId
+        setLenderUser(data); // ✅ Store full lender user object
 
         // Store in localStorage
         localStorage.setItem('token', data.token);
         localStorage.setItem('lenderUserId', data.lenderUserId);
-
+        localStorage.setItem("lenderUser", JSON.stringify(data)); // ✅ Store full data in localStorage
     };
 
     const logoutLender = () => {

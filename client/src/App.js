@@ -19,24 +19,25 @@ import AddGroundUp from "./components/AddGroundUp";
 import EditGroundUp from "./components/EditGroundUp";
 import OneClickQuoteModal from "./components/OneClickQuoteModal";
 
-
-
 // Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
+
+// Admin Pages
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminLenders from "./pages/admin/AdminLenders"; 
 import AdminLenderUsers from "./pages/admin/AdminLenderUsers";
-import LenderAwaitingAssignment from './pages/LenderPortal/LenderAwaitingAssignment'; //Import
 import AdminLenderApprovals from "./pages/admin/AdminLenderApprovals";
 import AdminHelpTickets from "./pages/admin/AdminHelpTickets";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminScrapers from "./pages/admin/AdminScrapers";
 import AdminJSONTools from "./pages/admin/AdminJSONTools";
 import AdminImportData from "./pages/admin/AdminImportData.js";
+
+// Loan Type Pages
 import LoanTypeSelection from "./pages/LoanTypeSelection";
 import FixAndFlipSearch from "./pages/FixAndFlipSearch";
 import ManageLoanPrograms from "./pages/ManageLoanPrograms";
@@ -44,14 +45,14 @@ import FixAndFlipCalc from "./pages/FixAndFlipCalc";
 import HardMoneyClass from "./pages/HardMoneyClass";
 import LessonPage from "./pages/LessonPage";
 
-
+// Lender Portal Pages
 import LenderProtectedRoutes from './components/LenderProtectedRoutes';
 import LenderDashboard from './pages/LenderPortal/LenderDashboard';
 import LenderDocuments from './pages/LenderPortal/LenderDocuments';
 import LenderLogin from './pages/LenderPortal/LenderLogin'; // Optional if separate login
 import LenderSignup from './pages/LenderPortal/LenderSignup';
-
-
+import LenderAwaitingAssignment from './pages/LenderPortal/LenderAwaitingAssignment'; //Import
+import LenderAwaitingApproval from './pages/LenderPortal/LenderAwaitingApproval';
 
 
 import NotFound from './pages/NotFound';
@@ -83,15 +84,17 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-
+                
                 <Route path="/lender/login" element={<LenderLogin />} />
                 <Route path="/lender/signup" element={<LenderSignup />} />
+                <Route path="/lender/awaiting-assignment" element={<LenderAwaitingAssignment />} />
+                <Route path="/lender/awaiting-approval" element={<LenderAwaitingApproval />} />
 
               <Route path="/manage-loan-programs/:lenderId" element={<ManageLoanPrograms />} />
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/lenders" element={<AdminLenders />} />
               <Route path="/admin/lender-users" element={<AdminLenderUsers />} />
-              <Route path="/lender/awaiting-assignment" element={<LenderAwaitingAssignment />} />
+              
               <Route
                   path="/admin/lender-approvals"
                   element={
@@ -142,12 +145,10 @@ function App() {
               <Route path="/edit-ground-up-program/:lenderId/:programId" element={<EditGroundUp />} />
 
              {/* Lender Portal (protected) */}
-  <Route path="/lender/*" element={<LenderProtectedRoutes />}>
+             <Route path="/lender/*" element={<LenderProtectedRoutes />}>
     <Route path="dashboard" element={<LenderDashboard />} />
     <Route path="documents" element={<LenderDocuments />} />
-    
-    {/* more lender-specific routes later */}
-  </Route>
+</Route>
   
   {/* Fallback Route */}
   <Route path="*" element={<NotFound />} />

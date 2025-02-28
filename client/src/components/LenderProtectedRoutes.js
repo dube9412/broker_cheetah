@@ -1,19 +1,12 @@
-import React, { useContext } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import React, { useContext } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { LenderAuthContext } from "../context/LenderAuthContext";
 
 const LenderProtectedRoutes = () => {
-  const { isAuthenticated, user } = useContext(AuthContext);
+    const { isLenderLoggedIn } = useContext(LenderAuthContext);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (!user.isLender) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return <Outlet />;
+    return isLenderLoggedIn ? <Outlet /> : <Navigate to="/lender/login" />;
 };
 
 export default LenderProtectedRoutes;
+
