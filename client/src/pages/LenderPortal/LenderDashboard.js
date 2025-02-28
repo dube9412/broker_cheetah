@@ -5,10 +5,9 @@ import { LenderAuthContext } from '../../context/LenderAuthContext'; // Import c
 
 const LenderDashboard = () => {
     const navigate = useNavigate();
-    const { lenderUserId, isLenderLoggedIn, logoutLender } = useContext(LenderAuthContext); // Use context
+    const { lenderUserId, logoutLender } = useContext(LenderAuthContext); // Use context
     const [lenderUserInfo, setLenderUserInfo] = useState(null);
     const [pendingEdits, setPendingEdits] = useState({});
-    const [logo, setLogo] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState('');
 
