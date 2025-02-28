@@ -7,25 +7,21 @@ const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 
 // Get *own* lender user info (PROTECTED)
-router.get('/:lenderUserId', verifyToken, async (req, res) => {
+router.get("/:lenderUserId", verifyToken, async (req, res) => {
     try {
         console.log("🔍 Fetching lender user:", req.params.lenderUserId);
-        // This route is for a lender user to get THEIR OWN information.
-        // The verifyToken middleware has already decoded the JWT and attached the user info to req.user.
-        if (req.user.role !== 'lender' || req.user.lenderUserId !== req.params.lenderUserId) {
-            return res.status(403).json({ success: false, message: "Unauthorized: You can only access your own account." });
+
+        const lenderUser = await LenderUser.findById(req.params.lenderUserId).select("-password");
+
+        if (!lenderUser) {
+            console.log("❌ Lender user not found.");
+            return res.status(404).json({ success: false, message: "Lender user not found" });
         }
 
-        const LenderUser = await LenderUser.findById(req.params.lenderUserId).select('-password');
-
-        if (!LenderUser) {
-            return res.status(404).json({ success: false, message: 'Lender user not found' });
-        }
-
-        res.json(LenderUser);
+        res.json({ success: true, lenderUser });
     } catch (error) {
-        console.error("Error fetching lender user:", error);
-        res.status(500).json({ success: false, message: "Server error" });
+        console.error("❌ Server Error Fetching Lender User:", error);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
     }
 });
 
