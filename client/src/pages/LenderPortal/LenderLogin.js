@@ -1,9 +1,12 @@
-// LenderLogin.js (TEMPORARY HARDCODED URL)
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useContext } from "react"; // ✅ Combined imports
+import { useNavigate, Link } from "react-router-dom";
+import { LenderAuthContext } from "../../context/LenderAuthContext"; // ✅ Import LenderAuthContext
+
 
 const LenderLogin = () => {
     const navigate = useNavigate();
+    const { loginLender } = useContext(LenderAuthContext); // ✅ Use loginLender inside the component
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(''); // Use state for error messages
@@ -30,6 +33,7 @@ const LenderLogin = () => {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("lenderUserId", data.lenderUserId);
                 localStorage.setItem("role", "lender");  // ✅ Ensure role is stored
+                
                 loginLender(data); // ✅ Update context
 
                 if (data.approved) {

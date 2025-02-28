@@ -10,6 +10,7 @@ const LenderDashboard = () => {
     const [pendingEdits, setPendingEdits] = useState({});
     const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState('');
+    const [logo, setLogo] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -157,8 +158,20 @@ const LenderDashboard = () => {
                         <button onClick={handleSubmitEdits}>Submit Changes</button>
 
                         <h3>Company Logo:</h3>
-                        {lenderUserInfo.logoUrl && <img src={lenderUserInfo.logoUrl} alt="Company Logo" />}
-                        <input type="file" accept="image/*" onChange={handleLogoUpload} disabled={uploading} />
+
+{/* ✅ Display selected logo before uploading */}
+{logo && (
+    <div>
+        <p>Preview:</p>
+        <img src={URL.createObjectURL(logo)} alt="Selected Logo" style={{ maxWidth: "150px", maxHeight: "150px" }} />
+    </div>
+)}
+
+{/* ✅ Display existing logo if already uploaded */}
+{lenderUserInfo?.logoUrl && <img src={lenderUserInfo.logoUrl} alt="Company Logo" style={{ maxWidth: "150px", maxHeight: "150px" }} />}
+
+<input type="file" accept="image/*" onChange={handleLogoUpload} disabled={uploading} />
+
                     </div>
 
                     <div className="lender-actions">
