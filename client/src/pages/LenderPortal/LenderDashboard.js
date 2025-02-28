@@ -21,14 +21,26 @@ const LenderDashboard = () => {
         }
 
         const fetchLenderUserInfo = async () => {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                console.error("❌ No token found. Redirecting to login.");
+                logoutLender(); // Log the user out
+                navigate("/lender/login");
+                return;
+            }
             try {
                 // *** HARDCODED URL ***
+                console.log("🔍 Fetching Lender User Info with Token:", token); // ✅ Debugging token
                 const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
+                        "Content-Type": "application/json"
                     },
                 });
                 const data = await response.json();
+                console.log("✅ Lender User API Response:", data);
+                
                 if (response.ok) {
                     setLenderUserInfo(data);
                 } else {
