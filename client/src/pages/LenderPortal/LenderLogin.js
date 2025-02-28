@@ -2,7 +2,6 @@ import React, { useState, useContext } from "react"; // ✅ Combined imports
 import { useNavigate, Link } from "react-router-dom";
 import { LenderAuthContext } from "../../context/LenderAuthContext"; // ✅ Import LenderAuthContext
 
-
 const LenderLogin = () => {
     const navigate = useNavigate();
     const { loginLender } = useContext(LenderAuthContext); // ✅ Use loginLender inside the component
@@ -33,7 +32,7 @@ const LenderLogin = () => {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("lenderUserId", data.lenderUserId);
                 localStorage.setItem("role", "lender");  // ✅ Ensure role is stored
-                
+
                 loginLender(data); // ✅ Update context
 
                 if (data.approved) {
