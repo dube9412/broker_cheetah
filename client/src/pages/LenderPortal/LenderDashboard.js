@@ -1,205 +1,86 @@
-// src/pages/LenderPortal/LenderDashboard.js (HARDCODED URLS - FOR IMMEDIATE FIX)
-import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { LenderAuthContext } from '../../context/LenderAuthContext'; // Import context
+// src/pages/LenderPortal/LenderDashboard.js
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { LenderAuthContext } from "../../context/LenderAuthContext"; // ✅ Import context
 
 const LenderDashboard = () => {
     const navigate = useNavigate();
-    const { lenderUserId, logoutLender } = useContext(LenderAuthContext); // Use context
-    const [lenderUserInfo, setLenderUserInfo] = useState(null);
-    const [pendingEdits, setPendingEdits] = useState({});
-    const [uploading, setUploading] = useState(false);
-    const [message, setMessage] = useState('');
-    const [logo, setLogo] = useState(null);
+    const { lenderUserId, logoutLender } = useContext(LenderAuthContext); // ✅ Context
+    const [lenderInfo, setLenderInfo] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
 
         if (!token || !lenderUserId) {
-            navigate('/lender/login');
+            logoutLender();
+            navigate("/lender/login");
             return;
         }
 
-        const fetchLenderUserInfo = async () => {
-            const token = localStorage.getItem("token");
-
-            if (!token) {
-                console.error("❌ No token found. Redirecting to login.");
-                logoutLender(); // Log the user out
-                navigate("/lender/login");
-                return;
-            }
+        const fetchLenderInfo = async () => {
             try {
-                // *** HARDCODED URL ***
-                console.log("🔍 Fetching Lender User Info with Token:", token); // ✅ Debugging token
-                const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}`, {
+                console.log("🔍 Fetching Lender Info for:", lenderUserId);
+                const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${lenderUserId}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
-                        "Content-Type": "application/json"
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
                     },
                 });
+
                 const data = await response.json();
-                console.log("✅ Lender User API Response:", data);
-                
                 if (response.ok) {
-                    setLenderUserInfo(data);
+                    setLenderInfo(data);
                 } else {
-                    console.error('Error fetching lender user info:', data.message);
-                    if (response.status === 401 || response.status === 403) {
-                        logoutLender();
-                        navigate('/lender/login');
-                    }
+                    console.error("❌ Fetch Lender Error:", data.message);
+                    setError(data.message || "Error fetching lender details.");
                 }
-            } catch (error) {
-                console.error('API Error:', error);
+            } catch (err) {
+                console.error("❌ API Error:", err);
+                setError("Server error fetching lender details.");
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchLenderUserInfo();
-    }, [navigate, lenderUserId, logoutLender]);
+        fetchLenderInfo();
+    }, [lenderUserId, navigate, logoutLender]);
 
-
-    const handleEditChange = (e) => {
-        setPendingEdits({
-            ...pendingEdits,
-            [e.target.name]: e.target.value,
-        });
-    };
-
-    const handleSubmitEdits = async () => {
-        const token = localStorage.getItem('token');
-
-        try {
-            // *** HARDCODED URL ***
-            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}`, {
-                method: 'PUT', // Or PATCH
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(pendingEdits),
-            });
-            const data = await response.json();
-            if (response.ok) {
-                setMessage('Your changes have been saved.');
-                setPendingEdits({});
-                setLenderUserInfo(data); // Update with the response data
-            } else {
-                setMessage('Error submitting changes.');
-            }
-        } catch (error) {
-            console.error('Edit submission error:', error);
-            setMessage('Error submitting changes.');
-        }
-    };
-
-    const handleLogoUpload = async (e) => {
-        const token = localStorage.getItem('token');
-        const file = e.target.files[0];
-        setLogo(file);
-        setUploading(true);
-
-        const formData = new FormData();
-        formData.append('logo', file);
-
-        try {
-            // *** HARDCODED URL ***
-            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}/upload-logo`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: formData,
-            });
-            const data = await response.json();
-            if (response.ok) {
-                setLenderUserInfo({ ...lenderUserInfo, logoUrl: data.logoUrl });
-                setMessage('Logo uploaded successfully!');
-            } else {
-                setMessage('Error uploading logo.');
-            }
-        } catch (error) {
-            console.error('Logo upload error:', error);
-            setMessage('Error uploading logo.');
-        }
-
-        setUploading(false);
-    };
-
-
+    if (loading) return <p>Loading lender data...</p>;
+    if (error) return <p style={{ color: "red" }}>{error}</p>;
 
     return (
         <div className="lender-dashboard">
-            <h2>Welcome to Your Lender User Portal</h2>
+            <h2>Welcome to Your Lender Portal</h2>
 
-            {lenderUserInfo ? (
-                <>
-                    <div className="lender-info">
-                        <label>Company Name:</label>
-                        <input
-                            type="text"
-                            name="companyName"
-                            value={pendingEdits.companyName ?? lenderUserInfo.companyName ?? ''}
-                            onChange={handleEditChange}
-                        />
+            <div className="lender-info">
+                <h3>Basic Information</h3>
+                <p><strong>Company Name:</strong> {lenderInfo.lenderName}</p>
+                <p><strong>Portal Website:</strong> <a href={lenderInfo.portalWebsite} target="_blank" rel="noopener noreferrer">{lenderInfo.portalWebsite}</a></p>
+                <p><strong>Website:</strong> <a href={lenderInfo.lenderWebsite} target="_blank" rel="noopener noreferrer">{lenderInfo.lenderWebsite}</a></p>
+                <p><strong>Contact Name:</strong> {lenderInfo.lenderContactName}</p>
+                <p><strong>Email:</strong> {lenderInfo.email}</p>
+                <p><strong>Phone:</strong> {lenderInfo.phone}</p>
+                <p><strong>States:</strong> {lenderInfo.states?.join(", ") || "N/A"}</p>
 
-                        <label>Contact Email:</label>
-                        <input
-                            type="email"
-                            name="contactEmail"
-                            value={pendingEdits.contactEmail ?? lenderUserInfo.contactEmail ?? ''}
-                            onChange={handleEditChange}
-                        />
+                <h3>Loan Settings</h3>
+                <p><strong>Broker Friendly:</strong> {lenderInfo.brokerFriendly ? "Yes" : "No"}</p>
+                <p><strong>White Label Paperwork:</strong> {lenderInfo.whiteLabelPaperwork ? "Yes" : "No"}</p>
+                <p><strong>White Label Funding (TPO):</strong> {lenderInfo.whiteLabelFunding ? "Yes" : "No"}</p>
 
-                        <label>Phone:</label>
-                        <input
-                            type="text"
-                            name="phone"
-                            value={pendingEdits.phone ?? lenderUserInfo.phone ?? ''}
-                            onChange={handleEditChange}
-                        />
+                <h3>Loan Policies</h3>
+                <p><strong>Assumable Loans:</strong> {lenderInfo.assumable ? "Yes" : "No"}</p>
+                <p><strong>Background Restrictions:</strong> {lenderInfo.backgroundLimitations}</p>
+                <p><strong>Financial Crimes Allowed:</strong> {lenderInfo.financialCrimes ? "Yes" : "No"}</p>
+            </div>
 
-                        <label>States Operating In:</label>
-                        <input
-                            type="text"
-                            name="states"
-                            value={pendingEdits.states ?? lenderUserInfo.states ?? ''}
-                            onChange={handleEditChange}
-                        />
-
-                        <button onClick={handleSubmitEdits}>Submit Changes</button>
-
-                        <h3>Company Logo:</h3>
-
-{/* ✅ Display selected logo before uploading */}
-{logo && (
-    <div>
-        <p>Preview:</p>
-        <img src={URL.createObjectURL(logo)} alt="Selected Logo" style={{ maxWidth: "150px", maxHeight: "150px" }} />
-    </div>
-)}
-
-{/* ✅ Display existing logo if already uploaded */}
-{lenderUserInfo?.logoUrl && <img src={lenderUserInfo.logoUrl} alt="Company Logo" style={{ maxWidth: "150px", maxHeight: "150px" }} />}
-
-<input type="file" accept="image/*" onChange={handleLogoUpload} disabled={uploading} />
-
-                    </div>
-
-                    <div className="lender-actions">
-                        <button onClick={() => navigate(`/lender/loan-programs/${lenderUserInfo.lenderId}`)}>
-                            Manage Loan Programs
-                        </button>
-                        <button onClick={() => navigate("/lender/documents")}>
-                            Manage Documents
-                        </button>
-                    </div>
-
-                    {message && <p>{message}</p>}
-                </>
-            ) : (
-                <p>Loading lender user information...</p>
-            )}
+            <div className="lender-actions">
+                <button onClick={() => navigate(`/lender/edit/${lenderUserId}`)}>Edit Lender Info</button>
+                <button onClick={() => navigate(`/lender/loan-programs/${lenderUserId}`)}>Manage Loan Programs</button>
+                <button onClick={() => navigate("/lender/documents")}>Manage Documents</button>
+                <button onClick={logoutLender} style={{ backgroundColor: "red", color: "white" }}>Logout</button>
+            </div>
         </div>
     );
 };
