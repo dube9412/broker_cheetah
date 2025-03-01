@@ -135,6 +135,14 @@ const LenderDashboard = () => {
                     </tr>
                 </tbody>
             </table>
+            <button 
+    onClick={() => {
+        logoutLender();
+        navigate("/lender/login"); // ✅ Redirect to login
+    }} 
+    style={{ backgroundColor: "red", color: "white", marginTop: "20px" }}>
+    Logout
+</button>
         </div>
     );
 };
