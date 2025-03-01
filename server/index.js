@@ -8,6 +8,7 @@ const lenderRoutes = require('./routes/lender');   // Lender *companies*
 const lenderAuthRoutes = require("./routes/lenderAuth"); // Lender *user* auth
 const lenderUserRoutes = require('./routes/lenderUsers'); // Individual lender *user* data
 const adminLenderUserRoutes = require("./routes/adminLenderUserRoutes");
+const lenderRoutes = require("./lenderRoutes");
 const loanProgramRoutes = require("./routes/loanPrograms");
 const fixAndFlipRoutes = require("./routes/fixAndFlipRoutes");
 const dscrRoutes = require("./routes/dscrRoutes");
@@ -42,6 +43,7 @@ app.use("/api/lenders", lenderRoutes);  // Lender *companies* (list of lenders)
 app.use("/api/lender-auth", lenderAuthRoutes);    // Lender *user* signup/login
 app.use("/api/admin-lender-users", adminLenderUserRoutes); // Admin actions for lender users
 app.use('/api/lender-users', lenderUserRoutes); // Individual lender *user* data (for LenderDashboard)
+app.use("/api/lender", lenderRoutes);
 app.use("/api/loan-programs", loanProgramRoutes);
 app.use("/api/fix-and-flip", fixAndFlipRoutes);
 app.use("/api/dscr", dscrRoutes);
