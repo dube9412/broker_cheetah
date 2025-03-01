@@ -1,4 +1,3 @@
-// src/pages/LenderPortal/LenderDashboard.js
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { LenderAuthContext } from "../../context/LenderAuthContext"; // ✅ Import context
@@ -53,13 +52,7 @@ const LenderDashboard = () => {
 
     // ✅ Fetch Lender Info using lenderId (After lenderUserInfo is fetched)
     useEffect(() => {
-        if (!lenderUserInfo) return; // 🔥 Wait until lenderUserInfo is loaded
-
-        if (!lenderUserInfo.lenderId) {
-            console.error("❌ No lenderId found for this user.");
-            setError("No lender assigned to this account.");
-            return;
-        }
+        if (!lenderUserInfo || !lenderUserInfo.lenderId) return; // 🔥 Wait until we have lenderId
 
         const fetchLenderInfo = async () => {
             try {
@@ -93,6 +86,23 @@ const LenderDashboard = () => {
     if (loading) return <p>Loading lender data...</p>;
     if (error) return <p style={{ color: "red" }}>{error}</p>;
 
+    if (!lenderInfo) {
+        return (
+            <div className="lender-dashboard">
+                <h2>Welcome to Your Lender Portal</h2>
+                <p style={{ color: "red", fontWeight: "bold" }}>❌ No lender assigned to this account.</p>
+                <button 
+                    onClick={() => {
+                        logoutLender();
+                        navigate("/lender/login"); // ✅ Redirect to login
+                    }} 
+                    style={{ backgroundColor: "red", color: "white", marginTop: "20px" }}>
+                    Logout
+                </button>
+            </div>
+        );
+    }
+
     return (
         <div className="lender-dashboard">
             <h2>Welcome to Your Lender Portal</h2>
@@ -111,56 +121,25 @@ const LenderDashboard = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {lenderInfo ? (
-                        <tr key={lenderInfo._id}>
-                            <td>{lenderInfo.name}</td>
-                            <td>
-                                {lenderInfo.website ? (
-                                    <a href={lenderInfo.website} target="_blank" rel="noopener noreferrer">
-                                        {lenderInfo.website}
-                                    </a>
-                                ) : "N/A"}
-                            </td>
-                            <td>
-                                {lenderInfo.portalAddress ? (
-                                    <a href={lenderInfo.portalAddress} target="_blank" rel="noopener noreferrer">
-                                        {lenderInfo.portalAddress}
-                                    </a>
-                                ) : "N/A"}
-                            </td>
-                            <td>{lenderInfo.contactName || "N/A"}</td>
-                            <td>{lenderInfo.phone || "N/A"}</td>
-                            <td>
-                                {lenderInfo.email ? (
-                                    <a href={`mailto:${lenderInfo.email}`}>{lenderInfo.email}</a>
-                                ) : "N/A"}
-                            </td>
-                            <td>
-                            <Link to={`/edit-lender/${lenderInfo._id}?returnTo=lender-dashboard`}>
-                                <button>Edit</button>
-                            </Link>
-                            {" | "}
-                            <Link to={`/manage-loan-programs/${lenderInfo._id}?returnTo=lender-dashboard`}>
-                                <button>Manage Loan Programs</button>
-                            </Link>
-
-                            </td>
-                        </tr>
-                    ) : (
-                        <tr>
-                            <td colSpan="7">No lender assigned to this account.</td>
-                        </tr>
-                    )}
+                    <tr>
+                        <td>{lenderInfo.name}</td>
+                        <td>{lenderInfo.website || "N/A"}</td>
+                        <td>{lenderInfo.portalAddress || "N/A"}</td>
+                        <td>{lenderInfo.contactName || "N/A"}</td>
+                        <td>{lenderInfo.phone || "N/A"}</td>
+                        <td>{lenderInfo.email || "N/A"}</td>
+                        <td>
+                            <Link to={`/edit-lender/${lenderInfo._id}?returnTo=/lender/dashboard`}><button>Edit</button></Link> {" | "}
+                            <Link to={`/manage-loan-programs/${lenderInfo._id}?returnTo=/lender/dashboard`}><button>Manage Loan Programs</button></Link>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
-
-            <button onClick={logoutLender} style={{ backgroundColor: "red", color: "white", marginTop: "20px" }}>
-                Logout
-            </button>
         </div>
     );
 };
 
 export default LenderDashboard;
+
 
 
