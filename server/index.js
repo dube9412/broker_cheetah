@@ -2,21 +2,21 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 // ✅ Import routes correctly
-const adminRoutes = require("./routes/adminRoutes"); //  Admin routes
-const authRoutes = require("./routes/auth");        // General user/admin auth
-const lenderRoutes = require('./routes/lender');   // Lender *companies*
+const adminRoutes = require("./routes/adminRoutes"); // Admin routes
+const authRoutes = require("./routes/auth"); // General user/admin auth
+const lenderRoutes = require('./routes/lender'); // Lender *companies*
 const lenderAuthRoutes = require("./routes/lenderAuth"); // Lender *user* auth
 const lenderUserRoutes = require('./routes/lenderUsers'); // Individual lender *user* data
 const adminLenderUserRoutes = require("./routes/adminLenderUserRoutes");
-const lenderRoutes = require("./lenderRoutes");
-const loanProgramRoutes = require("./routes/loanPrograms");
+const lenderCompanyRoutes = require("./routes/lenderRoutes"); // ✅ Renamed this one to prevent duplication
+const loanProgramRoutes = require("./routes/loanPrograms"); 
 const fixAndFlipRoutes = require("./routes/fixAndFlipRoutes");
 const dscrRoutes = require("./routes/dscrRoutes");
 const groundUpRoutes = require("./routes/groundUpRoutes");
 const stabilizedBridgeRoutes = require("./routes/stabilizedBridgeRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
 const documentRoutes = require('./routes/documentRoutes');
-const scraperRoutes = process.env.HOST_ENV !== "render" ? require("./routes/scraperRoutes") : null;//added for render
+const scraperRoutes = process.env.HOST_ENV !== "render" ? require("./routes/scraperRoutes") : null; // Only load scraper in non-render environments
 
 const app = express();
 
@@ -37,20 +37,20 @@ mongoose.connect("mongodb+srv://dube9412:ReGuLaRoLdPaSsWoRd@brokercheetahdb.rdbe
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // ✅ API Routes
-app.use("/api/admin", adminRoutes);         // Admin routes (including lender user management by admins)
-app.use("/api/auth", authRoutes);           // General user/admin auth
-app.use("/api/lenders", lenderRoutes);  // Lender *companies* (list of lenders)
-app.use("/api/lender-auth", lenderAuthRoutes);    // Lender *user* signup/login
-app.use("/api/admin-lender-users", adminLenderUserRoutes); // Admin actions for lender users
-app.use('/api/lender-users', lenderUserRoutes); // Individual lender *user* data (for LenderDashboard)
-app.use("/api/lender", lenderRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/lenders", lenderRoutes);
+app.use("/api/lender-auth", lenderAuthRoutes);
+app.use("/api/lender-users", lenderUserRoutes);
+app.use("/api/admin-lender-users", adminLenderUserRoutes);
+app.use("/api/lender-companies", lenderCompanyRoutes); // ✅ Fixed duplicate route
 app.use("/api/loan-programs", loanProgramRoutes);
 app.use("/api/fix-and-flip", fixAndFlipRoutes);
 app.use("/api/dscr", dscrRoutes);
 app.use("/api/ground-up", groundUpRoutes);
 app.use("/api/stabilized-bridge", stabilizedBridgeRoutes);
 app.use("/api/portfolio", portfolioRoutes);
-app.use('/api/documents', documentRoutes);
+app.use("/api/documents", documentRoutes);
 if (scraperRoutes) {
   app.use("/api/scrapers", scraperRoutes);
 }

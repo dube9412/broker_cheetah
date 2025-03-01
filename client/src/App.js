@@ -53,10 +53,9 @@ import LenderLogin from './pages/LenderPortal/LenderLogin'; // Optional if separ
 import LenderSignup from './pages/LenderPortal/LenderSignup';
 import LenderAwaitingAssignment from './pages/LenderPortal/LenderAwaitingAssignment'; //Import
 import LenderAwaitingApproval from './pages/LenderPortal/LenderAwaitingApproval';
-import EditLoanProgram from './pages/LenderPortal/EditLoanProgram';
-import AddLoanProgram from './pages/LenderPortal/AddLoanProgram';
 import UploadLoanDocuments from './pages/LenderPortal/UploadLoanDocuments';
 import LenderManageLoanPrograms from './pages/LenderPortal/LenderManageLoanPrograms';
+
 
 
 import NotFound from './pages/NotFound';
@@ -71,6 +70,15 @@ const ProtectedAdminRoute = ({ children }) => {
   const { isAdmin, isSuperAdmin } = useContext(AuthContext);
   if (!isAdmin && !isSuperAdmin) {
     return <Navigate to="/" />;
+  }
+  return children;
+};
+
+// ✅ New Protected Lender Route
+const ProtectedLenderRoute = ({ children }) => {
+  const { isLender } = useContext(AuthContext);
+  if (!isLender) {
+    return <Navigate to="/lender/login" />;
   }
   return children;
 };
@@ -148,14 +156,28 @@ function App() {
               <Route path="/add-ground-up-program/:lenderId" element={<AddGroundUp />} />
               <Route path="/edit-ground-up-program/:lenderId/:programId" element={<EditGroundUp />} />
 
+                <Route path="/lender/manage-loan-programs/:lenderId" element={<ProtectedLenderRoute><ManageLoanPrograms /></ProtectedLenderRoute>} />
+                <Route path="/lender/add-fix-and-flip-program/:lenderId" element={<ProtectedLenderRoute><AddFixAndFlip /></ProtectedLenderRoute>} />
+                <Route path="/lender/edit-fix-and-flip-program/:lenderId/:programId" element={<ProtectedLenderRoute><EditFixAndFlip /></ProtectedLenderRoute>} />
+                <Route path="/lender/add-dscr-program/:lenderId" element={<ProtectedLenderRoute><AddDSCR /></ProtectedLenderRoute>} />
+                <Route path="/lender/edit-dscr-program/:lenderId/:programId" element={<ProtectedLenderRoute><EditDSCR /></ProtectedLenderRoute>} />
+                <Route path="/lender/add-ground-up-program/:lenderId" element={<ProtectedLenderRoute><AddGroundUp /></ProtectedLenderRoute>} />
+                <Route path="/lender/edit-ground-up-program/:lenderId/:programId" element={<ProtectedLenderRoute><EditGroundUp /></ProtectedLenderRoute>} />
+                <Route path="/lender/add-portfolio-program/:lenderId" element={<ProtectedLenderRoute><AddPortfolio /></ProtectedLenderRoute>} />
+                <Route path="/lender/edit-portfolio-program/:lenderId/:programId" element={<ProtectedLenderRoute><EditPortfolio /></ProtectedLenderRoute>} />
+                <Route path="/lender/add-stabilized-bridge-program/:lenderId" element={<ProtectedLenderRoute><AddStabilizedBridge /></ProtectedLenderRoute>} />
+                <Route path="/lender/edit-stabilized-bridge-program/:lenderId/:programId" element={<ProtectedLenderRoute><EditStabilizedBridge /></ProtectedLenderRoute>} />
+                <Route path="/lender/edit-lender/:lenderId" element={<ProtectedLenderRoute><EditLender /></ProtectedLenderRoute>} />
+
+
              {/* Lender Portal (protected) */}
              <Route path="/lender/*" element={<LenderProtectedRoutes />}>
     <Route path="dashboard" element={<LenderDashboard />} />
     <Route path="documents" element={<LenderDocuments />} />
-    <Route path="/lender/edit-loan-program/:programId" element={<EditLoanProgram />} />
-    <Route path="/lender/add-loan-program/:lenderId" element={<AddLoanProgram />} />
-    <Route path="/lender/upload-docs/:programId" element={<UploadLoanDocuments />} />
-    <Route path="/lender/loan-programs/:lenderId" element={<LenderManageLoanPrograms />} />
+    
+
+    <Route path="upload-docs/:programId" element={<UploadLoanDocuments />} />
+    <Route path="loan-programs/:lenderId" element={<LenderManageLoanPrograms />} />
 
               </Route>
   

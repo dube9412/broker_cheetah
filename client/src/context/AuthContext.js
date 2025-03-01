@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
  const isLoggedIn = !!user; // ✅ Boolean for login state
   const isAdmin = user?.role === "admin" || user?.role === "superadmin";
   const isSuperAdmin = user?.role === "superadmin";
+  const isLender = user?.role === "lender";
 
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, isAdmin, isSuperAdmin, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoggedIn, isAdmin, isSuperAdmin, isLender, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
