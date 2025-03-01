@@ -136,13 +136,14 @@ const LenderDashboard = () => {
                                 ) : "N/A"}
                             </td>
                             <td>
-                                <Link to={`/edit-lender/${lenderInfo._id}`}>
-                                    <button>Edit</button>
-                                </Link>{" "}
-                                |{" "}
-                                <button onClick={() => navigate(`/manage-loan-programs/${lenderInfo._id}`)}>
-                                    Manage Loan Programs
-                                </button>
+                            <Link to={`/edit-lender/${lenderInfo._id}?returnTo=lender-dashboard`}>
+                                <button>Edit</button>
+                            </Link>
+                            {" | "}
+                            <Link to={`/manage-loan-programs/${lenderInfo._id}?returnTo=lender-dashboard`}>
+                                <button>Manage Loan Programs</button>
+                            </Link>
+
                             </td>
                         </tr>
                     ) : (
