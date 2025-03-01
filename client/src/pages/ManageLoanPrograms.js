@@ -160,8 +160,13 @@ function ManageLoanPrograms() {
         ))}
       </ul>
 
-      <button onClick={() => navigate(`/${returnTo}`)} style={{ marginTop: "20px" }}>Back</button>
-    </div>
+      <button
+    onClick={() => navigate(returnTo.startsWith("/") ? returnTo : `/${returnTo}`)} // ✅ Fix here
+    style={{ marginTop: "20px" }}
+>
+    Back
+</button> 
+</div>
   );
 }
 
