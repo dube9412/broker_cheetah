@@ -111,7 +111,7 @@ function EditLender() {
       .then((data) => {
         if (data.success) {
           alert("Lender updated successfully!");
-          navigate(isAdmin || isSuperAdmin ? "/admin-dashboard" : "/dashboard");
+          navigate(returnTo.startsWith("/") ? returnTo : `/${returnTo}`);  // ✅ FIXED
 
         } else {
           alert("Error updating lender.");
@@ -222,18 +222,18 @@ function EditLender() {
             Save Changes
           </button>
           <button
-            type="button"
-            onClick={() => navigate(`/${returnTo}`)}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#dc3545",
-              color: "#fff",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            Cancel
-          </button>
+    type="button"
+    onClick={() => navigate(returnTo.startsWith("/") ? returnTo : `/${returnTo}`)}  // ✅ FIX HERE
+    style={{
+      padding: "10px 20px",
+      backgroundColor: "#dc3545",
+      color: "#fff",
+      border: "none",
+      cursor: "pointer",
+    }}
+>
+    Cancel
+</button>
         </div>
       </form>
     </div>
