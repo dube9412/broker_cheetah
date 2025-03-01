@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext} from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import StatesCheckboxList from "./StatesCheckboxList";
 import { AuthContext } from "../context/AuthContext";
 
@@ -25,6 +25,11 @@ function EditLender() {
   const [bkFcSsDil, setBkFcSsDil] = useState("");
   const [backgroundLimitations, setBackgroundLimitations] = useState([]);
   const { isAdmin, isSuperAdmin } = useContext(AuthContext);
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const returnTo = searchParams.get("returnTo") || "/admin-dashboard"; // Default to admin
+
 
   useEffect(() => {
     console.log("EditLender Mounted");
