@@ -156,7 +156,7 @@ function ManageLoanPrograms() {
         ))}
       </ul>
 
-      <button onClick={() => navigate("/dashboard")} style={{ marginTop: "20px" }}>Back to Dashboard</button>
+      <button onClick={() => navigate(`/${returnTo}`)} style={{ marginTop: "20px" }}>Back</button>
     </div>
   );
 }
