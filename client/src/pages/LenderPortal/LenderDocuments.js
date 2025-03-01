@@ -18,8 +18,9 @@ const LenderDocuments = () => {
     const fetchLoanPrograms = async () => {
       try {
         const response = await fetch(
-          `https://broker-cheetah-backend.onrender.com/api/lenders/${lenderUserId}/loan-programs`
+          `https://broker-cheetah-backend.onrender.com/api/lender-users/${lenderUserId}/loan-programs`
         );
+        
         const data = await response.json();
         if (response.ok) {
           setLoanPrograms(data.loanPrograms);
