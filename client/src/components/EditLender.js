@@ -218,8 +218,7 @@ function EditLender() {
           </button>
           <button
             type="button"
-            onClick={() => navigate(isAdmin || isSuperAdmin ? "/admin-dashboard" : "/dashboard")
-            }
+            onClick={() => navigate(`/${returnTo}`)}
             style={{
               padding: "10px 20px",
               backgroundColor: "#dc3545",
