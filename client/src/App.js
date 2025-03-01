@@ -53,6 +53,10 @@ import LenderLogin from './pages/LenderPortal/LenderLogin'; // Optional if separ
 import LenderSignup from './pages/LenderPortal/LenderSignup';
 import LenderAwaitingAssignment from './pages/LenderPortal/LenderAwaitingAssignment'; //Import
 import LenderAwaitingApproval from './pages/LenderPortal/LenderAwaitingApproval';
+import EditLoanProgram from './pages/LenderPortal/EditLoanProgram';
+import AddLoanProgram from './pages/LenderPortal/AddLoanProgram';
+import UploadLoanDocuments from './pages/LenderPortal/UploadLoanDocuments';
+import LenderManageLoanPrograms from './pages/LenderPortal/LenderManageLoanPrograms';
 
 
 import NotFound from './pages/NotFound';
@@ -148,7 +152,12 @@ function App() {
              <Route path="/lender/*" element={<LenderProtectedRoutes />}>
     <Route path="dashboard" element={<LenderDashboard />} />
     <Route path="documents" element={<LenderDocuments />} />
-</Route>
+    <Route path="/lender/edit-loan-program/:programId" element={<EditLoanProgram />} />
+    <Route path="/lender/add-loan-program/:lenderId" element={<AddLoanProgram />} />
+    <Route path="/lender/upload-docs/:programId" element={<UploadLoanDocuments />} />
+    <Route path="/lender/loan-programs/:lenderId" element={<LenderManageLoanPrograms />} />
+
+              </Route>
   
   {/* Fallback Route */}
   <Route path="*" element={<NotFound />} />
