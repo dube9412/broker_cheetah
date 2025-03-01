@@ -52,11 +52,14 @@ const LenderDashboard = () => {
 
     // ✅ Fetch Lender Info using lenderId (After lenderUserInfo is fetched)
     useEffect(() => {
-        if (!lenderUserInfo?.lenderId) {
+        if (!lenderUserInfo) return; // 🔥 Wait until lenderUserInfo is loaded
+
+        if (!lenderUserInfo.lenderId) {
             console.error("❌ No lenderId found for this user.");
             setError("No lender assigned to this account.");
             return;
         }
+        
 
         const fetchLenderInfo = async () => {
             try {
