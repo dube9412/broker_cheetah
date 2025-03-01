@@ -123,10 +123,14 @@ const AdminLenders = () => {
                   <td>{lender.phone || "N/A"}</td>
                   <td>{lender.email ? <a href={`mailto:${lender.email}`}>{lender.email}</a> : "N/A"}</td>
                   <td>
-                    <Link to={`/edit-lender/${lender._id}`}><button>Edit</button></Link> {" | "}
+                  <Link to={`/edit-lender/${lenderInfo._id}?returnTo=admin-dashboard`}>
+                      <button>Edit</button>
+                  </Link> {" | "}
                     <button onClick={() => handleDelete(lender._id)}>Delete</button> {" | "}
-                    <button onClick={() => navigate(`/manage-loan-programs/${lender._id}`)}>Manage Loan Programs</button>
-                  </td>
+                  <Link to={`/manage-loan-programs/${lenderInfo._id}?returnTo=admin-dashboard`}>
+                    <button>Manage Loan Programs</button>
+                  </Link>
+                    </td>
                 </tr>
               ))
             ) : (
