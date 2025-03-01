@@ -53,7 +53,6 @@ import LenderLogin from './pages/LenderPortal/LenderLogin'; // Optional if separ
 import LenderSignup from './pages/LenderPortal/LenderSignup';
 import LenderAwaitingAssignment from './pages/LenderPortal/LenderAwaitingAssignment'; //Import
 import LenderAwaitingApproval from './pages/LenderPortal/LenderAwaitingApproval';
-import LenderManageLoanPrograms from './pages/LenderPortal/LenderManageLoanPrograms';
 
 
 
@@ -175,7 +174,6 @@ function App() {
     <Route path="documents" element={<LenderDocuments />} />
     
     <Route path="lender-documents" element={<LenderDocuments />} />
-    <Route path="loan-programs/:lenderId" element={<LenderManageLoanPrograms />} />
 
               </Route>
   
