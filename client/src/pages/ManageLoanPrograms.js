@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 
 function ManageLoanPrograms() {
   const { lenderId } = useParams();
@@ -11,6 +11,10 @@ function ManageLoanPrograms() {
   const [stabilizedBridgePrograms, setStabilizedBridgePrograms] = useState([]);
   const [portfolioPrograms, setPortfolioPrograms] = useState([]);
   const [groundUpPrograms, setGroundUpPrograms] = useState([]);
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const returnTo = searchParams.get("returnTo") || "/admin-dashboard"; // ✅ Define it before using it
 
   // ✅ Fetch function for loan programs
   const fetchPrograms = async (url, stateSetter) => {
