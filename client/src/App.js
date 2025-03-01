@@ -53,7 +53,6 @@ import LenderLogin from './pages/LenderPortal/LenderLogin'; // Optional if separ
 import LenderSignup from './pages/LenderPortal/LenderSignup';
 import LenderAwaitingAssignment from './pages/LenderPortal/LenderAwaitingAssignment'; //Import
 import LenderAwaitingApproval from './pages/LenderPortal/LenderAwaitingApproval';
-import LenderDocuments from './pages/LenderPortal/LenderDocuments';
 import LenderManageLoanPrograms from './pages/LenderPortal/LenderManageLoanPrograms';
 
 
