@@ -87,17 +87,7 @@ const AdminUsers = () => {
 
   return (
     <div className="admin-dashboard" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <nav className="admin-nav" style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
-        <button onClick={() => navigate("/admin-dashboard")} className="nav-button">Admin Home</button>
-        <button onClick={() => navigate("/admin/lenders")} className="nav-button">Lenders</button>
-        <button onClick={() => navigate("/admin/lender-users")} className="nav-button">Lender Users</button>
-        <button onClick={() => navigate("/admin/help-tickets")} className="nav-button">Help Tickets</button>
-        <button onClick={() => navigate("/admin/analytics")} className="nav-button">Analytics</button>
-        <button onClick={() => navigate("/admin/scrapers")} className="nav-button">Scrapers</button>
-        <button onClick={() => navigate("/admin/json-tools")} className="nav-button">JSON Tools</button>
-        <button onClick={() => navigate("/admin/import-data")} className="nav-button">Import Data</button>
-        </nav>
-    <div style={{ padding: "20px" }}>
+        <div style={{ padding: "20px" }}>
       <h1>Admin Users</h1>
       <p>Manage all registered users (Brokers, Admins, Superadmins).</p>
 

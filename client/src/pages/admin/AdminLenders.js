@@ -69,9 +69,7 @@ const AdminLenders = () => {
 
   return (
     <div className="admin-dashboard" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <AdminNav />
-
-      <div style={{ padding: "20px" }}>
+            <div style={{ padding: "20px" }}>
         <h1>Admin Dashboard</h1>
         <p>Welcome to the admin lender dashboard. Here you can edit, remove, or manage loan programs for any lender.</p>
 
