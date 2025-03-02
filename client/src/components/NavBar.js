@@ -1,24 +1,133 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { LenderAuthContext } from "../context/LenderAuthContext"; // ✅ Import lender context
 import logo from "../assets/logo.png";
 import "./NavBar.css";
 
 function NavBar() {
-  const { isLoggedIn, isAdmin, isSuperAdmin, user, logout } = useContext(AuthContext);
-  const [showLenderDropdown, setShowLenderDropdown] = useState(false); // State for lender dropdown
+  const { isLoggedIn, isAdmin, isSuperAdmin, logout } = useContext(AuthContext);
+  const { isLenderLoggedIn, logoutLender } = useContext(LenderAuthContext);
 
-  // ✅ Determine User Role
-  const isLender = user?.role === "lender" || localStorage.getItem("role") === "lender";
-
-  useEffect(() => {
-    console.log("Navbar: Auth state changed:", { isLoggedIn, isAdmin, isSuperAdmin, isLender });
-  }, [isLoggedIn, isAdmin, isSuperAdmin, isLender]);
+  const [dropdown, setDropdown] = useState(null);
 
   const handleLogout = () => {
     logout();
+    logoutLender();
     window.location.href = "/";
   };
+
+  // ✅ Unified Dashboard Dropdown
+  const dashboardDropdown = (
+    <div className="dropdown-content">
+      <Link to="/dashboard">User Dashboard</Link>
+      {isAdmin || isSuperAdmin ? <Link to="/admin-dashboard">Admin Dashboard</Link> : null}
+      {isLenderLoggedIn ? <Link to="/lender/dashboard">Lender Dashboard</Link> : null}
+    </div>
+  );
+
+  // ✅ User Navbar
+  const userNav = (
+    <>
+      <Link to="/select-loan-type">Lender Search</Link>
+
+      {/* Classes Dropdown */}
+      <div className="dropdown" onMouseEnter={() => setDropdown("classes")} onMouseLeave={() => setDropdown(null)}>
+        <span>Classes ▼</span>
+        {dropdown === "classes" && (
+          <div className="dropdown-content">
+            <Link to="/hard-money-class">Hard Money Class</Link>
+          </div>
+        )}
+      </div>
+
+      {/* Calculators Dropdown */}
+      <div className="dropdown" onMouseEnter={() => setDropdown("calculators")} onMouseLeave={() => setDropdown(null)}>
+        <span>Calculators ▼</span>
+        {dropdown === "calculators" && (
+          <div className="dropdown-content">
+            <Link to="/fix-and-flip-calculator">Fix & Flip Calculator</Link>
+            <Link to="/dscr-calculator">DSCR Calculator</Link>
+          </div>
+        )}
+      </div>
+
+      {/* Tools Dropdown */}
+      <div className="dropdown" onMouseEnter={() => setDropdown("tools")} onMouseLeave={() => setDropdown(null)}>
+        <span>Tools ▼</span>
+        {dropdown === "tools" && (
+          <div className="dropdown-content">
+            <Link to="/documents">Docs</Link>
+            <span className="coming-soon">Pipeline (Coming Soon)</span>
+            <span className="coming-soon">Help (Coming Soon)</span>
+            <span className="coming-soon">Knowledge Base (Coming Soon)</span>
+          </div>
+        )}
+      </div>
+    </>
+  );
+
+  // ✅ Admin Navbar
+  const adminNav = (
+    <>
+      {/* Dashboard Dropdown */}
+      <div className="dropdown" onMouseEnter={() => setDropdown("dashboards")} onMouseLeave={() => setDropdown(null)}>
+        <span>Dashboards ▼</span>
+        {dropdown === "dashboards" && dashboardDropdown}
+      </div>
+
+      {/* Manage Dropdown */}
+      <div className="dropdown" onMouseEnter={() => setDropdown("manage")} onMouseLeave={() => setDropdown(null)}>
+        <span>Manage ▼</span>
+        {dropdown === "manage" && (
+          <div className="dropdown-content">
+            <Link to="/admin/users">Users</Link>
+            <Link to="/admin/lenders">Lenders</Link>
+            <Link to="/admin/lender-users">Lender Users</Link>
+            <Link to="/admin/lender-approvals">Approve Lender Edits</Link>
+          </div>
+        )}
+      </div>
+
+      <Link to="/admin/analytics">Analytics</Link>
+      <Link to="/admin/help-tickets">Help Tickets</Link>
+
+      {/* Tools Dropdown */}
+      <div className="dropdown" onMouseEnter={() => setDropdown("admin-tools")} onMouseLeave={() => setDropdown(null)}>
+        <span>Tools ▼</span>
+        {dropdown === "admin-tools" && (
+          <div className="dropdown-content">
+            <Link to="/documents">Docs</Link>
+            <Link to="/admin/scrapers">Scrapers</Link>
+            <Link to="/admin/json-tools">JSON Import</Link>
+            <Link to="/admin/import-data">Import Data</Link>
+          </div>
+        )}
+      </div>
+    </>
+  );
+
+  // ✅ Lender Navbar
+  const lenderNav = (
+    <>
+      {/* Dashboard Dropdown */}
+      <div className="dropdown" onMouseEnter={() => setDropdown("lender-dashboards")} onMouseLeave={() => setDropdown(null)}>
+        <span>Dashboard ▼</span>
+        {dropdown === "lender-dashboards" && dashboardDropdown}
+      </div>
+
+      {/* Uploads Dropdown */}
+      <div className="dropdown" onMouseEnter={() => setDropdown("uploads")} onMouseLeave={() => setDropdown(null)}>
+        <span>Uploads ▼</span>
+        {dropdown === "uploads" && (
+          <div className="dropdown-content">
+            <Link to="/lender/upload-logo">Logo</Link>
+            <Link to="/lender/documents">Docs</Link>
+          </div>
+        )}
+      </div>
+    </>
+  );
 
   return (
     <div className="navbar-container">
@@ -27,67 +136,36 @@ function NavBar() {
         <h1>Broker Cheetah</h1>
       </div>
 
-      {isLoggedIn ? (
-        <>
-          <nav className="nav-links">
-            {isAdmin || isSuperAdmin ? (
-              <>
-                <Link to="/admin-dashboard">Admin Dashboard</Link>
-                <Link to="/admin/users">Users</Link>
-                <Link to="/admin/lenders">Lenders</Link>
-                <Link to="/admin/help-tickets">Help Tickets</Link>
-              </>
-            ) : isLender ? (
-              <>
-                <Link to="/lender/dashboard">Lender Dashboard</Link>
-                <Link to="/lender/loan-programs">Loan Programs</Link>
-                <Link to="/lender/documents">Documents</Link>
-              </>
-            ) : (
-              <>
-                <Link to="/dashboard">Dashboard</Link>
-                <Link to="/search/fixandflip">Fix & Flip</Link>
-                <Link to="/select-loan-type">Loan Types</Link>
-              </>
-            )}
-            <button onClick={handleLogout} className="logout-btn">Logout</button>
-          </nav>
-        </>
-      ) : (
-        <nav className="nav-links">
-          <Link to="/login">Login</Link>
-          <Link to="/signup">Sign Up</Link>
+      <nav className="nav-links">
+        {isLoggedIn && !isAdmin && !isSuperAdmin && !isLenderLoggedIn && userNav}
+        {isAdmin || isSuperAdmin ? adminNav : null}
+        {isLenderLoggedIn && !isAdmin && !isSuperAdmin ? lenderNav : null}
+      </nav>
 
-          {/* Lender Dropdown */}
-          <div
-            className="dropdown"
-            onMouseEnter={() => setShowLenderDropdown(true)}
-            onMouseLeave={() => setShowLenderDropdown(false)}
-            style={{ display: "inline-block", position: "relative", marginLeft: "10px" }}
-          >
-            <span style={{ cursor: "pointer", fontWeight: "bold" }}>Lender ▼</span>
+      <div className="logout-container">
+        {isLoggedIn || isLenderLoggedIn ? (
+          <button onClick={handleLogout}>Logout</button>
+        ) : (
+          <>
+            <Link to="/login">Login</Link>
+            <Link to="/signup">Sign Up</Link>
 
-            {showLenderDropdown && (
-              <div className="dropdown-content"
-                   style={{
-                     position: "absolute",
-                     top: "100%",
-                     left: "0",
-                     backgroundColor: "#fff",
-                     border: "1px solid #ccc",
-                     padding: "10px",
-                     boxShadow: "2px 2px 10px rgba(0,0,0,0.1)",
-                     zIndex: "1000"
-                   }}>
-                <Link to="/lender/login" style={{ display: "block", padding: "5px" }}>Lender Login</Link>
-                <Link to="/lender/signup" style={{ display: "block", padding: "5px" }}>Lender Signup</Link>
-              </div>
-            )}
-          </div>
-        </nav>
-      )}
+            {/* Lender Dropdown */}
+            <div className="dropdown" onMouseEnter={() => setDropdown("lender-login")} onMouseLeave={() => setDropdown(null)}>
+              <span>Lender ▼</span>
+              {dropdown === "lender-login" && (
+                <div className="dropdown-content">
+                  <Link to="/lender/login">Lender Login</Link>
+                  <Link to="/lender/signup">Lender Signup</Link>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
 
 export default NavBar;
+
