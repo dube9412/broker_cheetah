@@ -59,9 +59,22 @@ const handleFileChange = (e) => {
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    multiple: false, // Only allow one file at a time
-    accept: "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  });
+    multiple: false, // ✅ Allow only one file
+    accept: {
+        "application/pdf": [".pdf"],
+        "application/msword": [".doc"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+        "application/vnd.ms-excel": [".xls"], // ✅ Excel (.xls)
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"], // ✅ Excel (.xlsx)
+        "text/plain": [".txt"], // ✅ Plain Text
+        "text/csv": [".csv"], // ✅ CSV
+        "image/png": [".png"],
+        "image/jpeg": [".jpg", ".jpeg"]
+    }
+});
+
+
+
 
   // ✅ Handle document upload
   const handleUpload = async () => {
@@ -70,7 +83,9 @@ const handleFileChange = (e) => {
       return;
     }
 
-    const success = await uploadDocument(selectedFile, lenderId, programId ? programId : selectedProgram, selectedTag);
+    const success = await uploadDocument(selectedFile, lenderId ?? "MISSING_LENDER_ID", selectedProgram ?? "MISSING_PROGRAM_ID", selectedTag ?? "MISSING_TAG");
+
+
 
     if (success) {
       setSelectedFile(null);
