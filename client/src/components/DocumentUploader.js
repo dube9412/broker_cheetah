@@ -41,13 +41,13 @@ const DocumentUploader = ({ lenderId, loanPrograms }) => {
 ];
 
 const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file && validMimeTypes.includes(file.type)) {
-        setSelectedFile(file);
-    } else {
-        alert("Invalid file type. Please upload a PDF, Word doc, or image.");
-        setSelectedFile(null);
-    }
+  const file = e.target.files[0];
+  if (file && validMimeTypes.includes(file.type)) {
+      setSelectedFile(file);
+  } else {
+      alert("Invalid file type. Allowed: PDF, PNG, JPEG, DOC, DOCX.");
+      setSelectedFile(null);
+  }
 };
 
 
@@ -94,11 +94,12 @@ const handleFileChange = (e) => {
       {/* ✅ Assign to Loan Program (Optional) */}
       <label>Assign to a Loan Program (Optional): </label>
       <select value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)}>
-        <option value="">None</option>
-        {loanPrograms.map((program) => (
-          <option key={program._id} value={program._id}>{program.name}</option>
-        ))}
-      </select>
+    <option value="">None</option>
+    {Array.isArray(loanPrograms) ? loanPrograms.map((program) => (
+        <option key={program._id} value={program._id}>{program.name}</option>
+    )) : null} {/* ✅ Prevents error if loanPrograms is undefined */}
+</select>
+
       <br /><br />
 
       {/* ✅ Tag Selection */}
