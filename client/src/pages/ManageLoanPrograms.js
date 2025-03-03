@@ -66,16 +66,16 @@ function ManageLoanPrograms() {
 
     const fetchDocuments = async () => {
       try {
-          // ✅ Include programId only if it's defined
           const programQuery = programId ? `?programId=${programId}` : "";
           const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${lenderId}${programQuery}`);
           const data = await response.json();
   
           if (response.ok && data.success) {
               console.log("✅ Fetched Documents:", data.documents);
+  
               setUploadedDocs((prevDocs) => ({
                   ...prevDocs,
-                  [programId || "general"]: data.documents, // ✅ Store general docs if no programId
+                  [programId || "general"]: data.documents, // ✅ Ensure docs are linked to correct programId
               }));
           } else {
               console.warn("⚠️ No documents found.");
@@ -88,6 +88,7 @@ function ManageLoanPrograms() {
           console.error("❌ Error fetching documents:", error);
       }
   };
+  
   
     fetchLender();
     fetchData();
@@ -232,15 +233,13 @@ function ManageLoanPrograms() {
     uploadedDocs[program._id].map((doc) => (
         <div key={doc._id}>
             📄 {doc.originalName} ({doc.tag})
-            <a href={`https://broker-cheetah-backend.onrender.com${doc.filePath}`} target="_blank" rel="noopener noreferrer">
-                <button>View</button>
-            </a>
             <button onClick={() => handleDeleteDocument(doc._id, program._id)}>Delete</button>
         </div>
     ))
 ) : (
     <p>No documents uploaded for this program.</p>
 )}
+
           </li>
         ))}
       </ul>
