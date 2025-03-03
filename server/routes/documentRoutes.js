@@ -49,21 +49,28 @@ router.post("/upload", upload.single("file"), async (req, res) => {
 // ✅ Fetch Documents for a Specific Lender (Optional Program Filter)
 router.get("/:lenderId", async (req, res) => {
   try {
-    const { lenderId } = req.params;
-    const { programId } = req.query;
+      const { lenderId } = req.params;
+      const { programId } = req.query;
 
-    let query = { lenderId };
-    if (programId) {
-      query.programId = programId;
-    }
+      // ✅ Fetch both general lender-wide documents & program-specific ones
+      let query = { lenderId };
+      if (programId) {
+          query = { 
+              $or: [
+                  { lenderId, programId },  // ✅ Match program-specific docs
+                  { lenderId, programId: null }, // ✅ Also fetch lender-wide docs
+              ]
+          };
+      }
 
-    const documents = await Document.find(query);
-    res.status(200).json({ success: true, documents });
+      const documents = await Document.find(query);
+      res.status(200).json({ success: true, documents });
   } catch (error) {
-    console.error("❌ Error fetching documents:", error);
-    res.status(500).json({ success: false, message: "Error fetching documents." });
+      console.error("❌ Error fetching documents:", error);
+      res.status(500).json({ success: false, message: "Error fetching documents." });
   }
 });
+
 
 // ✅ Delete a Document by ID
 router.delete("/:documentId", async (req, res) => {
