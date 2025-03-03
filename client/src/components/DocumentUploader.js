@@ -69,7 +69,8 @@ const handleFileChange = (e) => {
       return;
     }
 
-    const success = await uploadDocument(selectedFile, lenderId, selectedProgram, selectedTag);
+    const success = await uploadDocument(selectedFile, lenderId, programId || selectedProgram, selectedTag);
+
     if (success) {
       setSelectedFile(null);
       setSelectedTag("");
@@ -95,7 +96,8 @@ const handleFileChange = (e) => {
       <label>Assign to a Loan Program (Optional): </label>
       <select value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)}>
     <option value="">None</option>
-    {Array.isArray(loanPrograms) ? loanPrograms.map((program) => (
+    {(Array.isArray(loanPrograms) && loanPrograms.length > 0) ? loanPrograms.map((program) => (
+
         <option key={program._id} value={program._id}>{program.name}</option>
     )) : null} {/* ✅ Prevents error if loanPrograms is undefined */}
 </select>
