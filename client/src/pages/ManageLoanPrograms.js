@@ -128,34 +128,41 @@ function ManageLoanPrograms() {
     }
   };
 
-  const handleDeleteDocument = async (documentId) => {
+  const handleDeleteDocument = async (documentId, programId) => {
     if (!documentId) {
-      console.error("❌ Error: No document ID provided for deletion.");
-      alert("Error: No document ID provided.");
-      return;
+        console.error("❌ Error: No document ID provided for deletion.");
+        alert("Error: No document ID provided.");
+        return;
     }
-  
+
     if (!window.confirm("Are you sure you want to delete this document?")) return;
-  
+
     try {
-      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${documentId}`, {
-        method: "DELETE",
-      });
-  
-      const data = await response.json();
-      if (response.ok) {
-        alert("✅ Document deleted successfully.");
-        
-        // ✅ Update state to remove the deleted document from UI
-        setDocuments((prevDocs) => prevDocs.filter((doc) => doc._id !== documentId));
-      } else {
-        alert(`❌ Error deleting document: ${data.message}`);
-      }
+        const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${documentId}`, {
+            method: "DELETE",
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert("✅ Document deleted successfully.");
+
+            // ✅ Update state to remove the deleted document from `uploadedDocs`
+            setUploadedDocs((prevDocs) => {
+                const updatedDocs = { ...prevDocs };
+                if (updatedDocs[programId]) {
+                    updatedDocs[programId] = updatedDocs[programId].filter((doc) => doc._id !== documentId);
+                }
+                return updatedDocs;
+            });
+        } else {
+            alert(`❌ Error deleting document: ${data.message}`);
+        }
     } catch (error) {
-      console.error("❌ Error deleting document:", error);
-      alert("An error occurred while deleting the document.");
+        console.error("❌ Error deleting document:", error);
+        alert("An error occurred while deleting the document.");
     }
-  };
+};
+
   
   
 
@@ -209,12 +216,19 @@ function ManageLoanPrograms() {
             
             {showUploader === program._id && <DocumentUploader lenderId={lenderId} programId={program._id} />}
 
-            {uploadedDocs[program._id]?.map((doc) => (
-    <div key={doc._id}>
-        📄 {doc.filename} ({doc.tag})
-        <button onClick={() => handleDeleteDocument(doc._id)}>Delete</button>
-    </div>
-))}
+            {uploadedDocs[program._id] && uploadedDocs[program._id].length > 0 ? (
+    uploadedDocs[program._id].map((doc) => (
+        <div key={doc._id}>
+            📄 {doc.filename} ({doc.tag})
+            <button onClick={() => handleDeleteDocument(doc._id, program._id)}>Delete</button>
+        </div>
+    ))
+) : (
+    <p>No documents uploaded for this program.</p>
+)}
+
+
+
 
           </li>
         ))}
