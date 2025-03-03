@@ -14,14 +14,14 @@ router.get("/:lenderId/dscr-programs", async (req, res) => {
 
     if (dscrPrograms.length === 0) {
       console.warn("⚠️ No DSCR programs found.");
-      return res.status(404).json({ message: "No DSCR programs found." });
+      return res.status(200).json([]);
     }
 
     console.log("✅ Found DSCR programs:", dscrPrograms);
-    res.json(dscrPrograms);
+    res.status(200).json(dscrPrograms);
   } catch (error) {
     console.error("❌ Error fetching DSCR programs:", error);
-    res.status(500).json({ message: "Failed to fetch DSCR programs." });
+    res.status(500).json({ message: "Server error retrieving DSCR programs." });
   }
 });
 
