@@ -1,109 +1,113 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { uploadDocument } from "../services/documentService"; // ✅ API CALLS
+import uploadDocument from "../utils/uploadDocument"; // ✅ Reusing upload logic
 
-const DocumentUploader = ({ lenderId, loanProgramId }) => {
-  const [file, setFile] = useState(null);
-  const [customName, setCustomName] = useState("");
-  const [selectedLoanProgram, setSelectedLoanProgram] = useState(loanProgramId || "");
-  const [loanPrograms, setLoanPrograms] = useState([]);
-  const [tag, setTag] = useState("");
+const DOCUMENT_CATEGORIES = [
+  { label: "Loan Program Applications", options: [
+    "DSCR Loan Application", 
+    "Fix & Flip / Bridge Loan Application", 
+    "Rental Portfolio Loan Application", 
+    "Ground Up Construction Application", 
+    "Scope of Work Worksheet"
+  ]},
+  { label: "General Underwriting & Processing Docs", options: [
+    "Borrower Experience Sheet", 
+    "Co-Signor (Guarantor) Sheet", 
+    "Canadian National Credit Report Worksheet", 
+    "Contractor Onboarding Worksheet", 
+    "How to Request a Draw", 
+    "Insurance Requirements", 
+    "Mortgage Clause Info"
+  ]},
+  { label: "Lender Marketing Materials", options: [
+    "Fix & Flip Marketing Sheet", 
+    "Ground Up Marketing Sheet"
+  ]},
+  { label: "Lender Information & Guidelines", options: [
+    "Product Info Sheet", 
+    "Product Details Sheet", 
+    "Lending Guidelines"
+  ]}
+];
 
-  const onDrop = (acceptedFiles) => {
-    setFile(acceptedFiles[0]);
-    setCustomName(acceptedFiles[0].name);
+const DocumentUploader = ({ lenderId, loanPrograms }) => {
+  const [selectedProgram, setSelectedProgram] = useState("");
+  const [selectedTag, setSelectedTag] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  // ✅ Handle standard file selection
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
   };
 
-  // ✅ Fetch Loan Programs for Dropdown
-  useEffect(() => {
-    const fetchLoanPrograms = async () => {
-      if (!lenderId) return;
-      try {
-        const response = await fetch(
-          `https://broker-cheetah-backend.onrender.com/api/lenders/${lenderId}/loan-programs`
-        );
-        const data = await response.json();
-        if (response.ok) {
-          setLoanPrograms(data.loanPrograms);
-        } else {
-          console.error("Error fetching loan programs", data.message);
-        }
-      } catch (error) {
-        console.error("API Error:", error);
-      }
-    };
-    fetchLoanPrograms();
-  }, [lenderId]);
+  // ✅ Handle drag-and-drop
+  const onDrop = useCallback((acceptedFiles) => {
+    setSelectedFile(acceptedFiles[0]); // Only take the first file
+  }, []);
 
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    multiple: false, // Only allow one file at a time
+    accept: "application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  });
+
+  // ✅ Handle document upload
   const handleUpload = async () => {
-    if (!file) return alert("Please select a file.");
-    if (!tag) return alert("Please enter a document tag (e.g., 'Credit Report', 'P&L Statement').");
+    if (!selectedFile || !selectedTag) {
+      alert("Please select a document and a tag before uploading.");
+      return;
+    }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("customName", customName);
-    formData.append("lenderId", lenderId);
-    formData.append("loanProgramId", selectedLoanProgram);
-    formData.append("tag", tag);
-
-    const response = await uploadDocument(formData);
-    if (response.success) {
-      alert("File uploaded successfully!");
-      setFile(null);
-      setCustomName("");
-      setSelectedLoanProgram("");
-      setTag("");
-    } else {
-      alert("Upload failed.");
+    const success = await uploadDocument(selectedFile, lenderId, selectedProgram, selectedTag);
+    if (success) {
+      setSelectedFile(null);
+      setSelectedTag("");
+      setSelectedProgram("");
     }
   };
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
-
   return (
-    <div>
+    <div style={{ border: "1px solid #ccc", padding: "10px", marginTop: "20px" }}>
       <h3>Upload Document</h3>
-      <div {...getRootProps()} style={{ border: "2px dashed #ccc", padding: 20 }}>
+
+      {/* ✅ Drag and Drop Area */}
+      <div {...getRootProps()} style={{ border: "2px dashed gray", padding: "20px", cursor: "pointer", marginBottom: "10px" }}>
         <input {...getInputProps()} />
-        <p>{file ? file.name : "Drag & drop a file here, or click to select file"}</p>
+        {selectedFile ? <p>Selected File: {selectedFile.name}</p> : <p>Drag & drop a file here, or click to select a file</p>}
       </div>
 
-      {file && (
-        <>
-          <input
-            type="text"
-            value={customName}
-            onChange={(e) => setCustomName(e.target.value)}
-            placeholder="Rename file"
-          />
+      {/* ✅ Standard File Upload */}
+      <input type="file" onChange={handleFileChange} />
+      <br /><br />
 
-          {/* ✅ Assign to Loan Program (if applicable) */}
-          <select
-            value={selectedLoanProgram}
-            onChange={(e) => setSelectedLoanProgram(e.target.value)}
-          >
-            <option value="">Assign to a Loan Program (Optional)</option>
-            {loanPrograms.map((program) => (
-              <option key={program._id} value={program._id}>
-                {program.name}
-              </option>
+      {/* ✅ Assign to Loan Program (Optional) */}
+      <label>Assign to a Loan Program (Optional): </label>
+      <select value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)}>
+        <option value="">None</option>
+        {loanPrograms.map((program) => (
+          <option key={program._id} value={program._id}>{program.name}</option>
+        ))}
+      </select>
+      <br /><br />
+
+      {/* ✅ Tag Selection */}
+      <label>Tag this document: </label>
+      <select value={selectedTag} onChange={(e) => setSelectedTag(e.target.value)}>
+        <option value="">Select a Tag</option>
+        {DOCUMENT_CATEGORIES.map((category) => (
+          <optgroup key={category.label} label={category.label}>
+            {category.options.map((option) => (
+              <option key={option} value={option}>{option}</option>
             ))}
-          </select>
+          </optgroup>
+        ))}
+      </select>
+      <br /><br />
 
-          {/* ✅ Document Tag (Mandatory) */}
-          <input
-            type="text"
-            value={tag}
-            onChange={(e) => setTag(e.target.value)}
-            placeholder="Tag this document (e.g., 'Credit Report')"
-          />
-
-          <button onClick={handleUpload}>Upload</button>
-        </>
-      )}
+      {/* ✅ Upload Button */}
+      <button onClick={handleUpload}>Upload</button>
     </div>
   );
 };
 
 export default DocumentUploader;
-
