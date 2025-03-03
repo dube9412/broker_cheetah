@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import DocumentUploader from "../components/DocumentUploader"; // ✅ Import
 
 function ManageLoanPrograms() {
-  const { lenderId } = useParams();
+  const { lenderId, programId} = useParams();
   const navigate = useNavigate();
 
   const [lender, setLender] = useState(null);
@@ -89,13 +89,9 @@ function ManageLoanPrograms() {
       }
   };
   
-  
-  
-  
-
     fetchLender();
     fetchData();
-    fetchDocuments();
+    fetchDocuments(programId);
   }, [lenderId]);
 
   // ✅ DELETE Function for Loan Programs
@@ -177,9 +173,6 @@ function ManageLoanPrograms() {
     }
 };
 
-  
-  
-
   return (
     <div>
       <h1>Manage Loan Programs for {lender?.name || "Loading..."}</h1>
@@ -235,8 +228,6 @@ function ManageLoanPrograms() {
                   loanPrograms={[program]} // ✅ Passes the current program in an array
                 />
               )}
-
-
 {uploadedDocs[program._id] && uploadedDocs[program._id].length > 0 ? (
     uploadedDocs[program._id].map((doc) => (
         <div key={doc._id}>
@@ -250,11 +241,6 @@ function ManageLoanPrograms() {
 ) : (
     <p>No documents uploaded for this program.</p>
 )}
-
-
-
-
-
           </li>
         ))}
       </ul>
