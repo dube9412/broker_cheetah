@@ -72,11 +72,13 @@ function ManageLoanPrograms() {
               setUploadedDocs(data);
           } else {
               console.warn("⚠️ No documents found.");
+              setUploadedDocs({});
           }
       } catch (error) {
           console.error("❌ Error fetching documents:", error);
       }
   };
+  
   
 
     fetchLender();
