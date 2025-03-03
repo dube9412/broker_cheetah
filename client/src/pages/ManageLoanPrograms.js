@@ -129,31 +129,34 @@ function ManageLoanPrograms() {
   };
 
   const handleDeleteDocument = async (documentId) => {
+    if (!documentId) {
+      console.error("❌ Error: No document ID provided for deletion.");
+      alert("Error: No document ID provided.");
+      return;
+    }
+  
     if (!window.confirm("Are you sure you want to delete this document?")) return;
   
     try {
-      console.log(`🔹 Attempting to delete document: ${documentId}`);
-      
       const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${documentId}`, {
         method: "DELETE",
       });
   
+      const data = await response.json();
       if (response.ok) {
-        console.log("✅ Document deleted.");
-        alert("Document deleted successfully.");
-  
-        // Refresh the document list (assuming fetchDocuments is fetching the latest list)
-        fetchDocuments();
+        alert("✅ Document deleted successfully.");
+        
+        // ✅ Update state to remove the deleted document from UI
+        setDocuments((prevDocs) => prevDocs.filter((doc) => doc._id !== documentId));
       } else {
-        const errorData = await response.json().catch(() => ({}));
-        console.error("❌ Error deleting document:", errorData.message || response.status);
-        alert(`Failed to delete document: ${errorData.message || "Unknown error"}`);
+        alert(`❌ Error deleting document: ${data.message}`);
       }
     } catch (error) {
       console.error("❌ Error deleting document:", error);
       alert("An error occurred while deleting the document.");
     }
   };
+  
   
 
   return (
