@@ -30,7 +30,7 @@ const DOCUMENT_CATEGORIES = [
   ]}
 ];
 
-const DocumentUploader = ({ lenderId, loanPrograms }) => {
+const DocumentUploader = ({ lenderId, programId, loanPrograms }) => {
   const [selectedProgram, setSelectedProgram] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -69,7 +69,7 @@ const handleFileChange = (e) => {
       return;
     }
 
-    const success = await uploadDocument(selectedFile, lenderId, programId || selectedProgram, selectedTag);
+    const success = await uploadDocument(selectedFile, lenderId, programId ? programId : selectedProgram, selectedTag);
 
     if (success) {
       setSelectedFile(null);
