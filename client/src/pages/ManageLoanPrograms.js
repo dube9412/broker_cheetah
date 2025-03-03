@@ -13,6 +13,7 @@ function ManageLoanPrograms() {
   const [portfolioPrograms, setPortfolioPrograms] = useState([]);
   const [groundUpPrograms, setGroundUpPrograms] = useState([]);
   const [showUploader, setShowUploader] = useState(null); // ✅ Track which program is uploading
+  const [uploadedDocs, setUploadedDocs] = useState({});
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -63,8 +64,24 @@ function ManageLoanPrograms() {
       }
     };
 
+    const fetchDocuments = async () => {
+      try {
+          const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${lenderId}`);
+          if (response.ok) {
+              const data = await response.json();
+              setUploadedDocs(data);
+          } else {
+              console.warn("⚠️ No documents found.");
+          }
+      } catch (error) {
+          console.error("❌ Error fetching documents:", error);
+      }
+  };
+  
+
     fetchLender();
     fetchData();
+    fetchDocuments();
   }, [lenderId]);
 
   // ✅ DELETE Function for Loan Programs
@@ -158,7 +175,16 @@ function ManageLoanPrograms() {
             <button onClick={() => setShowUploader(program._id)}>Upload Docs</button>
 
             {/* ✅ Show Document Uploader when Upload Button is Clicked */}
+            
             {showUploader === program._id && <DocumentUploader lenderId={lenderId} programId={program._id} />}
+            
+            {uploadedDocs[program._id]?.map((doc) => (
+    <div key={doc._id}>
+        📄 {doc.filename} ({doc.tag})
+        <button onClick={() => handleDeleteDocument(doc._id)}>Delete</button>
+    </div>
+))}
+
           </li>
         ))}
       </ul>
