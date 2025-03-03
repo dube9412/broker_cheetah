@@ -128,6 +128,34 @@ function ManageLoanPrograms() {
     }
   };
 
+  const handleDeleteDocument = async (documentId) => {
+    if (!window.confirm("Are you sure you want to delete this document?")) return;
+  
+    try {
+      console.log(`🔹 Attempting to delete document: ${documentId}`);
+      
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${documentId}`, {
+        method: "DELETE",
+      });
+  
+      if (response.ok) {
+        console.log("✅ Document deleted.");
+        alert("Document deleted successfully.");
+  
+        // Refresh the document list (assuming fetchDocuments is fetching the latest list)
+        fetchDocuments();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("❌ Error deleting document:", errorData.message || response.status);
+        alert(`Failed to delete document: ${errorData.message || "Unknown error"}`);
+      }
+    } catch (error) {
+      console.error("❌ Error deleting document:", error);
+      alert("An error occurred while deleting the document.");
+    }
+  };
+  
+
   return (
     <div>
       <h1>Manage Loan Programs for {lender?.name || "Loading..."}</h1>
@@ -177,7 +205,7 @@ function ManageLoanPrograms() {
             {/* ✅ Show Document Uploader when Upload Button is Clicked */}
             
             {showUploader === program._id && <DocumentUploader lenderId={lenderId} programId={program._id} />}
-            
+
             {uploadedDocs[program._id]?.map((doc) => (
     <div key={doc._id}>
         📄 {doc.filename} ({doc.tag})
