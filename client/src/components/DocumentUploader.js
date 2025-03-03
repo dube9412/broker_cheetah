@@ -35,10 +35,21 @@ const DocumentUploader = ({ lenderId, loanPrograms }) => {
   const [selectedTag, setSelectedTag] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
 
-  // ✅ Handle standard file selection
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
+  const validMimeTypes = [
+    "application/pdf", "image/png", "image/jpeg", 
+    "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+];
+
+const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && validMimeTypes.includes(file.type)) {
+        setSelectedFile(file);
+    } else {
+        alert("Invalid file type. Please upload a PDF, Word doc, or image.");
+        setSelectedFile(null);
+    }
+};
+
 
   // ✅ Handle drag-and-drop
   const onDrop = useCallback((acceptedFiles) => {
