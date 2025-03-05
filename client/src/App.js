@@ -119,7 +119,7 @@ function App() {
               <Route path="/admin/scrapers" element={<AdminScrapers />} />
               <Route path="/admin/json-tools" element={<AdminJSONTools />} />
               <Route path="/admin/import-data" element={<AdminImportData />} />
-              <Route path="/admin/documents" element={<AdminDocuments />} />
+              <Route path="/admin/documents" element={<ProtectedAdminRoute><AdminDocuments /></ProtectedAdminRoute>} />
               <Route path="/hard-money-class" element={<HardMoneyClass />} />
               <Route path="/hard-money-class/:lessonId" element={<LessonPage />} />
               <Route path="/fix-and-flip-calculator" element={<FixAndFlipCalc />} />
