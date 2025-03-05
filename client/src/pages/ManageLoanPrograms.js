@@ -216,43 +216,35 @@ console.log("📂 Docs for this Program:", uploadedDocs[program._id]);
       {/* ✅ EXISTING LOAN PROGRAMS SECTION */}
       <h2>EXISTING LOAN PROGRAMS</h2>
       <ul>
-        {[...fixAndFlipPrograms, ...dscrPrograms, ...groundUpPrograms, ...portfolioPrograms, ...stabilizedBridgePrograms].map((program) => (
-          <li key={program._id}>
-            <strong>{program.name}</strong>
-            <Link to={`/edit-${program.type.toLowerCase().replace(/ /g, "-")}-program/${lenderId}/${program._id}`}>
-              <button>Edit</button>
-            </Link>
-            {" | "}
-            <button onClick={() => handleDeleteLoanProgram(program._id, program.type)}>
-              Delete
-            </button>
-            {" | "}
-            <button onClick={() => setShowUploader(program._id)}>Upload Docs</button>
+      {[...fixAndFlipPrograms, ...dscrPrograms, ...groundUpPrograms, ...portfolioPrograms, ...stabilizedBridgePrograms].map((program) => (
+    <li key={program._id}>
+        <strong>{program.name}</strong>
+        <Link to={`/edit-${program.type.toLowerCase().replace(/ /g, "-")}-program/${lenderId}/${program._id}`}>
+            <button>Edit</button>
+        </Link>
+        {" | "}
+        <button onClick={() => handleDeleteLoanProgram(program._id, program.type)}>
+            Delete
+        </button>
+        {" | "}
+        <button onClick={() => setShowUploader(program._id)}>Upload Docs</button>
 
-            {/* ✅ Show Document Uploader when Upload Button is Clicked */}
-            
-            {showUploader === program._id && (
-                <DocumentUploader 
-                  lenderId={lenderId} 
-                  programId={program._id} 
-                  loanPrograms={[program]} // ✅ Passes the current program in an array
-                />
-              )}
-{uploadedDocs[program._id] && uploadedDocs[program._id].length > 0 ? (
-    uploadedDocs[program._id].map((doc) => (
-        <div key={doc._id}>
-            📄 {doc.originalName} ({doc.tag})
-            <button onClick={() => handleDeleteDocument(doc._id, program._id)}>Delete</button>
-        </div>
-    ))
-) : (
-    <p>No documents uploaded for this program.</p>
-)}
+        {/* ✅ Show Document Uploader when Upload Button is Clicked */}
+        {showUploader === program._id && <DocumentUploader lenderId={lenderId} programId={program._id} />}
 
-
-
-          </li>
-        ))}
+        {/* ✅ Check if documents exist for this program */}
+        {uploadedDocs[program._id] && uploadedDocs[program._id].length > 0 ? (
+            uploadedDocs[program._id].map((doc) => (
+                <div key={doc._id}>
+                    📄 {doc.originalName} ({doc.tag})
+                    <button onClick={() => handleDeleteDocument(doc._id, program._id)}>Delete</button>
+                </div>
+            ))
+        ) : (
+            <p>No documents uploaded for this program.</p>
+        )}
+    </li>
+))}
       </ul>
 
       <button onClick={() => navigate(returnTo.startsWith("/") ? returnTo : `/${returnTo}`)} style={{ marginTop: "20px" }}>
