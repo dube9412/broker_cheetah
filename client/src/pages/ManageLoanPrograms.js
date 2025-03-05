@@ -179,9 +179,6 @@ function ManageLoanPrograms() {
 };
 
 console.log("📂 Documents in State:", uploadedDocs);
-console.log("📂 Program ID:", program._id);
-console.log("📂 Docs for this Program:", uploadedDocs[program._id]);
-
 
   return (
     <div>
@@ -219,6 +216,10 @@ console.log("📂 Docs for this Program:", uploadedDocs[program._id]);
   {[...fixAndFlipPrograms, ...dscrPrograms, ...groundUpPrograms, ...portfolioPrograms, ...stabilizedBridgePrograms].map((program) => (
     <li key={program._id}>
       <strong>{program.name}</strong>
+
+      console.log("📂 Program ID:", program._id);
+      console.log("📂 Docs for this Program:", uploadedDocs[program._id]);
+
       <Link to={`/edit-${program.type.toLowerCase().replace(/ /g, "-")}-program/${lenderId}/${program._id}`}>
         <button>Edit</button>
       </Link>
