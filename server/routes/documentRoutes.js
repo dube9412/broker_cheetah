@@ -49,29 +49,33 @@ router.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
-// ✅ Serve Uploaded Files
-router.get("/file/:filename", async (req, res) => {
+// ✅ Serve Document Files
+router.get("/view/:documentId", async (req, res) => {
   try {
-    const { filename } = req.params;
+      const { documentId } = req.params;
+      const document = await Document.findById(documentId);
 
-    if (!filename) {
-      return res.status(400).json({ success: false, message: "Filename is required." });
-    }
+      if (!document) {
+          return res.status(404).json({ success: false, message: "Document not found in DB." });
+      }
 
-    const filePath = path.join(__dirname, "..", "uploads", filename);
-    console.log("📂 Serving File:", filePath);
+      const filePath = path.join(__dirname, "../uploads", document.filename);
 
-    // Check if file exists before serving
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ success: false, message: "File not found." });
-    }
+      console.log(`📂 Serving File: ${filePath}`); // ✅ Debugging
 
-    res.sendFile(filePath);
+      if (!fs.existsSync(filePath)) {
+          console.error(`❌ File not found: ${filePath}`);
+          return res.status(404).json({ success: false, message: "File not found." });
+      }
+
+      res.sendFile(filePath);
   } catch (error) {
-    console.error("❌ Error fetching document file:", error);
-    res.status(500).json({ success: false, message: "Error fetching document file." });
+      console.error("❌ Error fetching document file:", error);
+      res.status(500).json({ success: false, message: "Error fetching document file." });
   }
 });
+
+module.exports = router;
 
 
 
