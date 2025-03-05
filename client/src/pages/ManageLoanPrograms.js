@@ -217,9 +217,6 @@ console.log("📂 Documents in State:", uploadedDocs);
     <li key={program._id}>
       <strong>{program.name}</strong>
 
-      console.log("📂 Program ID:", program._id);
-      console.log("📂 Docs for this Program:", uploadedDocs[program._id]);
-
       <Link to={`/edit-${program.type.toLowerCase().replace(/ /g, "-")}-program/${lenderId}/${program._id}`}>
         <button>Edit</button>
       </Link>
@@ -237,7 +234,7 @@ console.log("📂 Documents in State:", uploadedDocs);
       {uploadedDocs?.[program._id]?.length > 0 ? (
         uploadedDocs[program._id].map((doc) => (
           <div key={doc._id}>
-            📄 {doc.originalName} ({doc.tag})
+            📄 ({doc.tag})
             <button onClick={() => handleDeleteDocument(doc._id, program._id)}>Delete</button>
           </div>
         ))
