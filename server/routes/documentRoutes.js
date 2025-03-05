@@ -46,6 +46,25 @@ router.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
+// ✅ Serve Document File
+router.get("/file/:filename", async (req, res) => {
+  try {
+    const { filename } = req.params;
+    const filePath = `uploads/${filename}`; // ✅ Ensure this matches where files are stored
+
+    res.sendFile(filePath, { root: "." }, (err) => {
+      if (err) {
+        console.error("❌ Error serving file:", err);
+        res.status(404).json({ success: false, message: "File not found." });
+      }
+    });
+  } catch (error) {
+    console.error("❌ Error fetching document file:", error);
+    res.status(500).json({ success: false, message: "Error fetching document." });
+  }
+});
+
+
 // ✅ Fetch Documents for a Specific Lender (Optional Program Filter)
 router.get("/:lenderId", async (req, res) => {
   try {
