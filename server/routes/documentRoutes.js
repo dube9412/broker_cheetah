@@ -52,26 +52,33 @@ router.post("/upload", upload.single("file"), async (req, res) => {
 // ✅ Serve Document Files
 router.get("/view/:documentId", async (req, res) => {
   try {
-      const { documentId } = req.params;
-      const document = await Document.findById(documentId);
+    const { documentId } = req.params;
+    console.log("📂 Fetching document with ID:", documentId);
 
-      if (!document) {
-          return res.status(404).json({ success: false, message: "Document not found in DB." });
-      }
+    const document = await Document.findById(documentId);
+    if (!document) {
+      return res.status(404).json({ success: false, message: "Document not found." });
+    }
 
-      const filePath = path.join(__dirname, "../uploads", document.filename);
+    // ✅ Ensure `filePath` is valid
+    const filePath = document.filePath;
+    if (!filePath) {
+      return res.status(400).json({ success: false, message: "File path is missing in database." });
+    }
 
-      console.log(`📂 Serving File: ${filePath}`); // ✅ Debugging
+    // ✅ Ensure the file exists
+    const absolutePath = path.join(__dirname, "../..", filePath);
+    if (!fs.existsSync(absolutePath)) {
+      console.error("❌ File does not exist:", absolutePath);
+      return res.status(404).json({ success: false, message: "File not found on server." });
+    }
 
-      if (!fs.existsSync(filePath)) {
-          console.error(`❌ File not found: ${filePath}`);
-          return res.status(404).json({ success: false, message: "File not found." });
-      }
-
-      res.sendFile(filePath);
+    // ✅ Serve the file
+    console.log("📂 Serving file:", absolutePath);
+    res.sendFile(absolutePath);
   } catch (error) {
-      console.error("❌ Error fetching document file:", error);
-      res.status(500).json({ success: false, message: "Error fetching document file." });
+    console.error("❌ Error fetching document file:", error);
+    res.status(500).json({ success: false, message: "Error fetching document file." });
   }
 });
 
