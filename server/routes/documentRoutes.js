@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const Document = require("../models/Document"); // ✅ Ensure this model exists
+const path = require("path");
 
 // ✅ Multer Storage Config (Stores files in "uploads/")
 const storage = multer.diskStorage({
@@ -46,24 +47,19 @@ router.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
-// ✅ Serve Document File
+// ✅ Serve Uploaded Files
 router.get("/file/:filename", async (req, res) => {
   try {
-    const { filename } = req.params;
-    const filePath = path.join(__dirname, "../uploads", filename); // ✅ Absolute Path Fix
+    const filePath = path.join(__dirname, "..", "uploads", req.params.filename);
+    console.log("📂 Serving File:", filePath);
 
-
-    res.sendFile(filePath, { root: "." }, (err) => {
-      if (err) {
-        console.error("❌ Error serving file:", err);
-        res.status(404).json({ success: false, message: "File not found." });
-      }
-    });
+    res.sendFile(filePath);
   } catch (error) {
     console.error("❌ Error fetching document file:", error);
-    res.status(500).json({ success: false, message: "Error fetching document." });
+    res.status(500).json({ success: false, message: "Error fetching document file." });
   }
 });
+
 
 
 // ✅ Fetch Documents for a Specific Lender (Optional Program Filter)
