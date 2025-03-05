@@ -29,19 +29,20 @@ const DOCUMENT_CATEGORIES = [
   ]}
 ];
 
-const BulkDocumentUploader = ({ lenderId }) => {
+const BulkDocumentUploader = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [selectedTag, setSelectedTag] = useState("");
-  const [lenders, setLenders] = useState([]); // ✅ Fix: Define lenders
+  const [selectedLender, setSelectedLender] = useState(""); // ✅ Define lender selection
+  const [lenders, setLenders] = useState([]); // ✅ Store lender list
 
-   // ✅ Fetch Lenders for Assignment
-   useEffect(() => {
+  // ✅ Fetch Lenders List (For Assigning Documents)
+  useEffect(() => {
     const fetchLenders = async () => {
       try {
         const response = await fetch("https://broker-cheetah-backend.onrender.com/api/lenders");
         const data = await response.json();
         if (response.ok) {
-          console.log("✅ Fetched Lenders:", data);
+          console.log("✅ Fetched Lenders:", data.lenders);
           setLenders(data.lenders);
         } else {
           console.warn("⚠️ No lenders found.");
@@ -53,18 +54,18 @@ const BulkDocumentUploader = ({ lenderId }) => {
     fetchLenders();
   }, []);
 
-  // ✅ Handle drag-and-drop
+  // ✅ Handle Drag & Drop
   const onDrop = useCallback((acceptedFiles) => {
     setSelectedFiles((prev) => [...prev, ...acceptedFiles]);
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    multiple: true, // ✅ Allow multiple files
+    multiple: true,
     accept: ".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.png,.jpeg,.jpg",
   });
 
-  // ✅ Bulk Upload Handler
+  // ✅ Handle Bulk Upload
   const handleUpload = async () => {
     if (!selectedLender) {
       alert("Please select a lender before uploading.");
@@ -101,17 +102,17 @@ const BulkDocumentUploader = ({ lenderId }) => {
 
   return (
     <div style={{ border: "1px solid #ccc", padding: "10px", marginTop: "20px" }}>
-      <h3>Bulk Upload Documents</h3>
+      <h3>📂 Bulk Upload Documents</h3>
 
-        {/* ✅ Lender Selection */}
-        <label>Assign Lender: </label>
-<select onChange={(e) => console.log("Lender selected:", e.target.value)}>
-  <option value="">Unassigned</option>
-  {lenders.map((lender) => (
-    <option key={lender._id} value={lender._id}>{lender.name}</option>
-  ))}
-</select>
-
+      {/* ✅ Lender Selection */}
+      <label>Assign Lender: </label>
+      <select value={selectedLender} onChange={(e) => setSelectedLender(e.target.value)}>
+        <option value="">Unassigned</option>
+        {lenders.map((lender) => (
+          <option key={lender._id} value={lender._id}>{lender.name}</option>
+        ))}
+      </select>
+      <br /><br />
 
       {/* ✅ Drag and Drop Area */}
       <div {...getRootProps()} style={{ border: "2px dashed gray", padding: "20px", cursor: "pointer", marginBottom: "10px" }}>
@@ -119,15 +120,19 @@ const BulkDocumentUploader = ({ lenderId }) => {
         <p>Drag & drop multiple files here, or click to select files</p>
       </div>
 
-       {/* ✅ Tag Selection */}
-       <label>Tag these documents: </label>
+      {/* ✅ Tag Selection */}
+      <label>Tag these documents: </label>
       <select value={selectedTag} onChange={(e) => setSelectedTag(e.target.value)}>
         <option value="">Select a Tag</option>
-        <option value="Application">Application</option>
-        <option value="Marketing">Marketing</option>
-        <option value="Guidelines">Guidelines</option>
+        {DOCUMENT_CATEGORIES.map((category) => (
+          <optgroup key={category.label} label={category.label}>
+            {category.options.map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </optgroup>
+        ))}
       </select>
-
+      <br /><br />
 
       <button onClick={handleUpload}>Upload</button>
     </div>
@@ -135,4 +140,3 @@ const BulkDocumentUploader = ({ lenderId }) => {
 };
 
 export default BulkDocumentUploader;
-
