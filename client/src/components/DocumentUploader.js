@@ -51,7 +51,6 @@ const handleFileChange = (e) => {
   }
 };
 
-
   // ✅ Handle drag-and-drop
   const onDrop = useCallback((acceptedFiles) => {
     setSelectedFile(acceptedFiles[0]); // Only take the first file
@@ -73,9 +72,6 @@ const handleFileChange = (e) => {
     }
 });
 
-
-
-
   // ✅ Handle document upload
   const handleUpload = async () => {
     if (!selectedFile || !selectedTag) {
@@ -84,8 +80,6 @@ const handleFileChange = (e) => {
     }
 
     const success = await uploadDocument(selectedFile, lenderId ?? "MISSING_LENDER_ID", selectedProgram ?? "MISSING_PROGRAM_ID", selectedTag ?? "MISSING_TAG");
-
-
 
     if (success) {
       setSelectedFile(null);
