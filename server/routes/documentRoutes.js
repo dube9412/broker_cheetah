@@ -66,28 +66,24 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
       return res.status(400).json({ success: false, message: "Lender ID and Tag are required." });
     }
 
-    const uploadedDocs = [];
-
-    for (const file of req.files) {
-      const newDocument = new Document({
+      // ✅ Create document objects for bulk insertion
+      const uploadedDocs = req.files.map(file => ({
         filename: file.filename,
         originalName: file.originalname,
-        filePath: `/uploads/${file.filename}`, // ✅ Relative Path
+        filePath: `/uploads/${file.filename}`,
         lenderId,
         programId: programId || null, // Optional
         tag,
-      });
+      }));
 
-      await newDocument.save();
-      uploadedDocs.push(newDocument);
+      await Document.insertMany(uploadedDocs); // ✅ Efficient bulk insert
+
+      res.status(201).json({ success: true, message: "Bulk documents uploaded successfully!", documents: uploadedDocs });
+    } catch (error) {
+      console.error("❌ Error in bulk upload:", error);
+      res.status(500).json({ success: false, message: "Error in bulk document upload." });
     }
-
-    res.status(201).json({ success: true, message: "Bulk documents uploaded successfully!", documents: uploadedDocs });
-  } catch (error) {
-    console.error("❌ Error in bulk upload:", error);
-    res.status(500).json({ success: false, message: "Error in bulk document upload." });
-  }
-});
+  });
 
 // ✅ Serve Uploaded Files
 router.get("/view/:documentId", async (req, res) => {
@@ -187,6 +183,5 @@ router.put("/:documentId/reassign", async (req, res) => {
     res.status(500).json({ success: false, message: "Error reassigning document." });
   }
 });
-
 
 module.exports = router;
