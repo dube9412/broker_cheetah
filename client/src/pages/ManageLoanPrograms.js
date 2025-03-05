@@ -66,28 +66,32 @@ function ManageLoanPrograms() {
 
     const fetchDocuments = async () => {
       try {
-          const programQuery = programId ? `?programId=${programId}` : "";
-          const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${lenderId}${programQuery}`);
+          const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${lenderId}`);
           const data = await response.json();
   
           if (response.ok && data.success) {
               console.log("✅ Fetched Documents:", data.documents);
   
-              setUploadedDocs((prevDocs) => ({
-                  ...prevDocs,
-                  [programId || "general"]: data.documents, // ✅ Ensure docs are linked to correct programId
-              }));
+              // 🔹 Ensure documents are stored under their respective programId
+              const docMap = {};
+              data.documents.forEach(doc => {
+                  const programKey = doc.programId || "general"; // Default to "general" for non-program-specific docs
+                  if (!docMap[programKey]) {
+                      docMap[programKey] = [];
+                  }
+                  docMap[programKey].push(doc);
+              });
+  
+              setUploadedDocs(docMap);
           } else {
               console.warn("⚠️ No documents found.");
-              setUploadedDocs((prevDocs) => ({
-                  ...prevDocs,
-                  [programId || "general"]: [],
-              }));
+              setUploadedDocs({});
           }
       } catch (error) {
           console.error("❌ Error fetching documents:", error);
       }
   };
+  
   
   
     fetchLender();
@@ -174,6 +178,11 @@ function ManageLoanPrograms() {
     }
 };
 
+console.log("📂 Documents in State:", uploadedDocs);
+console.log("📂 Program ID:", program._id);
+console.log("📂 Docs for this Program:", uploadedDocs[program._id]);
+
+
   return (
     <div>
       <h1>Manage Loan Programs for {lender?.name || "Loading..."}</h1>
@@ -239,6 +248,7 @@ function ManageLoanPrograms() {
 ) : (
     <p>No documents uploaded for this program.</p>
 )}
+
 
 
           </li>
