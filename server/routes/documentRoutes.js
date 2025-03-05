@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
+const path = require("path");  // ✅ Import path module
+const fs = require("fs");      // ✅ Import fs module
 const Document = require("../models/Document"); // ✅ Ensure this model exists
-const path = require("path");
+
 
 // ✅ Multer Storage Config (Stores files in "uploads/")
 const storage = multer.diskStorage({
