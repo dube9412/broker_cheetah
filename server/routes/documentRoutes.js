@@ -50,8 +50,19 @@ router.post("/upload", upload.single("file"), async (req, res) => {
 // ✅ Serve Uploaded Files
 router.get("/file/:filename", async (req, res) => {
   try {
-    const filePath = path.join(__dirname, "..", "uploads", req.params.filename);
+    const { filename } = req.params;
+
+    if (!filename) {
+      return res.status(400).json({ success: false, message: "Filename is required." });
+    }
+
+    const filePath = path.join(__dirname, "..", "uploads", filename);
     console.log("📂 Serving File:", filePath);
+
+    // Check if file exists before serving
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ success: false, message: "File not found." });
+    }
 
     res.sendFile(filePath);
   } catch (error) {
@@ -59,6 +70,7 @@ router.get("/file/:filename", async (req, res) => {
     res.status(500).json({ success: false, message: "Error fetching document file." });
   }
 });
+
 
 
 
