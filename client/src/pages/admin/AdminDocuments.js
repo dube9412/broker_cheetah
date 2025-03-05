@@ -6,6 +6,7 @@ const AdminDocuments = () => {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState([]);
   const [lenders, setLenders] = useState([]); // ✅ Store lender data
+  const [loanPrograms, setLoanPrograms] = useState([]); // ✅ Store loan program data
   const [loading, setLoading] = useState(true);
 
    // ✅ Fetch Lenders List (So we can display lender names)
@@ -51,6 +52,26 @@ const AdminDocuments = () => {
 
     fetchDocuments();
   }, []);
+
+   // ✅ Assign Loan Program to Document
+   const handleAssignProgram = async (documentId, newProgramId) => {
+    try {
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${documentId}/reassign`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newProgramId }),
+      });
+
+      if (response.ok) {
+        alert("✅ Document assigned to program.");
+        setDocuments(prevDocs => prevDocs.map(doc => (doc._id === documentId ? { ...doc, programId: newProgramId } : doc)));
+      } else {
+        alert("❌ Error assigning program.");
+      }
+    } catch (error) {
+      console.error("❌ Error assigning document:", error);
+    }
+  };
 
   // ✅ Handle Document Deletion
   const handleDeleteDocument = async (documentId) => {
@@ -101,37 +122,35 @@ const AdminDocuments = () => {
       <h1>📂 Admin Document Management</h1>
 
       {/* ✅ Bulk Upload Section */}
-      <BulkDocumentUploader isBulk={true} />
+      <BulkDocumentUploader lenders={lenders} />
 
       {/* ✅ List of Documents */}
       <h2>📄 All Documents</h2>
-      {documents.length === 0 ? (
-        <p>No documents uploaded yet.</p>
-      ) : (
+      {documents.length === 0 ? <p>No documents uploaded yet.</p> : (
         <ul>
-        {documents.map((doc) => {
-          const lenderName = lenders.find(l => l._id === doc.lenderId)?.name || "Unknown Lender";
-          return (
-            <li key={doc._id}>
-              📄 {doc.originalName} ({doc.tag}) - Lender: {lenderName}
-              
+       {documents.map((doc) => {
+            const lenderName = lenders.find(l => l._id === doc.lenderId)?.name || "Unknown Lender";
+            return (
+              <li key={doc._id}>
+                📄 {doc.originalName} - {lenderName}
+
               {/* ✅ Lender Assignment Dropdown */}
-              <label>Assign Lender: </label>
-              <select value={doc.lenderId || ""} onChange={(e) => handleReassignDocument(doc._id, e.target.value, doc.programId)}>
-                <option value="">Unassigned</option>
-                {lenders.map(lender => (
-                  <option key={lender._id} value={lender._id}>{lender.name}</option>
-                ))}
-              </select>
-      
-              <button onClick={() => window.open(`https://broker-cheetah-backend.onrender.com/api/documents/view/${doc._id}`, "_blank")}>View</button>
-              <button onClick={() => handleDeleteDocument(doc._id)}>Delete</button>
-              <button onClick={() => handleReassignDocument(doc._id, "NEW_LENDER_ID", "NEW_PROGRAM_ID")}>Reassign</button>
-            </li>
-          );
-        })}
-      </ul>
-      
+                {/* ✅ Assign Loan Program */}
+                <label>Assign to Loan Program:</label>
+                <select value={doc.programId || ""} onChange={(e) => handleAssignProgram(doc._id, e.target.value)}>
+                  <option value="">Unassigned</option>
+                  {loanPrograms.map(program => (
+                    <option key={program._id} value={program._id}>{program.name}</option>
+                  ))}
+                </select>
+
+             
+                <button onClick={() => window.open(`https://broker-cheetah-backend.onrender.com/api/documents/view/${doc._id}`, "_blank")}>View</button>
+                <button onClick={() => handleDeleteDocument(doc._id)}>Delete</button>
+              </li>
+            );
+          })}
+        </ul>
       )}
 
       <button onClick={() => navigate("/admin-dashboard")} style={{ marginTop: "20px" }}>Back to Admin</button>
@@ -140,4 +159,3 @@ const AdminDocuments = () => {
 };
 
 export default AdminDocuments;
-
