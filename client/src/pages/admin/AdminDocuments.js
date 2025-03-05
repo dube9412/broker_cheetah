@@ -5,7 +5,28 @@ import { useNavigate } from "react-router-dom";
 const AdminDocuments = () => {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState([]);
+  const [lenders, setLenders] = useState([]); // ✅ Store lender data
   const [loading, setLoading] = useState(true);
+
+   // ✅ Fetch Lenders List (So we can display lender names)
+   useEffect(() => {
+    const fetchLenders = async () => {
+      try {
+        const response = await fetch("https://broker-cheetah-backend.onrender.com/api/lenders");
+        const data = await response.json();
+        if (response.ok) {
+          console.log("✅ Fetched Lenders:", data);
+          setLenders(data.lenders);
+        } else {
+          console.warn("⚠️ No lenders found.");
+        }
+      } catch (error) {
+        console.error("❌ Error fetching lenders:", error);
+      }
+    };
+
+    fetchLenders();
+  }, []);
 
   // ✅ Fetch ALL documents (Both General & Program-Specific)
   useEffect(() => {
@@ -80,22 +101,25 @@ const AdminDocuments = () => {
       <h1>📂 Admin Document Management</h1>
 
       {/* ✅ Bulk Upload Section */}
-      <BulkDocumentUploader />
+      <BulkDocumentUploader isBulk={true} />
 
-      {/* ✅ List of All Documents */}
+      {/* ✅ List of Documents */}
       <h2>📄 All Documents</h2>
       {documents.length === 0 ? (
         <p>No documents uploaded yet.</p>
       ) : (
         <ul>
-          {documents.map((doc) => (
-            <li key={doc._id}>
-              📄 {doc.originalName} ({doc.tag})
-              <button onClick={() => window.open(`https://broker-cheetah-backend.onrender.com/api/documents/view/${doc._id}`, "_blank")}>View</button>
-              <button onClick={() => handleDeleteDocument(doc._id)}>Delete</button>
-              <button onClick={() => handleReassignDocument(doc._id, "NEW_LENDER_ID", "NEW_PROGRAM_ID")}>Reassign</button>
-            </li>
-          ))}
+          {documents.map((doc) => {
+            const lenderName = lenders.find(l => l._id === doc.lenderId)?.name || "Unknown Lender";
+            return (
+              <li key={doc._id}>
+                📄 {doc.originalName} ({doc.tag}) - Lender: {lenderName}
+                <button onClick={() => window.open(`https://broker-cheetah-backend.onrender.com/api/documents/view/${doc._id}`, "_blank")}>View</button>
+                <button onClick={() => handleDeleteDocument(doc._id)}>Delete</button>
+                <button onClick={() => handleReassignDocument(doc._id, "NEW_LENDER_ID", "NEW_PROGRAM_ID")}>Reassign</button>
+              </li>
+            );
+          })}
         </ul>
       )}
 
