@@ -109,18 +109,29 @@ const AdminDocuments = () => {
         <p>No documents uploaded yet.</p>
       ) : (
         <ul>
-          {documents.map((doc) => {
-            const lenderName = lenders.find(l => l._id === doc.lenderId)?.name || "Unknown Lender";
-            return (
-              <li key={doc._id}>
-                📄 {doc.originalName} ({doc.tag}) - Lender: {lenderName}
-                <button onClick={() => window.open(`https://broker-cheetah-backend.onrender.com/api/documents/view/${doc._id}`, "_blank")}>View</button>
-                <button onClick={() => handleDeleteDocument(doc._id)}>Delete</button>
-                <button onClick={() => handleReassignDocument(doc._id, "NEW_LENDER_ID", "NEW_PROGRAM_ID")}>Reassign</button>
-              </li>
-            );
-          })}
-        </ul>
+        {documents.map((doc) => {
+          const lenderName = lenders.find(l => l._id === doc.lenderId)?.name || "Unknown Lender";
+          return (
+            <li key={doc._id}>
+              📄 {doc.originalName} ({doc.tag}) - Lender: {lenderName}
+              
+              {/* ✅ Lender Assignment Dropdown */}
+              <label>Assign Lender: </label>
+              <select value={doc.lenderId || ""} onChange={(e) => handleReassignDocument(doc._id, e.target.value, doc.programId)}>
+                <option value="">Unassigned</option>
+                {lenders.map(lender => (
+                  <option key={lender._id} value={lender._id}>{lender.name}</option>
+                ))}
+              </select>
+      
+              <button onClick={() => window.open(`https://broker-cheetah-backend.onrender.com/api/documents/view/${doc._id}`, "_blank")}>View</button>
+              <button onClick={() => handleDeleteDocument(doc._id)}>Delete</button>
+              <button onClick={() => handleReassignDocument(doc._id, "NEW_LENDER_ID", "NEW_PROGRAM_ID")}>Reassign</button>
+            </li>
+          );
+        })}
+      </ul>
+      
       )}
 
       <button onClick={() => navigate("/admin-dashboard")} style={{ marginTop: "20px" }}>Back to Admin</button>
