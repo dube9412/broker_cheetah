@@ -72,7 +72,7 @@ function NavBar() {
               <span className="dropdown-title">Tools ▼</span>
               {showToolsDropdown && (
                 <div className="dropdown-content">
-                  <Link to="/docs">Docs</Link>
+                  <Link to="/admin/documents">Docs</Link>
                   <Link to="/admin/scrapers">Scrapers</Link>
                   <Link to="/admin/json-tools">JSON Import</Link>
                   <Link to="/admin/import-data">Import Data</Link>
@@ -141,7 +141,7 @@ function NavBar() {
               {showToolsDropdown && (
                 <div className="dropdown-content">
                   <Link to="/history">History</Link>
-                  <Link to="/docs">Docs</Link>
+                  <Link to="admin/documents">Docs</Link>
                   <Link to="/help">Help</Link>
                   <Link to="/knowledge-base">Knowledge Base</Link>
                 </div>
