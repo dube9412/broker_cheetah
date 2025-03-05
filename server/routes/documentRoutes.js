@@ -72,8 +72,6 @@ router.get("/:lenderId", async (req, res) => {
 });
 
 
-
-
 // ✅ Delete a Document by ID
 router.delete("/:documentId", async (req, res) => {
   try {
