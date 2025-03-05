@@ -3,7 +3,11 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const adminController = require('../controllers/adminController');
+const documentRoutes = require('./documentRoutes');
 const LenderUser = require("../models/LenderUser");
+
+// ✅ Use existing document routes inside /api/admin/documents
+router.use("/documents", documentRoutes);
 
 // ✅ GET all users (Admin Only)
 router.get("/users", async (req, res) => {
