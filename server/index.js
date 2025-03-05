@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require("path"); // ✅ Fix: Require path module
+
 // ✅ Import routes correctly
 const adminRoutes = require("./routes/adminRoutes"); // Admin routes
 const authRoutes = require("./routes/auth"); // General user/admin auth
