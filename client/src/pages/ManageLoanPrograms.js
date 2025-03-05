@@ -91,9 +91,7 @@ function ManageLoanPrograms() {
           console.error("❌ Error fetching documents:", error);
       }
   };
-  
-  
-  
+    
     fetchLender();
     fetchData();
     fetchDocuments(programId);
@@ -194,18 +192,20 @@ function ManageLoanPrograms() {
             // ✅ Update state to remove the deleted document from `uploadedDocs`
             setUploadedDocs((prevDocs) => {
                 const updatedDocs = { ...prevDocs };
-                if (updatedDocs[programId]) {
-                    updatedDocs[programId] = updatedDocs[programId].filter((doc) => doc._id !== documentId);
-                }
-                return updatedDocs;
-            });
-        } else {
-            alert(`❌ Error deleting document: ${data.message}`);
-        }
-    } catch (error) {
-        console.error("❌ Error deleting document:", error);
-        alert("An error occurred while deleting the document.");
-    }
+                if (programId) {
+                  updatedDocs[programId] = updatedDocs[programId].filter((doc) => doc._id !== documentId);
+              } else {
+                  updatedDocs.general = updatedDocs.general.filter((doc) => doc._id !== documentId);
+              }
+              return updatedDocs;
+          });
+      } else {
+          alert(`❌ Error deleting document: ${data.message}`);
+      }
+  } catch (error) {
+      console.error("❌ Error deleting document:", error);
+      alert("An error occurred while deleting the document.");
+  }
 };
 
 console.log("📂 Documents in State:", uploadedDocs);
@@ -240,6 +240,28 @@ console.log("📂 Documents in State:", uploadedDocs);
       <button>Mixed Use</button>{" | "}
       <button>General Commercial</button>{" | "}
 
+      {/* ✅ Lender-Wide Documents Section */}
+<h2>General Lender Documents</h2>
+{uploadedDocs?.general?.length > 0 ? (
+  uploadedDocs.general.map((doc) => (
+    <div key={doc._id}>
+      📄 {doc.tag} 
+      <button onClick={() => handleDeleteDocument(doc._id, null)}>Delete</button>
+      <button onClick={() => handleViewDocument(doc.filePath)}>View</button>
+      <select onChange={(e) => handleReassign(doc._id, e.target.value)}>
+        <option value="">Reassign to...</option>
+        {[...fixAndFlipPrograms, ...dscrPrograms, ...groundUpPrograms, ...portfolioPrograms, ...stabilizedBridgePrograms].map((targetProgram) => (
+          <option key={targetProgram._id} value={targetProgram._id}>
+            {targetProgram.name}
+          </option>
+        ))}
+      </select>
+    </div>
+  ))
+) : (
+  <p>No general lender documents uploaded.</p>
+)}
+
       {/* ✅ EXISTING LOAN PROGRAMS SECTION */}
       <h2>EXISTING LOAN PROGRAMS</h2>
       <ul>
@@ -265,7 +287,6 @@ console.log("📂 Documents in State:", uploadedDocs);
     loanPrograms={[program]} // ✅ Passes the current program in an array
   />
 )}
-
 
       {/* ✅ Fix: Make sure uploadedDocs[program._id] exists before mapping */}
       {uploadedDocs?.[program._id]?.length > 0 ? (
@@ -299,7 +320,6 @@ console.log("📂 Documents in State:", uploadedDocs);
     </li>
   ))}
 </ul>
-
 
       <button onClick={() => navigate(returnTo.startsWith("/") ? returnTo : `/${returnTo}`)} style={{ marginTop: "20px" }}>
         Back
