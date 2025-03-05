@@ -5,11 +5,16 @@ const path = require("path");  // ✅ Import path module
 const fs = require("fs");      // ✅ Import fs module
 const Document = require("../models/Document"); // ✅ Ensure this model exists
 
+/// ✅ Ensure "uploads/" directory exists
+const uploadPath = path.join(__dirname, "../../uploads");
+if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+}
 
-// ✅ Multer Storage Config (Stores files in "uploads/")
+// ✅ Multer Storage Config
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Change this if needed for a cloud solution (e.g., AWS S3)
+    cb(null, uploadPath); // ✅ Save files in /uploads/
   },
   filename: function (req, file, cb) {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -26,8 +31,6 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     }
 
     const { lenderId, programId, tag } = req.body;
-
-    // ✅ Ensure required fields exist
     if (!lenderId || !tag) {
       return res.status(400).json({ success: false, message: "Lender ID and Tag are required." });
     }
@@ -35,9 +38,9 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     const newDocument = new Document({
       filename: req.file.filename,
       originalName: req.file.originalname,
-      filePath: `/uploads/${req.file.filename}`, // Adjust if using cloud storage
+      filePath: `/uploads/${req.file.filename}`, // ✅ Relative Path
       lenderId,
-      programId: programId || null, // Optional
+      programId: programId || null,
       tag,
     });
 
@@ -49,43 +52,28 @@ router.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
-// ✅ Serve Document Files
+// ✅ Serve Uploaded Files
 router.get("/view/:documentId", async (req, res) => {
   try {
     const { documentId } = req.params;
-    console.log("📂 Fetching document with ID:", documentId);
-
     const document = await Document.findById(documentId);
+
     if (!document) {
       return res.status(404).json({ success: false, message: "Document not found." });
     }
 
-    // ✅ Ensure `filePath` is valid
-    const filePath = document.filePath;
-    if (!filePath) {
-      return res.status(400).json({ success: false, message: "File path is missing in database." });
-    }
-
-    // ✅ Ensure the file exists
-    const absolutePath = path.join(__dirname, "../..", filePath);
-    if (!fs.existsSync(absolutePath)) {
-      console.error("❌ File does not exist:", absolutePath);
+    const filePath = path.join(__dirname, "../../", document.filePath);
+    if (!fs.existsSync(filePath)) {
+      console.error("❌ File not found on server:", filePath);
       return res.status(404).json({ success: false, message: "File not found on server." });
     }
 
-    // ✅ Serve the file
-    console.log("📂 Serving file:", absolutePath);
-    res.sendFile(absolutePath);
+    res.sendFile(filePath);
   } catch (error) {
     console.error("❌ Error fetching document file:", error);
     res.status(500).json({ success: false, message: "Error fetching document file." });
   }
 });
-
-module.exports = router;
-
-
-
 
 // ✅ Fetch Documents for a Specific Lender (Optional Program Filter)
 router.get("/:lenderId", async (req, res) => {
@@ -103,7 +91,6 @@ router.get("/:lenderId", async (req, res) => {
               ]
           };
       }
-
       const documents = await Document.find(query);
       res.status(200).json({ success: true, documents });
   } catch (error) {
@@ -111,7 +98,6 @@ router.get("/:lenderId", async (req, res) => {
       res.status(500).json({ success: false, message: "Error fetching documents." });
   }
 });
-
 
 // ✅ Delete a Document by ID
 router.delete("/:documentId", async (req, res) => {
