@@ -228,7 +228,14 @@ console.log("📂 Documents in State:", uploadedDocs);
       <button onClick={() => setShowUploader(program._id)}>Upload Docs</button>
 
       {/* ✅ Show Document Uploader when Upload Button is Clicked */}
-      {showUploader === program._id && <DocumentUploader lenderId={lenderId} programId={program._id} />}
+      {showUploader === program._id && (
+    <DocumentUploader 
+    lenderId={lenderId} 
+    programId={program._id} 
+    loanPrograms={[program]} // ✅ Passes the current program in an array
+  />
+)}
+
 
       {/* ✅ Fix: Make sure uploadedDocs[program._id] exists before mapping */}
       {uploadedDocs?.[program._id]?.length > 0 ? (
