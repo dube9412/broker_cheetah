@@ -116,15 +116,16 @@ router.delete("/:documentId", async (req, res) => {
   }
 });
 
-// ✅ Reassign a Document to a Different Loan Program
+// ✅ Reassign a Document to a Different Loan Program (or Remove from a Program)
 router.put("/:documentId/reassign", async (req, res) => {
   try {
     const { documentId } = req.params;
     const { newProgramId } = req.body;
 
+    // ✅ If newProgramId is null, remove it from a loan program (Lender-Wide)
     const updatedDoc = await Document.findByIdAndUpdate(
       documentId,
-      { programId: newProgramId },
+      { programId: newProgramId || null },
       { new: true }
     );
 
@@ -138,5 +139,6 @@ router.put("/:documentId/reassign", async (req, res) => {
     res.status(500).json({ success: false, message: "Error reassigning document." });
   }
 });
+
 
 module.exports = router;

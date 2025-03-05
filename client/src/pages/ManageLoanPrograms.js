@@ -148,12 +148,14 @@ function ManageLoanPrograms() {
       alert("Please select a loan program to reassign this document.");
       return;
     }
+
+    const programIdToSend = newProgramId === "REMOVE" ? null : newProgramId;
   
     try {
       const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${documentId}/reassign`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newProgramId }),
+      body: JSON.stringify({ newProgramId: programIdToSend }),
       });
   
       const data = await response.json();
@@ -279,6 +281,10 @@ console.log("📂 Documents in State:", uploadedDocs);
             {/* 🔹 Reassign Dropdown */}
             <select onChange={(e) => handleReassign(doc._id, e.target.value)}>
               <option value="">Reassign to...</option>
+
+              {/* 🔹 Option to REMOVE from loan program (Lender-Wide Doc) */}
+              <option value="REMOVE">❌ Remove from Loan Program (Lender-Wide)</option>
+
               {[...fixAndFlipPrograms, ...dscrPrograms, ...groundUpPrograms, ...portfolioPrograms, ...stabilizedBridgePrograms].map((targetProgram) => (
                 <option key={targetProgram._id} value={targetProgram._id}>
                   {targetProgram.name}
