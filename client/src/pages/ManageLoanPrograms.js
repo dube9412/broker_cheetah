@@ -143,6 +143,34 @@ function ManageLoanPrograms() {
     }
   };
 
+  const handleReassign = async (documentId, newProgramId) => {
+    if (!newProgramId) {
+      alert("Please select a loan program to reassign this document.");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${documentId}/reassign`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newProgramId }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        alert("✅ Document reassigned successfully!");
+        window.location.reload(); // Refresh to update UI
+      } else {
+        alert(`❌ Error reassigning document: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("❌ Error reassigning document:", error);
+      alert("An error occurred while reassigning the document.");
+    }
+  };
+  
+
   const handleDeleteDocument = async (documentId, programId) => {
     if (!documentId) {
         console.error("❌ Error: No document ID provided for deletion.");
@@ -247,6 +275,16 @@ console.log("📂 Documents in State:", uploadedDocs);
             </button>
 {" | "}
             <button onClick={() => handleDeleteDocument(doc._id, program._id)}>Delete</button>
+
+            {/* 🔹 Reassign Dropdown */}
+            <select onChange={(e) => handleReassign(doc._id, e.target.value)}>
+              <option value="">Reassign to...</option>
+              {[...fixAndFlipPrograms, ...dscrPrograms, ...groundUpPrograms, ...portfolioPrograms, ...stabilizedBridgePrograms].map((targetProgram) => (
+                <option key={targetProgram._id} value={targetProgram._id}>
+                  {targetProgram.name}
+                </option>
+              ))}
+            </select>
           </div>
         ))
       ) : (
