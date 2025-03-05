@@ -242,8 +242,10 @@ console.log("📂 Documents in State:", uploadedDocs);
         uploadedDocs[program._id].map((doc) => (
           <div key={doc._id}>
             📄 ({doc.tag})
-            <button onClick={() => window.open(`https://broker-cheetah-backend.onrender.com/api/documents/file/${doc.filename}`, "_blank")}>  View </button>
-            {" | "}
+            <button onClick={() => window.open(`https://broker-cheetah-backend.onrender.com/api/documents/view/${doc._id}`, "_blank")}>
+                View
+            </button>
+{" | "}
             <button onClick={() => handleDeleteDocument(doc._id, program._id)}>Delete</button>
           </div>
         ))

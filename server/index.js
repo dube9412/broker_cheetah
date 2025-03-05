@@ -54,7 +54,8 @@ app.use("/api/documents", documentRoutes);
 if (scraperRoutes) {
   app.use("/api/scrapers", scraperRoutes);
 }
-app.use('/uploads', express.static('uploads'));//serve logo
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 // ✅ Debug: List all available routes after mounting
 app.use((req, res, next) => {
