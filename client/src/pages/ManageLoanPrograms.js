@@ -208,6 +208,17 @@ function ManageLoanPrograms() {
   }
 };
 
+const handleViewDocument = (documentId) => {
+  if (!documentId) {
+      alert("❌ Document ID is missing.");
+      return;
+  }
+
+  // ✅ Open the document using the backend route
+  window.open(`https://broker-cheetah-backend.onrender.com/api/documents/view/${documentId}`, "_blank");
+};
+
+
 console.log("📂 Documents in State:", uploadedDocs);
 
   return (
@@ -247,7 +258,7 @@ console.log("📂 Documents in State:", uploadedDocs);
     <div key={doc._id}>
       📄 {doc.tag} 
       <button onClick={() => handleDeleteDocument(doc._id, null)}>Delete</button>
-      <button onClick={() => handleViewDocument(doc.filePath)}>View</button>
+      <button onClick={() => handleViewDocument(doc._id)}>View</button>
       <select onChange={(e) => handleReassign(doc._id, e.target.value)}>
         <option value="">Reassign to...</option>
         {[...fixAndFlipPrograms, ...dscrPrograms, ...groundUpPrograms, ...portfolioPrograms, ...stabilizedBridgePrograms].map((targetProgram) => (
