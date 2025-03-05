@@ -71,21 +71,7 @@ router.get("/:lenderId", async (req, res) => {
   }
 });
 
-router.get("/:documentId", async (req, res) => {
-  try {
-    const { documentId } = req.params;
-    const document = await Document.findById(documentId);
 
-    if (!document) {
-      return res.status(404).json({ success: false, message: "Document not found" });
-    }
-
-    res.json({ success: true, document });
-  } catch (error) {
-    console.error("❌ Error fetching document:", error);
-    res.status(500).json({ success: false, message: "Server error while fetching document." });
-  }
-});
 
 
 // ✅ Delete a Document by ID
