@@ -32,7 +32,7 @@ const DOCUMENT_CATEGORIES = [
 const BulkDocumentUploader = ({ lenderId }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [selectedTag, setSelectedTag] = useState("");
-  const [selectedLender, setSelectedLender] = useState(null);
+  const [lenders, setLenders] = useState([]); // ✅ Fix: Define lenders
 
    // ✅ Fetch Lenders for Assignment
    useEffect(() => {
@@ -104,13 +104,14 @@ const BulkDocumentUploader = ({ lenderId }) => {
       <h3>Bulk Upload Documents</h3>
 
         {/* ✅ Lender Selection */}
-        <label>Assign to Lender: </label>
-      <select value={selectedLender} onChange={(e) => setSelectedLender(e.target.value)}>
-        <option value="">Select a Lender</option>
-        {lenders.map(lender => (
-          <option key={lender._id} value={lender._id}>{lender.name}</option>
-        ))}
-      </select>
+        <label>Assign Lender: </label>
+<select onChange={(e) => console.log("Lender selected:", e.target.value)}>
+  <option value="">Unassigned</option>
+  {lenders.map((lender) => (
+    <option key={lender._id} value={lender._id}>{lender.name}</option>
+  ))}
+</select>
+
 
       {/* ✅ Drag and Drop Area */}
       <div {...getRootProps()} style={{ border: "2px dashed gray", padding: "20px", cursor: "pointer", marginBottom: "10px" }}>
