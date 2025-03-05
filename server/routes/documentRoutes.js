@@ -52,6 +52,43 @@ router.post("/upload", upload.single("file"), async (req, res) => {
   }
 });
 
+// ✅ Bulk Upload Multiple Documents
+router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ success: false, message: "No files uploaded." });
+    }
+
+    const { lenderId, programId, tag } = req.body;
+
+    // ✅ Ensure lenderId and tag exist
+    if (!lenderId || !tag) {
+      return res.status(400).json({ success: false, message: "Lender ID and Tag are required." });
+    }
+
+    const uploadedDocs = [];
+
+    for (const file of req.files) {
+      const newDocument = new Document({
+        filename: file.filename,
+        originalName: file.originalname,
+        filePath: `/uploads/${file.filename}`, // ✅ Relative Path
+        lenderId,
+        programId: programId || null, // Optional
+        tag,
+      });
+
+      await newDocument.save();
+      uploadedDocs.push(newDocument);
+    }
+
+    res.status(201).json({ success: true, message: "Bulk documents uploaded successfully!", documents: uploadedDocs });
+  } catch (error) {
+    console.error("❌ Error in bulk upload:", error);
+    res.status(500).json({ success: false, message: "Error in bulk document upload." });
+  }
+});
+
 // ✅ Serve Uploaded Files
 router.get("/view/:documentId", async (req, res) => {
   try {
@@ -96,6 +133,17 @@ router.get("/:lenderId", async (req, res) => {
   } catch (error) {
       console.error("❌ Error fetching documents:", error);
       res.status(500).json({ success: false, message: "Error fetching documents." });
+  }
+});
+
+// ✅ Fetch ALL Documents (Admin Only)
+router.get("/", async (req, res) => {
+  try {
+    const documents = await Document.find({});
+    res.status(200).json({ success: true, documents });
+  } catch (error) {
+    console.error("❌ Error fetching all documents:", error);
+    res.status(500).json({ success: false, message: "Error fetching all documents." });
   }
 });
 

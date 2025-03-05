@@ -19,6 +19,7 @@ const AdminDashboard = () => {
         <button onClick={() => navigate("/admin/scrapers")} className="admin-button">Scraper Tools</button>
         <button onClick={() => navigate("/admin/json-tools")} className="admin-button">JSON Import</button>
         <button onClick={() => navigate("/admin/import-data")} className="admin-button">Import Data</button>
+        <button onClick={() => navigate("/admin/documents")} className="admin-button">Documents</button>
       </div>
     </div>
   );

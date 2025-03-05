@@ -36,6 +36,7 @@ import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminScrapers from "./pages/admin/AdminScrapers";
 import AdminJSONTools from "./pages/admin/AdminJSONTools";
 import AdminImportData from "./pages/admin/AdminImportData.js";
+import AdminDocuments from "./pages/admin/AdminDocuments";
 
 // Loan Type Pages
 import LoanTypeSelection from "./pages/LoanTypeSelection";
@@ -118,6 +119,7 @@ function App() {
               <Route path="/admin/scrapers" element={<AdminScrapers />} />
               <Route path="/admin/json-tools" element={<AdminJSONTools />} />
               <Route path="/admin/import-data" element={<AdminImportData />} />
+              <Route path="/admin/documents" element={<AdminDocuments />} />
               <Route path="/hard-money-class" element={<HardMoneyClass />} />
               <Route path="/hard-money-class/:lessonId" element={<LessonPage />} />
               <Route path="/fix-and-flip-calculator" element={<FixAndFlipCalc />} />
