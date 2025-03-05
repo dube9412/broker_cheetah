@@ -50,7 +50,8 @@ router.post("/upload", upload.single("file"), async (req, res) => {
 router.get("/file/:filename", async (req, res) => {
   try {
     const { filename } = req.params;
-    const filePath = `uploads/${filename}`; // ✅ Ensure this matches where files are stored
+    const filePath = path.join(__dirname, "../uploads", filename); // ✅ Absolute Path Fix
+
 
     res.sendFile(filePath, { root: "." }, (err) => {
       if (err) {
