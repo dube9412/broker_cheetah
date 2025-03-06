@@ -15,8 +15,7 @@ const DOCUMENT_CATEGORIES = [
     "Borrower Experience Sheet", 
     "Co-Signor (Guarantor) Sheet", 
     "Canadian National Credit Report Worksheet", 
-    "Contractor Onboarding Worksheet", 
-    "How to Request a Draw", 
+    "Contractor Onboarding Worksheet",
     "Insurance Requirements", 
     "Mortgage Clause Info"
   ]},
@@ -27,15 +26,17 @@ const DOCUMENT_CATEGORIES = [
   { label: "Lender Information & Guidelines", options: [
     "Product Info Sheet", 
     "Product Details Sheet", 
-    "Lending Guidelines"
+    "Lending Guidelines",     
+    "How to Request a Draw"
   ]}
 ];
 
 const AdminDocuments = () => {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState([]);
-  const [lenders, setLenders] = useState([]); // ✅ Store lender data
-  const [loanPrograms, setLoanPrograms] = useState([]); // ✅ Store loan program data
+  const [lenders, setLenders] = useState([]);
+  const [loanPrograms, setLoanPrograms] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
 
    // ✅ Fetch Lenders List (So we can display lender names)
@@ -180,6 +181,13 @@ const AdminDocuments = () => {
     }
   };
 
+    // ✅ Filter documents by Lender
+    const filteredDocuments = useMemo(() => {
+      return documents.filter(doc =>
+        lenders.find(lender => lender._id === doc.lenderId)?.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }, [documents, lenders, searchTerm]);
+
   if (loading) return <p>Loading documents...</p>;
 
   return (
@@ -189,49 +197,68 @@ const AdminDocuments = () => {
       {/* ✅ Bulk Upload Section */}
       <BulkDocumentUploader lenders={lenders} />
 
-      {/* ✅ List of Documents */}
-      <h2>📄 All Documents</h2>
-      {documents.length === 0 ? <p>No documents uploaded yet.</p> : (
-        <ul>
-          {documents.map((doc) => {
-            const lenderName = lenders.find(l => l._id === doc.lenderId)?.name || "Unknown Lender";
-            return (
-              <li key={doc._id}>
-                📄 {doc.originalName} - {lenderName}
+       {/* ✅ Search by Lender */}
+       <input
+        type="text"
+        placeholder="Search by Lender"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ margin: "10px 0", padding: "5px", width: "200px" }}
+      />
 
-                {/* ✅ Assign a Tag */}
-                <label>Tag:</label>
-                <select value={doc.tag || ""} onChange={(e) => handleAssignTag(doc._id, e.target.value)}>
-                  <option value="">Select a Tag</option>
-                  {DOCUMENT_CATEGORIES.map((category) => (
-                    <optgroup key={category.label} label={category.label}>
-                      {category.options.map((option) => (
-                        <option key={option} value={option}>{option}</option>
+            {/* ✅ List of Documents */}
+            <h2>📄 All Documents</h2>
+      {filteredDocuments.length === 0 ? <p>No documents uploaded yet.</p> : (
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th>Document Name</th>
+              <th>Lender</th>
+              <th>Tag</th>
+              <th>Loan Program</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredDocuments.map(doc => {
+              const lenderName = lenders.find(l => l._id === doc.lenderId)?.name || "Unknown Lender";
+              return (
+                <tr key={doc._id}>
+                  <td>{doc.originalName}</td>
+                  <td>{lenderName}</td>
+                  <td>
+                    <select value={doc.tag || ""} onChange={(e) => handleAssignTag(doc._id, e.target.value)}>
+                      <option value="">Select a Tag</option>
+                      {DOCUMENT_CATEGORIES.map(category => (
+                        <optgroup key={category.label} label={category.label}>
+                          {category.options.map(option => (
+                            <option key={option} value={option}>{option}</option>
+                          ))}
+                        </optgroup>
                       ))}
-                    </optgroup>
-                  ))}
-                </select>
-                <button onClick={() => handleAssignTag(doc._id, doc.tag)}>Save Tag</button>
-
-                {/* ✅ Assign Loan Program */}
-                <label>Assign to Loan Program:</label>
-                <select value={doc.programId || ""} onChange={(e) => handleAssignProgram(doc._id, e.target.value)}>
-                  <option value="">Unassigned</option>
-                  {loanPrograms.map(program => (
-                    <option key={program._id} value={program._id}>{program.name}</option>
-                  ))}
-                </select>
-
-                <button onClick={() => window.open(`https://broker-cheetah-backend.onrender.com/api/documents/view/${doc._id}`, "_blank")}>View</button>
-                <button onClick={() => handleReassignDocument(doc._id)}>Reassign</button>
-                <button onClick={() => handleDeleteDocument(doc._id)}>Delete</button>
-              </li>
-            );
-          })}
-        </ul>
+                    </select>
+                  </td>
+                  <td>
+                    <select value={doc.programId || ""} onChange={(e) => handleAssignProgram(doc._id, e.target.value)}>
+                      <option value="">Unassigned</option>
+                      {loanPrograms.map(program => (
+                        <option key={program._id} value={program._id}>{program.name}</option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <button onClick={() => window.open(`/api/documents/view/${doc._id}`, "_blank")}>View</button>
+                    <button onClick={() => handleReassignDocument(doc._id)}>Reassign</button>
+                    <button onClick={() => handleDeleteDocument(doc._id)}>Delete</button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       )}
 
-      <button onClick={() => navigate("/admin-dashboard")} style={{ marginTop: "20px" }}>Back to Admin</button>
+      <button onClick={() => navigate("/admin-dashboard")}>Back to Admin</button>
     </div>
   );
 };
