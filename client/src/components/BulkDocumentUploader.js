@@ -31,7 +31,6 @@ const DOCUMENT_CATEGORIES = [
 
 const BulkDocumentUploader = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [selectedTag, setSelectedTag] = useState("");
   const [selectedLender, setSelectedLender] = useState(""); // ✅ Define lender selection
   const [lenders, setLenders] = useState([]); // ✅ Store lender list
 
@@ -97,15 +96,14 @@ const BulkDocumentUploader = () => {
       alert("Please select a lender before uploading.");
       return;
     }
-    if (selectedFiles.length === 0 || !selectedTag) {
-      alert("Please select files and a tag before uploading.");
+    if (selectedFiles.length === 0) { // ✅ Only check for files
+      alert("Please select files before uploading.");
       return;
     }
 
     const formData = new FormData();
     selectedFiles.forEach(file => formData.append("files", file));
     formData.append("lenderId", selectedLender);
-    formData.append("tag", selectedTag);
 
     try {
       const response = await fetch("https://broker-cheetah-backend.onrender.com/api/documents/bulk-upload", {
@@ -117,7 +115,6 @@ const BulkDocumentUploader = () => {
         alert("✅ Bulk upload successful!");
         setSelectedFiles([]);
         setSelectedLender("");
-        setSelectedTag("");
       } else {
         alert("❌ Error uploading documents.");
       }
@@ -156,19 +153,6 @@ const BulkDocumentUploader = () => {
           ))}
         </ul>
       )}
-
-      {/* ✅ Tag Selection */}
-      <label>Tag these documents: </label>
-      <select value={selectedTag} onChange={(e) => setSelectedTag(e.target.value)}>
-        <option value="">Select a Tag</option>
-        {DOCUMENT_CATEGORIES.map((category) => (
-          <optgroup key={category.label} label={category.label}>
-            {category.options.map((option) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </optgroup>
-        ))}
-      </select>
 
       <br /><br />
       {/* ✅ Upload Button */}
