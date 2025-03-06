@@ -184,4 +184,27 @@ router.put("/:documentId/reassign", async (req, res) => {
   }
 });
 
+router.put("/:documentId/assign-tag", async (req, res) => {
+  try {
+    const { documentId } = req.params;
+    const { newTag } = req.body;
+
+    const updatedDoc = await Document.findByIdAndUpdate(
+      documentId,
+      { tag: newTag },
+      { new: true }
+    );
+
+    if (!updatedDoc) {
+      return res.status(404).json({ success: false, message: "Document not found" });
+    }
+
+    res.json({ success: true, message: "Tag assigned successfully", document: updatedDoc });
+  } catch (error) {
+    console.error("❌ Error assigning tag:", error);
+    res.status(500).json({ success: false, message: "Error assigning tag." });
+  }
+});
+
+
 module.exports = router;

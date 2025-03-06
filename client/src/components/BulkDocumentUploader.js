@@ -79,7 +79,6 @@ const BulkDocumentUploader = () => {
     const formData = new FormData();
     selectedFiles.forEach(file => formData.append("files", file));
     formData.append("lenderId", selectedLender);
-    formData.append("tag", selectedTag);
 
     try {
       const response = await fetch("https://broker-cheetah-backend.onrender.com/api/documents/bulk-upload", {
@@ -91,7 +90,6 @@ const BulkDocumentUploader = () => {
         alert("✅ Bulk upload successful!");
         setSelectedFiles([]);
         setSelectedLender("");
-        setSelectedTag("");
       } else {
         alert("❌ Error uploading documents.");
       }
