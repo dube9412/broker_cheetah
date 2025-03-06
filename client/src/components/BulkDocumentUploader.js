@@ -35,7 +35,28 @@ const BulkDocumentUploader = () => {
   const [selectedLender, setSelectedLender] = useState(""); // ✅ Define lender selection
   const [lenders, setLenders] = useState([]); // ✅ Store lender list
 
-  // ✅ Fetch Lenders List (For Assigning Documents)
+  const validMimeTypes = [
+    "application/pdf", 
+    "application/msword", 
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "image/png",
+    "image/jpeg",
+    "text/plain",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  ];
+  
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files).filter(file => validMimeTypes.includes(file.type));
+  
+    if (files.length === 0) {
+      alert("Invalid file type. Allowed: PDF, PNG, JPEG, DOC, DOCX.");
+       return;
+    }
+    setSelectedFiles(files);
+  };
+  
+    // ✅ Fetch Lenders List (For Assigning Documents)
   useEffect(() => {
     const fetchLenders = async () => {
       try {
@@ -54,15 +75,20 @@ const BulkDocumentUploader = () => {
     fetchLenders();
   }, []);
 
-  // ✅ Handle Drag & Drop
+  // ✅ Handle drag-and-drop
   const onDrop = useCallback((acceptedFiles) => {
-    setSelectedFiles((prev) => [...prev, ...acceptedFiles]);
+    const validFiles = acceptedFiles.filter(file => validMimeTypes.includes(file.type));
+    if (validFiles.length === 0) {
+      alert("Invalid file type selected. Only PDF, Word, Excel, and images are allowed.");
+      return;
+    }
+    setSelectedFiles((prev) => [...prev, ...validFiles]);
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    multiple: true,
-    accept: ".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.png,.jpeg,.jpg",
+    multiple: true, // ✅ Allow multiple files
+    accept: validMimeTypes.join(", "),
   });
 
   // ✅ Handle Bulk Upload
@@ -79,6 +105,7 @@ const BulkDocumentUploader = () => {
     const formData = new FormData();
     selectedFiles.forEach(file => formData.append("files", file));
     formData.append("lenderId", selectedLender);
+    formData.append("tag", selectedTag);
 
     try {
       const response = await fetch("https://broker-cheetah-backend.onrender.com/api/documents/bulk-upload", {
@@ -90,6 +117,7 @@ const BulkDocumentUploader = () => {
         alert("✅ Bulk upload successful!");
         setSelectedFiles([]);
         setSelectedLender("");
+        setSelectedTag("");
       } else {
         alert("❌ Error uploading documents.");
       }
@@ -110,13 +138,24 @@ const BulkDocumentUploader = () => {
           <option key={lender._id} value={lender._id}>{lender.name}</option>
         ))}
       </select>
-      <br /><br />
 
       {/* ✅ Drag and Drop Area */}
       <div {...getRootProps()} style={{ border: "2px dashed gray", padding: "20px", cursor: "pointer", marginBottom: "10px" }}>
         <input {...getInputProps()} />
         <p>Drag & drop multiple files here, or click to select files</p>
       </div>
+
+      {/* ✅ Standard File Upload (For users who prefer clicking) */}
+      <input type="file" multiple onChange={handleFileChange} style={{ marginBottom: "10px" }} />
+
+      {/* ✅ Display Selected Files */}
+      {selectedFiles.length > 0 && (
+        <ul>
+          {selectedFiles.map((file, index) => (
+            <li key={index}>{file.name}</li>
+          ))}
+        </ul>
+      )}
 
       {/* ✅ Tag Selection */}
       <label>Tag these documents: </label>
@@ -130,8 +169,9 @@ const BulkDocumentUploader = () => {
           </optgroup>
         ))}
       </select>
-      <br /><br />
 
+      <br /><br />
+      {/* ✅ Upload Button */}
       <button onClick={handleUpload}>Upload</button>
     </div>
   );
