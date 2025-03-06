@@ -63,7 +63,9 @@ const BulkDocumentUploader = () => {
         const data = await response.json();
         if (response.ok) {
           console.log("✅ Fetched Lenders:", data.lenders);
-          setLenders(data.lenders);
+          const sortedLenders = data.lenders.sort((a, b) => a.name.localeCompare(b.name));
+
+        setLenders(sortedLenders);
         } else {
           console.warn("⚠️ No lenders found.");
         }
