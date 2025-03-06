@@ -2,6 +2,35 @@ import React, { useState, useEffect } from "react";
 import BulkDocumentUploader from "../../components/BulkDocumentUploader"; // ✅ Use Bulk Uploader
 import { useNavigate } from "react-router-dom";
 
+// ✅ Tag Categories
+const DOCUMENT_CATEGORIES = [
+  { label: "Loan Program Applications", options: [
+    "DSCR Loan Application", 
+    "Fix & Flip / Bridge Loan Application", 
+    "Rental Portfolio Loan Application", 
+    "Ground Up Construction Application", 
+    "Scope of Work Worksheet"
+  ]},
+  { label: "General Underwriting & Processing Docs", options: [
+    "Borrower Experience Sheet", 
+    "Co-Signor (Guarantor) Sheet", 
+    "Canadian National Credit Report Worksheet", 
+    "Contractor Onboarding Worksheet", 
+    "How to Request a Draw", 
+    "Insurance Requirements", 
+    "Mortgage Clause Info"
+  ]},
+  { label: "Lender Marketing Materials", options: [
+    "Fix & Flip Marketing Sheet", 
+    "Ground Up Marketing Sheet"
+  ]},
+  { label: "Lender Information & Guidelines", options: [
+    "Product Info Sheet", 
+    "Product Details Sheet", 
+    "Lending Guidelines"
+  ]}
+];
+
 const AdminDocuments = () => {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState([]);
@@ -27,6 +56,22 @@ const AdminDocuments = () => {
     };
 
     fetchLenders();
+  }, []);
+
+  // ✅ Fetch Loan Programs (Needed for program assignment)
+  useEffect(() => {
+    const fetchLoanPrograms = async () => {
+      try {
+        const response = await fetch("https://broker-cheetah-backend.onrender.com/api/loan-programs");
+        const data = await response.json();
+        if (response.ok) {
+          setLoanPrograms(data.programs);
+        }
+      } catch (error) {
+        console.error("❌ Error fetching loan programs:", error);
+      }
+    };
+    fetchLoanPrograms();
   }, []);
 
   // ✅ Fetch ALL documents (Both General & Program-Specific)
@@ -73,6 +118,26 @@ const AdminDocuments = () => {
     }
   };
 
+  const handleAssignTag = async (documentId, newTag) => {
+    try {
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${documentId}/assign-tag`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newTag }),
+      });
+
+      if (response.ok) {
+        alert("✅ Tag assigned successfully.");
+        setDocuments(prevDocs => prevDocs.map(doc => (doc._id === documentId ? { ...doc, tag: newTag } : doc)));
+      } else {
+        alert("❌ Error assigning tag.");
+      }
+    } catch (error) {
+      console.error("❌ Error assigning tag:", error);
+    }
+  };
+
+
   // ✅ Handle Document Deletion
   const handleDeleteDocument = async (documentId) => {
     if (!window.confirm("Are you sure you want to delete this document?")) return;
@@ -104,8 +169,8 @@ const AdminDocuments = () => {
 
       if (response.ok) {
         alert("✅ Document reassigned successfully.");
-        setDocuments((prevDocs) =>
-          prevDocs.map((doc) => (doc._id === documentId ? { ...doc, lenderId: newLenderId, programId: newProgramId } : doc))
+        setDocuments(prevDocs =>
+          prevDocs.map(doc => (doc._id === documentId ? { ...doc, lenderId: newLenderId, programId: newProgramId } : doc))
         );
       } else {
         alert("❌ Error reassigning document.");
@@ -128,13 +193,26 @@ const AdminDocuments = () => {
       <h2>📄 All Documents</h2>
       {documents.length === 0 ? <p>No documents uploaded yet.</p> : (
         <ul>
-       {documents.map((doc) => {
+          {documents.map((doc) => {
             const lenderName = lenders.find(l => l._id === doc.lenderId)?.name || "Unknown Lender";
             return (
               <li key={doc._id}>
                 📄 {doc.originalName} - {lenderName}
 
-              {/* ✅ Lender Assignment Dropdown */}
+                {/* ✅ Assign a Tag */}
+                <label>Tag:</label>
+                <select value={doc.tag || ""} onChange={(e) => handleAssignTag(doc._id, e.target.value)}>
+                  <option value="">Select a Tag</option>
+                  {DOCUMENT_CATEGORIES.map((category) => (
+                    <optgroup key={category.label} label={category.label}>
+                      {category.options.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+                <button onClick={() => handleAssignTag(doc._id, doc.tag)}>Save Tag</button>
+
                 {/* ✅ Assign Loan Program */}
                 <label>Assign to Loan Program:</label>
                 <select value={doc.programId || ""} onChange={(e) => handleAssignProgram(doc._id, e.target.value)}>
@@ -144,8 +222,8 @@ const AdminDocuments = () => {
                   ))}
                 </select>
 
-             
                 <button onClick={() => window.open(`https://broker-cheetah-backend.onrender.com/api/documents/view/${doc._id}`, "_blank")}>View</button>
+                <button onClick={() => handleReassignDocument(doc._id)}>Reassign</button>
                 <button onClick={() => handleDeleteDocument(doc._id)}>Delete</button>
               </li>
             );
