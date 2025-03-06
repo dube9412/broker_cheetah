@@ -38,6 +38,7 @@ const AdminDocuments = () => {
   const [loanPrograms, setLoanPrograms] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loanProgramsByLender, setLoanProgramsByLender] = useState({});
 
    // ✅ Fetch Lenders List (So we can display lender names)
    useEffect(() => {
@@ -63,17 +64,27 @@ const AdminDocuments = () => {
   useEffect(() => {
     const fetchLoanPrograms = async () => {
       try {
-        const response = await fetch("https://broker-cheetah-backend.onrender.com/api/loan-programs");
-        const data = await response.json();
-        if (response.ok) {
-          setLoanPrograms(data.programs);
+        const uniqueLenderIds = [...new Set(documents.map(doc => doc.lenderId).filter(Boolean))]; // ✅ Get unique lender IDs
+  
+        const programsData = {};
+        for (const lenderId of uniqueLenderIds) {
+          const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${lenderId}/loan-programs`);
+          const data = await response.json();
+          if (response.ok) {
+            programsData[lenderId] = data.loanPrograms || []; // ✅ Store loan programs per lender
+          }
         }
+  
+        setLoanProgramsByLender(programsData);
       } catch (error) {
         console.error("❌ Error fetching loan programs:", error);
       }
     };
-    fetchLoanPrograms();
-  }, []);
+  
+    if (documents.length > 0) {
+      fetchLoanPrograms();
+    }
+  }, [documents]);
 
   // ✅ Fetch ALL documents (Both General & Program-Specific)
   useEffect(() => {
@@ -239,12 +250,15 @@ const AdminDocuments = () => {
                     </select>
                   </td>
                   <td>
-                    <select value={doc.programId || ""} onChange={(e) => handleAssignProgram(doc._id, e.target.value)}>
-                      <option value="">Unassigned</option>
-                      {loanPrograms.map(program => (
-                        <option key={program._id} value={program._id}>{program.name}</option>
-                      ))}
-                    </select>
+                  <select 
+                    value={doc.programId || ""} 
+                    onChange={(e) => handleAssignProgram(doc._id, e.target.value)}
+                  >
+                    <option value="">Unassigned</option>
+                    {(loanProgramsByLender[doc.lenderId] || []).map(program => (
+                      <option key={program._id} value={program._id}>{program.name}</option>
+                    ))}
+                  </select>
                   </td>
                   <td>
                     <button onClick={() => window.open(`/api/documents/view/${doc._id}`, "_blank")}>View</button>
