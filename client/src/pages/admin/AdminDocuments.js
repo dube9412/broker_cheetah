@@ -192,6 +192,19 @@ const AdminDocuments = () => {
     }
   };
 
+  const handleViewDocument = (documentId) => {
+    if (!documentId) {
+      alert("❌ Document ID is missing.");
+      return;
+    }
+  
+    console.log("📄 Attempting to view document:", documentId);
+  
+    // ✅ Construct full URL using the backend API
+    window.open(`https://broker-cheetah-backend.onrender.com/api/documents/view/${documentId}`, "_blank");
+  };
+  
+
     // ✅ Filter documents by Lender
     const filteredDocuments = useMemo(() => {
       return documents.filter(doc =>
@@ -264,7 +277,7 @@ const AdminDocuments = () => {
 
                   </td>
                   <td>
-                    <button onClick={() => window.open(`/api/documents/view/${doc._id}`, "_blank")}>View</button>
+                    <button onClick={() => handleViewDocument(doc._id)}>View</button>
                     <button onClick={() => handleReassignDocument(doc._id)}>Reassign</button>
                     <button onClick={() => handleDeleteDocument(doc._id)}>Delete</button>
                   </td>
