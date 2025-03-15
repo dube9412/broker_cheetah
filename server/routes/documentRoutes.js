@@ -86,7 +86,6 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
   });
 
 // ✅ Serve Uploaded Files
-// ✅ Serve Uploaded Files
 router.get("/view/:documentId", async (req, res) => {
   try {
     const { documentId } = req.params;
@@ -105,12 +104,31 @@ router.get("/view/:documentId", async (req, res) => {
       return res.status(404).json({ success: false, message: "File not found on server." });
     }
 
-    res.sendFile(filePath);
+    // ✅ Ensure correct MIME type is set
+    res.setHeader("Content-Type", getMimeType(document.filePath));
+
+    res.sendFile(document.filePath, { root: "uploads" });
   } catch (error) {
     console.error("❌ Error fetching document file:", error);
     res.status(500).json({ success: false, message: "Error fetching document file." });
   }
 });
+
+// ✅ Function to determine MIME type
+const getMimeType = (filePath) => {
+  const extension = filePath.split(".").pop();
+  const mimeTypes = {
+    pdf: "application/pdf",
+    doc: "application/msword",
+    docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    xls: "application/vnd.ms-excel",
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    png: "image/png",
+  };
+  return mimeTypes[extension] || "application/octet-stream";
+};
 
 
 // ✅ Fetch Documents for a Specific Lender (Optional Program Filter)
