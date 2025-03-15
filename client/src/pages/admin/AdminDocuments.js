@@ -60,7 +60,6 @@ const AdminDocuments = () => {
     fetchLenders();
   }, []);
 
-  // ✅ Fetch Loan Programs (Needed for program assignment)
   useEffect(() => {
     const fetchLoanPrograms = async () => {
       try {
@@ -85,6 +84,7 @@ const AdminDocuments = () => {
       fetchLoanPrograms();
     }
   }, [documents]);
+  
 
   // ✅ Fetch ALL documents (Both General & Program-Specific)
   useEffect(() => {
@@ -250,15 +250,18 @@ const AdminDocuments = () => {
                     </select>
                   </td>
                   <td>
-                  <select 
-                    value={doc.programId || ""} 
-                    onChange={(e) => handleAssignProgram(doc._id, e.target.value)}
-                  >
-                    <option value="">Unassigned</option>
-                    {(loanProgramsByLender[doc.lenderId] || []).map(program => (
-                      <option key={program._id} value={program._id}>{program.name}</option>
-                    ))}
-                  </select>
+                  <label>Assign to Loan Program:</label>
+                    <select 
+                      value={doc.programId || ""} 
+                      onChange={(e) => handleAssignProgram(doc._id, e.target.value)}
+                      disabled={!doc.lenderId} // ✅ Disable if no lender is assigned
+                    >
+                      <option value="">Unassigned</option>
+                      {(loanProgramsByLender[doc.lenderId] || []).map(program => (
+                        <option key={program._id} value={program._id}>{program.name}</option>
+                      ))}
+                    </select>
+
                   </td>
                   <td>
                     <button onClick={() => window.open(`/api/documents/view/${doc._id}`, "_blank")}>View</button>
