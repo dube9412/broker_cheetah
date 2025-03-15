@@ -86,6 +86,7 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
   });
 
 // ✅ Serve Uploaded Files
+// ✅ Serve Uploaded Files
 router.get("/view/:documentId", async (req, res) => {
   try {
     const { documentId } = req.params;
@@ -95,9 +96,12 @@ router.get("/view/:documentId", async (req, res) => {
       return res.status(404).json({ success: false, message: "Document not found." });
     }
 
-    const filePath = path.join(__dirname, "../../", document.filePath);
+    // ✅ Dynamically reconstruct the absolute file path
+    const filePath = path.join(__dirname, "../../uploads", document.filename);
+
+    // ✅ Check if the file actually exists
     if (!fs.existsSync(filePath)) {
-      console.error("❌ File not found on server:", filePath);
+      console.error("❌ File missing on server:", filePath);
       return res.status(404).json({ success: false, message: "File not found on server." });
     }
 
@@ -107,6 +111,7 @@ router.get("/view/:documentId", async (req, res) => {
     res.status(500).json({ success: false, message: "Error fetching document file." });
   }
 });
+
 
 // ✅ Fetch Documents for a Specific Lender (Optional Program Filter)
 router.get("/:lenderId", async (req, res) => {
