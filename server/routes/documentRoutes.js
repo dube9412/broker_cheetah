@@ -36,13 +36,14 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     }
 
     const newDocument = new Document({
-      filename: req.file.filename,
+      filename: req.file.filename || path.basename(req.file.path), // ✅ Ensure filename is saved
       originalName: req.file.originalname,
-      filePath: `/uploads/${req.file.filename}`, // ✅ Relative Path
+      filePath: `/uploads/${req.file.filename || path.basename(req.file.path)}`, // ✅ Ensure filePath uses correct filename
       lenderId,
       programId: programId || null,
       tag,
     });
+    
 
     await newDocument.save();
     res.status(201).json({ success: true, message: "Document uploaded successfully!", document: newDocument });
@@ -68,13 +69,14 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
 
       // ✅ Create document objects for bulk insertion
       const uploadedDocs = req.files.map(file => ({
-        filename: file.filename,
+        filename: file.filename || path.basename(file.path), // ✅ Ensure filename is mapped
         originalName: file.originalname,
-        filePath: `/uploads/${file.filename}`,
+        filePath: `/uploads/${file.filename || path.basename(file.path)}`, // ✅ Ensure filePath is correct
         lenderId,
-        programId: programId || null, // Optional
+        programId: programId || null,
         tag,
       }));
+      
 
       await Document.insertMany(uploadedDocs); // ✅ Efficient bulk insert
 

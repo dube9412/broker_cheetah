@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Font Styles */
+.font-geist-mono {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    letter-spacing: -0.03em;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    color: #111827;
+    overflow-x: hidden;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Active Tab Styles */
+.loan-tab-btn {
+    color: #6B7280;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.loan-tab-btn.active {
+    color: #1E40AF;
+    border-bottom: 2px solid #1E40AF;
+}
+
+/* Glossary Item Styles */
+.glossary-item {
+    border-bottom: 1px solid #F3F4F6;
+    padding-bottom: 1rem;
+}
+
+.glossary-item h3 {
+    position: relative;
+}
+
+.glossary-item h3::before {
+    content: '';
+    position: absolute;
+    left: -0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 70%;
+    background-color: #3B82F6;
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.glossary-item:hover h3::before {
+    opacity: 1;
+}
+
+/* Custom Animation for Hover Effects */
+@keyframes subtle-pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Custom Hover Animations */
+.hover-animate {
+    transition: all 0.3s ease;
+}
+
+.hover-animate:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Focus States */
+button:focus, a:focus, input:focus, select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+/* Form Element Styles */
+input, select, textarea {
+    transition: all 0.2s ease;
+}
+
+input:hover, select:hover, textarea:hover {
+    border-color: #9CA3AF;
+}
+
+/* Hidden Scrollbar but still scrollable */
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+    h2 {
+        font-size: 1.5rem;
+    }
+    h3 {
+        font-size: 1.25rem;
+    }
+}
+
+/* Lender Process Step Animation */
+.step-animate {
+    transition: all 0.3s ease;
+}
+
+.step-animate:hover {
+    background-color: #F9FAFB;
+    transform: translateY(-3px);
+}
+
+/* Image Hover Effect */
+.image-hover {
+    transition: all 0.5s ease;
+    filter: grayscale(20%);
+}
+
+.image-hover:hover {
+    filter: grayscale(0%);
+    transform: scale(1.02);
+}

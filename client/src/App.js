@@ -43,7 +43,7 @@ import LoanTypeSelection from "./pages/LoanTypeSelection";
 import FixAndFlipSearch from "./pages/FixAndFlipSearch";
 import ManageLoanPrograms from "./pages/ManageLoanPrograms";
 import FixAndFlipCalc from "./pages/FixAndFlipCalc";
-import HardMoneyClass from "./pages/HardMoneyClass";
+import HardMoneyClass from './components/HardMoneyClass/HardMoneyClass';
 import LessonPage from "./pages/LessonPage";
 
 // Lender Portal Pages
