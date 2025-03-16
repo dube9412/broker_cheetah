@@ -1385,7 +1385,7 @@ const HardMoneyClass = () => {
         </div>
       </div>
     </section>
-    <section id="finding-clients" ref={findingClientsRef} className="mb-16">
+    <section id="finding-clients" ref={brokerClientsRef} className="mb-16">
       <div className="border-b border-gray-200 pb-5 mb-8">
         <h2 className="text-3xl font-bold">
           5. Finding New Clients as a Broker
