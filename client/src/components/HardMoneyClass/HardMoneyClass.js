@@ -4,8 +4,6 @@ import realEstateLogo from './assets/realEstateLogo.svg';
 import applicationProcess from './assets/application_process.jpeg';
 import loanTypesPic from './assets/loan_types_pic.jpeg';
 
-import React, { useRef } from 'react';
-
 const HardMoneyClass = () => {
     const [activeTab, setActiveTab] = useState('loanTypes');
 
