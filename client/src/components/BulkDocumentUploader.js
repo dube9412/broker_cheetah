@@ -32,7 +32,7 @@ const DOCUMENT_CATEGORIES = [
 const BulkDocumentUploader = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [selectedLender, setSelectedLender] = useState(""); // ✅ Define lender selection
-  const [selectedTag, setSelectedTag] = useState(""); // ✅ Define tag selection
+  const [selectedTag, setSelectedTag] = useState(""); // ✅ Define document tag selection
   const [lenders, setLenders] = useState([]); // ✅ Store lender list
 
   const validMimeTypes = [
@@ -95,30 +95,34 @@ const BulkDocumentUploader = () => {
 
   // ✅ Handle Bulk Upload
   const handleUpload = async () => {
-    if (!selectedLender|| selectedTag) {
-      alert("Please select a lender and tag before uploading.");
+    // ✅ Set Default Tag for Bulk Upload (if empty)
+    const finalTag = selectedTag || "Uncategorized"; 
+  
+    if (!selectedLender || !finalTag) {  // ✅ Ensure Lender is selected
+      alert("⚠️ Please select a lender before uploading.");
       return;
     }
     if (selectedFiles.length === 0) { // ✅ Only check for files
-      alert("Please select files before uploading.");
+      alert("⚠️ Please select files before uploading.");
       return;
     }
-
+  
     const formData = new FormData();
     selectedFiles.forEach(file => formData.append("files", file));
     formData.append("lenderId", selectedLender);
-    formData.append("tag", selectedTag);
-
+    formData.append("tag", finalTag);  // ✅ Use default tag if none is selected
+  
     try {
       const response = await fetch("https://broker-cheetah-backend.onrender.com/api/documents/bulk-upload", {
         method: "POST",
         body: formData,
       });
-
+  
       if (response.ok) {
         alert("✅ Bulk upload successful!");
         setSelectedFiles([]);
         setSelectedLender("");
+        setSelectedTag("");  // ✅ Reset selection after upload
       } else {
         alert("❌ Error uploading documents.");
       }
@@ -126,6 +130,7 @@ const BulkDocumentUploader = () => {
       console.error("❌ Error uploading documents:", error);
     }
   };
+  
 
   return (
     <div style={{ border: "1px solid #ccc", padding: "10px", marginTop: "20px" }}>
