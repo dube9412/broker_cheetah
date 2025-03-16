@@ -2,24 +2,24 @@ import React, { useState, useEffect } from 'react';
 
 const FixAndFlipCalculator = () => {
   const [inputs, setInputs] = useState({
-    timeToSold: 6, // B3
-    purchasePrice: 100000, // B4
-    targetSalePrice: 150000, // B6
-    rehabDetailed: {},
-    rehabQuick: 30000, // Quick rehab mode
-    useDetailedRehab: false, // Toggle between Quick and Detailed modes
-    loanToCost: 0.9, // E3
-    rehabPercentage: 1, // E4
-    arvLimit: 0.65, // E5
-    totalLoanToCost: 0.9, // E6
-    interestRate: 0.13, // E7
-    origination: 0.03, // E8
-    transferTax: 0.0075, // E9
-    utilitiesPerMonth: 200, // E11
-    maintenanceCosts: 0, // E12
-    miscCosts: 0, // E13
-    realtorFee: 0.05, // E23
-    capitalGains: 0.2, // E24
+    timeToSold: 6,
+    purchasePrice: 100000,
+    targetSalePrice: 150000,
+    rehabQuick: 30000,
+    useDetailedRehab: false,
+    rehabDetailed: { interior: 0, exterior: 0, misc: 0 },
+    loanToCost: 0.9,
+    rehabPercentage: 1,
+    arvLimit: 0.65,
+    totalLoanToCost: 0.9,
+    interestRate: 0.13,
+    origination: 0.03,
+    transferTax: 0.0075,
+    utilitiesPerMonth: 200,
+    maintenanceCosts: 0,
+    miscCosts: 0,
+    realtorFee: 0.05,
+    capitalGains: 0.2,
   });
 
   const [outputs, setOutputs] = useState({});
@@ -35,9 +35,9 @@ const FixAndFlipCalculator = () => {
 
   const calculateOutputs = () => {
     const rehabTotal = inputs.useDetailedRehab
-      ? Object.values(inputs.rehabDetailed).reduce((sum, val) => sum + (parseFloat(val) || 0), 0)
+      ? Object.values(inputs.rehabDetailed).reduce((a, b) => a + (parseFloat(b) || 0), 0)
       : inputs.rehabQuick;
-  
+
     const B5 = rehabTotal;
     const B8 = inputs.purchasePrice * inputs.loanToCost;
     const B10 = inputs.purchasePrice * (1 - inputs.loanToCost);
@@ -46,25 +46,22 @@ const FixAndFlipCalculator = () => {
     const B13 = inputs.purchasePrice * inputs.transferTax;
     const B14 = B10 + B11 + B12 + B13;
     const B16 = B8 + (B5 * inputs.rehabPercentage);
-    const B17 = inputs.targetSalePrice * inputs.arvLimit;
-    const B19 = ((B8 * inputs.interestRate / 12 * inputs.timeToSold) + (B16 * inputs.interestRate / 12 * inputs.timeToSold)) / 2;
+    const B19 = ((B8 + B16) / 2) * (inputs.interestRate / 12) * inputs.timeToSold;
     const B20 = (inputs.utilitiesPerMonth + inputs.maintenanceCosts + inputs.miscCosts) * inputs.timeToSold;
     const B21 = B19 + B20;
     const B23 = B16 + B14 + B21;
-    const B24 = inputs.targetSalePrice; // ✅ corrected (not rehabQuick!)
+    const B24 = inputs.targetSalePrice;
     const B25 = B24 - B23;
-    const B26 = B25 / B24;
     const C16 = B16 / (inputs.purchasePrice + B5);
     const C17 = B16 / inputs.targetSalePrice;
     const F23 = inputs.realtorFee * B24;
     const F24 = B25 * inputs.capitalGains;
     const F25 = F23 + F24;
     const F26 = B25 - F25;
-  
+
     setOutputs({
-      rehabTotal,
-      totalLoan: B16,
-      totalInvestment: B23,
+      rehabTotal: B5,
+      totalCosts: B23,
       profit: B25,
       netProfit: F26,
       TLTC: C16,
@@ -76,47 +73,55 @@ const FixAndFlipCalculator = () => {
       },
     });
   };
-  
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Fix and Flip Calculator</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div>
+          <label>Time to Sold (months)</label>
+          <input className="border p-1 w-full" type="number" name="timeToSold" value={inputs.timeToSold} onChange={handleChange} />
+        </div>
+        <div>
+          <label>Purchase Price ($)</label>
+          <input className="border p-1 w-full" type="number" name="purchasePrice" value={inputs.purchasePrice} onChange={handleChange} />
+        </div>
+        <div>
+          <label>Target Sale Price ($)</label>
+          <input className="border p-1 w-full" type="number" name="targetSalePrice" value={inputs.targetSalePrice} onChange={handleChange} />
+        </div>
+        <div>
+          <label>Rehab Quick ($)</label>
+          <input className="border p-1 w-full" type="number" name="rehabQuick" value={inputs.rehabQuick} onChange={handleChange} />
+        </div>
 
-      <div className="mb-4">
-        <label>Time to Sold (months)</label>
-        <input type="number" name="timeToSold" value={inputs.timeToSold} onChange={handleChange} />
+        {/* Loan parameters clearly labeled */}
+        {['loanToCost','rehabPercentage','arvLimit','totalLoanToCost','interestRate','origination','transferTax','utilitiesPerMonth','maintenanceCosts','miscCosts','realtorFee','capitalGains'].map(key => (
+          <div key={key}>
+            <label>{key.charAt(0).toUpperCase() + key.slice(1)} {['loanToCost','rehabPercentage','arvLimit','totalLoanToCost','interestRate','origination','transferTax','realtorFee','capitalGains'].includes(key)? '(%)':'($)'}</label>
+            <input className="border p-1 w-full" type="number" name={key} value={inputs[key]} onChange={handleChange} />
+          </div>
+        ))}
       </div>
 
-      <div className="mb-4">
-        <label>Purchase Price ($)</label>
-        <input type="number" name="purchasePrice" value={inputs.purchasePrice} onChange={handleChange} />
-      </div>
-
-      <div className="mb-4">
-        <label>Target Sale Price ($)</label>
-        <input type="number" name="targetSalePrice" value={inputs.targetSalePrice} onChange={handleChange} />
-      </div>
-
-      <div className="mb-4">
-        <label>Rehab Quick ($)</label>
-        <input type="number" name="rehabQuick" value={inputs.rehabQuick} onChange={handleChange} />
-      </div>
-
-      <div className="mb-4">
+      <div className="mt-4">
         <label>
           <input type="checkbox" checked={inputs.useDetailedRehab} onChange={() => setInputs({ ...inputs, useDetailedRehab: !inputs.useDetailedRehab })} />
-          Use Detailed Rehab
+          Use Detailed Rehab (future)
         </label>
       </div>
 
-      <div className="results">
-        <h3>Results:</h3>
+      <div className="results mt-6 border-t pt-4">
+        <h3 className="font-bold">Results:</h3>
         <p>Total Rehab: ${outputs.rehabTotal?.toFixed(2)}</p>
-        <p>Total Costs: ${outputs.B23?.toFixed(2)}</p>
-        <p>Profit: ${outputs.netProfit?.toFixed(2)}</p>
-        <p>Profit %: {(outputs.profitPercent * 100)?.toFixed(2)}%</p>
-        {outputs.warnings?.TLTC && <p className="text-red-600">Warning: Exceeds TLTC limit!</p>}
-        {outputs.warnings?.ARV && <p className="text-red-600">Warning: ARV limit exceeded!</p>}
+        <p>Total Costs: ${outputs.totalCosts?.toFixed(2)}</p>
+        <p>Profit: ${outputs.profit?.toFixed(2)}</p>
+        <p>Net Profit (after Fees/Taxes): ${outputs.netProfit?.toFixed(2)}</p>
+        <p>Net Profit %: {(outputs.profitPercent * 100)?.toFixed(2)}%</p>
+        
+        {outputs.warnings?.TLTC && <p className="text-red-600 font-bold">Warning: Exceeds TLTC limit!</p>}
+        {outputs.warnings?.ARV && <p className="text-red-600 font-bold">Warning: ARV limit exceeded!</p>}
       </div>
     </div>
   );

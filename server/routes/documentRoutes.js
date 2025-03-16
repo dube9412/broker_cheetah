@@ -93,7 +93,8 @@ router.get("/view/:documentId", async (req, res) => {
       return res.status(404).json({ success: false, message: "Document not found" });
     }
 
-    const filePath = path.join(__dirname, "../../uploads", document.filename);
+    const filePath = path.join(__dirname, "../../", document.filePath);
+
     if (!fs.existsSync(filePath)) {
       console.error("❌ File missing on server:", filePath);
       return res.status(404).json({ success: false, message: "File missing" });
