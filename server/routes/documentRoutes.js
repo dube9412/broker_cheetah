@@ -88,27 +88,37 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
 // ✅ Serve Uploaded Files
 router.get("/view/:documentId", async (req, res) => {
   try {
+    console.log("🔹 Received request to view document:", req.params.documentId);
+
     const document = await Document.findById(req.params.documentId);
     if (!document) {
+      console.error("❌ Document not found in database:", req.params.documentId);
       return res.status(404).json({ success: false, message: "Document not found" });
     }
 
-    // ✅ Correct File Path Handling
-    const filePath = path.join(__dirname, "../../uploads", document.filename);
-    
+    console.log("📌 Document found:", document);
+
+    // 🔍 Ensure we use the correct file path
+    const filePath = path.resolve(__dirname, "../../uploads", document.filename);
+
+    console.log("📂 Checking file path:", filePath);
+
     if (!fs.existsSync(filePath)) {
       console.error("❌ File missing on server:", filePath);
       return res.status(404).json({ success: false, message: "File missing" });
     }
 
     const mimeType = getMimeType(document.filename);
-    res.setHeader('Content-Type', mimeType);
+    console.log("✅ Sending file with MIME type:", mimeType);
+
+    res.setHeader("Content-Type", mimeType);
     res.sendFile(filePath);
   } catch (error) {
-    console.error("❌ Error fetching document file:", error);
+    console.error("❌ Server Error fetching document file:", error);
     res.status(500).json({ success: false, message: "Server error fetching document file." });
   }
 });
+
 
 
 
