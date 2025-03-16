@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './HardMoneyClass.css'; 
 
 const HardMoneyClass = () => {
@@ -13,7 +13,7 @@ const HardMoneyClass = () => {
           document.body.removeChild(script); // Cleanup when component unmounts
         };
       }, []);
-      
+
   const htmlContent = `
     <!DOCTYPE html>
     <html lang="en">
