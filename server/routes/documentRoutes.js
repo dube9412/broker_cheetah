@@ -93,8 +93,9 @@ router.get("/view/:documentId", async (req, res) => {
       return res.status(404).json({ success: false, message: "Document not found" });
     }
 
-    const filePath = path.join(__dirname, "../../", document.filePath);
-
+    // ✅ Correct File Path Handling
+    const filePath = path.join(__dirname, "../../uploads", document.filename);
+    
     if (!fs.existsSync(filePath)) {
       console.error("❌ File missing on server:", filePath);
       return res.status(404).json({ success: false, message: "File missing" });
@@ -108,6 +109,7 @@ router.get("/view/:documentId", async (req, res) => {
     res.status(500).json({ success: false, message: "Server error fetching document file." });
   }
 });
+
 
 
 // ✅ Function to determine MIME type
