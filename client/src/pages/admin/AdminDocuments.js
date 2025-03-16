@@ -65,12 +65,30 @@ const AdminDocuments = () => {
       try {
         const uniqueLenderIds = [...new Set(documents.map(doc => doc.lenderId).filter(Boolean))]; // ✅ Get unique lender IDs
   
+        const loanTypePaths = [
+          "fix-and-flip",
+          "dscr",
+          "stabilized-bridge",
+          "portfolio",
+          "ground-up"
+        ]; // ✅ Dynamic, can expand in the future
+  
         const programsData = {};
+  
         for (const lenderId of uniqueLenderIds) {
-          const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${lenderId}/loan-programs`);
-          const data = await response.json();
-          if (response.ok) {
-            programsData[lenderId] = data.loanPrograms || []; // ✅ Store loan programs per lender
+          programsData[lenderId] = [];
+  
+          for (const loanType of loanTypePaths) {
+            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/${loanType}/${lenderId}/${loanType}-programs`);
+            const data = await response.json();
+  
+            console.log(`📌 Loan Programs for Lender ${lenderId} (${loanType}):`, data);
+  
+            if (response.ok && Array.isArray(data)) {
+              programsData[lenderId] = [...programsData[lenderId], ...data]; // ✅ Merge all loan programs dynamically
+            } else {
+              console.warn(`⚠️ No programs found for ${loanType} under lender ${lenderId}`);
+            }
           }
         }
   
@@ -84,6 +102,7 @@ const AdminDocuments = () => {
       fetchLoanPrograms();
     }
   }, [documents]);
+  
   
 
   // ✅ Fetch ALL documents (Both General & Program-Specific)
@@ -274,6 +293,7 @@ const AdminDocuments = () => {
                         <option key={program._id} value={program._id}>{program.name}</option>
                       ))}
                     </select>
+
 
                   </td>
                   <td>
