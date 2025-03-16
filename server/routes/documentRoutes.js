@@ -88,31 +88,26 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
 // ✅ Serve Uploaded Files
 router.get("/view/:documentId", async (req, res) => {
   try {
-    const { documentId } = req.params;
-    const document = await Document.findById(documentId);
-
+    const document = await Document.findById(req.params.documentId);
     if (!document) {
-      return res.status(404).json({ success: false, message: "Document not found." });
+      return res.status(404).json({ success: false, message: "Document not found" });
     }
 
-    // ✅ Dynamically reconstruct the absolute file path
     const filePath = path.join(__dirname, "../../uploads", document.filename);
-
-    // ✅ Check if the file actually exists
     if (!fs.existsSync(filePath)) {
       console.error("❌ File missing on server:", filePath);
-      return res.status(404).json({ success: false, message: "File not found on server." });
+      return res.status(404).json({ success: false, message: "File missing" });
     }
 
-    // ✅ Ensure correct MIME type is set
-    res.setHeader("Content-Type", getMimeType(document.filePath));
-
-    res.sendFile(document.filePath, { root: "uploads" });
+    const mimeType = getMimeType(document.filename);
+    res.setHeader('Content-Type', mimeType);
+    res.sendFile(filePath);
   } catch (error) {
     console.error("❌ Error fetching document file:", error);
-    res.status(500).json({ success: false, message: "Error fetching document file." });
+    res.status(500).json({ success: false, message: "Server error fetching document file." });
   }
 });
+
 
 // ✅ Function to determine MIME type
 const getMimeType = (filePath) => {
