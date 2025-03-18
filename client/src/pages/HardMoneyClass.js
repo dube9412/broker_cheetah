@@ -1,37 +1,62 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import resources from "../data/resources";
+import React, {useEffect } from "react";
+import Header from "../components/hardMoneyClass/Header";  // ✅ Import Header here
+import HeroSection from "../components/hardMoneyClass/HeroSection";
+import LoanTypes from "../components/hardMoneyClass/LoanTypes";
+import LenderProcess from "../components/hardMoneyClass/LenderProcess";
+import QuoteProcess from "../components/hardMoneyClass/QuoteProcess";
+import LoanApplication from "../components/hardMoneyClass/LoanApplication";
+import BrokerClients from "../components/hardMoneyClass/BrokerClients";
+import Glossary from "../components/hardMoneyClass/Glossary";
+import SubscribeSection from "../components/hardMoneyClass/SubscribeSection";
+import Footer from "../components/hardMoneyClass/Footer";  // ✅ Import Footer here
 
 function HardMoneyClass() {
+  useEffect(() => {
+    // Add fade-in animation for sections as user scrolls
+    const fadeInElements = document.querySelectorAll('section');
+    
+    const fadeInObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+          fadeInObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1
+    });
+    
+    fadeInElements.forEach(element => {
+      element.style.opacity = '0';
+      element.style.transform = 'translateY(20px)';
+      element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      fadeInObserver.observe(element);
+    });
+
+    return () => {
+      fadeInObserver.disconnect();
+    };
+  }, []);
+
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Hard Money Lending Class</h1>
-      <p className="mb-4">Learn everything you need to know about hard money lending, from the basics to advanced strategies.</p>
-      
-      <h2 className="text-xl font-bold mt-6">Modules</h2>
-      <ul className="list-disc ml-6">
-        <li><Link to="/hard-money-class/module-1" className="text-blue-500 hover:underline">📖 Introduction to Hard Money Loans and Types of them</Link></li>
-        <li><Link to="/hard-money-class/module-2" className="text-blue-500 hover:underline">🏡 Getting & Analyzing a Quote</Link></li>
-        <li><Link to="/hard-money-class/module-3" className="text-blue-500 hover:underline">💰 General Application Info</Link></li>
-        <li><Link to="/hard-money-class/module-4" className="text-blue-500 hover:underline">📑 Submitting a Loan Package</Link></li>
-        <li><Link to="/hard-money-class/module-5" className="text-blue-500 hover:underline">🔍 Understanding the Lender Process</Link></li>
-        <li><Link to="/hard-money-class/module-6" className="text-blue-500 hover:underline">📢 Marketing & Client Acquisition</Link></li>
-        <li><Link to="/hard-money-class/module-7" className="text-blue-500 hover:underline">📊 Glossary, Acronyms, and Client Sensitivities</Link></li>
-      </ul>
-      
-      <h2 className="text-xl font-bold mt-6">Downloadable Resources</h2>
-      <ul className="list-disc ml-6">
-        {resources.map((resource, index) => (
-          <li key={index} className="mb-2">
-            <a href={resource.url} className="text-blue-500 hover:underline" download>
-              {resource.name}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <React.Fragment>
+      <Header />
+      <main style={{maxWidth: '80rem', margin: '0 auto', padding: '2.5rem 1rem'}}>
+        <HeroSection />
+        <LoanTypes />
+        <QuoteProcess />
+        <LoanApplication />
+        <LenderProcess />
+        <BrokerClients />
+        <Glossary />
+        <SubscribeSection />
+      </main>
+      <Footer />
+    </React.Fragment>
   );
 }
 
 export default HardMoneyClass;
+
 

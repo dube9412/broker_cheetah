@@ -7,11 +7,7 @@ const FixAndFlipCalculator = () => {
     targetSalePrice: 200000,
     rehabQuick: 30000,
     useDetailedRehab: false,
-    rehabDetailed: {
-      interior: 0,
-      exterior: 0,
-      misc: 0,
-    },
+    rehabDetailed: { interior: 0, exterior: 0, misc: 0 },
     loanToCost: 90,
     rehabPercentage: 100,
     arvLimit: 65,
@@ -87,22 +83,24 @@ const FixAndFlipCalculator = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h1 className="text-3xl font-bold text-center mb-6">Fix and Flip Calculator</h1>
+    <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">Fix and Flip Calculator</h1>
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="inputs bg-gray-50 p-4 rounded-lg shadow-sm">
-          <h3 className="text-xl font-semibold mb-4">Inputs</h3>
+        {/* Inputs Section */}
+        <div className="inputs bg-blue-50 p-5 rounded-lg shadow-md border border-blue-300">
+          <h3 className="text-xl font-semibold text-blue-700 mb-4">Enter Your Deal Details</h3>
           {["timeToSold", "purchasePrice", "targetSalePrice", "rehabQuick", "loanToCost", "rehabPercentage",
             "arvLimit", "interestRate", "origination", "transferTax", "utilitiesPerMonth",
             "maintenanceCosts", "miscCosts", "realtorFee", "capitalGains"].map(key => (
             <div key={key} className="mb-4">
-              <label className="capitalize block text-sm font-medium mb-1">{key.replace(/([A-Z])/g, ' $1')}</label>
+              <label className="capitalize block text-sm font-medium text-blue-900">{key.replace(/([A-Z])/g, ' $1')}</label>
               <input
                 type="number"
                 name={key}
                 value={inputs[key]}
                 onChange={handleChange}
-                className="border border-gray-300 p-2 rounded w-full"
+                className="border border-blue-400 p-2 rounded-lg w-full focus:outline-none focus:ring focus:ring-blue-200"
               />
             </div>
           ))}
@@ -111,20 +109,21 @@ const FixAndFlipCalculator = () => {
               type="checkbox"
               checked={inputs.useDetailedRehab}
               onChange={() => setInputs({ ...inputs, useDetailedRehab: !inputs.useDetailedRehab })}
-              className="mr-2"
-            />Detailed Rehab
+              className="mr-2 text-blue-500"
+            />
+            <span className="text-blue-700">Use Detailed Rehab Breakdown</span>
           </label>
           {inputs.useDetailedRehab && (
             <div className="grid grid-cols-1 gap-4 mt-2">
               {["interior", "exterior", "misc"].map(key => (
                 <div key={key}>
-                  <label className="capitalize block text-sm font-medium mb-1">{key}</label>
+                  <label className="capitalize block text-sm font-medium text-blue-900">{key}</label>
                   <input
                     type="number"
                     name={key}
                     value={inputs.rehabDetailed[key]}
                     onChange={handleDetailedChange}
-                    className="border border-gray-300 p-2 rounded w-full"
+                    className="border border-blue-400 p-2 rounded-lg w-full focus:outline-none focus:ring focus:ring-blue-200"
                   />
                 </div>
               ))}
@@ -132,11 +131,14 @@ const FixAndFlipCalculator = () => {
           )}
         </div>
 
-        <div className="outputs bg-gray-100 p-4 rounded-lg shadow-sm">
-          <h2 className="text-xl font-bold mb-4">Results</h2>
+        {/* Outputs Section */}
+        <div className="outputs bg-green-50 p-5 rounded-lg shadow-md border border-green-300">
+          <h2 className="text-xl font-bold text-green-700 mb-4">Results Summary</h2>
           {["rehabTotal", "loanAmountInitial", "downPayment", "origination", "closingCosts", "transferTax", "totalClosing",
             "loanAmountMaxDraw", "arvDollarLimit", "totalCosts", "profit", "netProfit", "profitPercent"].map(key => (
-            <p key={key} className="capitalize">{key.replace(/([A-Z])/g, ' $1')}: <strong>${outputs[key]?.toFixed(2)}</strong></p>
+            <p key={key} className="capitalize text-lg text-green-900">
+              {key.replace(/([A-Z])/g, ' $1')}: <strong>${outputs[key]?.toFixed(2)}</strong>
+            </p>
           ))}
           {outputs.warnings?.TLTC && <p className="text-red-600 font-semibold mt-2">Warning: Exceeds TLTC limit!</p>}
           {outputs.warnings?.ARV && <p className="text-red-600 font-semibold">Warning: ARV limit exceeded!</p>}

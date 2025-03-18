@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
+
+:root {
+  --font-family: 'Inter', sans-serif;
+  --mono-font: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+.font-geist-mono {
+  font-family: var(--mono-font);
+  letter-spacing: -0.03em;
+}
+
+body {
+  font-family: var(--font-family);
+  line-height: 1.5;
+  color: #111827;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  background-color: #f9fafb;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.section-container {
+  margin-bottom: 4rem;
+}
+
+.card {
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #f3f4f6;
+}
+
+.hover-card {
+  transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.image-hover {
+  transition: all 0.5s ease;
+  filter: grayscale(20%);
+}
+
+.image-hover:hover {
+  filter: grayscale(0%);
+  transform: scale(1.02);
+}
+
+.loan-tab-btn {
+  color: #6B7280;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.loan-tab-btn.active {
+  color: #1E40AF;
+  border-bottom: 2px solid #1E40AF;
+}
+
+.glossary-item {
+  border-bottom: 1px solid #F3F4F6;
+  padding-bottom: 1rem;
+}
+
+.glossary-item h3 {
+  position: relative;
+}
+
+.glossary-item h3::before {
+  content: '';
+  position: absolute;
+  left: -0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 70%;
+  background-color: #3B82F6;
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.glossary-item:hover h3::before {
+  opacity: 1;
+}
+
+.centered-content {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.centered-content h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.centered-content p {
+  color: #6b7280;
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
