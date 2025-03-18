@@ -3,8 +3,8 @@ import React from 'react';
 function Header() {
   return (
     <header style={{
-      backgroundColor: '#A9A9A9',
-      color: '#fff',
+      backgroundColor: '#FFD700',
+      color: '#000',
       padding: '1.5rem',
       position: 'sticky',
       top: 0,
