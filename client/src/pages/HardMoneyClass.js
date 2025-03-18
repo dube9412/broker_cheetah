@@ -8,7 +8,6 @@ import LoanApplication from "../components/hardMoneyClass/LoanApplication";
 import BrokerClients from "../components/hardMoneyClass/BrokerClients";
 import Glossary from "../components/hardMoneyClass/Glossary";
 import SubscribeSection from "../components/hardMoneyClass/SubscribeSection";
-import Footer from "../components/hardMoneyClass/Footer";  // ✅ Import Footer here
 
 function HardMoneyClass() {
   useEffect(() => {
@@ -52,7 +51,6 @@ function HardMoneyClass() {
         <Glossary />
         <SubscribeSection />
       </main>
-      <Footer />
     </React.Fragment>
   );
 }
