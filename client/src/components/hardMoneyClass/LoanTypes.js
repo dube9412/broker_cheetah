@@ -52,7 +52,9 @@ function LoanTypes() {
         "Interest rates from 7-13%",
         "Funding for purchase and renovation costs",
         "Up to 90% of purchase price and 100% of rehab costs",
-        "Fast closing timeline (7-10 days)"
+        "Fast closing timeline (7-10 days)",
+        "Loans based on ARV (After Repair Value)",
+        "**Requires Detailed Rehab Budget**"
       ]
     },
     {
@@ -66,7 +68,9 @@ function LoanTypes() {
         "Property must generate sufficient cash flow",
         "Minimum DSCR typically 1.0-1.25x",
         "Terms from 5-30 years",
-        "Available for residential and commercial properties"
+        "Available for residential and commercial properties",
+        "Ideal for investors with multiple properties",
+        "Typically long term financing (15-30 years)"
       ]
     },
     {
@@ -79,8 +83,9 @@ function LoanTypes() {
         "12-36 month terms typically",
         "Lower rates than traditional bridge loans",
         "Can refinance into conventional financing once stabilized",
-        "For properties with existing cash flow",
-        "Interest-only payments common"
+        "Generally for properties with existing cash flow",
+        "Interest-only payments common",
+        "Can be a transition for fix and flips awaiting sale"
       ]
     },
     {
@@ -94,6 +99,7 @@ function LoanTypes() {
         "Draw schedule based on construction milestones",
         "12-24 month terms",
         "Requires detailed construction plans and budgets",
+        "Requires contractor vetting and inspections",
         "Higher rates due to increased risk (8-12%)"
       ]
     },
@@ -110,6 +116,21 @@ function LoanTypes() {
         "Flexible terms based on portfolio size",
         "Often includes release provisions for property sales"
       ]
+    },
+    {
+      icon: "bx-recylce",
+      iconBg: "#A9A9A9",
+      iconColor: "#000",
+      title: "BRRRR, Not because it's cold",
+      description: "Buy, Rehab, Rent, Refinance, Repeat - A strategy where investors buy distressed properties, rehab them, then refinance into a DSCR loan to pull cash out and keep reinvesting.",
+      features: [
+        "Initial Hard Money For Acquisition and Rehab",
+        "Refinance to DSCR Loan for Long Term Hold",        
+        "Pull Cash Out for Next Project",
+        "Repeat Process to Grow Portfolio",
+        "Infinite Returns with Proper Leverage"
+      ]
+      
     }
   ];
 
@@ -171,7 +192,8 @@ function LoanTypes() {
             Yes, experienced investors often leverage multiple loan types throughout their real estate journey. For example, 
             starting with a Ground Up Construction loan to build a property, transitioning to a Stabilized Bridge loan 
             while establishing rental income, then refinancing with a DSCR loan for long-term holding, or using a Portfolio loan 
-            to consolidate multiple properties. Strategic layering of loan products can optimize financing at each phase of a project.
+            to consolidate multiple properties. Strategic layering of loan products can optimize financing at each phase of a project.  
+            See BRRRR.  
           </p>
         </div>
       </div>

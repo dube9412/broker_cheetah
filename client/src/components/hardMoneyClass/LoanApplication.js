@@ -137,12 +137,24 @@ function LoanApplication() {
                 Simple and familiar process
               </li>
               <li style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'flex-start' }}>
+                <i className="bx bx-plus" style={{ color: '#10b981', marginRight: '0.5rem', marginTop: '0.125rem' }}></i>
+                Fast and no additional software needed
+              </li>
+              <li style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'flex-start' }}>
+                <i className="bx bx-plus" style={{ color: '#10b981', marginRight: '0.5rem', marginTop: '0.125rem' }}></i>
+                Accessible by most applicants
+              </li>
+              <li style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'flex-start' }}>
                 <i className="bx bx-minus" style={{ color: '#ef4444', marginRight: '0.5rem', marginTop: '0.125rem' }}></i>
                 Can be disorganized and harder to track
               </li>
               <li style={{ display: 'flex', alignItems: 'flex-start' }}>
                 <i className="bx bx-minus" style={{ color: '#ef4444', marginRight: '0.5rem', marginTop: '0.125rem' }}></i>
-                Limited file size capabilities
+                Manual Application Status Tracking
+              </li>
+              <li style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <i className="bx bx-minus" style={{ color: '#ef4444', marginRight: '0.5rem', marginTop: '0.125rem' }}></i>
+                Less Secure unless encrypted
               </li>
             </ul>
           </div>
@@ -172,6 +184,14 @@ function LoanApplication() {
               <li style={{ display: 'flex', alignItems: 'flex-start' }}>
                 <i className="bx bx-plus" style={{ color: '#10b981', marginRight: '0.5rem', marginTop: '0.125rem' }}></i>
                 Secure document sharing and e-signature capabilities
+              </li>
+              <li style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <i className="bx bx-minus" style={{ color: '#ef4444', marginRight: '0.5rem', marginTop: '0.125rem' }}></i>
+                With each portal comes a learning curve
+              </li>
+              <li style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <i className="bx bx-minus" style={{ color: '#ef4444', marginRight: '0.5rem', marginTop: '0.125rem' }}></i>
+                Technology can fail which may delay the process
               </li>
             </ul>
           </div>
