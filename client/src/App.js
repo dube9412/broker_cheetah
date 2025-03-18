@@ -5,6 +5,7 @@ import { LenderAuthProvider } from "./context/LenderAuthContext"; // ✅ Import 
 import RequestQuote from "./components/RequestQuote";
 import { useContext } from "react";
 
+
 // Components
 import NavBar from "./components/NavBar";
 import AddFixAndFlip from "./components/AddFixAndFlip";
@@ -43,7 +44,7 @@ import LoanTypeSelection from "./pages/LoanTypeSelection";
 import FixAndFlipSearch from "./pages/FixAndFlipSearch";
 import ManageLoanPrograms from "./pages/ManageLoanPrograms";
 import FixAndFlipCalc from "./pages/FixAndFlipCalc";
-import HardMoneyClass from './components/HardMoneyClass/HardMoneyClass';
+import HardMoneyClass from './pages/HardMoneyClass';
 import LessonPage from "./pages/LessonPage";
 
 // Lender Portal Pages
