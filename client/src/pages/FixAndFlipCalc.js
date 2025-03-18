@@ -87,26 +87,26 @@ const FixAndFlipCalculator = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Fix and Flip Calculator</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="inputs">
-          <h3 className="font-semibold mb-2">Inputs</h3>
+    <div className="container mx-auto p-6 bg-white shadow-md rounded-lg">
+      <h1 className="text-3xl font-bold text-center mb-6">Fix and Flip Calculator</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="inputs bg-gray-50 p-4 rounded-lg shadow-sm">
+          <h3 className="text-xl font-semibold mb-4">Inputs</h3>
           {["timeToSold", "purchasePrice", "targetSalePrice", "rehabQuick", "loanToCost", "rehabPercentage",
             "arvLimit", "interestRate", "origination", "transferTax", "utilitiesPerMonth",
             "maintenanceCosts", "miscCosts", "realtorFee", "capitalGains"].map(key => (
-            <div key={key} className="mb-2">
-              <label className="capitalize">{key.replace(/([A-Z])/g, ' $1')}</label>
+            <div key={key} className="mb-4">
+              <label className="capitalize block text-sm font-medium mb-1">{key.replace(/([A-Z])/g, ' $1')}</label>
               <input
                 type="number"
                 name={key}
                 value={inputs[key]}
                 onChange={handleChange}
-                className="border p-1 w-full"
+                className="border border-gray-300 p-2 rounded w-full"
               />
             </div>
           ))}
-          <label>
+          <label className="flex items-center mb-4">
             <input
               type="checkbox"
               checked={inputs.useDetailedRehab}
@@ -115,16 +115,16 @@ const FixAndFlipCalculator = () => {
             />Detailed Rehab
           </label>
           {inputs.useDetailedRehab && (
-            <div className="grid grid-cols-3 gap-2 mt-2">
+            <div className="grid grid-cols-1 gap-4 mt-2">
               {["interior", "exterior", "misc"].map(key => (
                 <div key={key}>
-                  <label className="capitalize">{key}</label>
+                  <label className="capitalize block text-sm font-medium mb-1">{key}</label>
                   <input
                     type="number"
                     name={key}
                     value={inputs.rehabDetailed[key]}
                     onChange={handleDetailedChange}
-                    className="border p-1 w-full"
+                    className="border border-gray-300 p-2 rounded w-full"
                   />
                 </div>
               ))}
@@ -132,14 +132,14 @@ const FixAndFlipCalculator = () => {
           )}
         </div>
 
-        <div className="outputs bg-gray-100 p-4 rounded-lg">
-          <h2 className="font-bold mb-2">Results</h2>
+        <div className="outputs bg-gray-100 p-4 rounded-lg shadow-sm">
+          <h2 className="text-xl font-bold mb-4">Results</h2>
           {["rehabTotal", "loanAmountInitial", "downPayment", "origination", "closingCosts", "transferTax", "totalClosing",
             "loanAmountMaxDraw", "arvDollarLimit", "totalCosts", "profit", "netProfit", "profitPercent"].map(key => (
-            <p key={key} className="capitalize">{key.replace(/([A-Z])/g, ' $1')}: ${outputs[key]?.toFixed(2)}</p>
+            <p key={key} className="capitalize">{key.replace(/([A-Z])/g, ' $1')}: <strong>${outputs[key]?.toFixed(2)}</strong></p>
           ))}
-          {outputs.warnings?.TLTC && <p className="text-red-600">Warning: Exceeds TLTC limit!</p>}
-          {outputs.warnings?.ARV && <p className="text-red-600">Warning: ARV limit exceeded!</p>}
+          {outputs.warnings?.TLTC && <p className="text-red-600 font-semibold mt-2">Warning: Exceeds TLTC limit!</p>}
+          {outputs.warnings?.ARV && <p className="text-red-600 font-semibold">Warning: ARV limit exceeded!</p>}
         </div>
       </div>
     </div>
@@ -147,4 +147,3 @@ const FixAndFlipCalculator = () => {
 };
 
 export default FixAndFlipCalculator;
-
