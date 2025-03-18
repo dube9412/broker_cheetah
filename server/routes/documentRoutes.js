@@ -97,11 +97,15 @@ router.get("/view/:documentId", async (req, res) => {
       console.error("❌ Document not found in database:", req.params.documentId);
       return res.status(404).json({ success: false, message: "Document not found" });
     }
+    if (!document.filePath) {
+      console.error("❌ File path is missing in the database for:", document._id);
+      return res.status(500).json({ success: false, message: "File path missing in database" });
+    }
 
     console.log("📌 Document found:", document);
 
     // 🔍 Ensure we use the correct file path
-    const filePath = path.resolve(__dirname, "../../uploads", document.filename);
+    const filePath = path.join(__dirname, "../../uploads", document.filename);
 
     console.log("📂 Checking file path:", filePath);
 
