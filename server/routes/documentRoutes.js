@@ -36,9 +36,9 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     }
 
     const newDocument = new Document({
-      filename: req.file.filename || path.basename(req.file.path), // ✅ Ensure filename is saved
+      filename: req.file.filename, // ✅ Ensure filename is saved
       originalName: req.file.originalname,
-      filePath: `/uploads/${req.file.filename || path.basename(req.file.path)}`, // ✅ Ensure filePath uses correct filename
+      filePath: `/uploads/${req.file.filename }`, // ✅ Ensure filePath uses correct filename
       lenderId,
       programId: programId || null,
       tag,
@@ -69,9 +69,9 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
 
       // ✅ Create document objects for bulk insertion
       const uploadedDocs = req.files.map(file => ({
-        filename: file.filename || path.basename(file.path), // ✅ Ensure filename is mapped
+        filename: file.filename, // ✅ Ensure filename is mapped
         originalName: file.originalname,
-        filePath: `/uploads/${file.filename || path.basename(file.path)}`, // ✅ Ensure filePath is correct
+        filePath: `/uploads/${file.filename}`, // ✅ Ensure filePath is correct
         lenderId,
         programId: programId || null,
         tag,
@@ -98,14 +98,19 @@ router.get("/view/:documentId", async (req, res) => {
     }
 
     // 2️⃣ Ensure file path exists
-    if (!document.filePath || !document.filename) {
+    if (!document.filePath) {
       console.error("❌ File path is missing in database for document:", document._id);
       return res.status(500).json({ success: false, message: "File path missing in database" });
     }
 
     // 3️⃣ Construct absolute file path
-    const filePath = path.join(__dirname, "../../uploads", document.filename);
+    const filePath = path.resolve(__dirname, "../../uploads", document.filename);
     console.log("📂 Attempting to serve file from:", filePath);
+
+    /* 3️⃣ **Fix the File Path**
+    const uploadsPath = path.join(__dirname, "../../uploads"); // This should be correct
+    const filename = path.basename(document.filePath); // Extract just the filename
+    const filePath = path.join(uploadsPath, filename);*/
 
     // 4️⃣ Check if file exists on server
     if (!fs.existsSync(filePath)) {
