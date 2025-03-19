@@ -36,13 +36,14 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     }
 
     const newDocument = new Document({
-      filename: req.file.filename, // ✅ Ensure filename is saved
+      filename: req.file.filename,
       originalName: req.file.originalname,
-      filePath: `/uploads/${req.file.filename }`, // ✅ Ensure filePath uses correct filename
+      filePath: req.file.path ? req.file.path.replace(/^.*\/uploads\//, "/uploads/") : "", // ✅ FIXED
       lenderId,
       programId: programId || null,
       tag,
     });
+    
     
 
     await newDocument.save();
@@ -97,16 +98,16 @@ router.get("/view/:documentId", async (req, res) => {
       return res.status(404).json({ success: false, message: "Document not found" });
     }
 
-    // 2️⃣ Ensure file path exists
-    if (!document.filePath) {
-      console.error("❌ File path is missing in database for document:", document._id);
-      return res.status(500).json({ success: false, message: "File path missing in database" });
-    }
+    console.log("🛠 FILE PATH FROM DB:", document.filePath);
+if (!document.filePath) {
+  console.error("❌ MISSING FILE PATH FOR DOCUMENT:", document._id);
+  return res.status(500).json({ success: false, message: "File path is missing in the database." });
+}
 
-    // 3️⃣ **Fix the File Path**
-    const uploadsPath = path.join(__dirname, "../../uploads"); // This should be correct
-    const filename = path.basename(document.filePath); // Extract just the filename
-    const filePath = path.join(uploadsPath, filename); // Combine with uploads path
+const filename = path.basename(document.filePath);
+const filePath = path.join(__dirname, "../../uploads", filename);
+console.log("✅ RESOLVED FILE PATH:", filePath);
+
 
     // 4️⃣ Check if file exists on server
     if (!fs.existsSync(filePath)) {
