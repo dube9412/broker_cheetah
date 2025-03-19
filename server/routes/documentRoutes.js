@@ -90,43 +90,38 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
 // ✅ Serve Uploaded Files
 router.get("/view/:documentId", async (req, res) => {
   try {
-    console.log("🔹 Received request to view document:", req.params.documentId);
-
+    // 1️⃣ Find the document in MongoDB
     const document = await Document.findById(req.params.documentId);
     if (!document) {
-      console.error("❌ Document not found in database:", req.params.documentId);
+      console.error("❌ Document not found in MongoDB:", req.params.documentId);
       return res.status(404).json({ success: false, message: "Document not found" });
     }
-    if (!document.filePath) {
-      console.error("❌ File path is missing in the database for:", document._id);
+
+    // 2️⃣ Ensure file path exists
+    if (!document.filePath || !document.filename) {
+      console.error("❌ File path is missing in database for document:", document._id);
       return res.status(500).json({ success: false, message: "File path missing in database" });
     }
 
-    console.log("📌 Document found:", document);
-
-    // 🔍 Ensure we use the correct file path
+    // 3️⃣ Construct absolute file path
     const filePath = path.join(__dirname, "../../uploads", document.filename);
+    console.log("📂 Attempting to serve file from:", filePath);
 
-    console.log("📂 Checking file path:", filePath);
-
+    // 4️⃣ Check if file exists on server
     if (!fs.existsSync(filePath)) {
-      console.error("❌ File missing on server:", filePath);
-      return res.status(404).json({ success: false, message: "File missing" });
+      console.error("❌ File does not exist on server:", filePath);
+      return res.status(404).json({ success: false, message: "File not found on server" });
     }
 
+    // 5️⃣ Determine correct MIME type
     const mimeType = getMimeType(document.filename);
-    console.log("✅ Sending file with MIME type:", mimeType);
-
     res.setHeader("Content-Type", mimeType);
     res.sendFile(filePath);
   } catch (error) {
-    console.error("❌ Server Error fetching document file:", error);
+    console.error("❌ Error serving document:", error);
     res.status(500).json({ success: false, message: "Server error fetching document file." });
   }
 });
-
-
-
 
 // ✅ Function to determine MIME type
 const getMimeType = (filePath) => {
