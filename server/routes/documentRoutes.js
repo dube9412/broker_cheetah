@@ -103,14 +103,10 @@ router.get("/view/:documentId", async (req, res) => {
       return res.status(500).json({ success: false, message: "File path missing in database" });
     }
 
-    // 3️⃣ Construct absolute file path
-    const filePath = path.resolve(__dirname, "../../uploads", document.filename);
-    console.log("📂 Attempting to serve file from:", filePath);
-
-    /* 3️⃣ **Fix the File Path**
+    // 3️⃣ **Fix the File Path**
     const uploadsPath = path.join(__dirname, "../../uploads"); // This should be correct
     const filename = path.basename(document.filePath); // Extract just the filename
-    const filePath = path.join(uploadsPath, filename);*/
+    const filePath = path.join(uploadsPath, filename); // Combine with uploads path
 
     // 4️⃣ Check if file exists on server
     if (!fs.existsSync(filePath)) {
