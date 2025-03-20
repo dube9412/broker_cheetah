@@ -35,11 +35,39 @@ function ManageLoanPrograms() {
     }
   };
 
+  const fetchDocuments = async () => {
+    try {
+        const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${lenderId}`);
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            console.log("✅ Fetched Documents:", data.documents);
+
+            // 🔹 Ensure documents are stored under their respective programId
+            const docMap = {};
+            data.documents.forEach(doc => {
+                const programKey = doc.programId || "general"; // Default to "general" for non-program-specific docs
+                if (!docMap[programKey]) {
+                    docMap[programKey] = [];
+                }
+                docMap[programKey].push(doc);
+            });
+
+            setUploadedDocs(docMap);
+        } else {
+            console.warn("⚠️ No documents found.");
+            setUploadedDocs({});
+        }
+    } catch (error) {
+        console.error("❌ Error fetching documents:", error);
+    }
+};
+
   const refreshDocuments = () => {
     console.log("🔄 Refreshing document list in ManageLoanPrograms...");
     fetchDocuments();
   };
-  
+
   useEffect(() => {
     const fetchLender = async () => {
       try {
@@ -69,35 +97,7 @@ function ManageLoanPrograms() {
       }
     };
 
-    const fetchDocuments = async () => {
-      try {
-          const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/documents/${lenderId}`);
-          const data = await response.json();
-  
-          if (response.ok && data.success) {
-              console.log("✅ Fetched Documents:", data.documents);
-  
-              // 🔹 Ensure documents are stored under their respective programId
-              const docMap = {};
-              data.documents.forEach(doc => {
-                  const programKey = doc.programId || "general"; // Default to "general" for non-program-specific docs
-                  if (!docMap[programKey]) {
-                      docMap[programKey] = [];
-                  }
-                  docMap[programKey].push(doc);
-              });
-  
-              setUploadedDocs(docMap);
-          } else {
-              console.warn("⚠️ No documents found.");
-              setUploadedDocs({});
-          }
-      } catch (error) {
-          console.error("❌ Error fetching documents:", error);
-      }
-  };
-
-     
+        
     fetchLender();
     fetchData();
     fetchDocuments(programId);
