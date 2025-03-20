@@ -85,6 +85,7 @@ const handleFileChange = (e) => {
       setSelectedFile(null);
       setSelectedTag("");
       setSelectedProgram("");
+      refreshDocuments(); // ✅ Refresh document list
     }
   };
 

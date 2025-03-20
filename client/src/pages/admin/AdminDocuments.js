@@ -60,6 +60,29 @@ const AdminDocuments = () => {
     fetchLenders();
   }, []);
 
+  const fetchDocuments = async () => {
+    try {
+      const response = await fetch("https://broker-cheetah-backend.onrender.com/api/documents");
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("✅ Fetched All Documents:", data.documents);
+        setDocuments(data.documents);
+      } else {
+        console.warn("⚠️ No documents found.");
+        setDocuments([]);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching documents:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
   useEffect(() => {
     const fetchLoanPrograms = async () => {
       try {
@@ -104,30 +127,6 @@ const AdminDocuments = () => {
   }, [documents]);
   
   
-
-  // ✅ Fetch ALL documents (Both General & Program-Specific)
-  useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        const response = await fetch("https://broker-cheetah-backend.onrender.com/api/documents");
-        const data = await response.json();
-
-        if (response.ok) {
-          console.log("✅ Fetched All Documents:", data.documents);
-          setDocuments(data.documents);
-        } else {
-          console.warn("⚠️ No documents found.");
-          setDocuments([]);
-        }
-      } catch (error) {
-        console.error("❌ Error fetching documents:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDocuments();
-  }, []);
 
    // ✅ Assign Loan Program to Document
    const handleAssignProgram = async (documentId, newProgramId) => {
@@ -238,7 +237,7 @@ const AdminDocuments = () => {
       <h1>📂 Admin Document Management</h1>
 
       {/* ✅ Bulk Upload Section */}
-      <BulkDocumentUploader lenders={lenders} />
+      <BulkDocumentUploader lenders={lenders} refreshDocuments={fetchDocuments} />
 
        {/* ✅ Search by Lender */}
        <input

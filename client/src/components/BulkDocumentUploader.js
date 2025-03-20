@@ -41,6 +41,7 @@ const BulkDocumentUploader = () => {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     "image/png",
     "image/jpeg",
+    "image/jpg",
     "text/plain",
     "application/vnd.ms-excel",
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -123,6 +124,7 @@ const BulkDocumentUploader = () => {
         setSelectedFiles([]);
         setSelectedLender("");
         setSelectedTag("");  // ✅ Reset selection after upload
+        refreshDocuments();  // ✅ Refresh documents list
       } else {
         alert("❌ Error uploading documents.");
       }
