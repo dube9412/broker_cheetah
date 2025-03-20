@@ -91,6 +91,12 @@ function ManageLoanPrograms() {
           console.error("❌ Error fetching documents:", error);
       }
   };
+
+  const refreshDocuments = () => {
+    console.log("🔄 Refreshing document list in ManageLoanPrograms...");
+    fetchDocuments();
+  };
+  
     
     fetchLender();
     fetchData();
@@ -296,7 +302,7 @@ console.log("📂 Documents in State:", uploadedDocs);
     lenderId={lenderId} 
     programId={program._id} 
     loanPrograms={[program]} // ✅ Passes the current program in an array
-    refreshDocuments={() => fetchDocuments()} // ✅ Refresh documents after upload
+    refreshDocuments={refreshDocuments}// ✅ Refresh documents after upload
   />
 )}
 

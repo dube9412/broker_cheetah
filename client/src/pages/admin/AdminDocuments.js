@@ -39,6 +39,7 @@ const AdminDocuments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [loanProgramsByLender, setLoanProgramsByLender] = useState({});
+  
 
    // ✅ Fetch Lenders List (So we can display lender names)
    useEffect(() => {
@@ -78,6 +79,12 @@ const AdminDocuments = () => {
       setLoading(false);
     }
   };
+
+  const refreshDocuments = () => {
+    console.log("🔄 Refreshing document list...");
+    fetchDocuments();
+  };
+  
 
   useEffect(() => {
     fetchDocuments();
@@ -237,7 +244,7 @@ const AdminDocuments = () => {
       <h1>📂 Admin Document Management</h1>
 
       {/* ✅ Bulk Upload Section */}
-      <BulkDocumentUploader lenders={lenders} refreshDocuments={fetchDocuments} />
+      <BulkDocumentUploader lenders={lenders} refreshDocuments={refreshDocuments}/>
 
        {/* ✅ Search by Lender */}
        <input
