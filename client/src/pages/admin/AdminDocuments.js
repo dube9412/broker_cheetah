@@ -212,6 +212,11 @@ const AdminDocuments = () => {
   };
 
   const handleViewDocument = (documentId) => {
+    if (!documentId) {
+      console.error("❌ Error: documentId is missing!", documentId);
+      return;
+    }
+
     const url = `https://broker-cheetah-backend.onrender.com/api/documents/view/${documentId}`;
     console.log("🔹 Viewing Document:", url);
     window.open(url, "_blank");
@@ -292,7 +297,8 @@ const AdminDocuments = () => {
 
                   </td>
                   <td>
-                    <button onClick={() => handleViewDocument(doc._id)}>View</button>
+                   <button onClick={() => handleViewDocument(doc._id || doc.id)}>View</button>
+
                     <button onClick={() => handleReassignDocument(doc._id)}>Reassign</button>
                     <button onClick={() => handleDeleteDocument(doc._id)}>Delete</button>
                   </td>
