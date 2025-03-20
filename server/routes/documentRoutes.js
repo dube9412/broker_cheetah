@@ -38,7 +38,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     const newDocument = new Document({
       filename: req.file.filename,
       originalName: req.file.originalname,
-      filePath: req.file.path ? req.file.path.replace(/^.*\/uploads\//, "/uploads/") : "", // ✅ FIXED
+      filePath: `/uploads/${req.file.filename}`, // ✅ Relative Path
       lenderId,
       programId: programId || null,
       tag,
@@ -88,48 +88,7 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
     }
   });
 
-// ✅ Serve Uploaded Files
-router.get("/view/:documentId", async (req, res) => {
-  try {
-    // 1️⃣ Find the document in MongoDB
-    const document = await Document.findById(req.params.documentId);
-    if (!document) {
-      console.error("❌ Document not found in MongoDB:", req.params.documentId);
-      return res.status(404).json({ success: false, message: "Document not found" });
-    }
-
-    console.log("🛠 FILE PATH FROM DB:", document.filePath);
-if (!document.filePath) {
-  console.error("❌ MISSING FILE PATH FOR DOCUMENT:", document._id);
-  return res.status(500).json({ success: false, message: "File path is missing in the database." });
-}
-
-const filename = path.basename(document.filePath);
-if (!document.filePath || typeof document.filePath !== "string") {
-  console.error("❌ Invalid file path in database for document:", document._id);
-  return res.status(500).json({ success: false, message: "Invalid file path stored in database." });
-}
-
-const filePath = path.resolve(__dirname, "../../uploads", path.basename(document.filePath));
-
-
-    // 4️⃣ Check if file exists on server
-    if (!fs.existsSync(filePath)) {
-      console.error("❌ File does not exist on server:", filePath);
-      return res.status(404).json({ success: false, message: "File not found on server" });
-    }
-
-    // 5️⃣ Determine correct MIME type
-    const mimeType = getMimeType(document.filename);
-    res.setHeader("Content-Type", mimeType);
-    res.sendFile(filePath);
-  } catch (error) {
-    console.error("❌ Error serving document:", error);
-    res.status(500).json({ success: false, message: "Server error fetching document file." });
-  }
-});
-
-// ✅ Function to determine MIME type
+  // ✅ Function to determine MIME type
 const getMimeType = (filePath) => {
   const extension = filePath.split(".").pop();
   const mimeTypes = {
@@ -145,6 +104,33 @@ const getMimeType = (filePath) => {
   return mimeTypes[extension] || "application/octet-stream";
 };
 
+// ✅ Serve Uploaded Files
+router.get("/view/:documentId", async (req, res) => {
+  try {
+    const { documentId } = req.params;
+    const document = await Document.findById(documentId);
+
+    if (!document) {
+      console.error("❌ Document not found in MongoDB:", req.params.documentId);
+      return res.status(404).json({ success: false, message: "Document not found" });
+    }
+
+    console.log("🛠 FILE PATH FROM DB:", document.filePath);
+
+const filePath = path.join(__dirname, "../../", document.filePath);
+    if (!fs.existsSync(filePath)) {
+      console.error("❌ File not found on server:", filePath);
+      return res.status(404).json({ success: false, message: "File not found on server." });
+    }
+
+    const mimeType = getMimeType(document.filename);
+    res.setHeader("Content-Type", mimeType);
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error("❌ Error serving document:", error);
+    res.status(500).json({ success: false, message: "Server error fetching document file." });
+  }
+});
 
 // ✅ Fetch Documents for a Specific Lender (Optional Program Filter)
 router.get("/:lenderId", async (req, res) => {
