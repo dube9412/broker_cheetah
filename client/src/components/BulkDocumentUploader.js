@@ -29,7 +29,7 @@ const DOCUMENT_CATEGORIES = [
   ]}
 ];
 
-const BulkDocumentUploader = () => {
+const BulkDocumentUploader = ({refreshDocuments}) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [selectedLender, setSelectedLender] = useState(""); // ✅ Define lender selection
   const [selectedTag, setSelectedTag] = useState(""); // ✅ Define document tag selection

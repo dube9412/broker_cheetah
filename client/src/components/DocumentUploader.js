@@ -30,7 +30,7 @@ const DOCUMENT_CATEGORIES = [
   ]}
 ];
 
-const DocumentUploader = ({ lenderId, programId, loanPrograms }) => {
+const DocumentUploader = ({ lenderId, programId, loanPrograms, refreshDocuments }) => {
   const [selectedProgram, setSelectedProgram] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
