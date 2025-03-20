@@ -35,6 +35,11 @@ function ManageLoanPrograms() {
     }
   };
 
+  const refreshDocuments = () => {
+    console.log("🔄 Refreshing document list in ManageLoanPrograms...");
+    fetchDocuments();
+  };
+  
   useEffect(() => {
     const fetchLender = async () => {
       try {
@@ -92,12 +97,7 @@ function ManageLoanPrograms() {
       }
   };
 
-  const refreshDocuments = () => {
-    console.log("🔄 Refreshing document list in ManageLoanPrograms...");
-    fetchDocuments();
-  };
-  
-    
+     
     fetchLender();
     fetchData();
     fetchDocuments(programId);
