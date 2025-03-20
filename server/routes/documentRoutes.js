@@ -70,7 +70,7 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
       const uploadedDocs = req.files.map(file => ({
         filename: file.filename, // ✅ Ensure filename is mapped
         originalName: file.originalname,
-        filePath: req.file ? `/uploads/${req.file.filename}` : "", // ✅ Ensure filePath is correct
+        filePath: `/uploads/${file.filename}`,// ✅ Ensure filePath is correct
         lenderId,
         programId: programId || null,
         tag,
@@ -92,7 +92,7 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
       return "application/octet-stream"; // Default fallback MIME type
     }
   
-    const extension = filePath.split(".").pop();
+    const extension = filePath.split(".").pop().toLowerCase();
     const mimeTypes = {
       pdf: "application/pdf",
       doc: "application/msword",
@@ -102,6 +102,7 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
       jpg: "image/jpeg",
       jpeg: "image/jpeg",
       png: "image/png",
+      txt: "text/plain",
     };
     return mimeTypes[extension] || "application/octet-stream";
   };
@@ -126,8 +127,9 @@ router.get("/view/:documentId", async (req, res) => {
       return res.status(404).json({ success: false, message: "File not found on server." });
     }
 
-    const mimeType = getMimeType(document.filename);
+    const mimeType = getMimeType(document.filePath);
     res.setHeader("Content-Type", mimeType);
+    res.setHeader("Content-Disposition", `inline; filename=${document.originalName}`);
     res.sendFile(filePath);
   } catch (error) {
     console.error("❌ Error serving document:", error);
