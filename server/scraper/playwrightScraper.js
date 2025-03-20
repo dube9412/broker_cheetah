@@ -24,10 +24,9 @@ const lenderWebsites = [
 (async () => {
     const browser = await chromium.launch({
         headless: true,
-        executablePath: process.env.PLAYWRIGHT_BROWSERS_PATH 
-            ? `${process.env.PLAYWRIGHT_BROWSERS_PATH}/chromium/chrome-linux/chrome`
-            : undefined
+        executablePath: '/usr/bin/google-chrome' // Use Render's installed Chrome
     });
+    
     
     const page = await browser.newPage();
 
