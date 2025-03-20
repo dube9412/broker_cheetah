@@ -296,6 +296,7 @@ console.log("📂 Documents in State:", uploadedDocs);
     lenderId={lenderId} 
     programId={program._id} 
     loanPrograms={[program]} // ✅ Passes the current program in an array
+    refreshDocuments={() => fetchDocuments()} // ✅ Refresh documents after upload
   />
 )}
 
