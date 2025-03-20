@@ -105,8 +105,12 @@ if (!document.filePath) {
 }
 
 const filename = path.basename(document.filePath);
-const filePath = path.join(__dirname, "../../uploads", filename);
-console.log("✅ RESOLVED FILE PATH:", filePath);
+if (!document.filePath || typeof document.filePath !== "string") {
+  console.error("❌ Invalid file path in database for document:", document._id);
+  return res.status(500).json({ success: false, message: "Invalid file path stored in database." });
+}
+
+const filePath = path.resolve(__dirname, "../../uploads", path.basename(document.filePath));
 
 
     // 4️⃣ Check if file exists on server
