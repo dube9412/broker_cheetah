@@ -8,7 +8,7 @@ const DocumentSchema = new mongoose.Schema({
   programId: { type: mongoose.Schema.Types.ObjectId, ref: 'LoanProgram', default: null }, // ✅ Nullable
   tag: { type: String, required: true }, // ✅ Ensure Tag is Saved
   uploadedAt: { type: Date, default: Date.now },
-  //uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
+  uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
 
 

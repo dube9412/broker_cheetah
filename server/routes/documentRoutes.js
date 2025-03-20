@@ -38,14 +38,12 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     const newDocument = new Document({
       filename: req.file.filename,
       originalName: req.file.originalname,
-      filePath: `/uploads/${req.file.filename}`, // ✅ Relative Path
+      filePath: req.file ? `/uploads/${req.file.filename}` : "", // ✅ Relative Path
       lenderId,
       programId: programId || null,
       tag,
     });
     
-    
-
     await newDocument.save();
     res.status(201).json({ success: true, message: "Document uploaded successfully!", document: newDocument });
   } catch (error) {
@@ -72,7 +70,7 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
       const uploadedDocs = req.files.map(file => ({
         filename: file.filename, // ✅ Ensure filename is mapped
         originalName: file.originalname,
-        filePath: `/uploads/${file.filename}`, // ✅ Ensure filePath is correct
+        filePath: req.file ? `/uploads/${req.file.filename}` : "", // ✅ Ensure filePath is correct
         lenderId,
         programId: programId || null,
         tag,
@@ -88,21 +86,26 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
     }
   });
 
-  // ✅ Function to determine MIME type
-const getMimeType = (filePath) => {
-  const extension = filePath.split(".").pop();
-  const mimeTypes = {
-    pdf: "application/pdf",
-    doc: "application/msword",
-    docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    xls: "application/vnd.ms-excel",
-    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    jpg: "image/jpeg",
-    jpeg: "image/jpeg",
-    png: "image/png",
+  const getMimeType = (filePath) => {
+    if (!filePath || typeof filePath !== "string") {
+      console.error("❌ Invalid filePath:", filePath);
+      return "application/octet-stream"; // Default fallback MIME type
+    }
+  
+    const extension = filePath.split(".").pop();
+    const mimeTypes = {
+      pdf: "application/pdf",
+      doc: "application/msword",
+      docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      xls: "application/vnd.ms-excel",
+      xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      png: "image/png",
+    };
+    return mimeTypes[extension] || "application/octet-stream";
   };
-  return mimeTypes[extension] || "application/octet-stream";
-};
+  
 
 // ✅ Serve Uploaded Files
 router.get("/view/:documentId", async (req, res) => {
@@ -110,14 +113,14 @@ router.get("/view/:documentId", async (req, res) => {
     const { documentId } = req.params;
     const document = await Document.findById(documentId);
 
-    if (!document) {
-      console.error("❌ Document not found in MongoDB:", req.params.documentId);
-      return res.status(404).json({ success: false, message: "Document not found" });
+    if (!document || !document.filePath) {
+      console.error("❌ Document missing filePath:", document);
+      return res.status(404).json({ success: false, message: "Document not found or missing file path." });
     }
 
     console.log("🛠 FILE PATH FROM DB:", document.filePath);
 
-const filePath = path.join(__dirname, "../../", document.filePath);
+    const filePath = path.join(__dirname, "../../", String(document.filePath));
     if (!fs.existsSync(filePath)) {
       console.error("❌ File not found on server:", filePath);
       return res.status(404).json({ success: false, message: "File not found on server." });
