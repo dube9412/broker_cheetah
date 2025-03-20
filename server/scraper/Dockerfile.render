@@ -1,5 +1,5 @@
-# Use Playwright image that includes Chromium and Node.js
-FROM mcr.microsoft.com/playwright:v1.42.0-focal
+# Use a Node.js base image with Playwright support
+FROM mcr.microsoft.com/playwright:v1.41.1-focal
 
 # Set working directory
 WORKDIR /app
@@ -11,11 +11,8 @@ RUN npm install
 # Copy the rest of the project
 COPY . .
 
-# Install Playwright dependencies
+# Install Playwright browsers
 RUN npx playwright install --with-deps
 
-# Expose API port (if needed)
-EXPOSE 5000
-
 # Start the scraper
-CMD ["node", "server/scraper/playwrightScraper.js"]
+CMD ["node", "playwrightScraper.js"]
