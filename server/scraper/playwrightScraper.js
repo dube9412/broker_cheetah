@@ -23,9 +23,10 @@ const lenderWebsites = [
 
 (async () => {
     const browser = await chromium.launch({
-        headless: true,
-        executablePath: '/usr/bin/google-chrome' // Use Render's installed Chrome
+        headless: true // No need for executablePath, Playwright handles it
     });
+    
+    
     
     
     const page = await browser.newPage();
