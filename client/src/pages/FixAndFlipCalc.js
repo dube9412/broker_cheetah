@@ -131,10 +131,24 @@ const FixAndFlipCalculator = () => {
       <path d="M12 17h.01"/>
     </svg>
   );
-  
-  // Money bag SVG for profitable deals vs broke person for unprofitable deals
-  const ProfitVisualization = ({profitable}) => {
-    return profitable ? (
+
+  const EyeIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+  );
+
+  const InfoIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="16" x2="12" y2="12"/>
+      <line x1="12" y1="8" x2="12.01" y2="8"/>
+    </svg>
+  );
+
+  const renderVisualRepresentation = () => {
+    return outputs.netProfit > 0 ? (
       <svg width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M75 15C68.3696 15 62.0107 17.6339 57.3223 22.3223C52.6339 27.0107 50 33.3696 50 40V45H40C36.0218 45 32.2064 46.5804 29.3934 49.3934C26.5804 52.2064 25 56.0218 25 60V120C25 123.978 26.5804 127.794 29.3934 130.607C32.2064 133.42 36.0218 135 40 135H110C113.978 135 117.794 133.42 120.607 130.607C123.42 127.794 125 123.978 125 120V60C125 56.0218 123.42 52.2064 120.607 49.3934C117.794 46.5804 113.978 45 110 45H100V40C100 33.3696 97.3661 27.0107 92.6777 22.3223C87.9893 17.6339 81.6304 15 75 15Z" fill="#4CAF50" stroke="black" strokeWidth="2"/>
         <path d="M60 45H90V40C90 36.0218 88.4196 32.2064 85.6066 29.3934C82.7936 26.5804 78.9782 25 75 25C71.0218 25 67.2064 26.5804 64.3934 29.3934C61.5804 32.2064 60 36.0218 60 40V45Z" fill="#81C784" stroke="black" strokeWidth="2"/>
@@ -1148,4 +1162,4 @@ const FixAndFlipCalculator = () => {
   );
 }
 
-export default FixAndFlipCalc;
+export default FixAndFlipCalculator;
