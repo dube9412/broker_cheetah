@@ -59,7 +59,6 @@ function EditFixAndFlip() {
     const updated = [...tiers];
     updated[index].rehabTypeDefinition = {
       ...updated[index].rehabTypeDefinition,
-      checklistTriggers: value.split(",").map(item => item.trim()),
     };
     setTiers(updated);
   };
@@ -147,11 +146,6 @@ function EditFixAndFlip() {
           <label>Min As-Is Value:</label>
           <input type="number" value={tier.minAsIsValue || ""} onChange={(e) => handleTierChange(i, "minAsIsValue", e.target.value)} />
 
-          <label>Max Exposure - Loan $:</label>
-          <input type="number" value={tier.maxExposure?.loanAmount || ""} onChange={(e) => handleTierChange(i, "maxExposure", { ...tier.maxExposure, loanAmount: e.target.value })} />
-          <label>Max Exposure - # Props:</label>
-          <input type="number" value={tier.maxExposure?.propertyCount || ""} onChange={(e) => handleTierChange(i, "maxExposure", { ...tier.maxExposure, propertyCount: e.target.value })} />
-
           <h4>Rehab Type Adjustments</h4>
           {["light", "medium", "heavy"].map(type => (
             <div key={type}>
@@ -177,12 +171,6 @@ function EditFixAndFlip() {
             </>
           )}
 
-          {tier.rehabTypeDefinition?.method === "sowChecklist" && (
-            <>
-              <label>Checklist Triggers (comma separated):</label>
-              <input type="text" value={tier.rehabTypeDefinition?.checklistTriggers?.join(", ") || ""} onChange={(e) => handleChecklistChange(i, e.target.value)} />
-            </>
-          )}
         </div>
       ))}
 
@@ -204,19 +192,9 @@ function EditFixAndFlip() {
       <br />
       <button onClick={handleSave}>💾 Save</button>
       <button onClick={handleDelete}>❌ Delete</button>
-      <button
-  onClick={() => navigate(`/manage-loan-programs/${lenderId}`)}
-  style={{
-    marginLeft: "10px",
-    backgroundColor: "#888",
-    color: "white",
-    padding: "10px 20px",
-    border: "none",
-    cursor: "pointer",
-  }}
->
-  Cancel
-</button>
+      <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button" style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>
+                        Cancel
+                    </button>
 
     </div>
   );

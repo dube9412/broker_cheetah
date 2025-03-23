@@ -1,4 +1,13 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
+
+const STATES = [
+  "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+  "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+  "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+  "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+  "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+];
 
 function FixAndFlipSearch() {
   const [state, setState] = useState("");
@@ -11,15 +20,10 @@ function FixAndFlipSearch() {
   const [liquidity, setLiquidity] = useState("");
   const [numFlips, setNumFlips] = useState("");
   const [results, setResults] = useState([]);
-  const [error, setError] = useState(""); // NEW: To catch any errors
-
-  useEffect(() => {
-    console.log("FixAndFlipSearch Mounted"); // DEBUG
-  }, []);
+  const [error, setError] = useState("");
 
   const handleSearch = () => {
-    setError(""); // Reset errors
-    console.log("Search initiated..."); // DEBUG
+    setError("");
 
     const params = new URLSearchParams({
       state,
@@ -39,7 +43,6 @@ function FixAndFlipSearch() {
         return res.json();
       })
       .then((lenders) => {
-        console.log("Matching lenders:", lenders);
         setResults(lenders);
       })
       .catch((err) => {
@@ -51,12 +54,18 @@ function FixAndFlipSearch() {
   return (
     <div>
       <h2>Fix & Flip Search</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>} {/* Error Display */}
-      
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
       <div>
         <label>State: </label>
-        <input value={state} onChange={(e) => setState(e.target.value)} />
+        <select value={state} onChange={(e) => setState(e.target.value)}>
+          <option value="">-- Select State --</option>
+          {STATES.map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
       </div>
+
       <div>
         <label>FICO: </label>
         <input value={fico} onChange={(e) => setFico(e.target.value)} />
@@ -70,11 +79,11 @@ function FixAndFlipSearch() {
         <input value={purchaseMoneySought} onChange={(e) => setPurchaseMoneySought(e.target.value)} />
       </div>
       <div>
-        <label>Current Value: </label>
+        <label>Current Value (As-Is): </label>
         <input value={currentValue} onChange={(e) => setCurrentValue(e.target.value)} />
       </div>
       <div>
-        <label>Rehab Needed: </label>
+        <label>Rehab Needed ($): </label>
         <input value={rehabNeeded} onChange={(e) => setRehabNeeded(e.target.value)} />
       </div>
       <div>
@@ -122,5 +131,3 @@ function FixAndFlipSearch() {
 }
 
 export default FixAndFlipSearch;
-
-

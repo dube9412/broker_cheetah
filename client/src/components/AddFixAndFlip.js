@@ -9,13 +9,12 @@ function AddFixAndFlip() {
   const [numTiers, setNumTiers] = useState(1);
   const [experienceWindowMonths, setExperienceWindowMonths] = useState("");
   const [minAsIsValue, setMinAsIsValue] = useState("");
-  const [maxExposure, setMaxExposure] = useState({ loanAmount: "", propertyCount: "" });
   const [loanRange, setLoanRange] = useState({ min: "", max: "" });
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [rehabTypeDefinition, setRehabTypeDefinition] = useState({
     method: "percentage",
     threshold: "",
-    checklistTriggers: ""
+    
   });
 
   const [tiers, setTiers] = useState([
@@ -95,14 +94,9 @@ function AddFixAndFlip() {
       lender: lenderId,
       experienceWindowMonths: parseInt(experienceWindowMonths),
       minAsIsValue: parseFloat(minAsIsValue),
-      maxExposure: {
-        loanAmount: parseFloat(maxExposure.loanAmount),
-        propertyCount: parseInt(maxExposure.propertyCount),
-      },
       rehabTypeDefinition: {
         method: rehabTypeDefinition.method,
-        threshold: parseFloat(rehabTypeDefinition.threshold),
-        checklistTriggers: rehabTypeDefinition.checklistTriggers.split(",").map(s => s.trim()),
+        threshold: parseFloat(rehabTypeDefinition.threshold)
       },
       loanRange: {
         min: parseFloat(loanRange.min),
@@ -139,11 +133,6 @@ function AddFixAndFlip() {
         <label>Min As-Is Property Value:</label>
         <input type="number" value={minAsIsValue} onChange={(e) => setMinAsIsValue(e.target.value)} />
 
-        <label>Max Exposure - Loan Amount:</label>
-        <input type="number" value={maxExposure.loanAmount} onChange={(e) => setMaxExposure({ ...maxExposure, loanAmount: e.target.value })} />
-        <label>Max Exposure - Property Count:</label>
-        <input type="number" value={maxExposure.propertyCount} onChange={(e) => setMaxExposure({ ...maxExposure, propertyCount: e.target.value })} />
-
         <label>Rehab Definition Method:</label>
         <select value={rehabTypeDefinition.method} onChange={(e) => setRehabTypeDefinition({ ...rehabTypeDefinition, method: e.target.value })}>
           <option value="percentage">By Percentage</option>
@@ -152,9 +141,6 @@ function AddFixAndFlip() {
 
         <label>Rehab Threshold % (if percentage):</label>
         <input type="number" value={rehabTypeDefinition.threshold} onChange={(e) => setRehabTypeDefinition({ ...rehabTypeDefinition, threshold: e.target.value })} />
-
-        <label>Checklist Triggers (comma separated):</label>
-        <input type="text" value={rehabTypeDefinition.checklistTriggers} onChange={(e) => setRehabTypeDefinition({ ...rehabTypeDefinition, checklistTriggers: e.target.value })} />
 
         <label>Loan Range:</label>
         <input placeholder="Min" value={loanRange.min} onChange={(e) => setLoanRange({ ...loanRange, min: e.target.value })} />
@@ -195,8 +181,14 @@ function AddFixAndFlip() {
           </div>
         ))}
 
-        <button type="submit" style={{ marginTop: "20px" }}>Save Program</button>
-        <button type="button" onClick={() => navigate(`/manage-loan-programs/${lenderId}`)}>Cancel</button>
+<div style={{ textAlign: "center", marginTop: "20px" }}>
+                    <button type="submit" style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>
+                        Save Program
+                    </button>
+                    <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button" style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>
+                        Cancel
+                    </button>
+                </div>
       </form>
     </div>
   );
