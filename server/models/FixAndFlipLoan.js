@@ -1,44 +1,78 @@
 const mongoose = require("mongoose");
 
 const FixAndFlipLoanSchema = new mongoose.Schema(
-    {
-        name: { type: String, required: true }, 
-        lender: { type: mongoose.Schema.Types.ObjectId, ref: "Lender", required: true }, 
-        type: { type: String, required: true }, 
+  {
+    name: { type: String, required: true },
+    lender: { type: mongoose.Schema.Types.ObjectId, ref: "Lender", required: true },
+    type: { type: String, required: true },
 
-        loanRange: {
-            min: { type: Number, required: false },  // Ensure this is a number
-            max: { type: Number, required: false },  // Ensure this is a number
-          },
+    // ✅ Shared Fields Across the Program
+    propertyTypes: [
+      {
+        type: String,
+        enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"],
+      },
+    ],
+    minFICO: { type: Number, required: false },
+    minExperience: { type: Number, required: false },
+    experienceWindowMonths: { type: Number, required: false },
+    minAsIsValue: { type: Number, required: false },
 
-          propertyTypes: [{ type: String, enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"], required: false }],
-          
+    rehabTypeDefinition: {
+      method: {
+        type: String,
+        enum: ["percentage", "sowChecklist"],
+        required: false,
+      },
+      threshold: { type: Number },
+      checklistTriggers: [String],
+    },
 
-        // ✅ Ensure all fields exist
+    maxExposure: {
+      loanAmount: { type: Number },
+      propertyCount: { type: Number },
+    },
+
+    // ✅ Tiered fields
+    tiers: [
+      {
+        tierName: { type: String, required: false },
+
         minFICO: { type: Number, required: false },
         minExperience: { type: Number, required: false },
-        maxLTP: { type: Number, required: false },
-        totalLTC: { type: Number, required: false },
-        maxARV: { type: Number, required: false },
-        maxRehab: {type: Number, required: false},
-        
 
-        tiers: [ // Optional array for tiered programs
-            {
-                tierName: { type: String, required: false },
-                minFICO: { type: Number, required: false },
-                minExperience: { type: Number, required: false },
-                maxLTP: { type: Number, required: false },
-                totalLTC: { type: Number, required: false },
-                maxARV: { type: Number, required: false },
-                maxRehab: {type: Number, required: false},
-               
-            },
-        ],
-    },
-    { timestamps: true }
+        loanRange: {
+          min: { type: Number, required: false },
+          max: { type: Number, required: false },
+        },
+
+        maxARV: { type: Number, required: false },
+        maxRehab: { type: Number, required: false },
+
+        rehabTypeAdjustments: {
+          light: {
+            maxLTC: { type: Number, required: false },
+            totalLTC: { type: Number, required: false },
+            maxARV: { type: Number, required: false },
+          },
+          medium: {
+            maxLTC: { type: Number, required: false },
+            totalLTC: { type: Number, required: false },
+            maxARV: { type: Number, required: false },
+          },
+          heavy: {
+            maxLTC: { type: Number, required: false },
+            totalLTC: { type: Number, required: false },
+            maxARV: { type: Number, required: false },
+          },
+        },
+      },
+    ],
+  },
+  { timestamps: true }
 );
 
-const FixAndFlipLoan = mongoose.model("FixAndFlipLoan", FixAndFlipLoanSchema);
+const FixAndFlipLoan =
+  mongoose.models.FixAndFlipLoan || mongoose.model("FixAndFlipLoan", FixAndFlipLoanSchema);
 
 module.exports = FixAndFlipLoan;

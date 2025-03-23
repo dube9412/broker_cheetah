@@ -7,9 +7,11 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const scraperDir = path.join(__dirname, "../scraper");
-    const files = fs.readdirSync(scraperDir);
+    console.log(`🛠️ Checking Scraper Directory: ${scraperDir}`);
 
-    // Filter only JavaScript scraper files
+    const files = fs.readdirSync(scraperDir);
+    console.log(`📂 Found Files:`, files);
+
     const scrapers = files
       .filter(file => file.endsWith(".js"))
       .map(file => ({
@@ -17,12 +19,15 @@ router.get("/", async (req, res) => {
         description: `Scraper for ${file.replace(".js", "")}`,
       }));
 
+    console.log(`✅ Scrapers List:`, scrapers);
+
     res.status(200).json({ scrapers });
   } catch (error) {
     console.error("❌ Error fetching scrapers:", error);
     res.status(500).json({ message: "Failed to fetch scrapers." });
   }
 });
+
 
 // ✅ Run a specific scraper
 router.post("/:scraperName/run", async (req, res) => {
