@@ -19,6 +19,7 @@ const stabilizedBridgeRoutes = require("./routes/stabilizedBridgeRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
 const documentRoutes = require('./routes/documentRoutes');
 const scraperRoutes = process.env.HOST_ENV !== "render" ? require("./routes/scraperRoutes") : null; // Only load scraper in non-render environments
+const importJSONRoutes = require("./routes/importJSONRoutes"); // ✅ Import JSON routes
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.use("/api/documents", documentRoutes);
 if (scraperRoutes) {
   app.use("/api/scrapers", scraperRoutes);
 }
+app.use("/api/import-json", importJSONRoutes); // ✅ Import JSON routes
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 
