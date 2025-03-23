@@ -57,20 +57,15 @@ router.post("/:lenderId/fix-and-flip-programs", async (req, res) => {
     }
 
     const newProgram = new FixAndFlipLoan({
-      name: req.body.name,
+      name: req.body.name || "Fix and Flip",
+      type: req.body.type || "Fix and Flip",
       lender: lenderId,
-      type: "Fix and Flip",
-      minFICO: req.body.minFICO,
-      minExperience: req.body.minExperience,
-      maxLTP: req.body.maxLTP,
-      totalLTC: req.body.totalLTC,
-      maxARV: req.body.maxARV,
-      minLoanAmount: req.body.minLoanAmount,
-        maxLoanAmount: req.body.maxLoanAmount,
-        StylePropertyMap: Array.isArray(req.body.StylePropertyMap) ? req.body.StylePropertyMap : [],
-        propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
-        maxRehab: req.body.maxRehab,
-      tiers: req.body.tiers || [],
+      loanRange: req.body.loanRange,
+      propertyTypes: req.body.propertyTypes || [],
+      minAsIsValue: req.body.minAsIsValue || null,
+      rehabTypeDefinition: req.body.rehabTypeDefinition || {},
+      rehabTypeAdjustments: req.body.rehabTypeAdjustments || {},
+      tiers: req.body.tiers || []
     });
 
     await newProgram.save();
