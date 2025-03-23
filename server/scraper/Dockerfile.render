@@ -11,6 +11,9 @@ RUN npm install
 # Copy all files
 COPY . .
 
+# Ensure the scraper folder is included
+COPY server/scraper /app/scraper
+
 # ✅ Force install Playwright browsers
 RUN npx playwright install --with-deps chromium
 

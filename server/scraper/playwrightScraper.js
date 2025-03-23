@@ -22,57 +22,53 @@ const lenderWebsites = [
 ];
 
 (async () => {
-    const browser = await chromium.launch({
-        headless: true // No need for executablePath, Playwright handles it
-    });
-    
-    
-    
-    
+    console.log("🚀 Scraper started...");
+    const browser = await chromium.launch({ headless: true });
+
     const page = await browser.newPage();
 
     // Fetch lender websites from MongoDB
     /*const lenders = await Lender.find({});
     const lenderWebsites = lenders.map(lender => lender.website);
 */
-    let scrapedData = [];
+let scrapedData = [];
 
-    for (const site of lenderWebsites) {
-        try {
-            await page.goto(site, { waitUntil: 'domcontentloaded' });
+for (const site of lenderWebsites) {
+    try {
+        await page.goto(site, { waitUntil: "domcontentloaded", timeout: 60000 });
 
-            // Extract basic lender info
-            const lenderName = await page.textContent('.lender-name-selector');
-            const lenderWebsite = site;
-            
-            // Find subpage links
-            const subPages = await page.$$eval('a', links => 
-                links.map(link => link.href).filter(href => href.includes('loan-program'))
-            );
-            
-            let loanPrograms = [];
+        await page.waitForSelector(".lender-name-selector", { timeout: 10000 });
+        const lenderName = await page.textContent(".lender-name-selector") || "N/A";
 
-            for (const subPage of subPages) {
-                await page.goto(subPage, { waitUntil: 'domcontentloaded' });
-                const programName = await page.textContent('.program-title-selector');
-                const rate = await page.textContent('.rate-selector');
-                
-                loanPrograms.push({ programName, rate });
-            }
+        const lenderWebsite = site;
 
-            scrapedData.push({ lenderName, lenderWebsite, loanPrograms });
-        } catch (error) {
-            console.error(`❌ Error scraping ${site}:`, error);
+        const subPages = await page.$$eval("a", links =>
+            links.map(link => link.href).filter(href => href.includes("loan-program"))
+        ) || [];
+
+        let loanPrograms = [];
+
+        for (const subPage of subPages) {
+            await page.goto(subPage, { waitUntil: "domcontentloaded", timeout: 30000 });
+
+            await page.waitForSelector(".program-title-selector", { timeout: 10000 });
+            await page.waitForSelector(".rate-selector", { timeout: 10000 });
+
+            const programName = await page.textContent(".program-title-selector") || "Unknown Program";
+            const rate = await page.textContent(".rate-selector") || "No Rate Data";
+
+            loanPrograms.push({ programName, rate });
         }
+
+        scrapedData.push({ lenderName, lenderWebsite, loanPrograms });
+
+    } catch (error) {
+        console.error(`❌ Error scraping ${site}:`, error.message);
     }
+}
+ // ✅ Save results to JSON file for manual review
+ fs.writeFileSync("scraped_data.json", JSON.stringify(scrapedData, null, 2), "utf8");
+ console.log("✅ Data saved to scraped_data.json");
 
-    // Save to JSON file
-    fs.writeFileSync('scraped_data.json', JSON.stringify(scrapedData, null, 2), 'utf8');
-    console.log('✅ Data saved to scraped_data.json');
-
-    await browser.close();
-    mongoose.connection.close();
+ await browser.close();
 })();
-
-
-
