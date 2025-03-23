@@ -13,8 +13,7 @@ const FixAndFlipLoanSchema = new mongoose.Schema(
         enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"],
       },
     ],
-    minFICO: { type: Number, required: false },
-    minExperience: { type: Number, required: false },
+    
     experienceWindowMonths: { type: Number, required: false },
     minAsIsValue: { type: Number, required: false },
 
@@ -26,11 +25,6 @@ const FixAndFlipLoanSchema = new mongoose.Schema(
       },
       threshold: { type: Number },
       checklistTriggers: [String],
-    },
-
-    maxExposure: {
-      loanAmount: { type: Number },
-      propertyCount: { type: Number },
     },
 
     // ✅ Tiered fields
