@@ -2,250 +2,224 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 function EditFixAndFlip() {
-    const { lenderId, programId } = useParams();
-    const navigate = useNavigate();
+  const { lenderId, programId } = useParams();
+  const navigate = useNavigate();
 
-    const [program, setProgram] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [tiers, setTiers] = useState([]);
-    const [numTiers, setNumTiers] = useState(1);
-    const [loanRange, setLoanRange] = useState({ min: "", max: "" });
-    const [propertyTypes, setPropertyTypes] = useState([]);
+  const [program, setProgram] = useState(null);
+  const [tiers, setTiers] = useState([]);
+  const [numTiers, setNumTiers] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [loanRange, setLoanRange] = useState({ min: "", max: "" });
+  const [propertyTypes, setPropertyTypes] = useState([]);
+  const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
 
-    const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
-   
-
-
-    useEffect(() => {
-        const fetchProgram = async () => {
-            try {
-                console.log(`🔹 Fetching loan program ${programId}`);
-                const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/fix-and-flip-programs/${programId}`);
-                const data = await response.json();
-    
-                console.log("🔹 API Response:", data); // Debugging line
-    
-                if (response.ok && data) {
-                    console.log("✅ Loan program loaded:", data);
-                    setProgram({
-                        name: data.name ?? "",
-                        type: data.type ?? "",
-                        lender: data.lender ?? lenderId,
-                    });
-                    setLoanRange({ min: data.loanRange?.min || "", max: data.loanRange?.max || "" });
-
-
-                    setTiers(data.tiers ?? []); // ✅ Load tiers into state
-                } else {
-                    console.error("❌ Error fetching loan program:", data);
-                    setError("Loan program not found.");
-                }
-            } catch (err) {
-                console.error("❌ Error fetching loan program:", err);
-                setError("Error loading loan program.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProgram();
-    }, [programId, lenderId]);
-
-    useEffect(() => {
-        if (tiers.length) {
-          setNumTiers(tiers.length);
+  useEffect(() => {
+    const fetchProgram = async () => {
+      try {
+        const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/fix-and-flip-programs/${programId}`);
+        const data = await response.json();
+        if (response.ok) {
+          setProgram(data);
+          setTiers(data.tiers || []);
+          setNumTiers(data.tiers?.length || 1);
+          setLoanRange(data.loanRange || { min: "", max: "" });
+          setPropertyTypes(data.propertyTypes || []);
         }
-      }, [tiers]);
-
-    const handleTierChange = (index, field, value) => {
-        setTiers((prevTiers) => {
-            const updatedTiers = [...prevTiers];
-            updatedTiers[index][field] = value;
-            return updatedTiers;
-        });
+      } catch (error) {
+        console.error("Error fetching program:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    const handlePropertyTypeChange = (type) => {
-        setPropertyTypes((prev) =>
-          prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-        );
-      };
-   
+    fetchProgram();
+  }, [programId]);
 
-const handleNumTiersChange = (e) => {
-  const newNumTiers = parseInt(e.target.value, 10);
-  setNumTiers(newNumTiers);
-
-  setTiers((prevTiers) => {
-    const updatedTiers = [...prevTiers];
-
-    while (updatedTiers.length < newNumTiers) {
-      updatedTiers.push({ minFICO: "", minExperience: "", maxLTP: "", totalLTC: "", maxARV: "", maxRehab: "" });
-    }
-
-    return updatedTiers.slice(0, newNumTiers);
-  });
-};
-
-    
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setProgram((prev) => ({
-            ...prev,
-            [name]: value,  // Update the field dynamically
-        }));
-    };
-
-    const handleSave = async () => {
-        try {
-            console.log(`🔹 Saving loan program ${programId}`);
-            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/fix-and-flip-programs/${programId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    ...program,
-                    tiers, // ✅ Ensure tiers are included in the update
-                    loanRange, 
-                    propertyTypes
-                }),
-            });
-
-            const result = await response.json();
-            if (response.ok) {
-                console.log("✅ Loan program updated:", result);
-                alert("Loan program updated successfully!");
-                navigate(`/manage-loan-programs/${lenderId}`);
-            } else {
-                console.error("❌ Error updating loan program:", result);
-                alert("Failed to update loan program.");
-            }
-        } catch (error) {
-            console.error("❌ Error updating loan program:", error);
-            alert("An error occurred while updating.");
-        }
-    };
-
-    const handleDelete = async () => {
-        if (!window.confirm("Are you sure you want to delete this loan program?")) return;
-    
-        try {
-            console.log(`🔹 Deleting loan program: ${programId}`);
-    
-            const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/${lenderId}/fix-and-flip-programs/${programId}`, {
-                method: "DELETE",
-            });
-    
-            if (response.ok) {
-                console.log("✅ Loan program deleted.");
-                alert("Loan program deleted successfully.");
-                navigate(`/manage-loan-programs/${lenderId}`);
-            } else {
-                const errorData = await response.json().catch(() => ({}));  
-                console.error("❌ Error deleting loan program:", errorData.message || response.status);
-                alert(`Failed to delete loan program: ${errorData.message || "Unknown error"}`);
-            }
-        } catch (error) {
-            console.error("❌ Error deleting loan program:", error);
-            alert("An error occurred while deleting the loan program.");
-        }
-    };
-    
-
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
-    if (!program) return <p>No loan program found.</p>;
-
-    return (
-        <div style={{ maxWidth: "500px", margin: "0 auto", padding: "20px" }}>
-            <h2 style={{ textAlign: "center" }}>Editing Loan Program for {program.name}</h2>
-
-            <label>Number of Tiers:</label>
-                <select value={numTiers} onChange={handleNumTiersChange} style={{ width: "100%", marginBottom: "10px" }}>
-                    {[1, 2, 3, 4, 5, 6, 7].map((num) => (
-                        <option key={num} value={num}>
-                            {num}
-                        </option>
-                    ))}
-                </select>
-
-            {/* Render tier inputs dynamically */}
-            {tiers.map((tier, index) => (
-                <div key={index} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
-                    <h3>Tier {index + 1}</h3>
-                    
-                    <label>Minimum FICO:</label>
-                    <input 
-                        type="number" 
-                        value={tier.minFICO} 
-                        onChange={(e) => handleTierChange(index, "minFICO", e.target.value)} 
-                        style={{ width: "100%", marginBottom: "10px" }} 
-                    />
-
-                    <label>Minimum Experience:</label>
-                    <input 
-                        type="number" 
-                        value={tier.minExperience} 
-                        onChange={(e) => handleTierChange(index, "minExperience", e.target.value)} 
-                        style={{ width: "100%", marginBottom: "10px" }} 
-                    />
-
-                    <label>Maximum LTP:</label>
-                    <input 
-                        type="number" 
-                        value={tier.maxLTP} 
-                        onChange={(e) => handleTierChange(index, "maxLTP", e.target.value)} 
-                        style={{ width: "100%", marginBottom: "10px" }} 
-                    />
-
-                    <label>Total LTC:</label>
-                    <input 
-                        type="number" 
-                        value={tier.totalLTC} 
-                        onChange={(e) => handleTierChange(index, "totalLTC", e.target.value)} 
-                        style={{ width: "100%", marginBottom: "10px" }} 
-                    />
-
-                    <label>Maximum ARV:</label>
-                    <input 
-                        type="number" 
-                        value={tier.maxARV} 
-                        onChange={(e) => handleTierChange(index, "maxARV", e.target.value)} 
-                        style={{ width: "100%", marginBottom: "10px" }} 
-                    />
-                     <label>Maximum Rehab $:</label>
-                        <input type="number" value={tier.maxRehab} onChange={(e) => handleTierChange(index, "maxRehab", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
-                   
-                </div>
-            ))}
-
-<label>Loan Range:</label>
-                <input type="text" value={loanRange.min} onChange={(e) => setLoanRange({ ...loanRange, min: e.target.value })} placeholder="Min" style={{ width: "48%", marginRight: "4%" }} />
-                <input type="text" value={loanRange.max} onChange={(e) => setLoanRange({ ...loanRange, max: e.target.value })} placeholder="Max" style={{ width: "48%" }} />
-
-                <label>Property Types:</label>
-<div>
-  {PROPERTY_TYPES.map((type) => (
-    <label key={type}>
-      <input
-        type="checkbox"
-        value={type}
-        checked={propertyTypes.includes(type)}
-        onChange={() => handlePropertyTypeChange(type)} // ✅ Using the function here
-      />
-      {type}
-    </label>
-  ))}
-</div>
-
-            <div style={{ textAlign: "center", marginTop: "20px" }}>
-                <button onClick={handleSave} style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>Save Changes</button>
-                <button onClick={handleDelete} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>   Delete Loan Program </button>{" | "}
-                <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>Cancel</button>
-            </div>
-        </div>
-    
+  const handlePropertyTypeChange = (type) => {
+    setPropertyTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
+  };
+  
+
+  const handleTierChange = (index, field, value) => {
+    const updated = [...tiers];
+    updated[index][field] = value;
+    setTiers(updated);
+  };
+
+  const handleRehabAdjustmentChange = (index, rehabType, field, value) => {
+    const updated = [...tiers];
+    if (!updated[index].rehabTypeAdjustments) updated[index].rehabTypeAdjustments = {};
+    if (!updated[index].rehabTypeAdjustments[rehabType]) updated[index].rehabTypeAdjustments[rehabType] = {};
+    updated[index].rehabTypeAdjustments[rehabType][field] = value;
+    setTiers(updated);
+  };
+
+  const handleChecklistChange = (index, value) => {
+    const updated = [...tiers];
+    updated[index].rehabTypeDefinition = {
+      ...updated[index].rehabTypeDefinition,
+      checklistTriggers: value.split(",").map(item => item.trim()),
+    };
+    setTiers(updated);
+  };
+
+  const handleNumTiersChange = (e) => {
+    const count = parseInt(e.target.value, 10);
+    setNumTiers(count);
+    setTiers((prev) => {
+      const newTiers = [...prev];
+      while (newTiers.length < count) {
+        newTiers.push({});
+      }
+      return newTiers.slice(0, count);
+    });
+  };
+
+  const handleSave = async () => {
+    try {
+      const updatedProgram = {
+        ...program,
+        tiers,
+        loanRange,
+        propertyTypes,
+      };
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/fix-and-flip-programs/${programId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedProgram),
+      });
+
+      if (response.ok) {
+        alert("✅ Program updated!");
+        navigate(`/manage-loan-programs/${lenderId}`);
+      } else {
+        const data = await response.json();
+        alert("❌ Update failed: " + (data.message || "Unknown error"));
+      }
+    } catch (error) {
+      alert("❌ Server error while saving.");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Delete this loan program?")) return;
+    try {
+      await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/${lenderId}/fix-and-flip-programs/${programId}`, {
+        method: "DELETE",
+      });
+      alert("✅ Deleted.");
+      navigate(`/manage-loan-programs/${lenderId}`);
+    } catch (error) {
+      alert("❌ Delete failed.");
+    }
+  };
+
+  if (loading || !program) return <p>Loading...</p>;
+
+  return (
+    <div style={{ maxWidth: "700px", margin: "0 auto", padding: "20px" }}>
+      <h2>Editing Fix & Flip: {program.name}</h2>
+
+      <label>Number of Tiers:</label>
+      <select value={numTiers} onChange={handleNumTiersChange}>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <option key={n} value={n}>{n}</option>
+        ))}
+      </select>
+
+      {tiers.map((tier, i) => (
+        <div key={i} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
+          <h3>Tier {i + 1}</h3>
+          <label>Min FICO:</label>
+          <input type="number" value={tier.minFICO || ""} onChange={(e) => handleTierChange(i, "minFICO", e.target.value)} />
+
+          <label>Min Experience:</label>
+          <input type="number" value={tier.minExperience || ""} onChange={(e) => handleTierChange(i, "minExperience", e.target.value)} />
+
+          <label>Loan Range:</label>
+          <input placeholder="Min" value={tier.loanRange?.min || ""} onChange={(e) => handleTierChange(i, "loanRange", { ...tier.loanRange, min: e.target.value })} />
+          <input placeholder="Max" value={tier.loanRange?.max || ""} onChange={(e) => handleTierChange(i, "loanRange", { ...tier.loanRange, max: e.target.value })} />
+
+          <label>Experience Window (months):</label>
+          <input type="number" value={tier.experienceWindowMonths || ""} onChange={(e) => handleTierChange(i, "experienceWindowMonths", e.target.value)} />
+
+          <label>Min As-Is Value:</label>
+          <input type="number" value={tier.minAsIsValue || ""} onChange={(e) => handleTierChange(i, "minAsIsValue", e.target.value)} />
+
+          <label>Max Exposure - Loan $:</label>
+          <input type="number" value={tier.maxExposure?.loanAmount || ""} onChange={(e) => handleTierChange(i, "maxExposure", { ...tier.maxExposure, loanAmount: e.target.value })} />
+          <label>Max Exposure - # Props:</label>
+          <input type="number" value={tier.maxExposure?.propertyCount || ""} onChange={(e) => handleTierChange(i, "maxExposure", { ...tier.maxExposure, propertyCount: e.target.value })} />
+
+          <h4>Rehab Type Adjustments</h4>
+          {["light", "medium", "heavy"].map(type => (
+            <div key={type}>
+              <strong>{type.toUpperCase()}:</strong>
+              <input placeholder="maxLTP" value={tier.rehabTypeAdjustments?.[type]?.maxLTP || ""} onChange={(e) => handleRehabAdjustmentChange(i, type, "maxLTP", e.target.value)} />
+              <input placeholder="totalLTC" value={tier.rehabTypeAdjustments?.[type]?.totalLTC || ""} onChange={(e) => handleRehabAdjustmentChange(i, type, "totalLTC", e.target.value)} />
+              <input placeholder="maxARV" value={tier.rehabTypeAdjustments?.[type]?.maxARV || ""} onChange={(e) => handleRehabAdjustmentChange(i, type, "maxARV", e.target.value)} />
+            </div>
+          ))}
+
+          <h4>Rehab Type Definition</h4>
+          <label>Method:</label>
+          <select value={tier.rehabTypeDefinition?.method || ""} onChange={(e) => handleTierChange(i, "rehabTypeDefinition", { ...tier.rehabTypeDefinition, method: e.target.value })}>
+            <option value="">-- Select --</option>
+            <option value="percentage">By % of Purchase Price</option>
+            <option value="sowChecklist">By Scope of Work Items</option>
+          </select>
+
+          {tier.rehabTypeDefinition?.method === "percentage" && (
+            <>
+              <label>Threshold %:</label>
+              <input type="number" value={tier.rehabTypeDefinition?.threshold || ""} onChange={(e) => handleTierChange(i, "rehabTypeDefinition", { ...tier.rehabTypeDefinition, threshold: e.target.value })} />
+            </>
+          )}
+
+          {tier.rehabTypeDefinition?.method === "sowChecklist" && (
+            <>
+              <label>Checklist Triggers (comma separated):</label>
+              <input type="text" value={tier.rehabTypeDefinition?.checklistTriggers?.join(", ") || ""} onChange={(e) => handleChecklistChange(i, e.target.value)} />
+            </>
+          )}
+        </div>
+      ))}
+
+      <label>Property Types:</label>
+      <div>
+      {PROPERTY_TYPES.map(type => (
+  <label key={type}>
+    <input
+      type="checkbox"
+      checked={propertyTypes.includes(type)}
+      onChange={() => handlePropertyTypeChange(type)} // ✅ Fix here
+    />
+    {type}
+  </label>
+))}
+
+      </div>
+
+      <br />
+      <button onClick={handleSave}>💾 Save</button>
+      <button onClick={handleDelete}>❌ Delete</button>
+      <button
+  onClick={() => navigate(`/manage-loan-programs/${lenderId}`)}
+  style={{
+    marginLeft: "10px",
+    backgroundColor: "#888",
+    color: "white",
+    padding: "10px 20px",
+    border: "none",
+    cursor: "pointer",
+  }}
+>
+  Cancel
+</button>
+
+    </div>
+  );
 }
 
 export default EditFixAndFlip;
