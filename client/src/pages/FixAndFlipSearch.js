@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Glossary from "../components/hardMoneyClass/Glossary";
 
 function FixAndFlipSearch() {
   const [state, setState] = useState("");
@@ -62,33 +63,31 @@ function FixAndFlipSearch() {
       <h4>🔹 Deal Details</h4>
 
       <label>State:</label>
-      <input value={state} onChange={(e) => setState(e.target.value)} /><br /><br />
+      <input value={state} onChange={(e) => setState(e.target.value)} /><br />
       <label>Purchase Price:</label>
 
-      <input value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} /><br /><br />
+      <input value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} /><br />
 
       <label>Rehab Needed ($):</label>
-      <input value={rehabNeeded} onChange={(e) => setRehabNeeded(e.target.value)} /><br /><br />
+      <input value={rehabNeeded} onChange={(e) => setRehabNeeded(e.target.value)} /><br />
 
-      <label>ARV:</label><br />
-      <input value={arv} onChange={(e) => setArv(e.target.value)} /><br /><br />
-
+      <label>ARV:</label>
+      <input value={arv} onChange={(e) => setArv(e.target.value)} /><br />
       <label>As-Is Value:</label>
-      
-      <input value={asisValue} onChange={(e) => setAsisValue(e.target.value)} /><br /><br />
+
+      <input value={asisValue} onChange={(e) => setAsisValue(e.target.value)} /><br />
 
       <h4>🔹 Borrower Profile</h4>
       
       <label>FICO:</label>
-      <input value={fico} onChange={(e) => setFico(e.target.value)} /><br /><br />
+      <input value={fico} onChange={(e) => setFico(e.target.value)} /><br />
 
       <label>Experience (Past 36 mo):</label>
-      <input value={experience} onChange={(e) => setExperience(e.target.value)} /><br /><br />
+      <input value={experience} onChange={(e) => setExperience(e.target.value)} /><br />
 
       <label>Liquidity Value (combined cash, stocks, bonds, retirement):</label>
-      <input value={liquidity} onChange={(e) => setLiquidity(e.target.value)} /><br /><br />
-
-      
+      <input value={liquidity} onChange={(e) => setLiquidity(e.target.value)} /><br />
+    
 
       <h4>🔹 Loan Options</h4>
 
@@ -121,7 +120,13 @@ function FixAndFlipSearch() {
           </ul>
         </div>
       )}
-    </div>
+<React.Fragment>
+  <main style={{maxWidth: '80rem', margin: '0 auto', padding: '2.5rem 1rem'}}>
+    <Glossary />
+  </main>
+</React.Fragment>
+</div>
+    
   );
 }
 
