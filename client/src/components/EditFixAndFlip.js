@@ -10,7 +10,11 @@ function EditFixAndFlip() {
   const [numTiers, setNumTiers] = useState(1);
   const [loading, setLoading] = useState(true);
   const [loanRange, setLoanRange] = useState({ min: "", max: "" });
+  const [experienceWindowMonths, setExperienceWindowMonths] = useState("");
+  const [minAsIsValue, setMinAsIsValue] = useState("");
+  const [rehabTypeDefinition, setRehabTypeDefinition] = useState({ method: "", threshold: "" });
   const [propertyTypes, setPropertyTypes] = useState([]);
+
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
 
   useEffect(() => {
@@ -23,6 +27,9 @@ function EditFixAndFlip() {
           setTiers(data.tiers || []);
           setNumTiers(data.tiers?.length || 1);
           setLoanRange(data.loanRange || { min: "", max: "" });
+          setExperienceWindowMonths(data.experienceWindowMonths || "");
+          setMinAsIsValue(data.minAsIsValue || "");
+          setRehabTypeDefinition(data.rehabTypeDefinition || { method: "", threshold: "" });
           setPropertyTypes(data.propertyTypes || []);
         }
       } catch (error) {
@@ -39,7 +46,6 @@ function EditFixAndFlip() {
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
   };
-  
 
   const handleTierChange = (index, field, value) => {
     const updated = [...tiers];
@@ -55,11 +61,10 @@ function EditFixAndFlip() {
     setTiers(updated);
   };
 
-  const handleChecklistChange = (index, value) => {
+  const handleTierLoanRangeChange = (index, bound, value) => {
     const updated = [...tiers];
-    updated[index].rehabTypeDefinition = {
-      ...updated[index].rehabTypeDefinition,
-    };
+    if (!updated[index].loanRange) updated[index].loanRange = {};
+    updated[index].loanRange[bound] = value;
     setTiers(updated);
   };
 
@@ -82,6 +87,9 @@ function EditFixAndFlip() {
         tiers,
         loanRange,
         propertyTypes,
+        experienceWindowMonths,
+        minAsIsValue,
+        rehabTypeDefinition,
       };
       const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/fix-and-flip-programs/${programId}`, {
         method: "PUT",
@@ -120,6 +128,29 @@ function EditFixAndFlip() {
     <div style={{ maxWidth: "700px", margin: "0 auto", padding: "20px" }}>
       <h2>Editing Fix & Flip: {program.name}</h2>
 
+      <label>Experience Window (months):</label>
+      <input type="number" value={experienceWindowMonths} onChange={(e) => setExperienceWindowMonths(e.target.value)} />
+
+      <label>Min As-Is Value:</label>
+      <input type="number" value={minAsIsValue} onChange={(e) => setMinAsIsValue(e.target.value)} />
+
+      <label>Loan Range:</label>
+      <input placeholder="Min" value={loanRange.min} onChange={(e) => setLoanRange({ ...loanRange, min: e.target.value })} />
+      <input placeholder="Max" value={loanRange.max} onChange={(e) => setLoanRange({ ...loanRange, max: e.target.value })} />
+
+      <label>Rehab Definition:</label>
+      <select value={rehabTypeDefinition.method} onChange={(e) => setRehabTypeDefinition({ ...rehabTypeDefinition, method: e.target.value })}>
+        <option value="">-- Select Method --</option>
+        <option value="percentage">By % of Purchase Price</option>
+        <option value="sowChecklist">Scope of Work</option>
+      </select>
+      {rehabTypeDefinition.method === "percentage" && (
+        <>
+          <label>Threshold %:</label>
+          <input type="number" value={rehabTypeDefinition.threshold} onChange={(e) => setRehabTypeDefinition({ ...rehabTypeDefinition, threshold: e.target.value })} />
+        </>
+      )}
+
       <label>Number of Tiers:</label>
       <select value={numTiers} onChange={handleNumTiersChange}>
         {[1, 2, 3, 4, 5].map((n) => (
@@ -130,6 +161,9 @@ function EditFixAndFlip() {
       {tiers.map((tier, i) => (
         <div key={i} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
           <h3>Tier {i + 1}</h3>
+          <label>Tier Name:</label>
+          <input type="text" value={tier.tierName || ""} onChange={(e) => handleTierChange(i, "tierName", e.target.value)} />
+
           <label>Min FICO:</label>
           <input type="number" value={tier.minFICO || ""} onChange={(e) => handleTierChange(i, "minFICO", e.target.value)} />
 
@@ -137,14 +171,14 @@ function EditFixAndFlip() {
           <input type="number" value={tier.minExperience || ""} onChange={(e) => handleTierChange(i, "minExperience", e.target.value)} />
 
           <label>Loan Range:</label>
-          <input placeholder="Min" value={tier.loanRange?.min || ""} onChange={(e) => handleTierChange(i, "loanRange", { ...tier.loanRange, min: e.target.value })} />
-          <input placeholder="Max" value={tier.loanRange?.max || ""} onChange={(e) => handleTierChange(i, "loanRange", { ...tier.loanRange, max: e.target.value })} />
+          <input placeholder="Min" value={tier.loanRange?.min || ""} onChange={(e) => handleTierLoanRangeChange(i, "min", e.target.value)} />
+          <input placeholder="Max" value={tier.loanRange?.max || ""} onChange={(e) => handleTierLoanRangeChange(i, "max", e.target.value)} />
 
-          <label>Experience Window (months):</label>
-          <input type="number" value={tier.experienceWindowMonths || ""} onChange={(e) => handleTierChange(i, "experienceWindowMonths", e.target.value)} />
+          <label>Max ARV:</label>
+          <input type="number" value={tier.maxARV || ""} onChange={(e) => handleTierChange(i, "maxARV", e.target.value)} />
 
-          <label>Min As-Is Value:</label>
-          <input type="number" value={tier.minAsIsValue || ""} onChange={(e) => handleTierChange(i, "minAsIsValue", e.target.value)} />
+          <label>Max Rehab:</label>
+          <input type="number" value={tier.maxRehab || ""} onChange={(e) => handleTierChange(i, "maxRehab", e.target.value)} />
 
           <h4>Rehab Type Adjustments</h4>
           {["light", "medium", "heavy"].map(type => (
@@ -155,47 +189,25 @@ function EditFixAndFlip() {
               <input placeholder="maxARV" value={tier.rehabTypeAdjustments?.[type]?.maxARV || ""} onChange={(e) => handleRehabAdjustmentChange(i, type, "maxARV", e.target.value)} />
             </div>
           ))}
-
-          <h4>Rehab Type Definition</h4>
-          <label>Method:</label>
-          <select value={tier.rehabTypeDefinition?.method || ""} onChange={(e) => handleTierChange(i, "rehabTypeDefinition", { ...tier.rehabTypeDefinition, method: e.target.value })}>
-            <option value="">-- Select --</option>
-            <option value="percentage">By % of Purchase Price</option>
-            <option value="sowChecklist">By Scope of Work Items</option>
-          </select>
-
-          {tier.rehabTypeDefinition?.method === "percentage" && (
-            <>
-              <label>Threshold %:</label>
-              <input type="number" value={tier.rehabTypeDefinition?.threshold || ""} onChange={(e) => handleTierChange(i, "rehabTypeDefinition", { ...tier.rehabTypeDefinition, threshold: e.target.value })} />
-            </>
-          )}
-
         </div>
       ))}
 
       <label>Property Types:</label>
       <div>
-      {PROPERTY_TYPES.map(type => (
-  <label key={type}>
-    <input
-      type="checkbox"
-      checked={propertyTypes.includes(type)}
-      onChange={() => handlePropertyTypeChange(type)} // ✅ Fix here
-    />
-    {type}
-  </label>
-))}
-
+        {PROPERTY_TYPES.map((type) => (
+          <label key={type}>
+            <input type="checkbox" checked={propertyTypes.includes(type)} onChange={() => handlePropertyTypeChange(type)} />
+            {type}
+          </label>
+        ))}
       </div>
 
       <br />
       <button onClick={handleSave}>💾 Save</button>
       <button onClick={handleDelete}>❌ Delete</button>
-      <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button" style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>
-                        Cancel
-                    </button>
-
+      <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button">
+        Cancel
+      </button>
     </div>
   );
 }
