@@ -121,7 +121,7 @@ function AddFixAndFlip() {
       <form onSubmit={handleSubmit}>
         <label>Experience Window (Months):</label>
         <input type="number" value={experienceWindowMonths} onChange={(e) => setExperienceWindowMonths(e.target.value)} />
-
+    
         <label>Min As-Is Property Value:</label>
         <input type="number" value={minAsIsValue} onChange={(e) => setMinAsIsValue(e.target.value)} />
 
