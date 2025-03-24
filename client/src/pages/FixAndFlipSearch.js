@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import Glossary from "../components/hardMoneyClass/Glossary";
 
+const US_STATES = [
+  "AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA",
+  "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME",
+  "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM",
+  "NV", "NY", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX",
+  "UT", "VA", "VT", "WA", "WI", "WV", "WY"
+];
+
 function FixAndFlipSearch() {
   const [state, setState] = useState("");
   const [fico, setFico] = useState("");
@@ -46,7 +54,6 @@ function FixAndFlipSearch() {
       }));
 
       if (!response.ok) throw new Error("Failed to fetch");
-
       const data = await response.json();
       setResults(data || []);
     } catch (err) {
@@ -56,63 +63,91 @@ function FixAndFlipSearch() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Fix & Flip Filter</h2>
-      <h1>Enter one or more fields</h1>
+    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", maxWidth: "800px", margin: "0 auto" }}>
+      <h2>Fix & Flip Search</h2>
+      <p>Enter one or more filters to find matching loan programs.</p>
 
-      <h4>🔹 Deal Details</h4>
+      {/* 🔹 Deal Details */}
+      <fieldset style={{ border: "1px solid #ccc", padding: "15px", marginBottom: "20px" }}>
+        <legend><strong>🔹 Deal Details</strong></legend>
 
-      <label>State:</label>
-      <input value={state} onChange={(e) => setState(e.target.value)} /><br />
-      <label>Purchase Price:</label>
+        <label>State:<br />
+          <select value={state} onChange={(e) => setState(e.target.value)} style={{ width: "100%" }}>
+            <option value="">-- Select a state --</option>
+            {US_STATES.map((st) => (
+              <option key={st} value={st}>{st}</option>
+            ))}
+          </select>
+        </label><br /><br />
 
-      <input value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} /><br />
+        <label>Purchase Price:<br />
+          <input value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} style={{ width: "100%" }} />
+        </label><br /><br />
 
-      <label>Rehab Needed ($):</label>
-      <input value={rehabNeeded} onChange={(e) => setRehabNeeded(e.target.value)} /><br />
+        <label>Rehab Needed ($):<br />
+          <input value={rehabNeeded} onChange={(e) => setRehabNeeded(e.target.value)} style={{ width: "100%" }} />
+        </label><br /><br />
 
-      <label>ARV:</label>
-      <input value={arv} onChange={(e) => setArv(e.target.value)} /><br />
-      <label>As-Is Value:</label>
+        <label>ARV:<br />
+          <input value={arv} onChange={(e) => setArv(e.target.value)} style={{ width: "100%" }} />
+        </label><br /><br />
 
-      <input value={asisValue} onChange={(e) => setAsisValue(e.target.value)} /><br />
+        <label>As-Is Value:<br />
+          <input value={asisValue} onChange={(e) => setAsisValue(e.target.value)} style={{ width: "100%" }} />
+        </label>
+      </fieldset>
 
-      <h4>🔹 Borrower Profile</h4>
-      
-      <label>FICO:</label>
-      <input value={fico} onChange={(e) => setFico(e.target.value)} /><br />
+      {/* 🔹 Borrower Profile */}
+      <fieldset style={{ border: "1px solid #ccc", padding: "15px", marginBottom: "20px" }}>
+        <legend><strong>🔹 Borrower Profile</strong></legend>
 
-      <label>Experience (Past 36 mo):</label>
-      <input value={experience} onChange={(e) => setExperience(e.target.value)} /><br />
+        <label>FICO Score:<br />
+          <input value={fico} onChange={(e) => setFico(e.target.value)} style={{ width: "100%" }} />
+        </label><br /><br />
 
-      <label>Liquidity Value (combined cash, stocks, bonds, retirement):</label>
-      <input value={liquidity} onChange={(e) => setLiquidity(e.target.value)} /><br />
-    
+        <label>Experience (Flips in past 36 mo):<br />
+          <input value={experience} onChange={(e) => setExperience(e.target.value)} style={{ width: "100%" }} />
+        </label><br /><br />
 
-      <h4>🔹 Loan Options</h4>
+        <label>Liquidity (cash, stocks, etc.):<br />
+          <input value={liquidity} onChange={(e) => setLiquidity(e.target.value)} style={{ width: "100%" }} />
+        </label>
+      </fieldset>
 
-      <label>Recourse:</label>
-      <input type="checkbox" checked={recourse.recourse} onChange={() => setRecourse((prev) => ({ ...prev, recourse: !prev.recourse }))} /> Recourse
-      <input type="checkbox" checked={recourse.nonRecourse} onChange={() => setRecourse((prev) => ({ ...prev, nonRecourse: !prev.nonRecourse }))} /> Non-Recourse<br /><br />
+      {/* 🔹 Loan Options */}
+      <fieldset style={{ border: "1px solid #ccc", padding: "15px", marginBottom: "20px" }}>
+        <legend><strong>🔹 Loan Options</strong></legend>
 
-      <label>Interest Type:</label>
-      <label><input type="radio" name="interest" value="dutch" checked={interestType === "dutch"} onChange={(e) => setInterestType(e.target.value)} /> Dutch</label>
-      <label><input type="radio" name="interest" value="non-dutch" checked={interestType === "non-dutch"} onChange={(e) => setInterestType(e.target.value)} /> Non-Dutch</label><br /><br />
+        <label>Recourse:</label><br />
+        <label><input type="checkbox" checked={recourse.recourse} onChange={() => setRecourse((prev) => ({ ...prev, recourse: !prev.recourse }))} /> Recourse</label><br />
+        <label><input type="checkbox" checked={recourse.nonRecourse} onChange={() => setRecourse((prev) => ({ ...prev, nonRecourse: !prev.nonRecourse }))} /> Non-Recourse</label><br /><br />
 
-      <label>Cross Collateral Allowed:</label>
-      <select value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)}>
-        <option value="">-- Select --</option>
-        <option value="yes">Yes</option>
-        <option value="no">No</option>
-      </select><br /><br />
+        <label>Interest Type:</label><br />
+        <label><input type="radio" name="interest" value="dutch" checked={interestType === "dutch"} onChange={(e) => setInterestType(e.target.value)} /> Dutch</label><br />
+        <label><input type="radio" name="interest" value="non-dutch" checked={interestType === "non-dutch"} onChange={(e) => setInterestType(e.target.value)} /> Non-Dutch</label><br /><br />
 
-      <button onClick={handleSearch}>🔍 Search</button><br /><br />
+        <label>Draw Type:</label><br />
+        <label><input type="radio" name="drawType" value="dutch" checked={drawType === "dutch"} onChange={(e) => setDrawType(e.target.value)} /> Dutch</label><br />
+        <label><input type="radio" name="drawType" value="non-dutch" checked={drawType === "non-dutch"} onChange={(e) => setDrawType(e.target.value)} /> Non-Dutch</label><br /><br />
 
-      {warning && <p style={{ color: "orange" }}>{warning}</p>}
+        <label>Cross Collateral Allowed:<br />
+          <select value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)} style={{ width: "100%" }}>
+            <option value="">-- Select --</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <button onClick={handleSearch} style={{ padding: "10px 20px", backgroundColor: "#007bff", color: "#fff", border: "none", cursor: "pointer" }}>
+        🔍 Search
+      </button><br /><br />
+
+      {warning && <p style={{ color: "orange", fontWeight: "bold" }}>{warning}</p>}
 
       {results.length > 0 && (
         <div>
-          <h3>Results</h3>
+          <h3>Matching Lenders:</h3>
           <ul>
             {results.map((res, i) => (
               <li key={i}>{res.name}</li>
@@ -120,13 +155,11 @@ function FixAndFlipSearch() {
           </ul>
         </div>
       )}
-<React.Fragment>
-  <main style={{maxWidth: '80rem', margin: '0 auto', padding: '2.5rem 1rem'}}>
-    <Glossary />
-  </main>
-</React.Fragment>
-</div>
-    
+
+      <main style={{ maxWidth: "80rem", marginTop: "40px" }}>
+        <Glossary />
+      </main>
+    </div>
   );
 }
 
