@@ -9,10 +9,14 @@ function EditFixAndFlip() {
   const [tiers, setTiers] = useState([]);
   const [numTiers, setNumTiers] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [loanRange, setLoanRange] = useState({ min: "", max: "" });
+
   const [experienceWindowMonths, setExperienceWindowMonths] = useState("");
   const [minAsIsValue, setMinAsIsValue] = useState("");
-  const [rehabTypeDefinition, setRehabTypeDefinition] = useState({ method: "", threshold: "" });
+  const [termLengthMonths, setTermLengthMonths] = useState("");
+  const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
+  const [interestType, setInterestType] = useState("");
+  const [drawType, setDrawType] = useState("");
+  const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
   const [propertyTypes, setPropertyTypes] = useState([]);
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
@@ -26,10 +30,13 @@ function EditFixAndFlip() {
           setProgram(data);
           setTiers(data.tiers || []);
           setNumTiers(data.tiers?.length || 1);
-          setLoanRange(data.loanRange || { min: "", max: "" });
           setExperienceWindowMonths(data.experienceWindowMonths || "");
           setMinAsIsValue(data.minAsIsValue || "");
-          setRehabTypeDefinition(data.rehabTypeDefinition || { method: "", threshold: "" });
+          setTermLengthMonths(data.termLengthMonths || "");
+          setRecourse(data.recourse || { recourse: false, nonRecourse: false });
+          setInterestType(data.interestType || "");
+          setDrawType(data.drawType || "");
+          setCrossCollateralAllowed(data.crossCollateralAllowed || "");
           setPropertyTypes(data.propertyTypes || []);
         }
       } catch (error) {
@@ -41,10 +48,25 @@ function EditFixAndFlip() {
     fetchProgram();
   }, [programId]);
 
-  const handlePropertyTypeChange = (type) => {
-    setPropertyTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
+  const handleNumTiersChange = (e) => {
+    const count = parseInt(e.target.value, 10);
+    setNumTiers(count);
+    setTiers((prev) => {
+      const newTiers = [...prev];
+      while (newTiers.length < count) {
+        newTiers.push({
+          tierName: "",
+          minFICO: "",
+          minExperience: "",
+          loanRange: { min: "", max: "" },
+          maxLTC: "",
+          totalLTC: "",
+          maxARV: "",
+          rehabPercent: "",
+        });
+      }
+      return newTiers.slice(0, count);
+    });
   };
 
   const handleTierChange = (index, field, value) => {
@@ -53,44 +75,37 @@ function EditFixAndFlip() {
     setTiers(updated);
   };
 
-  const handleRehabAdjustmentChange = (index, rehabType, field, value) => {
+  const handleLoanRangeChange = (index, bound, value) => {
     const updated = [...tiers];
-    if (!updated[index].rehabTypeAdjustments) updated[index].rehabTypeAdjustments = {};
-    if (!updated[index].rehabTypeAdjustments[rehabType]) updated[index].rehabTypeAdjustments[rehabType] = {};
-    updated[index].rehabTypeAdjustments[rehabType][field] = value;
-    setTiers(updated);
-  };
-
-  const handleTierLoanRangeChange = (index, bound, value) => {
-    const updated = [...tiers];
-    if (!updated[index].loanRange) updated[index].loanRange = {};
     updated[index].loanRange[bound] = value;
     setTiers(updated);
   };
 
-  const handleNumTiersChange = (e) => {
-    const count = parseInt(e.target.value, 10);
-    setNumTiers(count);
-    setTiers((prev) => {
-      const newTiers = [...prev];
-      while (newTiers.length < count) {
-        newTiers.push({});
-      }
-      return newTiers.slice(0, count);
-    });
+  const handlePropertyTypeChange = (type) => {
+    setPropertyTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
+  const handleRecourseChange = (type) => {
+    setRecourse((prev) => ({ ...prev, [type]: !prev[type] }));
   };
 
   const handleSave = async () => {
     try {
       const updatedProgram = {
         ...program,
-        tiers,
-        loanRange,
-        propertyTypes,
         experienceWindowMonths,
         minAsIsValue,
-        rehabTypeDefinition,
+        termLengthMonths,
+        recourse,
+        interestType,
+        drawType,
+        crossCollateralAllowed,
+        propertyTypes,
+        tiers,
       };
+
       const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/fix-and-flip-programs/${programId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -105,6 +120,7 @@ function EditFixAndFlip() {
         alert("❌ Update failed: " + (data.message || "Unknown error"));
       }
     } catch (error) {
+      console.error("❌ Error during update:", error);
       alert("❌ Server error while saving.");
     }
   };
@@ -128,28 +144,41 @@ function EditFixAndFlip() {
     <div style={{ maxWidth: "700px", margin: "0 auto", padding: "20px" }}>
       <h2>Editing Fix & Flip: {program.name}</h2>
 
-      <label>Experience Window (months):</label>
+      <label>Experience Window (Months):</label>
       <input type="number" value={experienceWindowMonths} onChange={(e) => setExperienceWindowMonths(e.target.value)} />
 
-      <label>Min As-Is Value:</label>
+      <label>Min As-Is Property Value:</label>
       <input type="number" value={minAsIsValue} onChange={(e) => setMinAsIsValue(e.target.value)} />
 
-      <label>Loan Range:</label>
-      <input placeholder="Min" value={loanRange.min} onChange={(e) => setLoanRange({ ...loanRange, min: e.target.value })} />
-      <input placeholder="Max" value={loanRange.max} onChange={(e) => setLoanRange({ ...loanRange, max: e.target.value })} />
+      <label>Term Length (Months):</label>
+      <input type="number" value={termLengthMonths} onChange={(e) => setTermLengthMonths(e.target.value)} />
 
-      <label>Rehab Definition:</label>
-      <select value={rehabTypeDefinition.method} onChange={(e) => setRehabTypeDefinition({ ...rehabTypeDefinition, method: e.target.value })}>
-        <option value="">-- Select Method --</option>
-        <option value="percentage">By % of Purchase Price</option>
-        <option value="sowChecklist">Scope of Work</option>
+      <label>Recourse:</label>
+      <label><input type="checkbox" checked={recourse.recourse} onChange={() => handleRecourseChange("recourse")} /> Recourse</label>
+      <label><input type="checkbox" checked={recourse.nonRecourse} onChange={() => handleRecourseChange("nonRecourse")} /> Non-Recourse</label>
+
+      <label>Interest Type:</label>
+      <label><input type="radio" value="dutch" checked={interestType === "dutch"} onChange={(e) => setInterestType(e.target.value)} /> Dutch</label>
+      <label><input type="radio" value="non-dutch" checked={interestType === "non-dutch"} onChange={(e) => setInterestType(e.target.value)} /> Non-Dutch</label>
+
+      <label>Draw Type:</label>
+      <label><input type="radio" value="dutch" checked={drawType === "dutch"} onChange={(e) => setDrawType(e.target.value)} /> Dutch</label>
+      <label><input type="radio" value="non-dutch" checked={drawType === "non-dutch"} onChange={(e) => setDrawType(e.target.value)} /> Non-Dutch</label>
+
+      <label>Cross Collateral Allowed:</label>
+      <select value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)}>
+        <option value="">-- Select --</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
       </select>
-      {rehabTypeDefinition.method === "percentage" && (
-        <>
-          <label>Threshold %:</label>
-          <input type="number" value={rehabTypeDefinition.threshold} onChange={(e) => setRehabTypeDefinition({ ...rehabTypeDefinition, threshold: e.target.value })} />
-        </>
-      )}
+
+      <label>Property Types:</label>
+      {PROPERTY_TYPES.map(type => (
+        <label key={type}>
+          <input type="checkbox" checked={propertyTypes.includes(type)} onChange={() => handlePropertyTypeChange(type)} />
+          {type}
+        </label>
+      ))}
 
       <label>Number of Tiers:</label>
       <select value={numTiers} onChange={handleNumTiersChange}>
@@ -161,53 +190,24 @@ function EditFixAndFlip() {
       {tiers.map((tier, i) => (
         <div key={i} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
           <h3>Tier {i + 1}</h3>
-          <label>Tier Name:</label>
-          <input type="text" value={tier.tierName || ""} onChange={(e) => handleTierChange(i, "tierName", e.target.value)} />
+          <input placeholder="Tier Name" value={tier.tierName || ""} onChange={(e) => handleTierChange(i, "tierName", e.target.value)} />
+          <input placeholder="Min FICO" value={tier.minFICO || ""} onChange={(e) => handleTierChange(i, "minFICO", e.target.value)} />
+          <input placeholder="Min Experience" value={tier.minExperience || ""} onChange={(e) => handleTierChange(i, "minExperience", e.target.value)} />
 
-          <label>Min FICO:</label>
-          <input type="number" value={tier.minFICO || ""} onChange={(e) => handleTierChange(i, "minFICO", e.target.value)} />
+          <input placeholder="Loan Range Min" value={tier.loanRange?.min || ""} onChange={(e) => handleLoanRangeChange(i, "min", e.target.value)} />
+          <input placeholder="Loan Range Max" value={tier.loanRange?.max || ""} onChange={(e) => handleLoanRangeChange(i, "max", e.target.value)} />
 
-          <label>Min Experience:</label>
-          <input type="number" value={tier.minExperience || ""} onChange={(e) => handleTierChange(i, "minExperience", e.target.value)} />
-
-          <label>Loan Range:</label>
-          <input placeholder="Min" value={tier.loanRange?.min || ""} onChange={(e) => handleTierLoanRangeChange(i, "min", e.target.value)} />
-          <input placeholder="Max" value={tier.loanRange?.max || ""} onChange={(e) => handleTierLoanRangeChange(i, "max", e.target.value)} />
-
-          <label>Max ARV:</label>
-          <input type="number" value={tier.maxARV || ""} onChange={(e) => handleTierChange(i, "maxARV", e.target.value)} />
-
-          <label>Max Rehab:</label>
-          <input type="number" value={tier.maxRehab || ""} onChange={(e) => handleTierChange(i, "maxRehab", e.target.value)} />
-
-          <h4>Rehab Type Adjustments</h4>
-          {["light", "medium", "heavy"].map(type => (
-            <div key={type}>
-              <strong>{type.toUpperCase()}:</strong>
-              <input placeholder="maxLTP" value={tier.rehabTypeAdjustments?.[type]?.maxLTP || ""} onChange={(e) => handleRehabAdjustmentChange(i, type, "maxLTP", e.target.value)} />
-              <input placeholder="totalLTC" value={tier.rehabTypeAdjustments?.[type]?.totalLTC || ""} onChange={(e) => handleRehabAdjustmentChange(i, type, "totalLTC", e.target.value)} />
-              <input placeholder="maxARV" value={tier.rehabTypeAdjustments?.[type]?.maxARV || ""} onChange={(e) => handleRehabAdjustmentChange(i, type, "maxARV", e.target.value)} />
-            </div>
-          ))}
+          <input placeholder="Max LTC" value={tier.maxLTC || ""} onChange={(e) => handleTierChange(i, "maxLTC", e.target.value)} />
+          <input placeholder="Total LTC" value={tier.totalLTC || ""} onChange={(e) => handleTierChange(i, "totalLTC", e.target.value)} />
+          <input placeholder="Max ARV" value={tier.maxARV || ""} onChange={(e) => handleTierChange(i, "maxARV", e.target.value)} />
+          <input placeholder="Rehab % Covered" value={tier.rehabPercent || ""} onChange={(e) => handleTierChange(i, "rehabPercent", e.target.value)} />
         </div>
       ))}
 
-      <label>Property Types:</label>
-      <div>
-        {PROPERTY_TYPES.map((type) => (
-          <label key={type}>
-            <input type="checkbox" checked={propertyTypes.includes(type)} onChange={() => handlePropertyTypeChange(type)} />
-            {type}
-          </label>
-        ))}
-      </div>
-
       <br />
       <button onClick={handleSave}>💾 Save</button>
-      <button onClick={handleDelete}>❌ Delete</button>
-      <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button">
-        Cancel
-      </button>
+      <button onClick={handleDelete} style={{ marginLeft: "10px" }}>❌ Delete</button>
+      <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} style={{ marginLeft: "10px" }}>Cancel</button>
     </div>
   );
 }

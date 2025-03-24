@@ -47,38 +47,32 @@ router.get("/fix-and-flip-programs/:programId", async (req, res) => {
 // ✅ POST: Add a new Fix and Flip Loan Program
 router.post("/:lenderId/fix-and-flip-programs", async (req, res) => {
   try {
-    console.log("🔹 Received Fix and Flip Loan Program data:", req.body);
     const { lenderId } = req.params;
-
-    const lender = await Lender.findById(lenderId);
-    if (!lender) {
-      console.error("❌ Lender not found:", lenderId);
-      return res.status(404).json({ message: "Lender not found" });
-    }
 
     const newProgram = new FixAndFlipLoan({
       name: req.body.name || "Fix and Flip",
       type: req.body.type || "Fix and Flip",
       lender: lenderId,
-      loanRange: req.body.loanRange,
-      propertyTypes: req.body.propertyTypes || [],
+
+      // ✅ Base-level fields
+      experienceWindowMonths: req.body.experienceWindowMonths || null,
       minAsIsValue: req.body.minAsIsValue || null,
-      rehabTypeDefinition: req.body.rehabTypeDefinition || {},
-      rehabTypeAdjustments: req.body.rehabTypeAdjustments || {},
-      tiers: req.body.tiers || []
+      termLengthMonths: req.body.termLengthMonths || null,
+      recourse: req.body.recourse || { recourse: false, nonRecourse: false },
+      interestType: req.body.interestType || "",
+      drawType: req.body.drawType || "",
+      crossCollateralAllowed: req.body.crossCollateralAllowed || "",
+      propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
+
+      // ✅ Tiers array
+      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [],
     });
 
     await newProgram.save();
-
-    // ✅ Add reference to the lender
-    lender.fixAndFlipPrograms.push(newProgram._id);
-    await lender.save();
-
-    console.log("✅ Fix and Flip Loan Program Saved:", newProgram);
     res.status(201).json({ success: true, program: newProgram });
   } catch (error) {
-    console.error("❌ Error saving Fix and Flip Loan Program:", error);
-    res.status(500).json({ message: "Server error while saving loan program" });
+    console.error("❌ Error creating Fix & Flip program:", error);
+    res.status(500).json({ success: false, message: "Server error during Fix & Flip program creation." });
   }
 });
 

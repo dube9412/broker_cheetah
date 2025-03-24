@@ -4,61 +4,50 @@ const FixAndFlipLoanSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     lender: { type: mongoose.Schema.Types.ObjectId, ref: "Lender", required: true },
-    type: { type: String, required: true },
+    type: { type: String, required: true }, // Should always be "Fix and Flip"
 
-    // ✅ Shared Fields Across the Program
-    propertyTypes: [
-      {
-        type: String,
-        enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"],
-      },
-    ],
-
-    experienceWindowMonths: { type: Number, required: false },
-    minAsIsValue: { type: Number, required: false },
-
-    rehabTypeDefinition: {
-      method: {
-        type: String,
-        enum: ["percentage", "sowChecklist"],
-        required: false,
-      },
-      threshold: { type: Number },
+    // 🔹 Base-Level Fields
+    propertyTypes: {
+      type: [String],
+      enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"],
+      default: [],
     },
+    experienceWindowMonths: { type: Number },
+    minAsIsValue: { type: Number },
 
-    // ✅ Tiered fields
+    recourse: {
+      type: [String],
+      enum: ["recourse", "non-recourse"],
+      default: [],
+    },
+    interestType: {
+      type: String,
+      enum: ["dutch", "non-dutch"],
+    },
+    drawType: {
+      type: String,
+      enum: ["dutch", "non-dutch"],
+    },
+    crossCollateralAllowed: { type: Boolean },
+    termLength: { type: Number }, // in months
+
+    // 🔸 Tier-Level Fields
     tiers: [
       {
-        tierName: { type: String, required: false },
+        tierName: { type: String },
 
-        minFICO: { type: Number, required: false },
-        minExperience: { type: Number, required: false },
+        minFICO: { type: Number },
+        minExperience: { type: Number },
 
         loanRange: {
-          min: { type: Number, required: false },
-          max: { type: Number, required: false },
+          min: { type: Number },
+          max: { type: Number },
         },
 
-        maxARV: { type: Number, required: false },
-        maxRehab: { type: Number, required: false },
-
-        rehabTypeAdjustments: {
-          light: {
-            maxLTC: { type: Number, required: false },
-            totalLTC: { type: Number, required: false },
-            maxARV: { type: Number, required: false },
-          },
-          medium: {
-            maxLTC: { type: Number, required: false },
-            totalLTC: { type: Number, required: false },
-            maxARV: { type: Number, required: false },
-          },
-          heavy: {
-            maxLTC: { type: Number, required: false },
-            totalLTC: { type: Number, required: false },
-            maxARV: { type: Number, required: false },
-          },
-        },
+        rehabPercent: { type: Number }, // Percent of rehab costs covered
+        maxLTC: { type: Number },       // Loan to purchase/cost
+        totalLTC: { type: Number },     // Blended LTC
+        maxARV: { type: Number },       // ARV Cap
       },
     ],
   },
