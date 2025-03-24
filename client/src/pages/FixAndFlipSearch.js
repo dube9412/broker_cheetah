@@ -56,41 +56,51 @@ function FixAndFlipSearch() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Fix & Flip Search</h2>
+      <h2>Fix & Flip Filter</h2>
+      <h1>Enter one or more fields</h1>
 
-      <label>State:</label><br />
+      <h4>🔹 Deal Details</h4>
+
+      <label>State:</label>
       <input value={state} onChange={(e) => setState(e.target.value)} /><br /><br />
+      <label>Purchase Price:</label>
 
-      <label>FICO:</label><br />
-      <input value={fico} onChange={(e) => setFico(e.target.value)} /><br /><br />
-
-      <label>Purchase Price:</label><br />
       <input value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} /><br /><br />
 
-      <label>Rehab Needed ($):</label><br />
+      <label>Rehab Needed ($):</label>
       <input value={rehabNeeded} onChange={(e) => setRehabNeeded(e.target.value)} /><br /><br />
 
       <label>ARV:</label><br />
       <input value={arv} onChange={(e) => setArv(e.target.value)} /><br /><br />
 
-      <label>As-Is Value:</label><br />
+      <label>As-Is Value:</label>
+      
       <input value={asisValue} onChange={(e) => setAsisValue(e.target.value)} /><br /><br />
 
-      <label>Experience (Past 36 mo):</label><br />
+      <h4>🔹 Borrower Profile</h4>
+      
+      <label>FICO:</label>
+      <input value={fico} onChange={(e) => setFico(e.target.value)} /><br /><br />
+
+      <label>Experience (Past 36 mo):</label>
       <input value={experience} onChange={(e) => setExperience(e.target.value)} /><br /><br />
 
-      <label>Liquidity Value (combined cash, stocks, bonds, retirement):</label><br />
+      <label>Liquidity Value (combined cash, stocks, bonds, retirement):</label>
       <input value={liquidity} onChange={(e) => setLiquidity(e.target.value)} /><br /><br />
 
-      <label>Recourse:</label><br />
+      
+
+      <h4>🔹 Loan Options</h4>
+
+      <label>Recourse:</label>
       <input type="checkbox" checked={recourse.recourse} onChange={() => setRecourse((prev) => ({ ...prev, recourse: !prev.recourse }))} /> Recourse
       <input type="checkbox" checked={recourse.nonRecourse} onChange={() => setRecourse((prev) => ({ ...prev, nonRecourse: !prev.nonRecourse }))} /> Non-Recourse<br /><br />
 
-      <label>Interest Type:</label><br />
+      <label>Interest Type:</label>
       <label><input type="radio" name="interest" value="dutch" checked={interestType === "dutch"} onChange={(e) => setInterestType(e.target.value)} /> Dutch</label>
       <label><input type="radio" name="interest" value="non-dutch" checked={interestType === "non-dutch"} onChange={(e) => setInterestType(e.target.value)} /> Non-Dutch</label><br /><br />
 
-      <label>Cross Collateral Allowed:</label><br />
+      <label>Cross Collateral Allowed:</label>
       <select value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)}>
         <option value="">-- Select --</option>
         <option value="yes">Yes</option>
