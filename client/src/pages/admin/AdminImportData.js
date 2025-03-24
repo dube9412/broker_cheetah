@@ -7,10 +7,6 @@ const AdminImportData = () => {
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
 
-  <AdminNav />
-
-   
-
 
   useEffect(() => {
     fetch("https://broker-cheetah-backend.onrender.com/api/admin/import-data")
