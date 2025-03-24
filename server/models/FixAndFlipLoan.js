@@ -13,7 +13,7 @@ const FixAndFlipLoanSchema = new mongoose.Schema(
         enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"],
       },
     ],
-    
+
     experienceWindowMonths: { type: Number, required: false },
     minAsIsValue: { type: Number, required: false },
 
@@ -24,7 +24,6 @@ const FixAndFlipLoanSchema = new mongoose.Schema(
         required: false,
       },
       threshold: { type: Number },
-      checklistTriggers: [String],
     },
 
     // ✅ Tiered fields
