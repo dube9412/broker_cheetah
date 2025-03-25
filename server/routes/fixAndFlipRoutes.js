@@ -59,9 +59,7 @@ router.post("/:lenderId/fix-and-flip-programs", async (req, res) => {
       minAsIsValue: req.body.minAsIsValue || null,
       termLengthMonths: req.body.termLengthMonths || null,
       recourse: req.body.recourse || { recourse: false, nonRecourse: false },
-      interestType: req.body.interestType || "",
-      drawType: req.body.drawType || "",
-      crossCollateralAllowed: req.body.crossCollateralAllowed || "",
+      interestType: req.body.interestType || { dutch: false, nonDutch: false },      crossCollateralAllowed: req.body.crossCollateralAllowed || "",
       propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
 
       // ✅ Tiers array
@@ -129,8 +127,99 @@ router.delete("/:lenderId/fix-and-flip-programs/:programId", async (req, res) =>
     }
 });
 
-    
+// ✅ SEARCH Fix and Flip Programs
+router.get("/search", async (req, res) => {
+  try {
+    const {
+      state,
+      fico,
+      purchasePrice,
+      rehabNeeded,
+      arv,
+      asisValue,
+      experience,
+      liquidity,
+      recourse,
+      nonRecourse,
+      interestTypeDutch,
+      interestTypeNonDutch,
+      crossCollateralAllowed,
+    } = req.query;
 
+    const filters = {};
+
+    // ✅ Base-level filters
+    if (crossCollateralAllowed) filters.crossCollateralAllowed = crossCollateralAllowed;
+
+    // ✅ Recourse filtering (OR logic)
+    if (recourse === "true" || nonRecourse === "true") {
+      filters.$or = [];
+      if (recourse === "true") filters.$or.push({ "recourse.recourse": true });
+      if (nonRecourse === "true") filters.$or.push({ "recourse.nonRecourse": true });
+    }
+
+   if (interestTypeDutch === "true" || interestTypeNonDutch === "true") {
+      filters.$or = [];
+      if (interestTypeDutch === "true") filters.$or.push({ "interestType.dutch": true });
+      if (interestTypeNonDutch === "true") filters.$or.push({ "interestType.nonDutch": true });
+    }
+
+    // ✅ Fetch all programs that meet base-level filters
+    const programs = await FixAndFlipLoan.find(filters).populate("lender");
+
+    const matchingPrograms = [];
+
+    for (const program of programs) {
+      // ✅ Check state compatibility
+      if (state && !program.lender.states.includes(state)) continue;
+
+      // ✅ Tier matching
+      const matchingTier = program.tiers.find((tier) => {
+        if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
+        if (experience && tier.minExperience && Number(experience) < tier.minExperience) return false;
+
+        const pp = Number(purchasePrice) || 0;
+        const rehab = Number(rehabNeeded) || 0;
+        const asIs = Number(asisValue) || 0;
+        const afterRepairValue = Number(arv) || 0;
+
+        // ✅ Max Purchase Price Check (LTC limit)
+        if (tier.maxLTC && asIs && pp > (asIs * tier.maxLTC) / 100) return false;
+
+        // ✅ Max Total LTC Check
+        if (tier.totalLTC && (pp + rehab) > (afterRepairValue * tier.totalLTC) / 100) return false;
+
+        // ✅ Max ARV Check
+        if (tier.maxARV && afterRepairValue > 0 && (pp + rehab) > (afterRepairValue * tier.maxARV) / 100) return false;
+
+        // ✅ Rehab Percent (optional safety check)
+        if (tier.rehabPercent && rehab > 0 && pp > 0) {
+          const rehabPercent = (rehab / pp) * 100;
+          if (rehabPercent > tier.rehabPercent) return false;
+        }
+
+        return true; // ✅ Found a tier that works
+      });
+
+      if (matchingTier) {
+        matchingPrograms.push({
+          name: program.lender.name,
+          contact: program.lender.contactName,
+          phone: program.lender.phone,
+          email: program.lender.email,
+          programId: program._id,
+          lenderId: program.lender._id,
+          tier: matchingTier.tierName || "Unnamed Tier",
+        });
+      }
+    }
+
+    res.json(matchingPrograms);
+  } catch (error) {
+    console.error("❌ Error in Fix and Flip Search:", error);
+    res.status(500).json({ message: "Search failed" });
+  }
+});
   
 // ✅ Debugging: List Registered Routes
 console.log("✅ Registered Routes in Fix and Flip Routes:");
