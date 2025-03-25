@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Glossary from "../components/hardMoneyClass/Glossary";
 
+const BASE_URL = "https://broker-cheetah-backend.onrender.com";
+
 const US_STATES = [
   "AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA",
   "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME",
