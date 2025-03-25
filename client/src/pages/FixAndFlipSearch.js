@@ -20,7 +20,6 @@ function FixAndFlipSearch() {
   const [liquidity, setLiquidity] = useState("");
   const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
   const [interestType, setInterestType] = useState("");
-  const [drawType, setDrawType] = useState("");
   const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
 
   const [results, setResults] = useState([]);
@@ -37,7 +36,7 @@ function FixAndFlipSearch() {
     }
 
     try {
-      const response = await fetch(`/api/lenders/fixandflip?` + new URLSearchParams({
+      const queryString = new URLSearchParams({
         state,
         fico,
         purchasePrice,
@@ -46,20 +45,28 @@ function FixAndFlipSearch() {
         asisValue,
         experience,
         liquidity,
-        interestType,
-        drawType,
+        interestTypeDutch: interestType.dutch,
+  interestTypeNonDutch: interestType.nonDutch,
         crossCollateralAllowed,
         recourse: recourse.recourse,
         nonRecourse: recourse.nonRecourse
-      }));
+      }).toString();
 
-      if (!response.ok) throw new Error("Failed to fetch");
-      const data = await response.json();
-      setResults(data || []);
-    } catch (err) {
-      console.error("❌ Error searching:", err);
-      setResults([]);
-    }
+      const url = `${BASE_URL}/api/fix-and-flip/search?${queryString}`;
+      console.log("🔍 Fetching:", url); // Debug
+
+      const response = await fetch(url);
+  if (!response.ok) {
+    const errorText = await response.text(); // Get raw error
+    throw new Error(`❌ Status ${response.status}: ${errorText}`);
+  }
+
+  const data = await response.json();
+  setResults(data || []);
+} catch (err) {
+  console.error("❌ Error searching:", err.message);
+  setResults([]);
+}
   };
 
   return (
@@ -119,16 +126,12 @@ function FixAndFlipSearch() {
         <legend><strong>🔹 Loan Options</strong></legend>
 
         <label>Recourse:</label>
-        <label><input type="checkbox" checked={recourse.recourse} onChange={() => setRecourse((prev) => ({ ...prev, recourse: !prev.recourse }))} /> Recourse</label><br />
+        <label><input type="checkbox" checked={recourse.recourse} onChange={() => setRecourse((prev) => ({ ...prev, recourse: !prev.recourse }))} /> Recourse</label>
         <label><input type="checkbox" checked={recourse.nonRecourse} onChange={() => setRecourse((prev) => ({ ...prev, nonRecourse: !prev.nonRecourse }))} /> Non-Recourse</label><br />
 
         <label>Interest Type:</label>
-        <label><input type="radio" name="interest" value="dutch" checked={interestType === "dutch"} onChange={(e) => setInterestType(e.target.value)} /> Dutch</label><br />
-        <label><input type="radio" name="interest" value="non-dutch" checked={interestType === "non-dutch"} onChange={(e) => setInterestType(e.target.value)} /> Non-Dutch</label><br />
-
-        <label>Draw Type:</label>
-        <label><input type="radio" name="drawType" value="dutch" checked={drawType === "dutch"} onChange={(e) => setDrawType(e.target.value)} /> Dutch</label><br />
-        <label><input type="radio" name="drawType" value="non-dutch" checked={drawType === "non-dutch"} onChange={(e) => setDrawType(e.target.value)} /> Non-Dutch</label><br />
+        <label><input type="checkbox" checked={interestType.dutch} onChange={() => setInterestType((prev) => ({ ...prev, dutch: !prev.dutch }))} /> Dutch</label>
+        <label><input type="checkbox" checked={interestType.nonDutch} onChange={() => setInterestType((prev) => ({ ...prev, nonDutch: !prev.nonDutch }))} /> Non-Dutch</label><br />
 
         <label>Cross Collateral Allowed:
           <select value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)} style={{ width: "100%" }}>
