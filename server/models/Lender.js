@@ -17,6 +17,8 @@ const LenderSchema = new mongoose.Schema({
   assumable: { type: Boolean, default: false },
   bkFcSsDil: { type: Number, default: null },
   backgroundLimitations: [String],
+  highlightNote: { type: String, default: "" },
+
   loanPrograms: [{ type: mongoose.Schema.Types.ObjectId, ref: "LoanProgram" }],
 
   // ✅ Fix: Add a reference to Fix and Flip Loan Programs
