@@ -151,15 +151,44 @@ function FixAndFlipSearch() {
       {warning && <p style={{ color: "orange", fontWeight: "bold" }}>{warning}</p>}
 
       {results.length > 0 && (
-        <div>
-          <h3>Matching Lenders:</h3>
-          <ul>
-            {results.map((res, i) => (
-              <li key={i}>{res.name}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+  <div>
+    <h3>Matching Lenders:</h3>
+    <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+      {results.map((res, i) => (
+        <li
+          key={i}
+          style={{
+            marginBottom: "20px",
+            borderBottom: "1px solid #ccc",
+            paddingBottom: "10px",
+          }}
+        >
+          <strong>✅ {res.name}</strong>{" "}
+          <span style={{ fontSize: "0.9em" }}>{res.phone || ""}</span>
+          <br />
+          - Expect <strong>{res.maxLTC || "N/A"}%</strong> of purchase,{" "}
+          <strong>{res.rehabPercent || "N/A"}%</strong> rehab,{" "}
+          <strong>{res.termLengthMonths || "N/A"}-month</strong> term.
+          <br />
+          - Interest:{" "}
+          <strong>{res.interestType || "Not Provided"}</strong> | Recourse:{" "}
+          <strong>{res.recourse || "Not Provided"}</strong>
+          <br />
+          - Rehab Classification:{" "}
+          <strong>{res.rehabType || "Not Specified"}</strong>
+          <br />
+          📌 <em>Why this lender works:</em>{" "}
+          {res.highlightNote || "Available Fix & Flip program"}
+          <br />
+          <label>
+            <input type="checkbox" value={res.lenderId} /> Request Quote
+          </label>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
 
       <main style={{ maxWidth: "80rem", marginTop: "40px" }}>
         <Glossary />

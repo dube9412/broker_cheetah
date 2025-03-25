@@ -144,72 +144,80 @@ router.get("/search", async (req, res) => {
       interestTypeDutch,
       interestTypeNonDutch,
       crossCollateralAllowed,
+      propertyType,
     } = req.query;
 
     const filters = {};
 
-    // ✅ Base-level filters
     if (crossCollateralAllowed) filters.crossCollateralAllowed = crossCollateralAllowed;
 
-    // ✅ Recourse filtering (OR logic)
     if (recourse === "true" || nonRecourse === "true") {
       filters.$or = [];
       if (recourse === "true") filters.$or.push({ "recourse.recourse": true });
       if (nonRecourse === "true") filters.$or.push({ "recourse.nonRecourse": true });
     }
 
-   if (interestTypeDutch === "true" || interestTypeNonDutch === "true") {
-      filters.$or = [];
+    if (interestTypeDutch === "true" || interestTypeNonDutch === "true") {
+      filters.$or = filters.$or || [];
       if (interestTypeDutch === "true") filters.$or.push({ "interestType.dutch": true });
       if (interestTypeNonDutch === "true") filters.$or.push({ "interestType.nonDutch": true });
     }
 
-    // ✅ Fetch all programs that meet base-level filters
+    if (propertyType) filters.propertyTypes = propertyType;
+
     const programs = await FixAndFlipLoan.find(filters).populate("lender");
 
     const matchingPrograms = [];
 
     for (const program of programs) {
-      // ✅ Check state compatibility
       if (state && !program.lender.states.includes(state)) continue;
 
-      // ✅ Tier matching
       const matchingTier = program.tiers.find((tier) => {
         if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
         if (experience && tier.minExperience && Number(experience) < tier.minExperience) return false;
 
         const pp = Number(purchasePrice) || 0;
         const rehab = Number(rehabNeeded) || 0;
+        const arvNum = Number(arv) || 0;
         const asIs = Number(asisValue) || 0;
-        const afterRepairValue = Number(arv) || 0;
 
-        // ✅ Max Purchase Price Check (LTC limit)
         if (tier.maxLTC && asIs && pp > (asIs * tier.maxLTC) / 100) return false;
+        if (tier.totalLTC && (pp + rehab) > (arvNum * tier.totalLTC) / 100) return false;
+        if (tier.maxARV && (pp + rehab) > (arvNum * tier.maxARV) / 100) return false;
+        if (tier.rehabPercent && rehab > (pp * tier.rehabPercent / 100)) return false;
 
-        // ✅ Max Total LTC Check
-        if (tier.totalLTC && (pp + rehab) > (afterRepairValue * tier.totalLTC) / 100) return false;
-
-        // ✅ Max ARV Check
-        if (tier.maxARV && afterRepairValue > 0 && (pp + rehab) > (afterRepairValue * tier.maxARV) / 100) return false;
-
-        // ✅ Rehab Percent (optional safety check)
-        if (tier.rehabPercent && rehab > 0 && pp > 0) {
-          const rehabPercent = (rehab / pp) * 100;
-          if (rehabPercent > tier.rehabPercent) return false;
-        }
-
-        return true; // ✅ Found a tier that works
+        return true;
       });
 
       if (matchingTier) {
+        let rehabType = "Light";
+        if (purchasePrice && rehabNeeded) {
+          const rehabRatio = (Number(rehabNeeded) / Number(purchasePrice)) * 100;
+          if (rehabRatio > 100) rehabType = "Heavy";
+          else if (rehabRatio > 50) rehabType = "Medium";
+        }
+
+        let interestTypeDisplay = program.interestType?.dutch ? "Dutch" :
+                                  program.interestType?.nonDutch ? "Non-Dutch" : "N/A";
+
+        let recourseDisplay = program.recourse?.recourse
+          ? "Recourse"
+          : program.recourse?.nonRecourse
+          ? "Non-Recourse"
+          : "N/A";
+
         matchingPrograms.push({
           name: program.lender.name,
-          contact: program.lender.contactName,
           phone: program.lender.phone,
-          email: program.lender.email,
-          programId: program._id,
+          highlightNote: program.lender.highlightNote || "",
+          maxLTC: matchingTier.maxLTC || "N/A",
+          rehabPercent: matchingTier.rehabPercent || "N/A",
+          termLengthMonths: program.termLengthMonths || "N/A",
+          interestType: interestTypeDisplay,
+          recourse: recourseDisplay,
+          rehabType,
           lenderId: program.lender._id,
-          tier: matchingTier.tierName || "Unnamed Tier",
+          programId: program._id,
         });
       }
     }
@@ -220,6 +228,7 @@ router.get("/search", async (req, res) => {
     res.status(500).json({ message: "Search failed" });
   }
 });
+
   
 // ✅ Debugging: List Registered Routes
 console.log("✅ Registered Routes in Fix and Flip Routes:");
