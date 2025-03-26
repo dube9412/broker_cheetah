@@ -61,6 +61,7 @@ router.post("/:lenderId/fix-and-flip-programs", async (req, res) => {
       recourse: req.body.recourse || { recourse: false, nonRecourse: false },
       interestType: req.body.interestType || { dutch: false, nonDutch: false },      crossCollateralAllowed: req.body.crossCollateralAllowed || "",
       propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
+      drawType: req.body.drawType || { self: false, thirdParty: false },
 
       // ✅ Tiers array
       tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [],
@@ -79,11 +80,24 @@ router.put("/fix-and-flip-programs/:programId", async (req, res) => {
   try {
     console.log(`🔹 Updating Fix and Flip loan program: ${req.params.programId}`);
 
+    const updatePayload = {
+      experienceWindowMonths: req.body.experienceWindowMonths || null,
+      minAsIsValue: req.body.minAsIsValue || null,
+      termLengthMonths: req.body.termLengthMonths || null,
+      recourse: req.body.recourse || { recourse: false, nonRecourse: false },
+      interestType: req.body.interestType || { dutch: false, nonDutch: false },
+      drawType: req.body.drawType || { self: false, thirdParty: false },
+      crossCollateralAllowed: req.body.crossCollateralAllowed || "",
+      propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
+      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [],
+    };
+    
     const updatedProgram = await FixAndFlipLoan.findByIdAndUpdate(
       req.params.programId,
-      { $set: req.body }, // Update only fields sent in the request
-      { new: true, runValidators: true } // Return the updated document
+      { $set: updatePayload },
+      { new: true, runValidators: true }
     );
+    
 
     if (!updatedProgram) {
       console.error("❌ Fix and Flip Loan Program not found:", req.params.programId);
