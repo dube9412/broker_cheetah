@@ -16,19 +16,21 @@ const FixAndFlipLoanSchema = new mongoose.Schema(
     minAsIsValue: { type: Number },
 
     recourse: {
-      type: [String],
-      enum: ["recourse", "non-recourse"],
-      default: [],
+        recourse: { type: Boolean, default: false },
+        nonRecourse: { type: Boolean, default: false },
     },
     interestType: {
-      type: String,
-      enum: ["dutch", "non-dutch"],
+        dutch: { type: Boolean, default: false },
+        nonDutch: { type: Boolean, default: false },
     },
     drawType: {
-      type: String,
-      enum: ["dutch", "non-dutch"],
+        self: { type: Boolean, default: false },
+        thirdParty: { type: Boolean, default: false },
     },
-    crossCollateralAllowed: { type: Boolean },
+    crossCollateralAllowed: {
+        type: String,
+        enum: ["yes", "no"],
+        default: "no",
     termLength: { type: Number }, // in months
 
     // 🔸 Tier-Level Fields
