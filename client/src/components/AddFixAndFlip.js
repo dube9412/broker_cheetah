@@ -104,7 +104,7 @@ function AddFixAndFlip() {
     <div style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       <h2>Add Fix & Flip Loan Program</h2>
 
-      <fieldset style={{ padding: "15px", marginBottom: "20px" }}>
+      <fieldset style={{ border: "1px solid #ccc", padding: "15px", marginBottom: "20px" }}>
         <legend><strong>Program Details</strong></legend>
 
         <label>Experience Window (Months):
@@ -140,7 +140,8 @@ function AddFixAndFlip() {
 
         <label>Property Types:</label><br />
         {PROPERTY_OPTIONS.map((type) => (
-          <label key={type}><input type="checkbox" checked={propertyTypes.includes(type)} onChange={() => handlePropertyTypeChange(type)} /> {type}<br /></label>
+          <label key={type} style={{ marginRight: "10px" }}>
+            <input type="checkbox" checked={propertyTypes.includes(type)} onChange={() => handlePropertyTypeChange(type)} /> {type}<br /></label>
         ))}
       </fieldset>
 
