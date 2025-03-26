@@ -146,14 +146,16 @@ function EditFixAndFlip() {
       <h2>Edit Fix & Flip Program</h2>
 
       <fieldset style={{ border: "1px solid #ccc", padding: "15px", marginBottom: "20px" }}>
-        <legend><strong>Loan Details</strong></legend>
+        <legend><strong>Program Details</strong></legend>
 
         <label>Experience Window (Months):
           <input type="number" value={experienceWindowMonths} onChange={(e) => setExperienceWindowMonths(e.target.value)} />
         </label><br />
+
         <label>Min As-Is Property Value:
           <input type="number" value={minAsIsValue} onChange={(e) => setMinAsIsValue(e.target.value)} />
         </label><br />
+        
         <label>Term Length (Months):
           <input type="number" value={termLengthMonths} onChange={(e) => setTermLengthMonths(e.target.value)} />
         </label><br />
