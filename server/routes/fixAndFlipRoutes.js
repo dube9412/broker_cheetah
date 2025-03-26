@@ -71,9 +71,11 @@ router.post("/:lenderId/fix-and-flip-programs", async (req, res) => {
     await newProgram.save();
     res.status(201).json({ success: true, program: newProgram });
   } catch (error) {
-    console.error("❌ Error creating Fix & Flip program:", error);
-    res.status(500).json({ success: false, message: "Server error during Fix & Flip program creation." });
+    console.error("❌ Error creating Fix & Flip program:", error.message);
+    console.error("❌ Stack Trace:", error.stack);
+    res.status(500).json({ success: false, message: error.message });
   }
+  
 });
 
 // ✅ PUT: Update a Fix and Flip Loan Program

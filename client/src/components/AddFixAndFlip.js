@@ -80,6 +80,8 @@ function AddFixAndFlip() {
       tiers,
     };
 
+    console.log("🔍 SUBMIT PAYLOAD", payload);
+
     try {
       const res = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/${lenderId}/fix-and-flip-programs`, {
         method: "POST",
