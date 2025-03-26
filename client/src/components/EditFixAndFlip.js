@@ -14,7 +14,7 @@ function EditFixAndFlip() {
   const [minAsIsValue, setMinAsIsValue] = useState("");
   const [termLengthMonths, setTermLengthMonths] = useState("");
   const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
-  const [interestType, setInterestType] = useState("");
+  const [interestType, setInterestType] = useState({ dutch: false, nonDutch: false });
   const [drawType, setDrawType] = useState("");
   const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
   const [propertyTypes, setPropertyTypes] = useState([]);
