@@ -27,11 +27,8 @@ const FixAndFlipLoanSchema = new mongoose.Schema(
         self: { type: Boolean, default: false },
         thirdParty: { type: Boolean, default: false },
     },
-    crossCollateralAllowed: {
-        type: String,
-        enum: ["yes", "no"],
-        default: "no",
-    },
+    crossCollateralAllowed: { type: Boolean },
+
     termLength: { type: Number }, // in months
 
     // 🔸 Tier-Level Fields
