@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -15,7 +16,7 @@ function EditFixAndFlip() {
   const [termLengthMonths, setTermLengthMonths] = useState("");
   const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
   const [interestType, setInterestType] = useState({ dutch: false, nonDutch: false });
-  const [drawType, setDrawType] = useState("");
+  const [drawType, setDrawType] = useState({ self: false, thirdParty: false });
   const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
   const [propertyTypes, setPropertyTypes] = useState([]);
 
@@ -34,8 +35,8 @@ function EditFixAndFlip() {
           setMinAsIsValue(data.minAsIsValue || "");
           setTermLengthMonths(data.termLengthMonths || "");
           setRecourse(data.recourse || { recourse: false, nonRecourse: false });
-          setInterestType(data.interestType || "");
-          setDrawType(data.drawType || "");
+          setInterestType(data.interestType || { dutch: false, nonDutch: false });
+          setDrawType(data.drawType || { self: false, thirdParty: false });
           setCrossCollateralAllowed(data.crossCollateralAllowed || "");
           setPropertyTypes(data.propertyTypes || []);
         }
@@ -47,6 +48,16 @@ function EditFixAndFlip() {
     };
     fetchProgram();
   }, [programId]);
+
+  const handleCheckboxChange = (stateSetter, key) => {
+    stateSetter((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handlePropertyTypeChange = (type) => {
+    setPropertyTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
 
   const handleNumTiersChange = (e) => {
     const count = parseInt(e.target.value, 10);
@@ -79,16 +90,6 @@ function EditFixAndFlip() {
     const updated = [...tiers];
     updated[index].loanRange[bound] = value;
     setTiers(updated);
-  };
-
-  const handlePropertyTypeChange = (type) => {
-    setPropertyTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
-  };
-
-  const handleRecourseChange = (type) => {
-    setRecourse((prev) => ({ ...prev, [type]: !prev[type] }));
   };
 
   const handleSave = async () => {
@@ -141,73 +142,80 @@ function EditFixAndFlip() {
   if (loading || !program) return <p>Loading...</p>;
 
   return (
-    <div style={{ maxWidth: "700px", margin: "0 auto", padding: "20px" }}>
-      <h2>Editing Fix & Flip: {program.name}</h2>
+    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", maxWidth: "800px", margin: "0 auto" }}>
+      <h2>Edit Fix & Flip Program</h2>
 
-      <label>Experience Window (Months):</label>
-      <input type="number" value={experienceWindowMonths} onChange={(e) => setExperienceWindowMonths(e.target.value)} />
+      <fieldset style={{ border: "1px solid #ccc", padding: "15px", marginBottom: "20px" }}>
+        <legend><strong>Loan Details</strong></legend>
 
-      <label>Min As-Is Property Value:</label>
-      <input type="number" value={minAsIsValue} onChange={(e) => setMinAsIsValue(e.target.value)} />
+        <label>Experience Window (Months):
+          <input type="number" value={experienceWindowMonths} onChange={(e) => setExperienceWindowMonths(e.target.value)} />
+        </label><br />
+        <label>Min As-Is Property Value:
+          <input type="number" value={minAsIsValue} onChange={(e) => setMinAsIsValue(e.target.value)} />
+        </label><br />
+        <label>Term Length (Months):
+          <input type="number" value={termLengthMonths} onChange={(e) => setTermLengthMonths(e.target.value)} />
+        </label><br />
 
-      <label>Term Length (Months):</label>
-      <input type="number" value={termLengthMonths} onChange={(e) => setTermLengthMonths(e.target.value)} />
+        <label>Recourse:</label>
+        <label><input type="checkbox" checked={recourse.recourse} onChange={() => handleCheckboxChange(setRecourse, "recourse")} /> Recourse</label>
+        <label><input type="checkbox" checked={recourse.nonRecourse} onChange={() => handleCheckboxChange(setRecourse, "nonRecourse")} /> Non-Recourse</label><br />
 
-      <label>Recourse:</label>
-      <label><input type="checkbox" checked={recourse.recourse} onChange={() => handleRecourseChange("recourse")} /> Recourse</label>
-      <label><input type="checkbox" checked={recourse.nonRecourse} onChange={() => handleRecourseChange("nonRecourse")} /> Non-Recourse</label>
+        <label>Interest Type:</label>
+        <label><input type="checkbox" checked={interestType.dutch} onChange={() => handleCheckboxChange(setInterestType, "dutch")} /> Dutch</label>
+        <label><input type="checkbox" checked={interestType.nonDutch} onChange={() => handleCheckboxChange(setInterestType, "nonDutch")} /> Non-Dutch</label><br />
 
-      <label>Interest Type:</label>
-      <label><input type="radio" value="dutch" checked={interestType === "dutch"} onChange={(e) => setInterestType(e.target.value)} /> Dutch</label>
-      <label><input type="radio" value="non-dutch" checked={interestType === "non-dutch"} onChange={(e) => setInterestType(e.target.value)} /> Non-Dutch</label>
+        <label>Draw Type:</label>
+        <label><input type="checkbox" checked={drawType.self} onChange={() => handleCheckboxChange(setDrawType, "self")} /> Self</label>
+        <label><input type="checkbox" checked={drawType.thirdParty} onChange={() => handleCheckboxChange(setDrawType, "thirdParty")} /> 3rd Party</label><br />
 
-      <label>Draw Type:</label>
-      <label><input type="radio" value="dutch" checked={drawType === "dutch"} onChange={(e) => setDrawType(e.target.value)} /> Dutch</label>
-      <label><input type="radio" value="non-dutch" checked={drawType === "non-dutch"} onChange={(e) => setDrawType(e.target.value)} /> Non-Dutch</label>
+        <label>Cross Collateral Allowed:
+          <select value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)}>
+            <option value="">-- Select --</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </label><br />
 
-      <label>Cross Collateral Allowed:</label>
-      <select value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)}>
-        <option value="">-- Select --</option>
-        <option value="yes">Yes</option>
-        <option value="no">No</option>
-      </select>
-
-      <label>Property Types:</label>
-      {PROPERTY_TYPES.map(type => (
-        <label key={type}>
-          <input type="checkbox" checked={propertyTypes.includes(type)} onChange={() => handlePropertyTypeChange(type)} />
-          {type}
-        </label>
-      ))}
-
-      <label>Number of Tiers:</label>
-      <select value={numTiers} onChange={handleNumTiersChange}>
-        {[1, 2, 3, 4, 5].map((n) => (
-          <option key={n} value={n}>{n}</option>
+        <label>Property Types:</label><br />
+        {PROPERTY_TYPES.map(type => (
+          <label key={type} style={{ marginRight: "10px" }}>
+            <input type="checkbox" checked={propertyTypes.includes(type)} onChange={() => handlePropertyTypeChange(type)} />
+            {type}
+          </label>
         ))}
-      </select>
+      </fieldset>
+
+      <label>Number of Tiers:
+        <select value={numTiers} onChange={handleNumTiersChange}>
+          {[1, 2, 3, 4, 5].map((n) => (
+            <option key={n} value={n}>{n}</option>
+          ))}
+        </select>
+      </label><br /><br />
 
       {tiers.map((tier, i) => (
-        <div key={i} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
-          <h3>Tier {i + 1}</h3>
+        <fieldset key={i} style={{ border: "1px solid #aaa", padding: "10px", marginBottom: "15px" }}>
+          <legend><strong>Tier {i + 1}</strong></legend>
           <input placeholder="Tier Name" value={tier.tierName || ""} onChange={(e) => handleTierChange(i, "tierName", e.target.value)} />
           <input placeholder="Min FICO" value={tier.minFICO || ""} onChange={(e) => handleTierChange(i, "minFICO", e.target.value)} />
           <input placeholder="Min Experience" value={tier.minExperience || ""} onChange={(e) => handleTierChange(i, "minExperience", e.target.value)} />
-
           <input placeholder="Loan Range Min" value={tier.loanRange?.min || ""} onChange={(e) => handleLoanRangeChange(i, "min", e.target.value)} />
           <input placeholder="Loan Range Max" value={tier.loanRange?.max || ""} onChange={(e) => handleLoanRangeChange(i, "max", e.target.value)} />
-
           <input placeholder="Max LTC" value={tier.maxLTC || ""} onChange={(e) => handleTierChange(i, "maxLTC", e.target.value)} />
           <input placeholder="Total LTC" value={tier.totalLTC || ""} onChange={(e) => handleTierChange(i, "totalLTC", e.target.value)} />
           <input placeholder="Max ARV" value={tier.maxARV || ""} onChange={(e) => handleTierChange(i, "maxARV", e.target.value)} />
           <input placeholder="Rehab % Covered" value={tier.rehabPercent || ""} onChange={(e) => handleTierChange(i, "rehabPercent", e.target.value)} />
-        </div>
+        </fieldset>
       ))}
 
-      <br />
-      <button onClick={handleSave}>💾 Save</button>
-      <button onClick={handleDelete} style={{ marginLeft: "10px" }}>❌ Delete</button>
-      <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} style={{ marginLeft: "10px" }}>Cancel</button>
+<div style={{ marginTop: "20px", textAlign: "center" }}>
+          <button onClick={handleSave} style={{ marginRight: "10px" }}>💾 Save Program</button>
+          <button onClick={handleDelete} style={{ marginRight: "10px" }}>❌ Delete</button>
+          <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button">Cancel</button>
+        </div>
+    
     </div>
   );
 }

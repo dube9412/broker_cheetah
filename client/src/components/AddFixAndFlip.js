@@ -119,16 +119,16 @@ function AddFixAndFlip() {
           <input value={termLengthMonths} onChange={(e) => setTermLengthMonths(e.target.value)} />
         </label><br />
 
-        <label>Recourse:</label><br />
-        <input type="checkbox" checked={recourse.recourse} onChange={() => handleCheckboxChange("recourse", "recourse")} /> Recourse<br />
+        <label>Recourse:</label>
+        <input type="checkbox" checked={recourse.recourse} onChange={() => handleCheckboxChange("recourse", "recourse")} /> Recourse
         <input type="checkbox" checked={recourse.nonRecourse} onChange={() => handleCheckboxChange("nonRecourse", "recourse")} /> Non-Recourse<br />
 
-        <label>Interest Type:</label><br />
-        <input type="checkbox" checked={interestType.dutch} onChange={() => handleCheckboxChange("dutch", "interestType")} /> Dutch<br />
+        <label>Interest Type:</label>
+        <input type="checkbox" checked={interestType.dutch} onChange={() => handleCheckboxChange("dutch", "interestType")} /> Dutch
         <input type="checkbox" checked={interestType.nonDutch} onChange={() => handleCheckboxChange("nonDutch", "interestType")} /> Non-Dutch<br />
 
-        <label>Draw Type:</label><br />
-        <input type="checkbox" checked={drawType.self} onChange={() => handleCheckboxChange("self", "drawType")} /> Self<br />
+        <label>Draw Type:</label>
+        <input type="checkbox" checked={drawType.self} onChange={() => handleCheckboxChange("self", "drawType")} /> Self
         <input type="checkbox" checked={drawType.thirdParty} onChange={() => handleCheckboxChange("thirdParty", "drawType")} /> 3rd Party<br />
 
         <label>Cross Collateral Allowed:</label>
@@ -178,7 +178,10 @@ function AddFixAndFlip() {
         <button type="button" onClick={handleAddTier}>+ Add Tier</button>
       </fieldset>
 
-      <button onClick={handleSubmit}>Save</button>
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <button onClick={handleSubmit} style={{ marginRight: "10px" }}>Save Program</button>
+          <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button">Cancel</button>
+        </div>
     </div>
   );
 }
