@@ -31,6 +31,7 @@ const FixAndFlipLoanSchema = new mongoose.Schema(
         type: String,
         enum: ["yes", "no"],
         default: "no",
+    },
     termLength: { type: Number }, // in months
 
     // 🔸 Tier-Level Fields
