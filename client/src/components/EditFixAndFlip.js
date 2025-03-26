@@ -155,7 +155,7 @@ function EditFixAndFlip() {
         <label>Min As-Is Property Value:
           <input type="number" value={minAsIsValue} onChange={(e) => setMinAsIsValue(e.target.value)} />
         </label><br />
-        
+
         <label>Term Length (Months):
           <input type="number" value={termLengthMonths} onChange={(e) => setTermLengthMonths(e.target.value)} />
         </label><br />
@@ -173,11 +173,12 @@ function EditFixAndFlip() {
         <label><input type="checkbox" checked={drawType.thirdParty} onChange={() => handleCheckboxChange(setDrawType, "thirdParty")} /> 3rd Party</label><br />
 
         <label>Cross Collateral Allowed:
-          <select value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)}>
+          <select value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value === "true")}>
             <option value="">-- Select --</option>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+
         </label><br />
 
         <label>Property Types:</label><br />
