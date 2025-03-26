@@ -192,7 +192,7 @@ function EditFixAndFlip() {
 
       <label>Number of Tiers:
         <select value={numTiers} onChange={handleNumTiersChange}>
-          {[1, 2, 3, 4, 5].map((n) => (
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
             <option key={n} value={n}>{n}</option>
           ))}
         </select>
