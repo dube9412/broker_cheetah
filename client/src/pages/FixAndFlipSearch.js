@@ -71,6 +71,23 @@ function FixAndFlipSearch() {
 }
   };
 
+  const handleClear = () => {
+    setState("");
+    setFico("");
+    setPurchasePrice("");
+    setRehabNeeded("");
+    setArv("");
+    setAsisValue("");
+    setExperience("");
+    setLiquidity("");
+    setRecourse({ recourse: false, nonRecourse: false });
+    setInterestType({ dutch: false, nonDutch: false });
+    setCrossCollateralAllowed("");
+    setResults([]);
+    setWarning("");
+  };
+  
+
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", maxWidth: "800px", margin: "0 auto" }}>
       <h2>Fix & Flip Search</h2>
@@ -146,7 +163,11 @@ function FixAndFlipSearch() {
 
       <button onClick={handleSearch} style={{ padding: "10px 20px", backgroundColor: "#007bff", color: "#fff", border: "none", cursor: "pointer" }}>
         🔍 Search
-      </button><br /><br />
+      </button>
+      <button onClick={handleClear} style={{ marginLeft: "10px" }}>
+     🔄 New Search
+</button>
+<br /><br />
 
       {warning && <p style={{ color: "orange", fontWeight: "bold" }}>{warning}</p>}
 
