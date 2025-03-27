@@ -118,7 +118,7 @@
 
 /* Glossary styling: Ensure defined words are readable */
 .glossary-term {
-  color: #007BFF; /* Blue color for defined words */
+  color: #ffc107; /* Gold color for defined words */
   font-weight: bold;
 }
 
