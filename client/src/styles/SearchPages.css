@@ -25,10 +25,10 @@
 }
 
 .search-fieldset {
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 20px;
+  border: 2px solid #ccc; /* Match Fix and Flip line thickness */
+  padding: 10px;
   margin-bottom: 20px;
+  border-radius: 5px;
   background-color: #222;
 }
 
@@ -114,4 +114,38 @@
 
 .back-button:hover {
   background-color: #e0a800;
+}
+
+/* Glossary styling: Ensure defined words are readable */
+.glossary-term {
+  color: #007BFF; /* Blue color for defined words */
+  font-weight: bold;
+}
+
+/* Responsive layout for fieldsets */
+@media (min-width: 768px) {
+  .search-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .search-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .search-row > .search-fieldset {
+    flex: 1;
+  }
+}
+
+@media (max-width: 767px) {
+  .search-container {
+    display: block;
+  }
+
+  .search-row {
+    display: block;
+  }
 }

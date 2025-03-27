@@ -97,34 +97,36 @@ function FixAndFlipSearch() {
       <h1 className="search-title">Fix & Flip Search</h1>
       <p className="search-subtitle">Enter one or more filters to find matching loan programs.</p>
 
-      <fieldset className="search-fieldset">
-        <legend className="search-legend">🔹 Deal Details</legend>
-        <label className="search-label">State:</label>
-        <select className="search-select" value={state} onChange={(e) => setState(e.target.value)}>
-          <option value="">-- Select a state --</option>
-          {US_STATES.map((st) => (
-            <option key={st} value={st}>{st}</option>
-          ))}
-        </select>
-        <label className="search-label">Purchase Price:</label>
-        <input className="search-input" value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} />
-        <label className="search-label">Rehab Needed ($):</label>
-        <input className="search-input" value={rehabNeeded} onChange={(e) => setRehabNeeded(e.target.value)} />
-        <label className="search-label">ARV:</label>
-        <input className="search-input" value={arv} onChange={(e) => setArv(e.target.value)} />
-        <label className="search-label">As-Is Value:</label>
-        <input className="search-input" value={asisValue} onChange={(e) => setAsisValue(e.target.value)} />
-      </fieldset>
+      <div className="search-row">
+        <fieldset className="search-fieldset">
+          <legend className="search-legend">🔹 Deal Details</legend>
+          <label className="search-label">State:</label>
+          <select className="search-select" value={state} onChange={(e) => setState(e.target.value)}>
+            <option value="">-- Select a state --</option>
+            {US_STATES.map((st) => (
+              <option key={st} value={st}>{st}</option>
+            ))}
+          </select>
+          <label className="search-label">Purchase Price:</label>
+          <input className="search-input" value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} />
+          <label className="search-label">Rehab Needed ($):</label>
+          <input className="search-input" value={rehabNeeded} onChange={(e) => setRehabNeeded(e.target.value)} />
+          <label className="search-label">ARV:</label>
+          <input className="search-input" value={arv} onChange={(e) => setArv(e.target.value)} />
+          <label className="search-label">As-Is Value:</label>
+          <input className="search-input" value={asisValue} onChange={(e) => setAsisValue(e.target.value)} />
+        </fieldset>
 
-      <fieldset className="search-fieldset">
-        <legend className="search-legend">🔹 Borrower Profile</legend>
-        <label className="search-label">FICO Score:</label>
-        <input className="search-input" value={fico} onChange={(e) => setFico(e.target.value)} />
-        <label className="search-label">Experience (Flips in past 36 mo):</label>
-        <input className="search-input" value={experience} onChange={(e) => setExperience(e.target.value)} />
-        <label className="search-label">Liquidity (cash, stocks, etc.):</label>
-        <input className="search-input" value={liquidity} onChange={(e) => setLiquidity(e.target.value)} />
-      </fieldset>
+        <fieldset className="search-fieldset">
+          <legend className="search-legend">🔹 Borrower Profile</legend>
+          <label className="search-label">FICO Score:</label>
+          <input className="search-input" value={fico} onChange={(e) => setFico(e.target.value)} />
+          <label className="search-label">Experience (Flips in past 36 mo):</label>
+          <input className="search-input" value={experience} onChange={(e) => setExperience(e.target.value)} />
+          <label className="search-label">Liquidity (cash, stocks, etc.):</label>
+          <input className="search-input" value={liquidity} onChange={(e) => setLiquidity(e.target.value)} />
+        </fieldset>
+      </div>
 
       <fieldset className="search-fieldset">
         <legend className="search-legend">🔹 Loan Options</legend>

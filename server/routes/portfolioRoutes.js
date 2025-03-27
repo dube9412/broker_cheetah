@@ -101,10 +101,18 @@ router.get("/search", async (req, res) => {
       loanAmount,
       propertyType,
       zipcode,
+      loanTerm,
+      maxLTV,
+      maxPortfolioSize,
+      minDSCR,
     } = req.query;
 
     const filters = {};
     if (propertyType) filters.propertyTypes = propertyType;
+    if (loanTerm) filters.termMonths = { $gte: Number(loanTerm) };
+    if (maxLTV) filters["tiers.maxLTV"] = { $gte: Number(maxLTV) };
+    if (maxPortfolioSize) filters["tiers.maxPortfolioSize"] = { $gte: Number(maxPortfolioSize) };
+    if (minDSCR) filters.minDSCR = { $lte: Number(minDSCR) };
 
     const programs = await PortfolioLoan.find(filters).populate("lender");
 

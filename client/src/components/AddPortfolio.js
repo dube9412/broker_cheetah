@@ -10,6 +10,9 @@ function AddPortfolio() {
   const [loanRange, setLoanRange] = useState({ min: "", max: "" });
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [loanTerm, setLoanTerm] = useState("");
+  const [minLoanTerm, setMinLoanTerm] = useState("");
+  const [maxLoanTerm, setMaxLoanTerm] = useState("");
+  const [minDSCR, setMinDSCR] = useState("");
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
 
@@ -76,6 +79,9 @@ function AddPortfolio() {
           loanRange: formattedLoanRange,
           propertyTypes: propertyTypes,
           loanTerm,
+          minLoanTerm,
+          maxLoanTerm,
+          minDSCR,
           tiers,
         }),
       });
@@ -146,6 +152,12 @@ function AddPortfolio() {
         <input type="text" value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
         <br />
 
+        <label>Loan Term Range (months):</label>
+        <input type="number" value={minLoanTerm} onChange={(e) => setMinLoanTerm(e.target.value)} style={{ width: "45%", marginRight: "10px" }} />
+        <input type="number" value={maxLoanTerm} onChange={(e) => setMaxLoanTerm(e.target.value)} style={{ width: "45%" }} />
+
+        <label>Minimum DSCR:</label>
+        <input type="number" value={minDSCR} onChange={(e) => setMinDSCR(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <button type="submit" style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>
