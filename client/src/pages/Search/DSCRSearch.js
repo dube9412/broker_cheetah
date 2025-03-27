@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Glossary from "../../components/hardMoneyClass/Glossary";
 import "../../styles/SearchPages.css";
 
@@ -13,6 +14,7 @@ const US_STATES = [
 ];
 
 function DSCRSearch() {
+  const navigate = useNavigate();
   const [state, setState] = useState("");
   const [fico, setFico] = useState("");
   const [experience, setExperience] = useState("");
@@ -72,6 +74,7 @@ function DSCRSearch() {
 
   return (
     <div className="search-container">
+      <button className="back-button" onClick={() => navigate("/lender-search")}>🔙 Back to Loan Types</button>
       <h1 className="search-title">DSCR Loan Search</h1>
       <p className="search-subtitle">Enter one or more filters to find matching loan programs.</p>
 
