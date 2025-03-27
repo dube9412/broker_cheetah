@@ -57,10 +57,16 @@
   color: #fff; /* White text */
 }
 
+/* Search and New Search buttons: Small and side-by-side */
+.search-buttons-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
 .search-button {
-  display: inline-block;
-  padding: 10px 20px;
-  font-size: 1rem;
+  padding: 8px 16px;
+  font-size: 0.9rem;
   color: #111;
   background-color: #ffc107;
   border: none;
@@ -97,11 +103,12 @@
   text-align: center;
 }
 
+/* Back button: Small and positioned in the upper-left */
 .back-button {
   display: inline-block;
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 1rem;
+  margin-bottom: 20px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
   color: #111;
   background-color: #ffc107;
   border: none;
