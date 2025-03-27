@@ -54,6 +54,66 @@ router.put("/stabilized-bridge-programs/:programId", async (req, res) => {
   }
 });
 
+// ✅ Stabilized Bridge Search Endpoint
+router.get("/search", async (req, res) => {
+  try {
+    const {
+      state,
+      fico,
+      experience,
+      loanAmount,
+      propertyType,
+      zipcode,
+      dscrRatio,
+    } = req.query;
+
+    const filters = {};
+
+    if (propertyType) filters.propertyTypes = propertyType;
+
+    const programs = await StabilizedBridgeLoan.find(filters).populate("lender");
+
+    const matchingPrograms = [];
+
+    for (const program of programs) {
+      if (state && !program.lender.states.includes(state)) continue;
+
+      const matchingTier = program.tiers.find((tier) => {
+        if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
+        if (experience && tier.minExperience && Number(experience) < tier.minExperience) return false;
+        if (dscrRatio && tier.minDSCR && Number(dscrRatio) < tier.minDSCR) return false;
+
+        if (loanAmount) {
+          const loan = Number(loanAmount);
+          if (program.loanRange?.min && loan < program.loanRange.min) return false;
+          if (program.loanRange?.max && loan > program.loanRange.max) return false;
+        }
+
+        return true;
+      });
+
+      if (matchingTier) {
+        matchingPrograms.push({
+          lenderName: program.lender.name,
+          lenderPhone: program.lender.phone,
+          lenderId: program.lender._id,
+          programId: program._id,
+          loanRange: program.loanRange || {},
+          termMonths: program.termMonths || "N/A",
+          maxLTV: matchingTier.maxLTV || "N/A",
+          minDSCR: matchingTier.minDSCR || "N/A",
+        });
+      }
+    }
+
+    res.json(matchingPrograms);
+  } catch (error) {
+    console.error("❌ Stabilized Bridge Search error:", error);
+    res.status(500).json({ message: "Server error during Stabilized Bridge search." });
+  }
+});
+
+
 // ✅ DELETE: Remove a Stabilized Bridge Loan Program
 const mongoose = require("mongoose");
 

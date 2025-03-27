@@ -58,14 +58,8 @@ router.post("/:lenderId/ground-up-programs", async (req, res) => {
         name: req.body.name,
         lender: lenderId,
         type: "Ground Up",
-        minFICO: req.body.minFICO,
-        minExperience: req.body.minExperience,
-        maxLTV: req.body.maxLTV,
-        maxLTC: req.body.maxLTC,
-        minLoanAmount: req.body.minLoanAmount,
-        maxLoanAmount: req.body.maxLoanAmount,
         constructionBudget: req.body.constructionBudget,
-        StylePropertyMap: Array.isArray(req.body.StylePropertyMap) ? req.body.StylePropertyMap : [],
+        
 propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
         tiers: req.body.tiers || [],
     });
@@ -103,6 +97,65 @@ router.put("/ground-up-programs/:programId", async (req, res) => {
     res.status(500).json({ message: "Failed to update program." });
   }
 });
+
+// ✅ Ground Up Search Endpoint
+router.get("/search", async (req, res) => {
+  try {
+    const {
+      state,
+      fico,
+      experience,
+      loanAmount,
+      propertyType,
+      zipcode,
+    } = req.query;
+
+    const filters = {};
+
+    if (propertyType) filters.propertyTypes = propertyType;
+
+    const programs = await GroundUpLoan.find(filters).populate("lender");
+
+    const matchingPrograms = [];
+
+    for (const program of programs) {
+      if (state && !program.lender.states.includes(state)) continue;
+
+      const matchingTier = program.tiers.find((tier) => {
+        if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
+        if (experience && tier.minExperience && Number(experience) < tier.minExperience) return false;
+
+        if (loanAmount) {
+          const loan = Number(loanAmount);
+          if (program.loanRange?.min && loan < program.loanRange.min) return false;
+          if (program.loanRange?.max && loan > program.loanRange.max) return false;
+        }
+
+        return true;
+      });
+
+      if (matchingTier) {
+        matchingPrograms.push({
+          lenderName: program.lender.name,
+          lenderPhone: program.lender.phone,
+          lenderId: program.lender._id,
+          programId: program._id,
+          loanRange: program.loanRange || {},
+          termMonths: program.termMonths || "N/A",
+          constructionBudget: program.constructionBudget || "N/A",
+          maxLTV: matchingTier.maxLTV || "N/A",
+          maxLTC: matchingTier.maxLTC || "N/A",
+        });
+      }
+    }
+
+    res.json(matchingPrograms);
+  } catch (error) {
+    console.error("❌ Ground Up Search error:", error);
+    res.status(500).json({ message: "Server error during Ground Up search." });
+  }
+});
+
 
 // ✅ DELETE: Remove a Ground Up Loan Program
 const mongoose = require("mongoose");

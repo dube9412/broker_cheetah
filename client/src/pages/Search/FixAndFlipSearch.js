@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Glossary from "../components/hardMoneyClass/Glossary";
+import Glossary from "../../components/hardMoneyClass/Glossary";
 
 const BASE_URL = "https://broker-cheetah-backend.onrender.com";
 

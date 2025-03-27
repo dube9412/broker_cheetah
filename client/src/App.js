@@ -40,12 +40,19 @@ import AdminImportData from "./pages/admin/AdminImportData.js";
 import AdminDocuments from "./pages/admin/AdminDocuments";
 
 // Loan Type Pages
-import LoanTypeSelection from "./pages/LoanTypeSelection";
-import FixAndFlipSearch from "./pages/FixAndFlipSearch";
+
 import ManageLoanPrograms from "./pages/ManageLoanPrograms";
 import FixAndFlipCalc from "./pages/FixAndFlipCalc";
 import HardMoneyClass from './pages/HardMoneyClass';
 import LessonPage from "./pages/LessonPage";
+
+// Search Pages
+import LoanTypeSelection from "./pages/Search/LoanTypeSelection.js";
+import FixAndFlipSearch from "./pages/Search/FixAndFlipSearch.js";
+import DSCRSearch from "./pages/Search/DSCRSearch.js";
+import GroundUpSearch from "./pages/Search/GroundUpSearch";
+import StabilizedBridgeSearch from "./pages/Search/StabilizedBridgeSearch";
+import PortfolioSearch from "./pages/Search/PortfolioSearch";
 
 // Lender Portal Pages
 import LenderProtectedRoutes from './components/LenderProtectedRoutes';
@@ -129,6 +136,10 @@ function App() {
               {/* Loan type & search */}
               <Route path="/select-loan-type" element={<LoanTypeSelection />} />
               <Route path="/search/fixandflip" element={<FixAndFlipSearch />} />
+              <Route path="/search/dscr" element={<DSCRSearch />} />
+              <Route path="/search/groundup" element={<GroundUpSearch />} />
+              <Route path="/search/stabilizedbridge" element={<StabilizedBridgeSearch />} />
+              <Route path="/search/portfolio" element={<PortfolioSearch />} />
 
               {/* Admin Dashboard */}
               <Route

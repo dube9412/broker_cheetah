@@ -92,6 +92,63 @@ router.put("/portfolio-programs/:programId", async (req, res) => {
   }
 });
 
+router.get("/search", async (req, res) => {
+  try {
+    const {
+      state,
+      fico,
+      experience,
+      loanAmount,
+      propertyType,
+      zipcode,
+    } = req.query;
+
+    const filters = {};
+    if (propertyType) filters.propertyTypes = propertyType;
+
+    const programs = await PortfolioLoan.find(filters).populate("lender");
+
+    const matchingPrograms = [];
+
+    for (const program of programs) {
+      if (state && !program.lender.states.includes(state)) continue;
+
+      const matchingTier = program.tiers.find((tier) => {
+        if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
+        if (experience && tier.minExperience && Number(experience) < tier.minExperience) return false;
+
+        if (loanAmount) {
+          const amount = Number(loanAmount);
+          if (program.loanRange?.min && amount < program.loanRange.min) return false;
+          if (program.loanRange?.max && amount > program.loanRange.max) return false;
+        }
+
+        return true;
+      });
+
+      if (matchingTier) {
+        matchingPrograms.push({
+          lenderName: program.lender.name,
+          lenderPhone: program.lender.phone,
+          lenderId: program.lender._id,
+          programId: program._id,
+          loanRangeMin: program.loanRange?.min || null,
+          loanRangeMax: program.loanRange?.max || null,
+          termMonths: program.termMonths || "N/A",
+          maxLTV: matchingTier.maxLTV || "N/A",
+          maxPortfolioSize: matchingTier.maxPortfolioSize || "N/A",
+        });
+      }
+    }
+
+    res.json(matchingPrograms);
+  } catch (error) {
+    console.error("❌ Portfolio Search error:", error);
+    res.status(500).json({ message: "Server error during Portfolio loan search." });
+  }
+});
+
+
 // ✅ DELETE: Remove a Portfolio Loan Program
 const mongoose = require("mongoose");
 
