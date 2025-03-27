@@ -126,6 +126,69 @@ router.put("/dscr-programs/:programId", async (req, res) => {
   }
 });
 
+// Add this to your dscrRoutes.js
+router.get("/search", async (req, res) => {
+  try {
+    const {
+      state,
+      fico,
+      experience,
+      loanAmount,
+      propertyType,
+      propertyUse,
+      dscrRatio,
+    } = req.query;
+
+    const filters = {};
+
+    if (propertyType) filters.propertyTypes = propertyType;
+    if (propertyUse) filters.propertyUse = propertyUse;
+
+    const programs = await DSCRLoan.find(filters).populate("lender");
+
+    const matchingPrograms = [];
+
+    for (const program of programs) {
+      if (state && !program.lender.states.includes(state)) continue;
+
+      const matchingTier = program.tiers.find((tier) => {
+        if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
+        if (experience && tier.minExperience && Number(experience) < tier.minExperience) return false;
+        if (dscrRatio && tier.dscrRatioMin && Number(dscrRatio) < tier.dscrRatioMin) return false;
+
+        if (loanAmount) {
+          const loan = Number(loanAmount);
+          if (tier.loanRange?.min && loan < tier.loanRange.min) return false;
+          if (tier.loanRange?.max && loan > tier.loanRange.max) return false;
+        }
+
+        return true;
+      });
+
+      if (matchingTier) {
+        matchingPrograms.push({
+          lenderName: program.lender.name,
+          lenderPhone: program.lender.phone,
+          lenderId: program.lender._id,
+          programId: program._id,
+          maxLTVPurchase: matchingTier.maxLTVPurchase || "N/A",
+          maxLTVRateTerm: matchingTier.maxLTVRateTerm || "N/A",
+          maxLTVCashOut: matchingTier.maxLTVCashOut || "N/A",
+          dscrRatioMin: matchingTier.dscrRatioMin || "N/A",
+          loanRange: program.loanRange || {},
+          prepaymentPeriod: program.prepaymentPeriod || "N/A",
+        });
+      }
+    }
+
+    res.json(matchingPrograms);
+  } catch (error) {
+    console.error("❌ DSCR Search error:", error);
+    res.status(500).json({ message: "Server error during DSCR search." });
+  }
+});
+
+
 // ✅ DELETE: Remove a DSCR Loan Program
 const mongoose = require("mongoose");
 
