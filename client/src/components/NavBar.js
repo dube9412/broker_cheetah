@@ -82,7 +82,7 @@ function NavBar() {
           </nav>
 
           <div className="logout-container">
-            <button onClick={logout}>Logout</button>
+            <button onClick={logout}>Logout</button> // Redirect handled in AuthContext
           </div>
         </>
       ) : isLenderLoggedIn ? (
@@ -95,7 +95,7 @@ function NavBar() {
           </nav>
 
           <div className="logout-container">
-            <button onClick={logoutLender}>Logout</button>
+            <button onClick={logoutLender}>Logout</button> // Redirect handled in LenderAuthContext
           </div>
         </>
       ) : isLoggedIn ? (
@@ -150,7 +150,7 @@ function NavBar() {
           </nav>
 
           <div className="logout-container">
-            <button onClick={logout}>Logout</button>
+            <button onClick={logout}>Logout</button> // Redirect handled in AuthContext
           </div>
         </>
       ) : (

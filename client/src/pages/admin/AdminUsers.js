@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import AdminNav from "../../components/AdminNav";
+
 
 
 const AdminUsers = () => {
@@ -129,6 +129,7 @@ const AdminUsers = () => {
             <th>Email</th>
             <th>Role</th>
             <th>Created At</th>
+            <th>Last Login</th> {/* New column for Last Login */}
             <th>Actions</th>
           </tr>
         </thead>
@@ -139,6 +140,7 @@ const AdminUsers = () => {
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td>{new Date(user.createdAt).toLocaleString()}</td>
+                <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}</td> {/* Display Last Login */}
                 <td>
                   {user.role !== "superadmin" && (
                     <>
@@ -162,7 +164,7 @@ const AdminUsers = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="4">No users found.</td>
+              <td colSpan="5">No users found.</td> {/* Update colspan to match new column count */}
             </tr>
           )}
         </tbody>

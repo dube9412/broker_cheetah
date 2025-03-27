@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Glossary from "../../components/hardMoneyClass/Glossary";
+import "../../styles/SearchPages.css";
 
 const BASE_URL = "https://broker-cheetah-backend.onrender.com";
 
@@ -11,7 +12,6 @@ const US_STATES = [
   "UT", "VA", "VT", "WA", "WI", "WV", "WY"
 ];
 
-
 function SearchStabilizedBridge() {
   const [state, setState] = useState("");
   const [zipCode, setZipCode] = useState("");
@@ -21,85 +21,129 @@ function SearchStabilizedBridge() {
   const [propertyType, setPropertyType] = useState("");
   const [dscrRatio, setDscrRatio] = useState("");
   const [results, setResults] = useState([]);
+  const [warning, setWarning] = useState("");
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
 
   const handleSearch = async () => {
+    setWarning("");
+
     try {
-      const params = new URLSearchParams({
+      const queryString = new URLSearchParams({
         state,
         zipCode,
         fico,
         experience,
         loanAmount,
         propertyType,
-        dscrRatio
-      });
+        dscrRatio,
+      }).toString();
 
-      const res = await fetch(`https://broker-cheetah-backend.onrender.com/api/stabilized-bridge/search?${params}`);
-      const data = await res.json();
+      const url = `${BASE_URL}/api/stabilized-bridge/search?${queryString}`;
+      console.log("🔍 Fetching:", url);
 
-      setResults(data);
-    } catch (error) {
-      console.error("❌ Error searching Stabilized Bridge programs:", error);
-      alert("Search failed.");
+      const response = await fetch(url);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`❌ Status ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      setResults(data || []);
+    } catch (err) {
+      console.error("❌ Error searching:", err.message);
+      setResults([]);
     }
   };
 
+  const handleClear = () => {
+    setState("");
+    setZipCode("");
+    setFico("");
+    setExperience("");
+    setLoanAmount("");
+    setPropertyType("");
+    setDscrRatio("");
+    setResults([]);
+    setWarning("");
+  };
+
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Search Stabilized Bridge Programs</h2>
+    <div className="search-container">
+      <h1 className="search-title">Stabilized Bridge Search</h1>
+      <p className="search-subtitle">Enter one or more filters to find matching loan programs.</p>
 
-      <label>State:
-        <input value={state} onChange={(e) => setState(e.target.value)} />
-      </label><br />
+      <fieldset className="search-fieldset">
+        <legend className="search-legend">🔹 Deal Details</legend>
 
-      <label>ZIP Code:
-        <input value={zipCode} onChange={(e) => setZipCode(e.target.value)} />
-      </label><br />
+        <label>State:
+          <select value={state} onChange={(e) => setState(e.target.value)} style={{ width: "100%" }}>
+            <option value="">-- Select a state --</option>
+            {US_STATES.map((st) => (
+              <option key={st} value={st}>{st}</option>
+            ))}
+          </select>
+        </label><br />
 
-      <label>FICO Score:
-        <input value={fico} onChange={(e) => setFico(e.target.value)} />
-      </label><br />
+        <label>ZIP Code:
+          <input value={zipCode} onChange={(e) => setZipCode(e.target.value)} style={{ width: "100%" }} />
+        </label><br />
 
-      <label>Experience (# of deals):
-        <input value={experience} onChange={(e) => setExperience(e.target.value)} />
-      </label><br />
+        <label>Loan Amount:
+          <input value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} style={{ width: "100%" }} />
+        </label><br />
 
-      <label>Loan Amount:
-        <input value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} />
-      </label><br />
+        <label>Property Type:
+          <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)} style={{ width: "100%" }}>
+            <option value="">-- Select --</option>
+            {PROPERTY_TYPES.map((type) => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+        </label><br />
+      </fieldset>
 
-      <label>Property Type:
-        <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)}>
-          <option value="">-- Select --</option>
-          {PROPERTY_TYPES.map((type) => (
-            <option key={type} value={type}>{type}</option>
-          ))}
-        </select>
-      </label><br />
+      <fieldset className="search-fieldset">
+        <legend className="search-legend">🔹 Borrower Profile</legend>
 
-      <label>Min DSCR Ratio:
-        <input value={dscrRatio} onChange={(e) => setDscrRatio(e.target.value)} />
-      </label><br />
+        <label>FICO Score:
+          <input value={fico} onChange={(e) => setFico(e.target.value)} style={{ width: "100%" }} />
+        </label><br />
 
-      <button onClick={handleSearch}>Search</button>
+        <label>Experience (# of deals):
+          <input value={experience} onChange={(e) => setExperience(e.target.value)} style={{ width: "100%" }} />
+        </label><br />
 
-      <hr />
-      <h3>Results:</h3>
-      {results.length === 0 && <p>No matching programs.</p>}
-      {results.map((program, i) => (
-        <div key={i} style={{ border: "1px solid #ccc", padding: "10px", margin: "10px 0" }}>
-          <strong>Lender:</strong> {program.lenderName} <br />
-          <strong>Max LTV:</strong> {program.maxLTV || "N/A"} <br />
-          <strong>Min DSCR:</strong> {program.minDSCR || "N/A"} <br />
-          <strong>Loan Term:</strong> {program.loanTerm || "N/A"} months <br />
-          <strong>Loan Range:</strong> ${program.loanRangeMin || "N/A"} - ${program.loanRangeMax || "N/A"}
-        </div>
-      ))}
-       <main style={{ maxWidth: "80rem", marginTop: "40px" }}>
-        <Glossary />
-      </main>
+        <label>Min DSCR Ratio:
+          <input value={dscrRatio} onChange={(e) => setDscrRatio(e.target.value)} style={{ width: "100%" }} />
+        </label>
+      </fieldset>
+
+      <button className="search-button" onClick={handleSearch}>🔍 Search</button>
+      <button className="search-button" onClick={handleClear} style={{ marginLeft: "10px" }}>🔄 New Search</button>
+
+      {warning && <p className="search-warning">{warning}</p>}
+
+      <div className="search-results">
+        {results.map((res, i) => (
+          <div key={i} className="search-result-item">
+            <strong>✅ {res.lenderName}</strong>
+            <span style={{ fontSize: "0.9em" }}>{res.lenderPhone || ""}</span>
+            <br />
+            - Max LTV: <strong>{res.maxLTV || "N/A"}%</strong>, Min DSCR: <strong>{res.minDSCR || "N/A"}</strong>
+            <br />
+            - Loan Term: <strong>{res.loanTerm || "N/A"} months</strong>
+            <br />
+            - Loan Range: <strong>${res.loanRange?.min || "N/A"} - ${res.loanRange?.max || "N/A"}</strong>
+            <br />
+            <label>
+              <input type="checkbox" value={res.lenderId} /> Request Quote
+            </label>
+          </div>
+        ))}
+      </div>
+
+      <Glossary />
     </div>
   );
 }

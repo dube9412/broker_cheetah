@@ -45,56 +45,74 @@ router.get("/ground-up-programs/:programId", async (req, res) => {
 // ✅ POST: Add a new Ground Up Loan Program
 router.post("/:lenderId/ground-up-programs", async (req, res) => {
   try {
-    console.log("🔹 Received Ground Up Loan Program data:", req.body);
     const { lenderId } = req.params;
 
-    const lender = await Lender.findById(lenderId);
-    if (!lender) {
-        console.error("❌ Lender not found:", lenderId);
-        return res.status(404).json({ message: "Lender not found" });
-        }
-
     const newProgram = new GroundUpLoan({
-        name: req.body.name,
-        lender: lenderId,
-        type: "Ground Up",
-        constructionBudget: req.body.constructionBudget,
-        
-propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
-        tiers: req.body.tiers || [],
+      name: req.body.name || "Ground Up Construction Loan",
+      type: req.body.type || "Ground Up",
+      lender: lenderId,
+
+      // ✅ Base-level fields
+      experienceWindowMonths: req.body.experienceWindowMonths || null,
+      minAsIsValue: req.body.minAsIsValue || null,
+      termLengthMonths: req.body.termLengthMonths || null,
+      constructionBudget: req.body.constructionBudget || null,
+      recourse: req.body.recourse || { recourse: false, nonRecourse: false },
+      interestType: req.body.interestType || { dutch: false, nonDutch: false },
+      drawType: req.body.drawType || { self: false, thirdParty: false },
+      crossCollateralAllowed:
+        typeof req.body.crossCollateralAllowed === "boolean"
+          ? req.body.crossCollateralAllowed
+          : null,
+
+      propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
+
+      // ✅ Tiers array
+      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [],
     });
 
     await newProgram.save();
-
-    console.log("✅ Saved new Ground Up program:", newProgram);
     res.status(201).json({ success: true, program: newProgram });
   } catch (error) {
-    console.error("❌ Error saving Ground Up program:", error);
-    res.status(500).json({ message: "Failed to save program." });
+    console.error("❌ Error creating Ground Up program:", error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
 // ✅ PUT: Update a Ground Up Loan Program
 router.put("/ground-up-programs/:programId", async (req, res) => {
   try {
-    console.log(`🔹 Updating Ground Up Loan Program: ${req.params.programId}`);
+    const updatePayload = {
+      experienceWindowMonths: req.body.experienceWindowMonths || null,
+      minAsIsValue: req.body.minAsIsValue || null,
+      termLengthMonths: req.body.termLengthMonths || null,
+      constructionBudget: req.body.constructionBudget || null,
+      recourse: req.body.recourse || { recourse: false, nonRecourse: false },
+      interestType: req.body.interestType || { dutch: false, nonDutch: false },
+      drawType: req.body.drawType || { self: false, thirdParty: false },
+      crossCollateralAllowed:
+        typeof req.body.crossCollateralAllowed === "boolean"
+          ? req.body.crossCollateralAllowed
+          : null,
+
+      propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
+      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [],
+    };
 
     const updatedProgram = await GroundUpLoan.findByIdAndUpdate(
-        req.params.programId, 
-        { $set: req.body }, 
-        { new: true, runValidators: true }
+      req.params.programId,
+      { $set: updatePayload },
+      { new: true, runValidators: true }
     );
 
     if (!updatedProgram) {
-        console.error("❌ Ground Up Loan Program not found:", req.params.programId);
-      return res.status(404).json({ message: "Program not found" });
+      return res.status(404).json({ message: "Loan program not found" });
     }
 
-    console.log("✅ Updated Ground Up program:", updatedProgram);
     res.json({ success: true, program: updatedProgram });
   } catch (error) {
-    console.error("❌ Error updating Ground Up program:", error);
-    res.status(500).json({ message: "Failed to update program." });
+    console.error("❌ Error updating Ground Up Loan Program:", error);
+    res.status(500).json({ message: "Failed to update loan program" });
   }
 });
 

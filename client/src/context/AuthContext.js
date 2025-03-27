@@ -1,8 +1,10 @@
 import React, { createContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Add this import
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const navigate = useNavigate(); // Add this hook
   const [user, setUser] = useState(null);
  const isLoggedIn = !!user; // ✅ Boolean for login state
   const isAdmin = user?.role === "admin" || user?.role === "superadmin";
@@ -29,9 +31,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("userRole", userData.role);
   };
 
-  const logout = () => {setUser(null);
+  const logout = () => {
+    setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("userRole");
+    navigate("/"); // Redirect to Home.js
   };
 
   return (
