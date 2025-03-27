@@ -1,19 +1,15 @@
 import React, { createContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Add this import
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const navigate = useNavigate(); // Add this hook
   const [user, setUser] = useState(null);
- const isLoggedIn = !!user; // ✅ Boolean for login state
+  const isLoggedIn = !!user;
   const isAdmin = user?.role === "admin" || user?.role === "superadmin";
   const isSuperAdmin = user?.role === "superadmin";
   const isLender = user?.role === "lender";
 
-
   useEffect(() => {
-    // ✅ Restore login state from localStorage
     const storedToken = localStorage.getItem("token");
     const storedRole = localStorage.getItem("userRole");
 
@@ -25,8 +21,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     console.log("Logging in user:", userData);
-    setUser(userData); // ✅ Update state to trigger re-render
-
+    setUser(userData);
     localStorage.setItem("token", userData.token);
     localStorage.setItem("userRole", userData.role);
   };
@@ -35,7 +30,6 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("userRole");
-    navigate("/"); // Redirect to Home.js
   };
 
   return (

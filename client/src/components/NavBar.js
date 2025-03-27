@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { LenderAuthContext } from "../context/LenderAuthContext";
 import logo from "../assets/logo.png";
@@ -8,6 +8,7 @@ import "./NavBar.css";
 function NavBar() {
   const { isLoggedIn, isAdmin, isSuperAdmin, logout } = useContext(AuthContext);
   const { isLenderLoggedIn, logoutLender } = useContext(LenderAuthContext);
+  const navigate = useNavigate();
   
   const [showLenderDropdown, setShowLenderDropdown] = useState(false);
   const [showClassDropdown, setShowClassDropdown] = useState(false);
@@ -18,6 +19,16 @@ function NavBar() {
   useEffect(() => {
     console.log("Navbar: Auth state changed:", { isLoggedIn, isAdmin, isSuperAdmin, isLenderLoggedIn });
   }, [isLoggedIn, isAdmin, isSuperAdmin, isLenderLoggedIn]);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/"); // Redirect to home after logout
+  };
+
+  const handleLenderLogout = () => {
+    logoutLender();
+    navigate("/"); // Redirect to home after logout
+  };
 
   return (
     <div className="navbar-container">
@@ -82,7 +93,7 @@ function NavBar() {
           </nav>
 
           <div className="logout-container">
-            <button onClick={logout}>Logout</button> // Redirect handled in AuthContext
+            <button onClick={handleLogout}>Logout</button> // Redirect handled in AuthContext
           </div>
         </>
       ) : isLenderLoggedIn ? (
@@ -95,7 +106,7 @@ function NavBar() {
           </nav>
 
           <div className="logout-container">
-            <button onClick={logoutLender}>Logout</button> // Redirect handled in LenderAuthContext
+            <button onClick={handleLenderLogout}>Logout</button> // Redirect handled in LenderAuthContext
           </div>
         </>
       ) : isLoggedIn ? (
@@ -150,7 +161,7 @@ function NavBar() {
           </nav>
 
           <div className="logout-container">
-            <button onClick={logout}>Logout</button> // Redirect handled in AuthContext
+            <button onClick={handleLogout}>Logout</button> // Redirect handled in AuthContext
           </div>
         </>
       ) : (
