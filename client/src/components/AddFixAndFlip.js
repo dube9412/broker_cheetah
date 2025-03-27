@@ -133,12 +133,10 @@ function AddFixAndFlip() {
         <input type="checkbox" checked={drawType.self} onChange={() => handleCheckboxChange("self", "drawType")} /> Self
         <input type="checkbox" checked={drawType.thirdParty} onChange={() => handleCheckboxChange("thirdParty", "drawType")} /> 3rd Party<br />
 
-        <label>Cross Collateral Allowed:</label>
-        <select value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value === "true")}>
-            <option value="">-- Select --</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-        </select>
+        <label>Cross Collateral Allowed:</label><br />
+<label><input type="radio" value="true" checked={crossCollateralAllowed === true} onChange={() => setCrossCollateralAllowed(true)} /> Yes</label><br />
+<label><input type="radio" value="false" checked={crossCollateralAllowed === false} onChange={() => setCrossCollateralAllowed(false)} /> No</label>
+
             <br />
 
         <label>Property Types:</label><br />

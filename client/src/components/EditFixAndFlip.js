@@ -172,14 +172,10 @@ function EditFixAndFlip() {
         <label><input type="checkbox" checked={drawType.self} onChange={() => handleCheckboxChange(setDrawType, "self")} /> Self</label>
         <label><input type="checkbox" checked={drawType.thirdParty} onChange={() => handleCheckboxChange(setDrawType, "thirdParty")} /> 3rd Party</label><br />
 
-        <label>Cross Collateral Allowed:
-          <select value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value === "true")}>
-            <option value="">-- Select --</option>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-        </select>
-
-        </label><br />
+        <label>Cross Collateral Allowed:</label><br />
+<label><input type="radio" value="true" checked={crossCollateralAllowed === true} onChange={() => setCrossCollateralAllowed(true)} /> Yes</label><br />
+<label><input type="radio" value="false" checked={crossCollateralAllowed === false} onChange={() => setCrossCollateralAllowed(false)} /> No</label>
+<br />
 
         <label>Property Types:</label><br />
         {PROPERTY_TYPES.map(type => (
