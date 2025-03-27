@@ -61,15 +61,7 @@ router.post("/:lenderId/fix-and-flip-programs", async (req, res) => {
       recourse: req.body.recourse || { recourse: false, nonRecourse: false },
       interestType: req.body.interestType || { dutch: false, nonDutch: false },
       drawType: req.body.drawType || { self: false, thirdParty: false },
-      crossCollateralAllowed:
-          typeof req.body.crossCollateralAllowed === "boolean"
-            ? req.body.crossCollateralAllowed
-            : req.body.crossCollateralAllowed === "true"
-            ? true
-            : req.body.crossCollateralAllowed === "false"
-            ? false
-            : undefined,
-
+      crossCollateralAllowed: req.body.crossCollateralAllowed || null,
       propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
 
       // ✅ Tiers array
