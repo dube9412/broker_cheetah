@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Glossary from "../../components/hardMoneyClass/Glossary";
 import "../../styles/SearchPages.css";
 
@@ -13,6 +14,7 @@ const US_STATES = [
 ];
 
 function FixAndFlipSearch() {
+  const navigate = useNavigate();
   const [state, setState] = useState("");
   const [fico, setFico] = useState("");
   const [purchasePrice, setPurchasePrice] = useState("");
@@ -91,6 +93,7 @@ function FixAndFlipSearch() {
 
   return (
     <div className="search-container">
+      <button className="back-button" onClick={() => navigate("/search")}>🔙 Back to Loan Types</button>
       <h1 className="search-title">Fix & Flip Search</h1>
       <p className="search-subtitle">Enter one or more filters to find matching loan programs.</p>
 

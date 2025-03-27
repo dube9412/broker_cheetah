@@ -1,47 +1,48 @@
-
 .search-container {
   max-width: 900px;
   margin: 0 auto;
   padding: 40px 20px;
-  background-color: #f9f9f9;
+  background-color: #111;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  color: #fff;
   font-family: Arial, sans-serif;
 }
 
 .search-title {
   text-align: center;
   font-size: 2.5rem;
-  margin-bottom: 20px;
-  color: #333;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #ffc107; /* gold accent */
 }
 
 .search-subtitle {
   text-align: center;
   font-size: 1.2rem;
   margin-bottom: 30px;
-  color: #666;
+  color: #ccc;
 }
 
 .search-fieldset {
-  border: 1px solid #ddd;
+  border: 1px solid #333;
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
-  background-color: #fff;
+  background-color: #222;
 }
 
 .search-legend {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #444;
+  color: #ffc107;
 }
 
 .search-label {
   display: block;
   font-size: 1rem;
   margin-bottom: 8px;
-  color: #555;
+  color: #ccc;
 }
 
 .search-input,
@@ -49,17 +50,19 @@
   width: 100%;
   padding: 10px;
   margin-bottom: 15px;
-  border: 1px solid #ccc;
+  border: 1px solid #444;
   border-radius: 4px;
   font-size: 1rem;
+  background-color: #333;
+  color: #fff;
 }
 
 .search-button {
   display: inline-block;
   padding: 10px 20px;
   font-size: 1rem;
-  color: #fff;
-  background-color: #007bff;
+  color: #111;
+  background-color: #ffc107;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -67,7 +70,7 @@
 }
 
 .search-button:hover {
-  background-color: #0056b3;
+  background-color: #e0a800;
 }
 
 .search-results {
@@ -75,15 +78,16 @@
 }
 
 .search-result-item {
-  border: 1px solid #ddd;
+  border: 1px solid #333;
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 15px;
-  background-color: #fff;
+  background-color: #222;
+  color: #fff;
 }
 
 .search-result-item strong {
-  color: #333;
+  color: #ffc107;
 }
 
 .search-warning {
@@ -91,4 +95,23 @@
   font-weight: bold;
   margin-bottom: 20px;
   text-align: center;
+}
+
+.back-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #111;
+  background-color: #ffc107;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #e0a800;
 }
