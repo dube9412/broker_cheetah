@@ -7,7 +7,6 @@ function AddDSCR() {
 
     const [lender, setLender] = useState(null);
     const [numTiers, setNumTiers] = useState(1);
-   // const [dscrRatioMin, setDscrRatioMin] = useState("");
     const [tiers, setTiers] = useState([
         { minFICO: "", minExperience: "", maxLTVPurchase: "", maxLTVRateTerm: "", maxLTVCashOut: "", dscrRatioMin: "" }
     ]);
@@ -16,8 +15,12 @@ function AddDSCR() {
     const [prepaymentPeriod, setPrepaymentPeriod] = useState("");
     const [propertyTypes, setPropertyTypes] = useState([]);
     const [propertyUse, setPropertyUse] = useState("");
+    const [currentRent, setCurrentRent] = useState("");
+    const [marketRent, setMarketRent] = useState("");
+    const [taxes, setTaxes] = useState("");
+    const [insurance, setInsurance] = useState("");
+    const [hoaFees, setHoaFees] = useState("");
 
-    // ✅ Options for Property Type Selection
     const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
     const PROPERTY_USES = ["Standard Rental", "Short Term Rental", "Vacant"];
 
@@ -101,6 +104,13 @@ function AddDSCR() {
                 propertyUse: propertyUse || undefined,
                 prepaymentPeriod: prepaymentPeriod || undefined,
                 tiers: cleanedTiers,
+                dscrInputs: {
+                  currentRent: currentRent ? Number(currentRent) : undefined,
+                  marketRent: marketRent ? Number(marketRent) : undefined,
+                  taxes: taxes ? Number(taxes) : undefined,
+                  insurance: insurance ? Number(insurance) : undefined,
+                  hoaFees: hoaFees ? Number(hoaFees) : undefined,
+                },
               }),
             }
           );
@@ -128,7 +138,8 @@ function AddDSCR() {
                 {lender ? `Adding DSCR Loan Program for ${lender.name}` : "Loading Lender..."}
             </h2>
 
-            <label>Loan Range:</label>
+            <form onSubmit={handleSubmit}>
+                <label>Loan Range:</label>
                 <input type="number" value={loanRange.min} onChange={(e) => setLoanRange({ ...loanRange, min: e.target.value })} placeholder="Min" style={{ width: "48%", marginRight: "4%" }} />
                 <input type="number" value={loanRange.max} onChange={(e) => setLoanRange({ ...loanRange, max: e.target.value })} placeholder="Max" style={{ width: "48%" }} />
 
@@ -158,8 +169,22 @@ function AddDSCR() {
                     </label>
                 ))}
 
-            <form onSubmit={handleSubmit}>
-                <label>Number of Tiers:</label>
+                <label>Current Rent ($):</label>
+                <input type="number" value={currentRent} onChange={(e) => setCurrentRent(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Market Rent ($):</label>
+                <input type="number" value={marketRent} onChange={(e) => setMarketRent(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Taxes ($/year):</label>
+                <input type="number" value={taxes} onChange={(e) => setTaxes(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Insurance ($/year):</label>
+                <input type="number" value={insurance} onChange={(e) => setInsurance(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>HOA Fees ($/month):</label>
+                <input type="number" value={hoaFees} onChange={(e) => setHoaFees(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
+            <label>Number of Tiers:</label>
                 <select value={numTiers} onChange={handleNumTiersChange} style={{ width: "100%", marginBottom: "10px" }}>
                     {[1, 2, 3, 4, 5, 6].map((num) => (
                         <option key={num} value={num}>
