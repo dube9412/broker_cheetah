@@ -1,54 +1,56 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import { AuthContext } from "./AuthContext"; // ✅ Import Main Auth Context
-import { useNavigate } from "react-router-dom"; // Add this import
 
 export const LenderAuthContext = createContext();
 
 export const LenderAuthProvider = ({ children }) => {
+  const [isLenderLoggedIn, setIsLenderLoggedIn] = useState(false);
   const [lenderUser, setLenderUser] = useState(null);
-  const isLenderLoggedIn = !!lenderUser;
+  const [lenderUserId, setLenderUserId] = useState(null);
   const { login } = useContext(AuthContext); // ✅ Use AuthContext to update the main auth state
-  const navigate = useNavigate(); // Add this hook
 
   // ✅ Restore login state from LocalStorage
   useEffect(() => {
-    const storedLenderToken = localStorage.getItem("lenderToken");
-    const storedLenderRole = localStorage.getItem("lenderRole");
+    const storedToken = localStorage.getItem("token");
+    const storedLenderUserId = localStorage.getItem("lenderUserId");
 
-    if (storedLenderToken && storedLenderRole) {
-      setLenderUser({ token: storedLenderToken, role: storedLenderRole });
+    if (storedToken && storedLenderUserId) {
+      setIsLenderLoggedIn(true);
+      setLenderUserId(storedLenderUserId);
     }
   }, []);
 
-  const loginLender = (lenderData) => {
-    setLenderUser(lenderData);
-    localStorage.setItem("lenderToken", lenderData.token);
-    localStorage.setItem("lenderRole", lenderData.role);
+  const loginLender = (data) => {
+    setIsLenderLoggedIn(true);
+    setLenderUserId(data.lenderUserId);
+    setLenderUser(data);
+
+    // ✅ Store in LocalStorage
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("lenderUserId", data.lenderUserId);
+    localStorage.setItem("role", "lender"); // ✅ Save role
 
     // ✅ Update AuthContext so NavBar re-renders correctly
     login({
-      token: lenderData.token,
+      token: data.token,
       role: "lender",
     });
   };
 
   const logoutLender = () => {
+    setIsLenderLoggedIn(false);
     setLenderUser(null);
-    localStorage.removeItem("lenderToken");
-    localStorage.removeItem("lenderRole");
+    setLenderUserId(null);
 
-    navigate("/"); // Redirect to Home.js
+    // ✅ Clear LocalStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("lenderUserId");
+    localStorage.removeItem("role");
   };
 
   return (
-    <LenderAuthContext.Provider value={{ lenderUser, isLenderLoggedIn, loginLender, logoutLender }}>
+    <LenderAuthContext.Provider value={{ isLenderLoggedIn, lenderUser, lenderUserId, loginLender, logoutLender }}>
       {children}
     </LenderAuthContext.Provider>
   );
 };
-
-export const useLenderAuth = () => useContext(LenderAuthContext);
-
-
-
-
