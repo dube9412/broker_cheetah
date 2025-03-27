@@ -33,13 +33,6 @@ function Login() {
             role: data.role,
             lenderId: data.lenderId
           });
-
-          // ✅ Update last login timestamp
-          fetch(`https://broker-cheetah-backend.onrender.com/api/users/${data.userId}/last-login`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ lastLogin: new Date().toISOString() })
-          }).catch(err => console.error("Failed to update last login:", err));
   
           // ✅ Redirect clearly based on role
           if (data.role === "superadmin" || data.role === "admin") {
@@ -91,4 +84,3 @@ function Login() {
 }
 
 export default Login;
-
