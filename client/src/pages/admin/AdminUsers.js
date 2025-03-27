@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import AdminNav from "../../components/AdminNav";
@@ -8,10 +8,10 @@ const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
   const { isAdmin, isSuperAdmin } = useContext(AuthContext);
   const navigate = useNavigate();
-  
-  <AdminNav />
 
   // Redirect unauthorized users
   useEffect(() => {
@@ -82,6 +82,19 @@ const AdminUsers = () => {
     }
   };
 
+  // Filter and sort users based on search term and role
+  const filteredUsers = useMemo(() => {
+    return users
+      .filter(user =>
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .sort((a, b) =>
+        sortOrder === "asc"
+          ? a.role.localeCompare(b.role)
+          : b.role.localeCompare(a.role)
+      );
+  }, [users, searchTerm, sortOrder]);
+
   if (loading) return <div>Loading users...</div>;
   if (error) return <div>{error}</div>;
 
@@ -90,6 +103,25 @@ const AdminUsers = () => {
         <div style={{ padding: "20px" }}>
       <h1>Admin Users</h1>
       <p>Manage all registered users (Brokers, Admins, Superadmins).</p>
+
+      {/* Search Field */}
+      <input
+        type="text"
+        placeholder="Search by email..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ padding: '8px', width: '200px', marginBottom: '20px' }}
+      />
+
+      {/* Sort Dropdown */}
+      <select
+        value={sortOrder}
+        onChange={(e) => setSortOrder(e.target.value)}
+        style={{ padding: '8px', marginLeft: '10px' }}
+      >
+        <option value="asc">Role: A-Z</option>
+        <option value="desc">Role: Z-A</option>
+      </select>
 
       <table border="1" cellPadding="6" style={{ marginTop: "1rem" }}>
         <thead>
@@ -101,8 +133,8 @@ const AdminUsers = () => {
           </tr>
         </thead>
         <tbody>
-          {users.length > 0 ? (
-            users.map((user) => (
+          {filteredUsers.length > 0 ? (
+            filteredUsers.map((user) => (
               <tr key={user._id}>
                 <td>{user.email}</td>
                 <td>{user.role}</td>
