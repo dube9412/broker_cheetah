@@ -11,7 +11,7 @@ function AddFixAndFlip() {
   const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
   const [interestType, setInterestType] = useState({ dutch: false, nonDutch: false });
   const [drawType, setDrawType] = useState({ self: false, thirdParty: false });
-  const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
+  const [crossCollateralAllowed, setCrossCollateralAllowed] = useState(null);
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [tiers, setTiers] = useState([{
     tierName: "",
@@ -75,7 +75,7 @@ function AddFixAndFlip() {
       recourse,
       interestType,
       drawType,
-      crossCollateralAllowed,
+      crossCollateralAllowed: !!crossCollateralAllowed,
       propertyTypes,
       tiers,
     };
@@ -134,8 +134,22 @@ function AddFixAndFlip() {
         <input type="checkbox" checked={drawType.thirdParty} onChange={() => handleCheckboxChange("thirdParty", "drawType")} /> 3rd Party<br />
 
         <label>Cross Collateral Allowed:</label><br />
-<label><input type="radio" value="true" checked={crossCollateralAllowed === true} onChange={() => setCrossCollateralAllowed(true)} /> Yes</label><br />
-<label><input type="radio" value="false" checked={crossCollateralAllowed === false} onChange={() => setCrossCollateralAllowed(false)} /> No</label>
+<label>
+  <input
+    type="radio"
+    name="crossCollateral"
+    checked={crossCollateralAllowed === true}
+    onChange={() => setCrossCollateralAllowed(true)}
+  /> Yes
+</label><br />
+<label>
+  <input
+    type="radio"
+    name="crossCollateral"
+    checked={crossCollateralAllowed === false}
+    onChange={() => setCrossCollateralAllowed(false)}
+  /> No
+</label>
 
             <br />
 
