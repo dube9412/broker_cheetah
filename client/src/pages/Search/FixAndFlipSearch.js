@@ -144,8 +144,10 @@ function FixAndFlipSearch() {
         </select>
       </fieldset>
 
-      <button className="search-button" onClick={handleSearch}>🔍 Search</button>
-      <button className="search-button" onClick={handleClear} style={{ marginLeft: "10px" }}>🔄 New Search</button>
+      <div className="search-buttons-container">
+        <button className="search-button" onClick={handleSearch}>🔍 Search</button>
+        <button className="search-button" onClick={handleClear}>🔄 New Search</button>
+      </div>
 
       {warning && <p className="search-warning">{warning}</p>}
 

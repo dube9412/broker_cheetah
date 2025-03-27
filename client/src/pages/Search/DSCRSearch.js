@@ -161,8 +161,10 @@ function DSCRSearch() {
         </label>
       </fieldset>
 
-      <button className="search-button" onClick={handleSearch}>🔍 Search</button>
-      <button className="search-button" onClick={handleClear} style={{ marginLeft: "10px" }}>🔄 New Search</button>
+      <div className="search-buttons-container">
+        <button className="search-button" onClick={handleSearch}>🔍 Search</button>
+        <button className="search-button" onClick={handleClear}>🔄 New Search</button>
+      </div>
 
       <div className="search-results">
         {results.length === 0 && <p>No matching programs.</p>}

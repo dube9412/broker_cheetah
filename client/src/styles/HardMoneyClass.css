@@ -88,8 +88,12 @@ html {
   padding-bottom: 1rem;
 }
 
+/* Glossary item term styling: Black text on white background */
 .glossary-item h3 {
-  position: relative;
+  color: #000; /* Black text for terms */
+  background-color: #fff; /* White background */
+  padding: 0.5rem; /* Add padding for better readability */
+  border-radius: 4px; /* Slight rounding for aesthetics */
 }
 
 .glossary-item h3::before {

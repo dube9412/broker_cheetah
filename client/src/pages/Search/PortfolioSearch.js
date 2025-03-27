@@ -75,63 +75,48 @@ function SearchPortfolio() {
       <div className="search-row">
         <fieldset className="search-fieldset">
           <legend className="search-legend">🔹 Deal Details</legend>
-          <label>FICO Score:
-            <input value={fico} onChange={(e) => setFico(e.target.value)} />
-          </label><br />
-
-          <label>Experience (# of rentals):
-            <input value={experience} onChange={(e) => setExperience(e.target.value)} />
-          </label><br />
-
-          <label>Loan Amount:
-            <input value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} />
-          </label><br />
-
-          <label>Property Type:
-            <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)}>
-              <option value="">-- Select --</option>
-              <option value="Single Family 1-4">Single Family 1-4</option>
-              <option value="Condo">Condo</option>
-              <option value="Townhome">Townhome</option>
-              <option value="Manufactured">Manufactured</option>
-              <option value="Cabins">Cabins</option>
-            </select>
-          </label><br />
+          <label className="search-label">FICO Score:</label>
+          <input className="search-input" value={fico} onChange={(e) => setFico(e.target.value)} />
+          <label className="search-label">Experience (# of rentals):</label>
+          <input className="search-input" value={experience} onChange={(e) => setExperience(e.target.value)} />
+          <label className="search-label">Loan Amount:</label>
+          <input className="search-input" value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} />
+          <label className="search-label">Property Type:</label>
+          <select className="search-select" value={propertyType} onChange={(e) => setPropertyType(e.target.value)}>
+            <option value="">-- Select --</option>
+            <option value="Single Family 1-4">Single Family 1-4</option>
+            <option value="Condo">Condo</option>
+            <option value="Townhome">Townhome</option>
+            <option value="Manufactured">Manufactured</option>
+            <option value="Cabins">Cabins</option>
+          </select>
         </fieldset>
 
         <fieldset className="search-fieldset">
           <legend className="search-legend">🔹 Borrower Profile</legend>
-          <label>State:
-            <input value={state} onChange={(e) => setState(e.target.value)} />
-          </label><br />
-
-          <label>Zipcode:
-            <input value={zipcode} onChange={(e) => setZipcode(e.target.value)} />
-          </label><br />
+          <label className="search-label">State:</label>
+          <input className="search-input" value={state} onChange={(e) => setState(e.target.value)} />
+          <label className="search-label">Zipcode:</label>
+          <input className="search-input" value={zipcode} onChange={(e) => setZipcode(e.target.value)} />
         </fieldset>
       </div>
 
       <fieldset className="search-fieldset">
         <legend className="search-legend">🔹 Additional Filters</legend>
-        <label>Loan Term (months):
-          <input value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)} />
-        </label><br />
-
-        <label>Max LTV (%):
-          <input value={maxLTV} onChange={(e) => setMaxLTV(e.target.value)} />
-        </label><br />
-
-        <label>Max Portfolio Size:
-          <input value={maxPortfolioSize} onChange={(e) => setMaxPortfolioSize(e.target.value)} />
-        </label><br />
-
-        <label>Min DSCR:
-          <input value={minDSCR} onChange={(e) => setMinDSCR(e.target.value)} />
-        </label><br />
+        <label className="search-label">Loan Term (months):</label>
+        <input className="search-input" value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)} />
+        <label className="search-label">Max LTV (%):</label>
+        <input className="search-input" value={maxLTV} onChange={(e) => setMaxLTV(e.target.value)} />
+        <label className="search-label">Max Portfolio Size:</label>
+        <input className="search-input" value={maxPortfolioSize} onChange={(e) => setMaxPortfolioSize(e.target.value)} />
+        <label className="search-label">Min DSCR:</label>
+        <input className="search-input" value={minDSCR} onChange={(e) => setMinDSCR(e.target.value)} />
       </fieldset>
 
-      <button className="search-button" onClick={handleSearch}>🔍 Search</button>
-      <button className="search-button" onClick={handleClear} style={{ marginLeft: "10px" }}>🔄 New Search</button>
+      <div className="search-buttons-container">
+        <button className="search-button" onClick={handleSearch}>🔍 Search</button>
+        <button className="search-button" onClick={handleClear}>🔄 New Search</button>
+      </div>
 
       <div className="search-results">
         {results.length === 0 && <p>No matching programs.</p>}
