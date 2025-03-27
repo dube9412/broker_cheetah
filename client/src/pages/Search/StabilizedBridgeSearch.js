@@ -81,7 +81,7 @@ function SearchStabilizedBridge() {
           <legend className="search-legend">🔹 Deal Details</legend>
 
           <label>State:
-            <select value={state} onChange={(e) => setState(e.target.value)} style={{ width: "100%" }}>
+            <select className="search-select" value={state} onChange={(e) => setState(e.target.value)}>
               <option value="">-- Select a state --</option>
               {US_STATES.map((st) => (
                 <option key={st} value={st}>{st}</option>
@@ -90,15 +90,15 @@ function SearchStabilizedBridge() {
           </label><br />
 
           <label>ZIP Code:
-            <input value={zipCode} onChange={(e) => setZipCode(e.target.value)} style={{ width: "100%" }} />
+            <input className="search-input" value={zipCode} onChange={(e) => setZipCode(e.target.value)} />
           </label><br />
 
           <label>Loan Amount:
-            <input value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} style={{ width: "100%" }} />
+            <input className="search-input" value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} />
           </label><br />
 
           <label>Property Type:
-            <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)} style={{ width: "100%" }}>
+            <select className="search-select" value={propertyType} onChange={(e) => setPropertyType(e.target.value)}>
               <option value="">-- Select --</option>
               {PROPERTY_TYPES.map((type) => (
                 <option key={type} value={type}>{type}</option>
@@ -111,15 +111,15 @@ function SearchStabilizedBridge() {
           <legend className="search-legend">🔹 Borrower Profile</legend>
 
           <label>FICO Score:
-            <input value={fico} onChange={(e) => setFico(e.target.value)} style={{ width: "100%" }} />
+            <input className="search-input" value={fico} onChange={(e) => setFico(e.target.value)} />
           </label><br />
 
           <label>Experience (# of deals):
-            <input value={experience} onChange={(e) => setExperience(e.target.value)} style={{ width: "100%" }} />
+            <input className="search-input" value={experience} onChange={(e) => setExperience(e.target.value)} />
           </label><br />
 
           <label>Min DSCR Ratio:
-            <input value={dscrRatio} onChange={(e) => setDscrRatio(e.target.value)} style={{ width: "100%" }} />
+            <input className="search-input" value={dscrRatio} onChange={(e) => setDscrRatio(e.target.value)} />
           </label>
         </fieldset>
       </div>
