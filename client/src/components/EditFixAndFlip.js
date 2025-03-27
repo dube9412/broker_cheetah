@@ -180,7 +180,7 @@ function EditFixAndFlip() {
     checked={crossCollateralAllowed === true}
     onChange={() => setCrossCollateralAllowed(true)}
   /> Yes
-</label><br />
+</label>
 <label>
   <input
     type="radio"
