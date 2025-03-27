@@ -211,15 +211,15 @@ function EditFixAndFlip() {
       {tiers.map((tier, i) => (
         <fieldset key={i} style={{ border: "1px solid #aaa", padding: "10px", marginBottom: "15px" }}>
           <legend><strong>Tier {i + 1}</strong></legend>
-          <label>Tier Name:<input placeholder="Tier Name" value={tier.tierName || ""} onChange={(e) => handleTierChange(i, "tierName", e.target.value)} /></label>
-          <label>Min Fico:<input placeholder="Min FICO" value={tier.minFICO || ""} onChange={(e) => handleTierChange(i, "minFICO", e.target.value)} /></label>
-          <label>Min Experience:<input placeholder="Completed Deals" value={tier.minExperience || ""} onChange={(e) => handleTierChange(i, "minExperience", e.target.value)} /></label>
-          <label>Loan Range Min:<input placeholder="Min" value={tier.loanRange?.min || ""} onChange={(e) => handleLoanRangeChange(i, "min", e.target.value)} /></label>
-          <label>Loan Range Max:<input placeholder="Max" value={tier.loanRange?.max || ""} onChange={(e) => handleLoanRangeChange(i, "max", e.target.value)} /></label>
-          <label>Max LTC:<input placeholder="Max Purchase %" value={tier.maxLTC || ""} onChange={(e) => handleTierChange(i, "maxLTC", e.target.value)} /></label>
-          <label>Total LTC:<input placeholder="Total or Blended LTC" value={tier.totalLTC || ""} onChange={(e) => handleTierChange(i, "totalLTC", e.target.value)} /></label>
-          <label>Max ARV:<input placeholder="Max ARV" value={tier.maxARV || ""} onChange={(e) => handleTierChange(i, "maxARV", e.target.value)} /></label>
-          <label>Rehab % Covered:<input placeholder="Max Rehab %" value={tier.rehabPercent || ""} onChange={(e) => handleTierChange(i, "rehabPercent", e.target.value)} /></label>
+          <label>  Tier Name:<input placeholder="Tier Name" value={tier.tierName || ""} onChange={(e) => handleTierChange(i, "tierName", e.target.value)} /></label>
+          <label>  Min Fico:<input placeholder="Min FICO" value={tier.minFICO || ""} onChange={(e) => handleTierChange(i, "minFICO", e.target.value)} /></label>
+          <label>  Min Experience:<input placeholder="Completed Deals" value={tier.minExperience || ""} onChange={(e) => handleTierChange(i, "minExperience", e.target.value)} /></label>
+          <label>  Loan Range Min:<input placeholder="Min" value={tier.loanRange?.min || ""} onChange={(e) => handleLoanRangeChange(i, "min", e.target.value)} />
+          <input placeholder="Max" value={tier.loanRange?.max || ""} onChange={(e) => handleLoanRangeChange(i, "max", e.target.value)} /></label>
+          <label>  Max LTC:<input placeholder="Max Purchase %" value={tier.maxLTC || ""} onChange={(e) => handleTierChange(i, "maxLTC", e.target.value)} /></label>
+          <label>  Total LTC:<input placeholder="Total or Blended LTC" value={tier.totalLTC || ""} onChange={(e) => handleTierChange(i, "totalLTC", e.target.value)} /></label>
+          <label>  Max ARV:<input placeholder="Max ARV" value={tier.maxARV || ""} onChange={(e) => handleTierChange(i, "maxARV", e.target.value)} /></label>
+          <label>  Rehab % Covered:<input placeholder="Max Rehab %" value={tier.rehabPercent || ""} onChange={(e) => handleTierChange(i, "rehabPercent", e.target.value)} /></label>
 
            </fieldset>
       ))}
