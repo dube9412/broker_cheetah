@@ -14,13 +14,11 @@ export const AuthProvider = ({ children }) => {
     const storedRole = localStorage.getItem("userRole");
 
     if (storedToken && storedRole) {
-      console.log("Restoring user from localStorage:", { token: storedToken, role: storedRole });
       setUser({ token: storedToken, role: storedRole });
     }
   }, []);
 
   const login = (userData) => {
-    console.log("Logging in user:", userData);
     setUser(userData);
     localStorage.setItem("token", userData.token);
     localStorage.setItem("userRole", userData.role);
