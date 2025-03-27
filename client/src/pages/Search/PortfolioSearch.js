@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Glossary from "../../components/hardMoneyClass/Glossary";
 import "../../styles/SearchPages.css";
 
@@ -13,6 +14,7 @@ const US_STATES = [
 ];
 
 function SearchPortfolio() {
+  const navigate = useNavigate();
   const [fico, setFico] = useState("");
   const [experience, setExperience] = useState("");
   const [loanAmount, setLoanAmount] = useState("");
@@ -54,6 +56,7 @@ function SearchPortfolio() {
 
   return (
     <div className="search-container">
+      <button className="back-button" onClick={() => navigate("/lender-search")}>🔙 Back to Loan Types</button>
       <h1 className="search-title">Portfolio Loan Search</h1>
       <p className="search-subtitle">Enter one or more filters to find matching loan programs.</p>
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Glossary from "../../components/hardMoneyClass/Glossary";
 import "../../styles/SearchPages.css";
 
@@ -13,6 +14,7 @@ const US_STATES = [
 ];
 
 function SearchGroundUp() {
+  const navigate = useNavigate();
   const [state, setState] = useState("");
   const [fico, setFico] = useState("");
   const [experience, setExperience] = useState("");
@@ -73,6 +75,7 @@ function SearchGroundUp() {
 
   return (
     <div className="search-container">
+      <button className="back-button" onClick={() => navigate("/lender-search")}>🔙 Back to Loan Types</button>
       <h1 className="search-title">Ground Up Search</h1>
       <p className="search-subtitle">Enter one or more filters to find matching loan programs.</p>
 
