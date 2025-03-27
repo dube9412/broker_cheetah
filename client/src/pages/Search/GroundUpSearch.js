@@ -1,4 +1,16 @@
 import React, { useState } from "react";
+import Glossary from "../../components/hardMoneyClass/Glossary";
+
+const BASE_URL = "https://broker-cheetah-backend.onrender.com";
+
+const US_STATES = [
+  "AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA",
+  "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME",
+  "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM",
+  "NV", "NY", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX",
+  "UT", "VA", "VT", "WA", "WI", "WV", "WY"
+];
+
 
 function SearchGroundUp() {
   const [fico, setFico] = useState("");
@@ -79,7 +91,11 @@ function SearchGroundUp() {
           <strong>Term:</strong> {program.termMonths || "N/A"} months
         </div>
       ))}
+       <main style={{ maxWidth: "80rem", marginTop: "40px" }}>
+        <Glossary />
+      </main>
     </div>
+    
   );
 }
 

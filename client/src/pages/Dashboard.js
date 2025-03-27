@@ -22,7 +22,7 @@ function Dashboard() {
           <p>Master hard money lending fundamentals.</p>
         </Link>
 
-        <Link to="/fix-and-flip-calc" className="dashboard-card">
+        <Link to="/fix-and-flip-calculator" className="dashboard-card">
           <h3>Fix & Flip Calculator</h3>
           <p>Analyze your deals with precision.</p>
         </Link>
