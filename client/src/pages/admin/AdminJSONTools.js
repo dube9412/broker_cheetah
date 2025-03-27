@@ -84,7 +84,7 @@ const AdminJSONTools = () => {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <AdminNav />
+      
 
       <h1>📦 Admin JSON Tools</h1>
       <p>Upload Fix and Flip loan programs using a JSON file.</p>
