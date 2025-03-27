@@ -141,7 +141,7 @@ function AddFixAndFlip() {
     checked={crossCollateralAllowed === true}
     onChange={() => setCrossCollateralAllowed(true)}
   /> Yes
-</label><br />
+</label>
 <label>
   <input
     type="radio"
@@ -160,35 +160,27 @@ function AddFixAndFlip() {
         ))}
       </fieldset>
 
-      <fieldset style={{ padding: "15px", marginBottom: "20px" }}>
+      <fieldset style={{ border: "1px solid #aaa", padding: "10px", marginBottom: "15px" }}>
         <legend><strong>Tiers</strong></legend>
         {tiers.map((tier, index) => (
           <div key={index} style={{ marginBottom: "15px", border: "1px solid #ddd", padding: "10px" }}>
-            <label>Tier Name:
-              <input value={tier.tierName} onChange={(e) => handleTierChange(index, "tierName", e.target.value)} />
-            </label><br />
-            <label>Min FICO:
-              <input value={tier.minFICO} onChange={(e) => handleTierChange(index, "minFICO", e.target.value)} />
-            </label><br />
-            <label>Min Experience:
-              <input value={tier.minExperience} onChange={(e) => handleTierChange(index, "minExperience", e.target.value)} />
-            </label><br />
-            <label>Loan Range:
-              Min: <input value={tier.loanRange.min} onChange={(e) => handleLoanRangeChange(index, "min", e.target.value)} />
-              Max: <input value={tier.loanRange.max} onChange={(e) => handleLoanRangeChange(index, "max", e.target.value)} />
-            </label><br />
-            <label>Max LTC:
-              <input value={tier.maxLTC} onChange={(e) => handleTierChange(index, "maxLTC", e.target.value)} />
-            </label><br />
-            <label>Total LTC:
-              <input value={tier.totalLTC} onChange={(e) => handleTierChange(index, "totalLTC", e.target.value)} />
-            </label><br />
-            <label>Max ARV:
-              <input value={tier.maxARV} onChange={(e) => handleTierChange(index, "maxARV", e.target.value)} />
-            </label><br />
-            <label>Rehab %:
-              <input value={tier.rehabPercent} onChange={(e) => handleTierChange(index, "rehabPercent", e.target.value)} />
-            </label>
+            
+              <input placeholder="Tier Name" value={tier.tierName} onChange={(e) => handleTierChange(index, "tierName", e.target.value)} />
+            <br />
+              <input placeholder="Fico" value={tier.minFICO} onChange={(e) => handleTierChange(index, "minFICO", e.target.value)} />
+              <input placeholder="Experience" value={tier.minExperience} onChange={(e) => handleTierChange(index, "minExperience", e.target.value)} />
+            <br />
+              <input placeholder="min" value={tier.loanRange.min} onChange={(e) => handleLoanRangeChange(index, "min", e.target.value)} />
+              <input placeholder="max" value={tier.loanRange.max} onChange={(e) => handleLoanRangeChange(index, "max", e.target.value)} />
+            <br />
+              <input placeholder="Max Purchase %"value={tier.maxLTC} onChange={(e) => handleTierChange(index, "maxLTC", e.target.value)} />
+            
+              <input placeholder="Total or Blended LTC" value={tier.totalLTC} onChange={(e) => handleTierChange(index, "totalLTC", e.target.value)} />
+            <br />
+              <input placeholder="Max ARV" value={tier.maxARV} onChange={(e) => handleTierChange(index, "maxARV", e.target.value)} />
+            
+              <input placeholder="Max Rehab %" value={tier.rehabPercent} onChange={(e) => handleTierChange(index, "rehabPercent", e.target.value)} />
+            
           </div>
         ))}
         <button type="button" onClick={handleAddTier}>+ Add Tier</button>
