@@ -10,6 +10,8 @@ const AdminLenderUsers = () => {
     const [selectedLender, setSelectedLender] = useState({}); // Stores selected lenders for assignment
 const [lenders, setLenders] = useState([]); // Stores available lenders
 const [message, setMessage] = useState(""); // Stores success/error messages
+const [searchTerm, setSearchTerm] = useState(""); // State for search input
+const [sortBy, setSortBy] = useState("name"); // State for sorting criteria
 
 
     useEffect(() => {
@@ -200,6 +202,21 @@ const [message, setMessage] = useState(""); // Stores success/error messages
         }
     };
 
+    const filteredLenderUsers = lenderUsers.filter(user => 
+        user.approved && 
+        (user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+         (user.lenderName && user.lenderName.toLowerCase().includes(searchTerm.toLowerCase())))
+    );
+
+    const sortedLenderUsers = [...filteredLenderUsers].sort((a, b) => {
+        if (sortBy === "name") {
+            return a.name.localeCompare(b.name);
+        } else if (sortBy === "lender") {
+            return (a.lenderName || "").localeCompare(b.lenderName || "");
+        }
+        return 0;
+    });
+
     if (loading) return <div>Loading lender users...</div>;
 
     return (
@@ -241,6 +258,23 @@ const [message, setMessage] = useState(""); // Stores success/error messages
             </table>
 
             <h2>Active Lender Users</h2>
+            <div style={{ marginBottom: "1rem" }}>
+                <input
+                    type="text"
+                    placeholder="Search by name or lender"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{ padding: "0.5rem", width: "70%", marginRight: "1rem" }}
+                />
+                <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    style={{ padding: "0.5rem" }}
+                >
+                    <option value="name">Sort by Name</option>
+                    <option value="lender">Sort by Lender</option>
+                </select>
+            </div>
             <table border="1" cellPadding="6" style={{ marginTop: "1rem" }}>
                 <thead>
                     <tr>
@@ -252,7 +286,7 @@ const [message, setMessage] = useState(""); // Stores success/error messages
                     </tr>
                 </thead>
                 <tbody>
-    {lenderUsers.filter(user => user.approved).map((user) => (
+    {sortedLenderUsers.map((user) => (
         <tr key={user._id}>
             <td>{user.name}</td>
             <td>{user.email}</td>
@@ -288,6 +322,11 @@ const [message, setMessage] = useState(""); // Stores success/error messages
             </td>
         </tr>
     ))}
+    {sortedLenderUsers.length === 0 && (
+        <tr>
+            <td colSpan="5">No active lender users found.</td>
+        </tr>
+    )}
 </tbody>
 
             </table>
