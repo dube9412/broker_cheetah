@@ -83,7 +83,7 @@ function DSCRSearch() {
           <legend className="search-legend">🔹 Deal Details</legend>
 
           <label>State:
-            <select value={state} onChange={(e) => setState(e.target.value)} style={{ width: "100%" }}>
+            <select className="search-select" value={state} onChange={(e) => setState(e.target.value)}>
               <option value="">-- Select a state --</option>
               {US_STATES.map((st) => (
                 <option key={st} value={st}>{st}</option>
@@ -92,11 +92,11 @@ function DSCRSearch() {
           </label><br />
 
           <label>Loan Amount:
-            <input value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} style={{ width: "100%" }} />
+            <input className="search-input" value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} />
           </label><br />
 
           <label>Property Type:
-            <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)} style={{ width: "100%" }}>
+            <select className="search-select" value={propertyType} onChange={(e) => setPropertyType(e.target.value)}>
               <option value="">-- Select --</option>
               <option value="Single Family 1-4">Single Family 1-4</option>
               <option value="Condo">Condo</option>
@@ -107,7 +107,7 @@ function DSCRSearch() {
           </label><br />
 
           <label>Property Use:
-            <select value={propertyUse} onChange={(e) => setPropertyUse(e.target.value)} style={{ width: "100%" }}>
+            <select className="search-select" value={propertyUse} onChange={(e) => setPropertyUse(e.target.value)}>
               <option value="">-- Select --</option>
               <option value="Standard Rental">Standard Rental</option>
               <option value="Short Term Rental">Short Term Rental</option>
@@ -120,11 +120,11 @@ function DSCRSearch() {
           <legend className="search-legend">🔹 Borrower Profile</legend>
 
           <label>FICO Score:
-            <input value={fico} onChange={(e) => setFico(e.target.value)} style={{ width: "100%" }} />
+            <input className="search-input" value={fico} onChange={(e) => setFico(e.target.value)} />
           </label><br />
 
           <label>Experience (# of rentals):
-            <input value={experience} onChange={(e) => setExperience(e.target.value)} style={{ width: "100%" }} />
+            <input className="search-input" value={experience} onChange={(e) => setExperience(e.target.value)} />
           </label>
         </fieldset>
       </div>
@@ -133,23 +133,23 @@ function DSCRSearch() {
         <legend className="search-legend">🔹 DSCR Calculation Inputs</legend>
 
         <label>Current Rent ($):
-          <input value={currentRent} onChange={(e) => setCurrentRent(e.target.value)} style={{ width: "100%" }} />
+          <input className="search-input" value={currentRent} onChange={(e) => setCurrentRent(e.target.value)} />
         </label><br />
 
         <label>Market Rent ($):
-          <input value={marketRent} onChange={(e) => setMarketRent(e.target.value)} style={{ width: "100%" }} />
+          <input className="search-input" value={marketRent} onChange={(e) => setMarketRent(e.target.value)} />
         </label><br />
 
         <label>Taxes ($/year):
-          <input value={taxes} onChange={(e) => setTaxes(e.target.value)} style={{ width: "100%" }} />
+          <input className="search-input" value={taxes} onChange={(e) => setTaxes(e.target.value)} />
         </label><br />
 
         <label>Insurance ($/year):
-          <input value={insurance} onChange={(e) => setInsurance(e.target.value)} style={{ width: "100%" }} />
+          <input className="search-input" value={insurance} onChange={(e) => setInsurance(e.target.value)} />
         </label><br />
 
         <label>HOA Fees ($/month):
-          <input value={hoaFees} onChange={(e) => setHoaFees(e.target.value)} style={{ width: "100%" }} />
+          <input className="search-input" value={hoaFees} onChange={(e) => setHoaFees(e.target.value)} />
         </label>
       </fieldset>
 
@@ -157,7 +157,7 @@ function DSCRSearch() {
         <legend className="search-legend">🔹 Loan Options</legend>
 
         <label>Prepayment Period:
-          <input value={prepaymentPeriod} onChange={(e) => setPrepaymentPeriod(e.target.value)} style={{ width: "100%" }} />
+          <input className="search-input" value={prepaymentPeriod} onChange={(e) => setPrepaymentPeriod(e.target.value)} />
         </label>
       </fieldset>
 
