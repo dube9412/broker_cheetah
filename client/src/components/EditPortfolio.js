@@ -151,6 +151,13 @@ function EditPortfolio() {
       <label>Loan Term:</label>
       <input type="text" value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
 
+      <label>Loan Term Range (months):</label>
+      <input type="number" value={program.minLoanTerm} onChange={(e) => setProgram({ ...program, minLoanTerm: e.target.value })} style={{ width: "45%", marginRight: "10px" }} />
+      <input type="number" value={program.maxLoanTerm} onChange={(e) => setProgram({ ...program, maxLoanTerm: e.target.value })} style={{ width: "45%" }} />
+
+      <label>Minimum DSCR:</label>
+      <input type="number" value={program.minDSCR} onChange={(e) => setProgram({ ...program, minDSCR: e.target.value })} style={{ width: "100%", marginBottom: "10px" }} />
+
       <div style={{ textAlign: "center", marginTop: "20px" }}>
         <button onClick={handleSave} style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>Save Changes</button>
         <button onClick={handleDelete} style={{ padding: "10px 20px", backgroundColor: "#dc3545", color: "#fff", border: "none", cursor: "pointer" }}>Delete Loan Program</button>{" | "}

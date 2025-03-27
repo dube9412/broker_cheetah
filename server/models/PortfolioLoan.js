@@ -11,6 +11,9 @@ const PortfolioLoanSchema = new mongoose.Schema({
   },
   propertyTypes: [{ type: String, enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"], required: false }],
   termMonths: { type: Number, required: false },
+  minLoanTerm: { type: Number, required: false },
+  maxLoanTerm: { type: Number, required: false },
+  minDSCR: { type: Number, required: false },
   tiers: [
     {
       minFICO: { type: Number, required: false },

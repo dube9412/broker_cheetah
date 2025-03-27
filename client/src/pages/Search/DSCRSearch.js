@@ -78,54 +78,56 @@ function DSCRSearch() {
       <h1 className="search-title">DSCR Loan Search</h1>
       <p className="search-subtitle">Enter one or more filters to find matching loan programs.</p>
 
-      <fieldset className="search-fieldset">
-        <legend className="search-legend">🔹 Deal Details</legend>
+      <div className="search-row">
+        <fieldset className="search-fieldset">
+          <legend className="search-legend">🔹 Deal Details</legend>
 
-        <label>State:
-          <select value={state} onChange={(e) => setState(e.target.value)} style={{ width: "100%" }}>
-            <option value="">-- Select a state --</option>
-            {US_STATES.map((st) => (
-              <option key={st} value={st}>{st}</option>
-            ))}
-          </select>
-        </label><br />
+          <label>State:
+            <select value={state} onChange={(e) => setState(e.target.value)} style={{ width: "100%" }}>
+              <option value="">-- Select a state --</option>
+              {US_STATES.map((st) => (
+                <option key={st} value={st}>{st}</option>
+              ))}
+            </select>
+          </label><br />
 
-        <label>Loan Amount:
-          <input value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} style={{ width: "100%" }} />
-        </label><br />
+          <label>Loan Amount:
+            <input value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} style={{ width: "100%" }} />
+          </label><br />
 
-        <label>Property Type:
-          <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)} style={{ width: "100%" }}>
-            <option value="">-- Select --</option>
-            <option value="Single Family 1-4">Single Family 1-4</option>
-            <option value="Condo">Condo</option>
-            <option value="Townhome">Townhome</option>
-            <option value="Manufactured">Manufactured</option>
-            <option value="Cabins">Cabins</option>
-          </select>
-        </label><br />
+          <label>Property Type:
+            <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)} style={{ width: "100%" }}>
+              <option value="">-- Select --</option>
+              <option value="Single Family 1-4">Single Family 1-4</option>
+              <option value="Condo">Condo</option>
+              <option value="Townhome">Townhome</option>
+              <option value="Manufactured">Manufactured</option>
+              <option value="Cabins">Cabins</option>
+            </select>
+          </label><br />
 
-        <label>Property Use:
-          <select value={propertyUse} onChange={(e) => setPropertyUse(e.target.value)} style={{ width: "100%" }}>
-            <option value="">-- Select --</option>
-            <option value="Standard Rental">Standard Rental</option>
-            <option value="Short Term Rental">Short Term Rental</option>
-            <option value="Vacant">Vacant</option>
-          </select>
-        </label>
-      </fieldset>
+          <label>Property Use:
+            <select value={propertyUse} onChange={(e) => setPropertyUse(e.target.value)} style={{ width: "100%" }}>
+              <option value="">-- Select --</option>
+              <option value="Standard Rental">Standard Rental</option>
+              <option value="Short Term Rental">Short Term Rental</option>
+              <option value="Vacant">Vacant</option>
+            </select>
+          </label>
+        </fieldset>
 
-      <fieldset className="search-fieldset">
-        <legend className="search-legend">🔹 Borrower Profile</legend>
+        <fieldset className="search-fieldset">
+          <legend className="search-legend">🔹 Borrower Profile</legend>
 
-        <label>FICO Score:
-          <input value={fico} onChange={(e) => setFico(e.target.value)} style={{ width: "100%" }} />
-        </label><br />
+          <label>FICO Score:
+            <input value={fico} onChange={(e) => setFico(e.target.value)} style={{ width: "100%" }} />
+          </label><br />
 
-        <label>Experience (# of rentals):
-          <input value={experience} onChange={(e) => setExperience(e.target.value)} style={{ width: "100%" }} />
-        </label>
-      </fieldset>
+          <label>Experience (# of rentals):
+            <input value={experience} onChange={(e) => setExperience(e.target.value)} style={{ width: "100%" }} />
+          </label>
+        </fieldset>
+      </div>
 
       <fieldset className="search-fieldset">
         <legend className="search-legend">🔹 DSCR Calculation Inputs</legend>

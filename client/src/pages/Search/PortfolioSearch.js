@@ -21,6 +21,10 @@ function SearchPortfolio() {
   const [propertyType, setPropertyType] = useState("");
   const [state, setState] = useState("");
   const [zipcode, setZipcode] = useState("");
+  const [loanTerm, setLoanTerm] = useState("");
+  const [maxLTV, setMaxLTV] = useState("");
+  const [maxPortfolioSize, setMaxPortfolioSize] = useState("");
+  const [minDSCR, setMinDSCR] = useState("");
   const [results, setResults] = useState([]);
 
   const handleSearch = async () => {
@@ -32,6 +36,10 @@ function SearchPortfolio() {
         propertyType,
         state,
         zipcode,
+        loanTerm,
+        maxLTV,
+        maxPortfolioSize,
+        minDSCR,
       });
 
       const res = await fetch(`https://broker-cheetah-backend.onrender.com/api/portfolio/search?${params}`);
@@ -51,6 +59,10 @@ function SearchPortfolio() {
     setPropertyType("");
     setState("");
     setZipcode("");
+    setLoanTerm("");
+    setMaxLTV("");
+    setMaxPortfolioSize("");
+    setMinDSCR("");
     setResults([]);
   };
 
@@ -60,40 +72,61 @@ function SearchPortfolio() {
       <h1 className="search-title">Portfolio Loan Search</h1>
       <p className="search-subtitle">Enter one or more filters to find matching loan programs.</p>
 
+      <div className="search-row">
+        <fieldset className="search-fieldset">
+          <legend className="search-legend">🔹 Deal Details</legend>
+          <label>FICO Score:
+            <input value={fico} onChange={(e) => setFico(e.target.value)} />
+          </label><br />
+
+          <label>Experience (# of rentals):
+            <input value={experience} onChange={(e) => setExperience(e.target.value)} />
+          </label><br />
+
+          <label>Loan Amount:
+            <input value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} />
+          </label><br />
+
+          <label>Property Type:
+            <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)}>
+              <option value="">-- Select --</option>
+              <option value="Single Family 1-4">Single Family 1-4</option>
+              <option value="Condo">Condo</option>
+              <option value="Townhome">Townhome</option>
+              <option value="Manufactured">Manufactured</option>
+              <option value="Cabins">Cabins</option>
+            </select>
+          </label><br />
+        </fieldset>
+
+        <fieldset className="search-fieldset">
+          <legend className="search-legend">🔹 Borrower Profile</legend>
+          <label>State:
+            <input value={state} onChange={(e) => setState(e.target.value)} />
+          </label><br />
+
+          <label>Zipcode:
+            <input value={zipcode} onChange={(e) => setZipcode(e.target.value)} />
+          </label><br />
+        </fieldset>
+      </div>
+
       <fieldset className="search-fieldset">
-        <legend className="search-legend">🔹 Deal Details</legend>
-        <label>FICO Score:
-          <input value={fico} onChange={(e) => setFico(e.target.value)} />
+        <legend className="search-legend">🔹 Additional Filters</legend>
+        <label>Loan Term (months):
+          <input value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)} />
         </label><br />
 
-        <label>Experience (# of rentals):
-          <input value={experience} onChange={(e) => setExperience(e.target.value)} />
+        <label>Max LTV (%):
+          <input value={maxLTV} onChange={(e) => setMaxLTV(e.target.value)} />
         </label><br />
 
-        <label>Loan Amount:
-          <input value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} />
+        <label>Max Portfolio Size:
+          <input value={maxPortfolioSize} onChange={(e) => setMaxPortfolioSize(e.target.value)} />
         </label><br />
 
-        <label>Property Type:
-          <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)}>
-            <option value="">-- Select --</option>
-            <option value="Single Family 1-4">Single Family 1-4</option>
-            <option value="Condo">Condo</option>
-            <option value="Townhome">Townhome</option>
-            <option value="Manufactured">Manufactured</option>
-            <option value="Cabins">Cabins</option>
-          </select>
-        </label><br />
-      </fieldset>
-
-      <fieldset className="search-fieldset">
-        <legend className="search-legend">🔹 Borrower Profile</legend>
-        <label>State:
-          <input value={state} onChange={(e) => setState(e.target.value)} />
-        </label><br />
-
-        <label>Zipcode:
-          <input value={zipcode} onChange={(e) => setZipcode(e.target.value)} />
+        <label>Min DSCR:
+          <input value={minDSCR} onChange={(e) => setMinDSCR(e.target.value)} />
         </label><br />
       </fieldset>
 
