@@ -26,6 +26,14 @@ const DscrLoanSchema = new mongoose.Schema(
       type: String,
     },
 
+    dscrInputs: {
+      currentRent: { type: Number },
+      marketRent: { type: Number },
+      taxes: { type: Number },
+      insurance: { type: Number },
+      hoaFees: { type: Number },
+    },
+
     tiers: [
       {
         minFICO: { type: Number },

@@ -144,6 +144,37 @@ function EditDSCR() {
         <label key={use}><input type="radio" name="propertyUse" value={use} checked={propertyUse === use} onChange={() => setPropertyUse(use)} /> {use}</label>
       ))}
 
+      <label>Current Rent ($):</label>
+      <input
+        type="number"
+        value={program.dscrInputs?.currentRent || ""}
+        onChange={(e) => setProgram({ ...program, dscrInputs: { ...program.dscrInputs, currentRent: e.target.value } })}
+      />
+      <label>Market Rent ($):</label>
+      <input
+        type="number"
+        value={program.dscrInputs?.marketRent || ""}
+        onChange={(e) => setProgram({ ...program, dscrInputs: { ...program.dscrInputs, marketRent: e.target.value } })}
+      />
+      <label>Taxes ($/year):</label>
+      <input
+        type="number"
+        value={program.dscrInputs?.taxes || ""}
+        onChange={(e) => setProgram({ ...program, dscrInputs: { ...program.dscrInputs, taxes: e.target.value } })}
+      />
+      <label>Insurance ($/year):</label>
+      <input
+        type="number"
+        value={program.dscrInputs?.insurance || ""}
+        onChange={(e) => setProgram({ ...program, dscrInputs: { ...program.dscrInputs, insurance: e.target.value } })}
+      />
+      <label>HOA Fees ($/month):</label>
+      <input
+        type="number"
+        value={program.dscrInputs?.hoaFees || ""}
+        onChange={(e) => setProgram({ ...program, dscrInputs: { ...program.dscrInputs, hoaFees: e.target.value } })}
+      />
+
       <div style={{ marginTop: "20px", textAlign: "center" }}>
         <button onClick={handleSave} style={{ marginRight: "10px" }}>💾 Save Program</button>
         <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)}>Cancel</button>
