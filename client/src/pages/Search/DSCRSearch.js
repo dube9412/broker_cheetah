@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Glossary from "../../components/hardMoneyClass/Glossary";
+import "../../styles/SearchPages.css";
 
 const BASE_URL = "https://broker-cheetah-backend.onrender.com";
 
@@ -70,13 +71,12 @@ function DSCRSearch() {
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", maxWidth: "800px", margin: "0 auto" }}>
-      <h2>DSCR Loan Search</h2>
-      <p>Enter one or more filters to find matching loan programs.</p>
+    <div className="search-container">
+      <h1 className="search-title">DSCR Loan Search</h1>
+      <p className="search-subtitle">Enter one or more filters to find matching loan programs.</p>
 
-      {/* 🔹 Deal Details */}
-      <fieldset style={{ border: "1px solid #ccc", padding: "15px", marginBottom: "20px" }}>
-        <legend><strong>🔹 Deal Details</strong></legend>
+      <fieldset className="search-fieldset">
+        <legend className="search-legend">🔹 Deal Details</legend>
 
         <label>State:
           <select value={state} onChange={(e) => setState(e.target.value)} style={{ width: "100%" }}>
@@ -112,9 +112,8 @@ function DSCRSearch() {
         </label>
       </fieldset>
 
-      {/* 🔹 Borrower Profile */}
-      <fieldset style={{ border: "1px solid #ccc", padding: "15px", marginBottom: "20px" }}>
-        <legend><strong>🔹 Borrower Profile</strong></legend>
+      <fieldset className="search-fieldset">
+        <legend className="search-legend">🔹 Borrower Profile</legend>
 
         <label>FICO Score:
           <input value={fico} onChange={(e) => setFico(e.target.value)} style={{ width: "100%" }} />
@@ -125,9 +124,8 @@ function DSCRSearch() {
         </label>
       </fieldset>
 
-      {/* 🔹 DSCR Calculation Inputs */}
-      <fieldset style={{ border: "1px solid #ccc", padding: "15px", marginBottom: "20px" }}>
-        <legend><strong>🔹 DSCR Calculation Inputs</strong></legend>
+      <fieldset className="search-fieldset">
+        <legend className="search-legend">🔹 DSCR Calculation Inputs</legend>
 
         <label>Current Rent ($):
           <input value={currentRent} onChange={(e) => setCurrentRent(e.target.value)} style={{ width: "100%" }} />
@@ -150,38 +148,31 @@ function DSCRSearch() {
         </label>
       </fieldset>
 
-      {/* 🔹 Loan Options */}
-      <fieldset style={{ border: "1px solid #ccc", padding: "15px", marginBottom: "20px" }}>
-        <legend><strong>🔹 Loan Options</strong></legend>
+      <fieldset className="search-fieldset">
+        <legend className="search-legend">🔹 Loan Options</legend>
 
         <label>Prepayment Period:
           <input value={prepaymentPeriod} onChange={(e) => setPrepaymentPeriod(e.target.value)} style={{ width: "100%" }} />
         </label>
       </fieldset>
 
-      <button onClick={handleSearch} style={{ padding: "10px 20px", backgroundColor: "#007bff", color: "#fff", border: "none", cursor: "pointer" }}>
-        🔍 Search
-      </button>
-      <button onClick={handleClear} style={{ marginLeft: "10px", padding: "10px 20px", backgroundColor: "#6c757d", color: "#fff", border: "none", cursor: "pointer" }}>
-        🔄 Clear
-      </button>
+      <button className="search-button" onClick={handleSearch}>🔍 Search</button>
+      <button className="search-button" onClick={handleClear} style={{ marginLeft: "10px" }}>🔄 New Search</button>
 
-      <hr />
-      <h3>Results:</h3>
-      {results.length === 0 && <p>No matching programs.</p>}
-      {results.map((program, i) => (
-        <div key={i} style={{ border: "1px solid #ccc", padding: "10px", margin: "10px 0" }}>
-          <strong>Lender:</strong> {program.lenderName} <br />
-          <strong>Loan Range:</strong> ${program.loanRange?.min || "N/A"} - ${program.loanRange?.max || "N/A"} <br />
-          <strong>PPP:</strong> {program.prepaymentPeriod || "N/A"} <br />
-          <strong>Max LTV (Purchase):</strong> {program.maxLTVPurchase || "N/A"} <br />
-          <strong>DSCR Min:</strong> {program.dscrRatioMin || "N/A"}
-        </div>
-      ))}
+      <div className="search-results">
+        {results.length === 0 && <p>No matching programs.</p>}
+        {results.map((program, i) => (
+          <div key={i} className="search-result-item">
+            <strong>✅ {program.lenderName}</strong> <br />
+            <strong>Loan Range:</strong> ${program.loanRange?.min || "N/A"} - ${program.loanRange?.max || "N/A"} <br />
+            <strong>PPP:</strong> {program.prepaymentPeriod || "N/A"} <br />
+            <strong>Max LTV (Purchase):</strong> {program.maxLTVPurchase || "N/A"} <br />
+            <strong>DSCR Min:</strong> {program.dscrRatioMin || "N/A"}
+          </div>
+        ))}
+      </div>
 
-      <main style={{ maxWidth: "80rem", marginTop: "40px" }}>
-        <Glossary />
-      </main>
+      <Glossary />
     </div>
   );
 }
