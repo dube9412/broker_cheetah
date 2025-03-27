@@ -5,24 +5,35 @@ const DscrLoanSchema = new mongoose.Schema(
     name: { type: String, required: true },
     lender: { type: mongoose.Schema.Types.ObjectId, ref: "Lender", required: true },
     type: { type: String, required: true, default: "DSCR" },
-    
+
     loanRange: {
-      min: { type: Number, required: false },  // Ensure this is a number
-      max: { type: Number, required: false },  // Ensure this is a number
+      min: { type: Number, required: false },
+      max: { type: Number, required: false },
     },
 
-    propertyTypes: [{ type: String, enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"], required: false }],
-    propertyUse: { type: String, enum: ["Standard Rental", "Short Term Rental", "Vacant"], required: false },
-    prepaymentPeriod: { type: String, required: false },
+    propertyTypes: {
+      type: [String],
+      enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"],
+      default: [],
+    },
+
+    propertyUse: {
+      type: String,
+      enum: ["Standard Rental", "Short Term Rental", "Vacant"],
+    },
+
+    prepaymentPeriod: {
+      type: String,
+    },
 
     tiers: [
       {
-        minFICO: { type: Number, required: false },
-        experience: { type: Number, required: false },
-        maxLTVPurchase: { type: Number, required: false },
-        maxLTVRateTerm: { type: Number, required: false },
-        maxLTVCashOut: { type: Number, required: false },
-        dscrRatioMin: { type: Number, required: false },
+        minFICO: { type: Number },
+        minExperience: { type: Number },
+        maxLTVPurchase: { type: Number },
+        maxLTVRateTerm: { type: Number },
+        maxLTVCashOut: { type: Number },
+        dscrRatioMin: { type: Number },
       }
     ],
   },

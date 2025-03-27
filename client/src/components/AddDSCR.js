@@ -70,26 +70,40 @@ function AddDSCR() {
 
       const handleSubmit = async (e) => {
         e.preventDefault();
+      
         const formattedLoanRange = {
-          min: loanRange.min ? parseInt(loanRange.min) : undefined,
-          max: loanRange.max ? parseInt(loanRange.max) : undefined,
+          min: loanRange.min ? Number(loanRange.min) : undefined,
+          max: loanRange.max ? Number(loanRange.max) : undefined,
         };
       
+        const cleanedTiers = tiers.map((tier) => ({
+          ...tier,
+          minFICO: tier.minFICO ? Number(tier.minFICO) : undefined,
+          minExperience: tier.minExperience ? Number(tier.minExperience) : undefined,
+          maxLTVPurchase: tier.maxLTVPurchase ? Number(tier.maxLTVPurchase) : undefined,
+          maxLTVRateTerm: tier.maxLTVRateTerm ? Number(tier.maxLTVRateTerm) : undefined,
+          maxLTVCashOut: tier.maxLTVCashOut ? Number(tier.maxLTVCashOut) : undefined,
+          dscrRatioMin: tier.dscrRatioMin ? Number(tier.dscrRatioMin) : undefined,
+        }));
+      
         try {
-          const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/dscr/${lenderId}/dscr-programs`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: "New DSCR Program",
-              type: "DSCR",
-              lender: lenderId,
-              loanRange: formattedLoanRange,
-              propertyTypes,
-              propertyUse: propertyUse || undefined,
-              prepaymentPeriod,
-              tiers,
-            }),
-          });
+          const response = await fetch(
+            `https://broker-cheetah-backend.onrender.com/api/dscr/${lenderId}/dscr-programs`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: "New DSCR Program",
+                type: "DSCR",
+                lender: lenderId,
+                loanRange: formattedLoanRange,
+                propertyTypes,
+                propertyUse: propertyUse || undefined,
+                prepaymentPeriod: prepaymentPeriod || undefined,
+                tiers: cleanedTiers,
+              }),
+            }
+          );
       
           const data = await response.json();
           if (response.ok) {
@@ -106,13 +120,43 @@ function AddDSCR() {
         }
       };
       
-      
 
+      
     return (
         <div style={{ maxWidth: "500px", margin: "0 auto", padding: "20px" }}>
             <h2 style={{ textAlign: "center" }}>
                 {lender ? `Adding DSCR Loan Program for ${lender.name}` : "Loading Lender..."}
             </h2>
+
+            <label>Loan Range:</label>
+                <input type="number" value={loanRange.min} onChange={(e) => setLoanRange({ ...loanRange, min: e.target.value })} placeholder="Min" style={{ width: "48%", marginRight: "4%" }} />
+                <input type="number" value={loanRange.max} onChange={(e) => setLoanRange({ ...loanRange, max: e.target.value })} placeholder="Max" style={{ width: "48%" }} />
+
+                <label>Prepayment Period (PPP):</label>
+                <input type="number" value={prepaymentPeriod} onChange={(e) => setPrepaymentPeriod(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Property Types:</label>
+                  <div>
+                    {PROPERTY_TYPES.map((type) => (
+                      <label key={type}>
+                        <input
+                          type="checkbox"
+                          value={type}
+                          checked={propertyTypes.includes(type)}
+                          onChange={() => handlePropertyTypeChange(type)} // ✅ Using the function here
+                        />
+                        {type}
+                      </label>
+                    ))}
+                  </div>
+
+                <label>Property Use:</label>
+                {PROPERTY_USES.map((use) => (
+                    <label key={use}>
+                        <input type="radio" name="propertyUse" value={use} checked={propertyUse === use} onChange={() => setPropertyUse(use)} />
+                        {use}
+                    </label>
+                ))}
 
             <form onSubmit={handleSubmit}>
                 <label>Number of Tiers:</label>
@@ -151,36 +195,6 @@ function AddDSCR() {
                         style={{ width: "100%", marginBottom: "10px" }}
                         />  
                         </div>
-                ))}
-
-                <label>Loan Range:</label>
-                <input type="text" value={loanRange.min} onChange={(e) => setLoanRange({ ...loanRange, min: e.target.value })} placeholder="Min" style={{ width: "48%", marginRight: "4%" }} />
-                <input type="text" value={loanRange.max} onChange={(e) => setLoanRange({ ...loanRange, max: e.target.value })} placeholder="Max" style={{ width: "48%" }} />
-
-                <label>Prepayment Period (PPP):</label>
-                <input type="text" value={prepaymentPeriod} onChange={(e) => setPrepaymentPeriod(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
-
-                <label>Property Types:</label>
-<div>
-  {PROPERTY_TYPES.map((type) => (
-    <label key={type}>
-      <input
-        type="checkbox"
-        value={type}
-        checked={propertyTypes.includes(type)}
-        onChange={() => handlePropertyTypeChange(type)} // ✅ Using the function here
-      />
-      {type}
-    </label>
-  ))}
-</div>
-
-                <label>Property Use:</label>
-                {PROPERTY_USES.map((use) => (
-                    <label key={use}>
-                        <input type="radio" name="propertyUse" value={use} checked={propertyUse === use} onChange={() => setPropertyUse(use)} />
-                        {use}
-                    </label>
                 ))}
 
             <button style={{ backgroundColor: 'green', color: 'white', padding: '10px 20px' }}>
