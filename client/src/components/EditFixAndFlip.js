@@ -17,7 +17,7 @@ function EditFixAndFlip() {
   const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
   const [interestType, setInterestType] = useState({ dutch: false, nonDutch: false });
   const [drawType, setDrawType] = useState({ self: false, thirdParty: false });
-  const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
+  const [crossCollateralAllowed, setCrossCollateralAllowed] = useState(null);
   const [propertyTypes, setPropertyTypes] = useState([]);
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
@@ -37,7 +37,7 @@ function EditFixAndFlip() {
           setRecourse(data.recourse || { recourse: false, nonRecourse: false });
           setInterestType(data.interestType || { dutch: false, nonDutch: false });
           setDrawType(data.drawType || { self: false, thirdParty: false });
-          setCrossCollateralAllowed(data.crossCollateralAllowed || "");
+          setCrossCollateralAllowed(data.crossCollateralAllowed ?? null);
           setPropertyTypes(data.propertyTypes || []);
         }
       } catch (error) {
@@ -102,7 +102,7 @@ function EditFixAndFlip() {
         recourse,
         interestType,
         drawType,
-        crossCollateralAllowed,
+        crossCollateralAllowed: !!crossCollateralAllowed,
         propertyTypes,
         tiers,
       };
@@ -173,8 +173,22 @@ function EditFixAndFlip() {
         <label><input type="checkbox" checked={drawType.thirdParty} onChange={() => handleCheckboxChange(setDrawType, "thirdParty")} /> 3rd Party</label><br />
 
         <label>Cross Collateral Allowed:</label><br />
-<label><input type="radio" value="true" checked={crossCollateralAllowed === true} onChange={() => setCrossCollateralAllowed(true)} /> Yes</label><br />
-<label><input type="radio" value="false" checked={crossCollateralAllowed === false} onChange={() => setCrossCollateralAllowed(false)} /> No</label>
+<label>
+  <input
+    type="radio"
+    name="crossCollateral"
+    checked={crossCollateralAllowed === true}
+    onChange={() => setCrossCollateralAllowed(true)}
+  /> Yes
+</label><br />
+<label>
+  <input
+    type="radio"
+    name="crossCollateral"
+    checked={crossCollateralAllowed === false}
+    onChange={() => setCrossCollateralAllowed(false)}
+  /> No
+</label>
 <br />
 
         <label>Property Types:</label><br />
