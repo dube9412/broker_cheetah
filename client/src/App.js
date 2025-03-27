@@ -134,7 +134,7 @@ function App() {
               <Route path="/one-click-quote" element={<OneClickQuoteModal />} />
 
               {/* Loan type & search */}
-              <Route path="/select-loan-type" element={<LoanTypeSelection />} />
+              <Route path="/lender-search" element={<LoanTypeSelection />} />
               <Route path="/search/fixandflip" element={<FixAndFlipSearch />} />
               <Route path="/search/dscr" element={<DSCRSearch />} />
               <Route path="/search/groundup" element={<GroundUpSearch />} />

@@ -6,7 +6,7 @@ function LoanTypeSelection() {
 
   const handleSelect = (type) => {
     // e.g., /search/fixandflip or /search/dscr
-    navigate(`/search/${type}`);
+    navigate(`/Search/${type}`);
   };
 
   return (
