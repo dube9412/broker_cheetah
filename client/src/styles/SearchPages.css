@@ -53,8 +53,8 @@
   border: 1px solid #444;
   border-radius: 4px;
   font-size: 1rem;
-  background-color: #333;
-  color: #fff;
+  background-color: #333; /* Dark background */
+  color: #fff; /* White text */
 }
 
 .search-button {
@@ -118,7 +118,7 @@
 
 /* Glossary styling: Ensure defined words are readable */
 .glossary-term {
-  color: #ffc107; /* Gold color for defined words */
+  color: #000; /* Gold color for defined words */
   font-weight: bold;
 }
 
