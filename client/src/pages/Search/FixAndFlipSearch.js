@@ -233,6 +233,16 @@ function FixAndFlipSearch() {
         <OneClickQuoteModal
           selectedLenders={selectedLenders}
           onClose={() => setIsModalOpen(false)}
+          searchData={{
+            state,
+            fico,
+            purchasePrice,
+            rehabNeeded,
+            arv,
+            asisValue,
+            experience,
+            liquidity, // Pass liquidity to the modal
+          }}
         />
       )}
 

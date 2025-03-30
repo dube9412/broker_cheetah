@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 
-const OneClickQuoteModal = ({ selectedLenders, onClose }) => {
+const OneClickQuoteModal = ({ selectedLenders, onClose, searchData }) => {
   const [loanType, setLoanType] = useState("fixAndFlip");
   const [formData, setFormData] = useState({
     address: "",
-    ficoScore: "",
-    experience: "",
-    purchasePrice: "",
-    rehabNeeded: "",
-    arv: "",
-    liquidity: "",
+    ficoScore: searchData?.fico || "", // Prefill with search data
+    experience: searchData?.experience || "",
+    purchasePrice: searchData?.purchasePrice || "",
+    rehabNeeded: searchData?.rehabNeeded || "",
+    arv: searchData?.arv || "",
+    liquidity: searchData?.liquidity || "", // Add liquidity field
     rentRate: "",
     taxes: "",
     insurance: "",
     hoa: "",
-    downPayment: ""
+    downPayment: "",
   });
 
   const handleChange = (e) => {
@@ -39,6 +39,20 @@ const OneClickQuoteModal = ({ selectedLenders, onClose }) => {
       if (response.ok) {
         alert("Quote request submitted successfully!");
         onClose();
+
+        // Send emails to selected lenders
+        await Promise.all(
+          selectedLenders.map((lenderId) =>
+            fetch(
+              `https://broker-cheetah-backend.onrender.com/api/lenders/${lenderId}/send-email`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ formData }),
+              }
+            )
+          )
+        );
       } else {
         const errorData = await response.json();
         alert(`Error: ${errorData.message}`);
@@ -65,6 +79,9 @@ const OneClickQuoteModal = ({ selectedLenders, onClose }) => {
 
           <label className="block mb-2">Approx. FICO Score</label>
           <input type="number" name="ficoScore" value={formData.ficoScore} onChange={handleChange} className="w-full p-2 border rounded mb-4" required />
+
+          <label className="block mb-2">Liquidity</label>
+          <input type="number" name="liquidity" value={formData.liquidity} onChange={handleChange} className="w-full p-2 border rounded mb-4" required />
 
           {loanType === "fixAndFlip" && (
             <>
