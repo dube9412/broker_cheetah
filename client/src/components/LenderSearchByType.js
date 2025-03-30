@@ -57,6 +57,7 @@ function LenderSearchByType({ onResults }) {
                 checked={selectedLenders.includes(lender._id)}
               />
               {lender.name}
+              <p>{lender.highlightNote || "Available program"}</p> {/* Display dynamic note */}
             </li>
           ))}
         </ul>

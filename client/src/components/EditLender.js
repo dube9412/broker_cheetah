@@ -24,6 +24,7 @@ function EditLender() {
   const [assumable, setAssumable] = useState(false);
   const [bkFcSsDil, setBkFcSsDil] = useState("");
   const [backgroundLimitations, setBackgroundLimitations] = useState([]);
+  const [rehabLogic, setRehabLogic] = useState(""); // State for rehab weight logic
   const { isAdmin, isSuperAdmin } = useContext(AuthContext);
 
   const location = useLocation();
@@ -72,6 +73,7 @@ function EditLender() {
         setAssumable(lender.assumable || false);
         setBkFcSsDil(lender.bkFcSsDil || "");
         setBackgroundLimitations(lender.backgroundLimitations || []);
+        setRehabLogic(lender.rehabLogic || ""); // Load rehab logic
       })
       .catch((err) => {
         console.error("❌ Error fetching lender:", err);
@@ -205,6 +207,15 @@ function EditLender() {
             </label>
           ))}
         </div>
+        <br />
+
+        <label>Fix and Flip Rehab Weight Logic:</label>
+        <textarea
+          value={rehabLogic}
+          onChange={(e) => setRehabLogic(e.target.value)}
+          placeholder="Define logic for light, normal, and heavy rehabs"
+          style={{ width: "100%", marginBottom: "10px" }}
+        />
         <br />
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>

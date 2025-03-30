@@ -24,6 +24,7 @@ function AddLender() {
   const [assumable, setAssumable] = useState(false);
   const [bkFcSsDil, setBkFcSsDil] = useState("");
   const [backgroundLimitations, setBackgroundLimitations] = useState([]);
+  const [rehabLogic, setRehabLogic] = useState(""); // State for rehab weight logic
   const { isAdmin, isSuperAdmin } = useContext(AuthContext);
 
   const handleSubmit = (e) => {
@@ -46,6 +47,7 @@ function AddLender() {
       assumable,
       bkFcSsDil: parseInt(bkFcSsDil) || null,
       backgroundLimitations,
+      rehabLogic, // Add rehab logic to lender data
     };
 
     fetch("https://broker-cheetah-backend.onrender.com/api/lenders", {
@@ -140,6 +142,14 @@ function AddLender() {
                     </label>
                 ))}
             </div>
+
+            <label>Fix and Flip Rehab Weight Logic:</label>
+            <textarea
+                value={rehabLogic}
+                onChange={(e) => setRehabLogic(e.target.value)}
+                placeholder="Define logic for light, normal, and heavy rehabs"
+                style={{ width: "100%", marginBottom: "10px" }}
+            />
 
             <div style={{ textAlign: "center", marginTop: "20px" }}>
                 <button type="submit" style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>

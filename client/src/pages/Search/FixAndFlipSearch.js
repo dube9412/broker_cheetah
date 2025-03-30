@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Glossary from "../../components/hardMoneyClass/Glossary";
+import OneClickQuoteModal from "../../components/OneClickQuoteModal"; // Import the modal
 import "../../styles/SearchPages.css";
 
 const BASE_URL = "https://broker-cheetah-backend.onrender.com";
@@ -29,9 +30,16 @@ function FixAndFlipSearch() {
 
   const [results, setResults] = useState([]);
   const [warning, setWarning] = useState("");
+  const [selectedLenders, setSelectedLenders] = useState([]); // Track selected lenders
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
 
   const handleSearch = async () => {
     setWarning("");
+
+    if (!state || !fico || !experience) {
+        alert("Please fill in all required fields: State, FICO, and Experience.");
+        return;
+    }
 
     const rehabAmount = parseFloat(rehabNeeded);
     const purchase = parseFloat(purchasePrice);
@@ -67,7 +75,10 @@ function FixAndFlipSearch() {
   }
 
   const data = await response.json();
-  setResults(data || []);
+  setResults(data.map((res) => ({
+    ...res,
+    highlightNote: res.highlightNote || "Available Fix & Flip program", // Default note
+  })));
 } catch (err) {
   console.error("❌ Error searching:", err.message);
   setResults([]);
@@ -89,7 +100,22 @@ function FixAndFlipSearch() {
     setResults([]);
     setWarning("");
   };
-  
+
+  const handleLenderSelect = (lenderId) => {
+    setSelectedLenders((prevSelected) =>
+        prevSelected.includes(lenderId)
+            ? prevSelected.filter((id) => id !== lenderId)
+            : [...prevSelected, lenderId]
+    );
+  };
+
+  const openQuoteModal = () => {
+    if (selectedLenders.length === 0) {
+        alert("Please select at least one lender.");
+        return;
+    }
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="search-container">
@@ -155,15 +181,40 @@ function FixAndFlipSearch() {
         {results.map((res, i) => (
           <div key={i} className="search-result-item">
             <strong>✅ {res.name}</strong>
+            <p>{res.highlightNote}</p> {/* Display dynamic note */}
             <span>{res.phone || ""}</span>
             <p>Expect <strong>{res.maxLTC || "N/A"}%</strong> of purchase, <strong>{res.rehabPercent || "N/A"}%</strong> rehab, <strong>{res.termLengthMonths || "N/A"}-month</strong> term.</p>
             <p>Interest: <strong>{res.interestType || "Not Provided"}</strong> | Recourse: <strong>{res.recourse || "Not Provided"}</strong></p>
             <p>Rehab Classification: <strong>{res.rehabType || "Not Specified"}</strong></p>
             <p>📌 <em>Why this lender works:</em> {res.highlightNote || "Available Fix & Flip program"}</p>
-            <label><input type="checkbox" value={res.lenderId} /> Request Quote</label>
+            <label>
+              <input
+                type="checkbox"
+                value={res.lenderId}
+                onChange={() => handleLenderSelect(res.lenderId)}
+              />{" "}
+              Request Quote
+            </label>
           </div>
         ))}
       </div>
+
+      {selectedLenders.length > 0 && (
+        <button
+          className="search-button"
+          onClick={openQuoteModal}
+          style={{ marginTop: "1rem" }}
+        >
+          Request One-Click Quote
+        </button>
+      )}
+
+      {isModalOpen && (
+        <OneClickQuoteModal
+          selectedLenders={selectedLenders}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
 
       <Glossary />
     </div>
