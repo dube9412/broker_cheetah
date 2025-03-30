@@ -13,6 +13,7 @@ function EditGroundUp() {
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [constructionBudget, setConstructionBudget] = useState("");
   const [termMonths, setTermMonths] = useState("");
+  const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
 
@@ -30,6 +31,7 @@ function EditGroundUp() {
           setConstructionBudget(data.constructionBudget || "");
           setPropertyTypes(data.propertyTypes || []);
           setTermMonths(data.termMonths || ""); // ✅ Fixed incorrect assignment
+          setHighlightNote(data.highlightNote || ""); // Load highlightNote
         } else {
           console.error("❌ Error fetching loan program:", data);
           setError("Loan program not found.");
@@ -72,6 +74,7 @@ function EditGroundUp() {
           constructionBudget,
           propertyTypes,
           termMonths,
+          highlightNote, // Include highlightNote in the payload
         }),
       });
 
@@ -159,6 +162,14 @@ function EditGroundUp() {
 
       <label>Construction Budget:</label>
       <input type="number" value={constructionBudget} onChange={(e) => setConstructionBudget(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
+      <label>Highlight Note:</label>
+      <textarea
+        value={highlightNote}
+        onChange={(e) => setHighlightNote(e.target.value)}
+        placeholder="Enter a note explaining why this program is a good fit"
+        style={{ width: "100%", height: "100px", marginBottom: "10px" }}
+      />
 
       <div style={{ textAlign: "center", marginTop: "20px" }}>
         <button onClick={handleSave} style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>Save Changes</button>

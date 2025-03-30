@@ -285,7 +285,7 @@ console.log("📂 Documents in State:", uploadedDocs);
   {[...fixAndFlipPrograms, ...dscrPrograms, ...groundUpPrograms, ...portfolioPrograms, ...stabilizedBridgePrograms].map((program) => (
     <li key={program._id}>
       <strong>{program.name}</strong>
-
+      <p>{program.highlightNote || "No highlight note provided."}</p> {/* Display highlight note */}
       <Link to={`/edit-${program.type.toLowerCase().replace(/ /g, "-")}-program/${lenderId}/${program._id}`}>
         <button>Edit</button>
       </Link>

@@ -14,6 +14,8 @@ const US_STATES = [
   "UT", "VA", "VT", "WA", "WI", "WV", "WY"
 ];
 
+const TERM_LENGTH_OPTIONS = [6, 12, 18, 24, 36]; // Define term length options
+
 function FixAndFlipSearch() {
   const navigate = useNavigate();
   const [state, setState] = useState("");
@@ -27,6 +29,7 @@ function FixAndFlipSearch() {
   const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
   const [interestType, setInterestType] = useState("");
   const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
+  const [termLengthMonths, setTermLengthMonths] = useState(""); // Update to string for radio buttons
 
   const [results, setResults] = useState([]);
   const [warning, setWarning] = useState("");
@@ -62,7 +65,8 @@ function FixAndFlipSearch() {
   interestTypeNonDutch: interestType.nonDutch,
         crossCollateralAllowed,
         recourse: recourse.recourse,
-        nonRecourse: recourse.nonRecourse
+        nonRecourse: recourse.nonRecourse,
+        termLengthMonths, // Include termLengthMonths in the query
       }).toString();
 
       const url = `${BASE_URL}/api/fix-and-flip/search?${queryString}`;
@@ -97,6 +101,7 @@ function FixAndFlipSearch() {
     setRecourse({ recourse: false, nonRecourse: false });
     setInterestType({ dutch: false, nonDutch: false });
     setCrossCollateralAllowed("");
+    setTermLengthMonths(""); // Clear term length
     setResults([]);
     setWarning("");
   };
@@ -168,6 +173,21 @@ function FixAndFlipSearch() {
           <option value="yes">Yes</option>
           <option value="no">No</option>
         </select>
+        <label>Term Length (Months):</label>
+        <div>
+            {TERM_LENGTH_OPTIONS.map((length) => (
+                <label key={length} style={{ marginRight: "10px" }}>
+                    <input
+                        type="radio"
+                        name="termLengthMonths"
+                        value={length}
+                        checked={termLengthMonths === String(length)}
+                        onChange={(e) => setTermLengthMonths(e.target.value)}
+                    />
+                    {length} months
+                </label>
+            ))}
+        </div>
       </fieldset>
 
       <div className="search-buttons-container">

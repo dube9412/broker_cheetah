@@ -29,7 +29,7 @@ const FixAndFlipLoanSchema = new mongoose.Schema(
     },
     crossCollateralAllowed: { type: Boolean },
 
-    termLength: { type: Number }, // in months
+    termLengthMonths: { type: [Number], default: [] }, // Update to array for multiple term lengths
 
     // 🔸 Tier-Level Fields
     tiers: [

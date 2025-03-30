@@ -11,6 +11,7 @@ function AddStabilizedBridge() {
   const [loanRange, setLoanRange] = useState({ min: "", max: "" });
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [loanTerm, setLoanTerm] = useState("");
+  const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
 
@@ -76,6 +77,7 @@ function AddStabilizedBridge() {
           loanTerm: parseInt(loanTerm),
           propertyTypes,
           tiers,
+          highlightNote, // Include highlightNote in the payload
         }),
       });
 
@@ -144,8 +146,13 @@ function AddStabilizedBridge() {
 <label>Loan Term (in months):</label>
 <input type="number" value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
         <br />
-
-       
+        <label>Highlight Note:</label>
+        <textarea
+            value={highlightNote}
+            onChange={(e) => setHighlightNote(e.target.value)}
+            placeholder="Enter a note explaining why this program is a good fit"
+            style={{ width: "100%", height: "100px", marginBottom: "10px" }}
+        />
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <button type="submit" style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>

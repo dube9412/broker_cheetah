@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -13,12 +12,14 @@ function EditFixAndFlip() {
 
   const [experienceWindowMonths, setExperienceWindowMonths] = useState("");
   const [minAsIsValue, setMinAsIsValue] = useState("");
-  const [termLengthMonths, setTermLengthMonths] = useState("");
+  const [termLengthMonths, setTermLengthMonths] = useState([]); // Update to array for checkboxes
+  const TERM_LENGTH_OPTIONS = [6, 12, 18, 24, 36]; // Define term length options
   const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
   const [interestType, setInterestType] = useState({ dutch: false, nonDutch: false });
   const [drawType, setDrawType] = useState({ self: false, thirdParty: false });
   const [crossCollateralAllowed, setCrossCollateralAllowed] = useState(null);
   const [propertyTypes, setPropertyTypes] = useState([]);
+  const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
 
@@ -33,12 +34,13 @@ function EditFixAndFlip() {
           setNumTiers(data.tiers?.length || 1);
           setExperienceWindowMonths(data.experienceWindowMonths || "");
           setMinAsIsValue(data.minAsIsValue || "");
-          setTermLengthMonths(data.termLengthMonths || "");
+          setTermLengthMonths(data.termLengthMonths || []); // Load termLengthMonths
           setRecourse(data.recourse || { recourse: false, nonRecourse: false });
           setInterestType(data.interestType || { dutch: false, nonDutch: false });
           setDrawType(data.drawType || { self: false, thirdParty: false });
           setCrossCollateralAllowed(data.crossCollateralAllowed ?? null);
           setPropertyTypes(data.propertyTypes || []);
+          setHighlightNote(data.highlightNote || ""); // Load highlightNote
         }
       } catch (error) {
         console.error("Error fetching program:", error);
@@ -98,13 +100,14 @@ function EditFixAndFlip() {
         ...program,
         experienceWindowMonths,
         minAsIsValue,
-        termLengthMonths,
+        termLengthMonths, // Include termLengthMonths in the payload
         recourse,
         interestType,
         drawType,
         crossCollateralAllowed: !!crossCollateralAllowed,
         propertyTypes,
         tiers,
+        highlightNote, // Include highlightNote in the payload
       };
 
       const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/fix-and-flip-programs/${programId}`, {
@@ -156,9 +159,25 @@ function EditFixAndFlip() {
           <input type="number" value={minAsIsValue} onChange={(e) => setMinAsIsValue(e.target.value)} />
         </label><br />
 
-        <label>Term Length (Months):
-          <input type="number" value={termLengthMonths} onChange={(e) => setTermLengthMonths(e.target.value)} />
-        </label><br />
+        <label>Term Length (Months):</label>
+        <div>
+          {TERM_LENGTH_OPTIONS.map((length) => (
+            <label key={length} style={{ marginRight: "10px" }}>
+              <input
+                type="checkbox"
+                value={length}
+                checked={termLengthMonths.includes(length)}
+                onChange={(e) => {
+                  const updated = e.target.checked
+                    ? [...termLengthMonths, length]
+                    : termLengthMonths.filter((l) => l !== length);
+                  setTermLengthMonths(updated);
+                }}
+              />
+              {length} months
+            </label>
+          ))}
+        </div><br />
 
         <label>Recourse:</label>
         <label><input type="checkbox" checked={recourse.recourse} onChange={() => handleCheckboxChange(setRecourse, "recourse")} /> Recourse</label>
@@ -224,11 +243,19 @@ function EditFixAndFlip() {
            </fieldset>
       ))}
 
-<div style={{ marginTop: "20px", textAlign: "center" }}>
-          <button onClick={handleSave} style={{ marginRight: "10px" }}>💾 Save Program</button>
-          <button onClick={handleDelete} style={{ marginRight: "10px" }}>❌ Delete</button>
-          <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button">Cancel</button>
-        </div>
+      <label>Highlight Note:</label>
+      <textarea
+        value={highlightNote}
+        onChange={(e) => setHighlightNote(e.target.value)}
+        placeholder="Enter a note explaining why this program is a good fit"
+        style={{ width: "100%", height: "100px", marginBottom: "10px" }}
+      />
+
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
+        <button onClick={handleSave} style={{ marginRight: "10px" }}>💾 Save Program</button>
+        <button onClick={handleDelete} style={{ marginRight: "10px" }}>❌ Delete</button>
+        <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button">Cancel</button>
+      </div>
     
     </div>
   );

@@ -7,7 +7,7 @@ function AddFixAndFlip() {
 
   const [experienceWindowMonths, setExperienceWindowMonths] = useState("");
   const [minAsIsValue, setMinAsIsValue] = useState("");
-  const [termLengthMonths, setTermLengthMonths] = useState("");
+  const [termLengthMonths, setTermLengthMonths] = useState([]); // Update to array for checkboxes
   const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
   const [interestType, setInterestType] = useState({ dutch: false, nonDutch: false });
   const [drawType, setDrawType] = useState({ self: false, thirdParty: false });
@@ -23,8 +23,10 @@ function AddFixAndFlip() {
     maxARV: "",
     rehabPercent: "",
   }]);
+  const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
 
   const PROPERTY_OPTIONS = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
+  const TERM_LENGTH_OPTIONS = [6, 12, 18, 24, 36]; // Define term length options
 
   const handleCheckboxChange = (type, field) => {
     if (field === "drawType") {
@@ -78,6 +80,7 @@ function AddFixAndFlip() {
       crossCollateralAllowed: !!crossCollateralAllowed,
       propertyTypes,
       tiers,
+      highlightNote, // Include highlightNote in the payload
     };
 
     console.log("🔍 SUBMIT PAYLOAD", payload);
@@ -117,9 +120,25 @@ function AddFixAndFlip() {
           <input value={minAsIsValue} onChange={(e) => setMinAsIsValue(e.target.value)} />
         </label><br />
 
-        <label>Term Length (Months):
-          <input value={termLengthMonths} onChange={(e) => setTermLengthMonths(e.target.value)} />
-        </label><br />
+        <label>Term Length (Months):</label>
+        <div>
+          {TERM_LENGTH_OPTIONS.map((length) => (
+            <label key={length} style={{ marginRight: "10px" }}>
+              <input
+                type="checkbox"
+                value={length}
+                checked={termLengthMonths.includes(length)}
+                onChange={(e) => {
+                  const updated = e.target.checked
+                    ? [...termLengthMonths, length]
+                    : termLengthMonths.filter((l) => l !== length);
+                  setTermLengthMonths(updated);
+                }}
+              />
+              {length} months
+            </label>
+          ))}
+        </div><br />
 
         <label>Recourse:</label>
         <input type="checkbox" checked={recourse.recourse} onChange={() => handleCheckboxChange("recourse", "recourse")} /> Recourse
@@ -193,6 +212,14 @@ function AddFixAndFlip() {
         ))}
         <button type="button" onClick={handleAddTier}>+ Add Tier</button>
       </fieldset>
+
+      <label>Highlight Note:</label>
+      <textarea
+        value={highlightNote}
+        onChange={(e) => setHighlightNote(e.target.value)}
+        placeholder="Enter a note explaining why this program is a good fit"
+        style={{ width: "100%", height: "100px", marginBottom: "10px" }}
+      />
 
       <div style={{ marginTop: "20px", textAlign: "center" }}>
           <button onClick={handleSubmit} style={{ marginRight: "10px" }}>Save Program</button>

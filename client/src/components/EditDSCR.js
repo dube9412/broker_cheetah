@@ -13,6 +13,7 @@ function EditDSCR() {
   const [prepaymentPeriod, setPrepaymentPeriod] = useState("");
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [propertyUse, setPropertyUse] = useState("");
+  const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
   const PROPERTY_USES = ["Standard Rental", "Short Term Rental", "Vacant"];
@@ -36,6 +37,7 @@ function EditDSCR() {
         setPrepaymentPeriod(programData.prepaymentPeriod || "");
         setPropertyTypes(programData.propertyTypes || []);
         setPropertyUse(programData.propertyUse || "");
+        setHighlightNote(programData.highlightNote || ""); // Load highlightNote
       } catch (error) {
         console.error("❌ Error loading data:", error);
       }
@@ -86,6 +88,7 @@ function EditDSCR() {
           propertyUse: propertyUse || undefined,
           prepaymentPeriod,
           tiers,
+          highlightNote, // Include highlightNote in the payload
         }),
       });
 
@@ -173,6 +176,14 @@ function EditDSCR() {
         type="number"
         value={program.dscrInputs?.hoaFees || ""}
         onChange={(e) => setProgram({ ...program, dscrInputs: { ...program.dscrInputs, hoaFees: e.target.value } })}
+      />
+
+      <label>Highlight Note:</label>
+      <textarea
+        value={highlightNote}
+        onChange={(e) => setHighlightNote(e.target.value)}
+        placeholder="Enter a note explaining why this program is a good fit"
+        style={{ width: "100%", height: "100px", marginBottom: "10px" }}
       />
 
       <div style={{ marginTop: "20px", textAlign: "center" }}>

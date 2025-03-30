@@ -13,6 +13,7 @@ function AddPortfolio() {
   const [minLoanTerm, setMinLoanTerm] = useState("");
   const [maxLoanTerm, setMaxLoanTerm] = useState("");
   const [minDSCR, setMinDSCR] = useState("");
+  const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
 
@@ -82,6 +83,7 @@ function AddPortfolio() {
           minLoanTerm,
           maxLoanTerm,
           minDSCR,
+          highlightNote, // Include highlightNote in the payload
           tiers,
         }),
       });
@@ -158,6 +160,14 @@ function AddPortfolio() {
 
         <label>Minimum DSCR:</label>
         <input type="number" value={minDSCR} onChange={(e) => setMinDSCR(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
+        <label>Highlight Note:</label>
+        <textarea
+            value={highlightNote}
+            onChange={(e) => setHighlightNote(e.target.value)}
+            placeholder="Enter a note explaining why this program is a good fit"
+            style={{ width: "100%", height: "100px", marginBottom: "10px" }}
+        />
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <button type="submit" style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>

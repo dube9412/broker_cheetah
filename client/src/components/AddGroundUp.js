@@ -12,6 +12,7 @@ function AddGroundUp() {
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [termMonths, setTermMonths] = useState("");
   const [constructionBudget, setConstructionBudget] = useState("");
+  const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
  
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
   
@@ -78,6 +79,7 @@ function AddGroundUp() {
           termMonths: parseInt(termMonths),
           constructionBudget,
           tiers,
+          highlightNote, // Include highlightNote in the payload
         }),
       });
 
@@ -147,7 +149,13 @@ function AddGroundUp() {
           <input type="number" value={termMonths} onChange={(e) => setTermMonths(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />  
         <label>Construction Budget:</label>
           <input type="number" value={constructionBudget} onChange={(e) => setConstructionBudget(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
-
+        <label>Highlight Note:</label>
+        <textarea
+            value={highlightNote}
+            onChange={(e) => setHighlightNote(e.target.value)}
+            placeholder="Enter a note explaining why this program is a good fit"
+            style={{ width: "100%", height: "100px", marginBottom: "10px" }}
+        />
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <button type="submit" style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>

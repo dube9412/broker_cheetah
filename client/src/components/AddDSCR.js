@@ -20,6 +20,7 @@ function AddDSCR() {
     const [taxes, setTaxes] = useState("");
     const [insurance, setInsurance] = useState("");
     const [hoaFees, setHoaFees] = useState("");
+    const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
 
     const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
     const PROPERTY_USES = ["Standard Rental", "Short Term Rental", "Vacant"];
@@ -111,6 +112,7 @@ function AddDSCR() {
                   insurance: insurance ? Number(insurance) : undefined,
                   hoaFees: hoaFees ? Number(hoaFees) : undefined,
                 },
+                highlightNote, // Include highlightNote in the payload
               }),
             }
           );
@@ -183,6 +185,14 @@ function AddDSCR() {
 
                 <label>HOA Fees ($/month):</label>
                 <input type="number" value={hoaFees} onChange={(e) => setHoaFees(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Highlight Note:</label>
+                <textarea
+                    value={highlightNote}
+                    onChange={(e) => setHighlightNote(e.target.value)}
+                    placeholder="Enter a note explaining why this program is a good fit"
+                    style={{ width: "100%", height: "100px", marginBottom: "10px" }}
+                />
 
             <label>Number of Tiers:</label>
                 <select value={numTiers} onChange={handleNumTiersChange} style={{ width: "100%", marginBottom: "10px" }}>
