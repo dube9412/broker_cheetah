@@ -79,25 +79,43 @@ const BulkDocumentUploader = ({refreshDocuments}) => {
   }, []);
 
   // ✅ Handle drag-and-drop
+  const validExtensions = [
+    ".pdf", // PDF
+    ".doc", // DOC
+    ".docx", // DOCX
+    ".xls", // XLS
+    ".xlsx", // XLSX
+    ".png", // PNG
+    ".jpg", // JPG
+    ".jpeg", // JPEG
+    ".txt", // TXT
+    ".csv", // CSV
+  ];
+
   const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
     // Log rejected files for debugging
     if (rejectedFiles.length > 0) {
       console.warn("Rejected files:", rejectedFiles);
     }
 
-    const validFiles = acceptedFiles.filter(file => validMimeTypes.includes(file.type));
+    const validFiles = acceptedFiles.filter((file) => {
+      const extension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+      return validExtensions.includes(extension);
+    });
+
     if (validFiles.length === 0) {
-      alert("No valid files selected. Allowed types: PDF, Word, Excel, PNG, JPEG.");
+      alert("No valid files selected. Allowed extensions: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG, TXT, CSV.");
       return;
     }
+
     setSelectedFiles((prev) => [...prev, ...validFiles]);
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    multiple: true, // ✅ Allow multiple files
-    accept: validMimeTypes.join(", "),
-  }); // Use the cleaned-up MIME types
+    multiple: true,
+    accept: validExtensions.join(", "), // Use extensions instead of MIME types
+  });
 
   // ✅ Handle Bulk Upload
   const handleUpload = async () => {

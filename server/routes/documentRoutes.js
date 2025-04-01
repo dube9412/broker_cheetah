@@ -124,8 +124,13 @@ router.get("/view/:documentId", async (req, res) => {
     const { documentId } = req.params;
     const document = await Document.findById(documentId);
 
-    if (!document || !document.filePath) {
-      return res.status(404).json({ success: false, message: "Document not found or missing file path." });
+    if (!document) {
+      return res.status(404).json({ success: false, message: "Document not found." });
+    }
+
+    if (!document.filename) {
+      console.error("❌ Error: Document filename is missing:", document);
+      return res.status(400).json({ success: false, message: "Document filename is missing." });
     }
 
     const fileKey = document.filename; // S3 key
