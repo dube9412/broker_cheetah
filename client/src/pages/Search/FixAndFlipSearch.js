@@ -75,9 +75,8 @@ function FixAndFlipSearch() {
 
       // Filter results based on Fix and Flip loan program criteria
       const filteredResults = data.filter((lender) => {
-        // Ignore lenders without Fix and Flip programs (no tiers)
         if (!Array.isArray(lender.tiers) || lender.tiers.length === 0) {
-          console.warn("⚠️ Skipping lender without Fix and Flip programs:", lender.name);
+          console.warn("⚠️ Skipping lender without valid tiers:", lender.name);
           return false;
         }
 
@@ -87,9 +86,15 @@ function FixAndFlipSearch() {
         const matchingTier = lender.tiers.find((tier) => {
           if (tier.minFICO && Number(fico) < tier.minFICO) return false;
           if (tier.minExperience && Number(experience) < tier.minExperience) return false;
-          if (tier.maxLTC && Number(purchasePrice) > (asIs * tier.maxLTC) / 100) return false;
-          if (tier.totalLTC && totalCost > (arv * tier.totalLTC) / 100) return false;
-          if (tier.maxARV && totalCost > (arv * tier.maxARV) / 100) return false;
+
+          // LTC and ARV calculations
+          const ltcLimit = tier.maxLTC ? (asIs * tier.maxLTC) / 100 : Infinity;
+          const totalLtcLimit = tier.totalLTC ? (arv * tier.totalLTC) / 100 : Infinity;
+          const arvLimit = tier.maxARV ? (arv * tier.maxARV) / 100 : Infinity;
+
+          if (purchasePrice > ltcLimit) return false;
+          if (totalCost > totalLtcLimit) return false;
+          if (totalCost > arvLimit) return false;
 
           return true;
         });
