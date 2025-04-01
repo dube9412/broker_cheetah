@@ -75,6 +75,11 @@ function FixAndFlipSearch() {
 
       // Filter results to include only lenders with matching programs
       const filteredResults = data.filter((lender) => {
+        if (!Array.isArray(lender.programs)) {
+          console.warn("⚠️ Skipping lender due to missing or invalid 'programs' field:", lender);
+          return false;
+        }
+
         const matchingPrograms = lender.programs.filter((program) => {
           return (
             program.state === state &&
