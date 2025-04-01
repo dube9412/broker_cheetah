@@ -1,29 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const multerS3 = require("multer-s3");
-const AWS = require("aws-sdk");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { Upload } = require("@aws-sdk/lib-storage");
 const Document = require("../models/Document");
 
-// ✅ Configure AWS S3
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+// ✅ Configure AWS S3 Client
+const s3 = new S3Client({
   region: process.env.AWS_REGION,
-});
-
-// ✅ Multer Storage Config for S3
-const storage = multerS3({
-  s3: s3,
-  bucket: process.env.AWS_BUCKET_NAME,
-  metadata: (req, file, cb) => {
-    cb(null, { fieldName: file.fieldname });
-  },
-  key: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
 });
 
+// ✅ Multer Storage Config
+const storage = multer.memoryStorage(); // Store files in memory temporarily
 const upload = multer({ storage: storage });
 
 // ✅ Upload a Document
@@ -38,10 +30,25 @@ router.post("/upload", upload.single("file"), async (req, res) => {
       return res.status(400).json({ success: false, message: "Lender ID and Tag are required." });
     }
 
+    const fileKey = `${Date.now()}-${req.file.originalname}`;
+    const uploadParams = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: fileKey,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    };
+
+    // ✅ Upload to S3
+    const upload = new Upload({
+      client: s3,
+      params: uploadParams,
+    });
+    await upload.done();
+
     const newDocument = new Document({
-      filename: req.file.key, // S3 key
+      filename: fileKey, // S3 key
       originalName: req.file.originalname,
-      filePath: req.file.location, // S3 URL
+      filePath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`, // S3 URL
       lenderId,
       programId: programId || null,
       tag,
