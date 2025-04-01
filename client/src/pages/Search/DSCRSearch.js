@@ -35,7 +35,6 @@ function DSCRSearch() {
         state,
         fico,
         experience,
-        loanAmount,
         propertyType,
         propertyUse,
         currentRent,
@@ -43,13 +42,32 @@ function DSCRSearch() {
         taxes,
         insurance,
         hoaFees,
-        prepaymentPeriod,
       });
 
-      const res = await fetch(`${BASE_URL}/api/dscr/search?${params}`);
-      const data = await res.json();
+      const url = `${BASE_URL}/api/dscr/search?${params}`;
+      console.log("🔍 Fetching:", url);
 
-      setResults(data);
+      const response = await fetch(url);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`❌ Status ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+
+      // Filter results to include only lenders with matching programs
+      const filteredResults = data.filter((lender) => {
+        return lender.programs.some((program) => {
+          return (
+            program.state === state &&
+            program.minFICO <= fico &&
+            program.minExperience <= experience &&
+            program.propertyTypes.includes(propertyType)
+          );
+        });
+      });
+
+      setResults(filteredResults);
     } catch (error) {
       console.error("❌ Error searching DSCR programs:", error);
       alert("Search failed.");

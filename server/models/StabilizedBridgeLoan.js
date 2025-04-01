@@ -10,6 +10,8 @@ const StabilizedBridgeLoanSchema = new mongoose.Schema({
   },
   propertyTypes: [{ type: String, enum: ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"], required: false }],
   termMonths: { type: Number, required: false },
+  rehabComplete: { type: Boolean, default: false }, // Add rehabComplete field
+  rehabRemaining: { type: Number, required: false }, // Add rehabRemaining field
   tiers: [
     {
       minFICO: { type: Number, required: false },

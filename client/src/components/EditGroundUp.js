@@ -14,8 +14,11 @@ function EditGroundUp() {
   const [constructionBudget, setConstructionBudget] = useState("");
   const [termMonths, setTermMonths] = useState("");
   const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
+  const [arv, setArv] = useState("");
+  const [termLengthMonths, setTermLengthMonths] = useState([]); // Update loan term to checkboxes
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
+  const TERM_OPTIONS = [12, 13, 18, 19, 24]; // Define term options
 
   useEffect(() => {
     const fetchProgram = async () => {
@@ -170,6 +173,31 @@ function EditGroundUp() {
         placeholder="Enter a note explaining why this program is a good fit"
         style={{ width: "100%", height: "100px", marginBottom: "10px" }}
       />
+
+      <form onSubmit={handleSave}>
+        <label>ARV (After Repair Value):</label>
+        <input type="number" value={arv} onChange={(e) => setArv(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
+        <label>Loan Term (Months):</label>
+        <div>
+          {TERM_OPTIONS.map((term) => (
+            <label key={term} style={{ marginRight: "10px" }}>
+              <input
+                type="checkbox"
+                value={term}
+                checked={termLengthMonths.includes(term)}
+                onChange={(e) => {
+                  const updated = e.target.checked
+                    ? [...termLengthMonths, term]
+                    : termLengthMonths.filter((t) => t !== term);
+                  setTermLengthMonths(updated);
+                }}
+              />
+              {term} months
+            </label>
+          ))}
+        </div>
+      </form>
 
       <div style={{ textAlign: "center", marginTop: "20px" }}>
         <button onClick={handleSave} style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>Save Changes</button>

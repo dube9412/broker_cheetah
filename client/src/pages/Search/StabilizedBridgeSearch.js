@@ -24,6 +24,8 @@ function SearchStabilizedBridge() {
   const [dscrRatio, setDscrRatio] = useState("");
   const [results, setResults] = useState([]);
   const [warning, setWarning] = useState("");
+  const [rehabComplete, setRehabComplete] = useState(false);
+  const [rehabRemaining, setRehabRemaining] = useState("");
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
 
@@ -39,6 +41,8 @@ function SearchStabilizedBridge() {
         loanAmount,
         propertyType,
         dscrRatio,
+        rehabComplete,
+        rehabRemaining,
       }).toString();
 
       const url = `${BASE_URL}/api/stabilized-bridge/search?${queryString}`;
@@ -51,7 +55,21 @@ function SearchStabilizedBridge() {
       }
 
       const data = await response.json();
-      setResults(data || []);
+
+      // Filter results to include only lenders with matching programs
+      const filteredResults = data.filter((lender) => {
+        return lender.programs.some((program) => {
+          return (
+            program.state === state &&
+            program.minFICO <= fico &&
+            program.minExperience <= experience &&
+            program.propertyTypes.includes(propertyType) &&
+            (rehabComplete || program.rehabRemaining >= rehabRemaining)
+          );
+        });
+      });
+
+      setResults(filteredResults);
     } catch (err) {
       console.error("❌ Error searching:", err.message);
       setResults([]);
@@ -68,6 +86,8 @@ function SearchStabilizedBridge() {
     setDscrRatio("");
     setResults([]);
     setWarning("");
+    setRehabComplete(false);
+    setRehabRemaining("");
   };
 
   return (
@@ -121,6 +141,28 @@ function SearchStabilizedBridge() {
           <label>Min DSCR Ratio:
             <input className="search-input" value={dscrRatio} onChange={(e) => setDscrRatio(e.target.value)} />
           </label>
+        </fieldset>
+
+        <fieldset className="search-fieldset">
+          <legend className="search-legend">🔹 Rehab Status</legend>
+          <label>
+            Rehab Complete:
+            <input
+              type="checkbox"
+              checked={rehabComplete}
+              onChange={(e) => setRehabComplete(e.target.checked)}
+            />
+          </label>
+          {!rehabComplete && (
+            <label>
+              Rehab Remaining ($):
+              <input
+                type="number"
+                value={rehabRemaining}
+                onChange={(e) => setRehabRemaining(e.target.value)}
+              />
+            </label>
+          )}
         </fieldset>
       </div>
 

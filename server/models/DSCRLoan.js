@@ -26,6 +26,10 @@ const DscrLoanSchema = new mongoose.Schema(
       type: String,
     },
 
+    homeValue: { type: Number }, // Add home value
+    purchasePrice: { type: Number }, // Add purchase price
+    loanTermYears: { type: Number, enum: [15, 20, 25, 30, 40] }, // Add loan term
+
     dscrInputs: {
       currentRent: { type: Number },
       marketRent: { type: Number },
@@ -33,17 +37,6 @@ const DscrLoanSchema = new mongoose.Schema(
       insurance: { type: Number },
       hoaFees: { type: Number },
     },
-
-    tiers: [
-      {
-        minFICO: { type: Number },
-        minExperience: { type: Number },
-        maxLTVPurchase: { type: Number },
-        maxLTVRateTerm: { type: Number },
-        maxLTVCashOut: { type: Number },
-        dscrRatioMin: { type: Number },
-      }
-    ],
   },
   { timestamps: true }
 );

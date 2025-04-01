@@ -12,6 +12,8 @@ function AddStabilizedBridge() {
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [loanTerm, setLoanTerm] = useState("");
   const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
+  const [rehabComplete, setRehabComplete] = useState(false); // Add rehabComplete state
+  const [rehabRemaining, setRehabRemaining] = useState(""); // Add rehabRemaining state
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
 
@@ -76,6 +78,8 @@ function AddStabilizedBridge() {
           loanRange: formattedLoanRange,
           loanTerm: parseInt(loanTerm),
           propertyTypes,
+          rehabComplete, // Include rehabComplete in payload
+          rehabRemaining: rehabComplete ? null : parseInt(rehabRemaining), // Include rehabRemaining if rehab is not complete
           tiers,
           highlightNote, // Include highlightNote in the payload
         }),
@@ -153,6 +157,28 @@ function AddStabilizedBridge() {
             placeholder="Enter a note explaining why this program is a good fit"
             style={{ width: "100%", height: "100px", marginBottom: "10px" }}
         />
+        <fieldset style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
+          <legend>Rehab Status</legend>
+          <label>
+            Rehab Complete:
+            <input
+              type="checkbox"
+              checked={rehabComplete}
+              onChange={(e) => setRehabComplete(e.target.checked)}
+            />
+          </label>
+          {!rehabComplete && (
+            <label>
+              Rehab Remaining ($):
+              <input
+                type="number"
+                value={rehabRemaining}
+                onChange={(e) => setRehabRemaining(e.target.value)}
+                style={{ width: "100%", marginBottom: "10px" }}
+              />
+            </label>
+          )}
+        </fieldset>
 
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <button type="submit" style={{ marginRight: "10px", padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", border: "none", cursor: "pointer" }}>

@@ -18,7 +18,7 @@ function SearchGroundUp() {
   const [state, setState] = useState("");
   const [fico, setFico] = useState("");
   const [experience, setExperience] = useState("");
-  const [loanAmount, setLoanAmount] = useState("");
+  const [arv, setArv] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [constructionBudget, setConstructionBudget] = useState("");
   const [termMonths, setTermMonths] = useState("");
@@ -36,8 +36,8 @@ function SearchGroundUp() {
         state,
         fico,
         experience,
-        loanAmount,
         propertyType,
+        arv,
         constructionBudget,
         termMonths,
         zipCode,
@@ -53,7 +53,21 @@ function SearchGroundUp() {
       }
 
       const data = await response.json();
-      setResults(data || []);
+
+      // Filter results to include only lenders with matching programs
+      const filteredResults = data.filter((lender) => {
+        return lender.programs.some((program) => {
+          return (
+            program.state === state &&
+            program.minFICO <= fico &&
+            program.minExperience <= experience &&
+            program.propertyTypes.includes(propertyType) &&
+            program.maxARV >= arv
+          );
+        });
+      });
+
+      setResults(filteredResults);
     } catch (err) {
       console.error("❌ Error searching:", err.message);
       setResults([]);
@@ -64,7 +78,7 @@ function SearchGroundUp() {
     setState("");
     setFico("");
     setExperience("");
-    setLoanAmount("");
+    setArv("");
     setPropertyType("");
     setConstructionBudget("");
     setTermMonths("");
@@ -92,8 +106,8 @@ function SearchGroundUp() {
             </select>
           </label><br />
 
-          <label>Loan Amount:
-            <input className="search-input" value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} />
+          <label>ARV (After Repair Value):
+            <input className="search-input" value={arv} onChange={(e) => setArv(e.target.value)} />
           </label><br />
 
           <label>Property Type:

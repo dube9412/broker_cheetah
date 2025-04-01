@@ -21,6 +21,9 @@ function AddDSCR() {
     const [insurance, setInsurance] = useState("");
     const [hoaFees, setHoaFees] = useState("");
     const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
+    const [homeValue, setHomeValue] = useState("");
+    const [purchasePrice, setPurchasePrice] = useState("");
+    const [loanTermYears, setLoanTermYears] = useState(""); // Add loan term
 
     const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
     const PROPERTY_USES = ["Standard Rental", "Short Term Rental", "Vacant"];
@@ -194,43 +197,19 @@ function AddDSCR() {
                     style={{ width: "100%", height: "100px", marginBottom: "10px" }}
                 />
 
-            <label>Number of Tiers:</label>
-                <select value={numTiers} onChange={handleNumTiersChange} style={{ width: "100%", marginBottom: "10px" }}>
-                    {[1, 2, 3, 4, 5, 6].map((num) => (
-                        <option key={num} value={num}>
-                            {num}
-                        </option>
+                <label>Home Value ($):</label>
+                <input type="number" value={homeValue} onChange={(e) => setHomeValue(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Purchase Price ($):</label>
+                <input type="number" value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
+
+                <label>Loan Term (Years):</label>
+                <select value={loanTermYears} onChange={(e) => setLoanTermYears(e.target.value)} style={{ width: "100%", marginBottom: "10px" }}>
+                    <option value="">-- Select --</option>
+                    {[15, 20, 25, 30, 40].map((term) => (
+                        <option key={term} value={term}>{term} years</option>
                     ))}
                 </select>
-
-                {/* Render tier inputs dynamically */}
-                {tiers.map((tier, index) => (
-                    <div key={index} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
-                        <h3>Tier {index + 1}</h3>
-                        <label>Minimum FICO:</label>
-                        <input type="number" value={tier.minFICO} onChange={(e) => handleTierChange(index, "minFICO", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
-
-                        <label>Minimum Experience:</label>
-                        <input type="number" value={tier.minExperience} onChange={(e) => handleTierChange(index, "minExperience", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
-
-                        <label>Max LTV (Purchase):</label>
-                        <input type="number" value={tier.maxLTVPurchase} onChange={(e) => handleTierChange(index, "maxLTVPurchase", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
-
-                        <label>Max LTV (Rate & Term Refinance):</label>
-                        <input type="number" value={tier.maxLTVRateTerm} onChange={(e) => handleTierChange(index, "maxLTVRateTerm", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
-
-                        <label>Max LTV (Cash-Out Refinance):</label>
-                        <input type="number" value={tier.maxLTVCashOut} onChange={(e) => handleTierChange(index, "maxLTVCashOut", e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
-
-                        <label>DSCR Ratio Min:</label>
-                        <input
-                        type="number"
-                        value={tier.dscrRatioMin}
-                        onChange={(e) => handleTierChange(index, "dscrRatioMin", e.target.value)}
-                        style={{ width: "100%", marginBottom: "10px" }}
-                        />  
-                        </div>
-                ))}
 
             <button style={{ backgroundColor: 'green', color: 'white', padding: '10px 20px' }}>
             Add DSCR Loan Program

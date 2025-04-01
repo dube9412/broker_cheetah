@@ -40,15 +40,8 @@ function FixAndFlipSearch() {
     setWarning("");
 
     if (!state || !fico || !experience) {
-        alert("Please fill in all required fields: State, FICO, and Experience.");
-        return;
-    }
-
-    const rehabAmount = parseFloat(rehabNeeded);
-    const purchase = parseFloat(purchasePrice);
-
-    if (rehabAmount && purchase && (rehabAmount > purchase || rehabAmount > 100000)) {
-      setWarning("⚠️ Warning: Rehab may qualify as heavy based on size or cost. Some lenders may adjust terms.");
+      alert("Please fill in all required fields: State, FICO, and Experience.");
+      return;
     }
 
     try {
@@ -61,32 +54,59 @@ function FixAndFlipSearch() {
         asisValue,
         experience,
         liquidity,
-        interestTypeDutch: interestType.dutch,
-  interestTypeNonDutch: interestType.nonDutch,
-        crossCollateralAllowed,
-        recourse: recourse.recourse,
-        nonRecourse: recourse.nonRecourse,
-        termLengthMonths, // Include termLengthMonths in the query
       }).toString();
 
       const url = `${BASE_URL}/api/fix-and-flip/search?${queryString}`;
-      console.log("🔍 Fetching:", url); // Debug
+      console.log("🔍 Fetching:", url);
 
       const response = await fetch(url);
-  if (!response.ok) {
-    const errorText = await response.text(); // Get raw error
-    throw new Error(`❌ Status ${response.status}: ${errorText}`);
-  }
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`❌ Status ${response.status}: ${errorText}`);
+      }
 
-  const data = await response.json();
-  setResults(data.map((res) => ({
-    ...res,
-    highlightNote: res.highlightNote || "Available Fix & Flip program", // Default note
-  })));
-} catch (err) {
-  console.error("❌ Error searching:", err.message);
-  setResults([]);
-}
+      const data = await response.json();
+
+      // Filter results to include only lenders with matching programs
+      const filteredResults = data.filter((lender) => {
+        const matchingPrograms = lender.programs.filter((program) => {
+          return (
+            program.state === state &&
+            program.minFICO <= fico &&
+            program.minExperience <= experience &&
+            program.minAsIsValue <= asisValue &&
+            program.maxARV >= arv
+          );
+        });
+
+        if (matchingPrograms.length > 0) {
+          // Select the highest tier for each lender
+          lender.highestTier = matchingPrograms.reduce((highest, program) =>
+            program.tierRank > highest.tierRank ? program : highest
+          );
+          return true;
+        }
+
+        return false;
+      });
+
+      // Sort results based on loan options
+      const sortedResults = filteredResults.sort((a, b) => {
+        const aMatches = a.highestTier.recourse === recourse.recourse &&
+          a.highestTier.interestType === interestType &&
+          a.highestTier.crossCollateralAllowed === crossCollateralAllowed;
+        const bMatches = b.highestTier.recourse === recourse.recourse &&
+          b.highestTier.interestType === interestType &&
+          b.highestTier.crossCollateralAllowed === crossCollateralAllowed;
+
+        return bMatches - aMatches;
+      });
+
+      setResults(sortedResults);
+    } catch (err) {
+      console.error("❌ Error searching:", err.message);
+      setResults([]);
+    }
   };
 
   const handleClear = () => {
