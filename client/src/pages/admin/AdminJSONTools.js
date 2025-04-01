@@ -41,10 +41,16 @@ const AdminJSONTools = () => {
     reader.onload = (e) => {
       try {
         const jsonContent = JSON.parse(e.target.result);
+
+        if (!Array.isArray(jsonContent)) {
+          throw new Error("Uploaded JSON must be an array of objects.");
+        }
+
         setJsonData(jsonContent);
         alert("✅ JSON file loaded.");
       } catch (error) {
-        alert("❌ Error parsing JSON.");
+        console.error("❌ Error parsing JSON:", error);
+        alert(`❌ Error parsing JSON: ${error.message}`);
       } finally {
         setLoading(false);
       }
@@ -52,8 +58,12 @@ const AdminJSONTools = () => {
   };
 
   const handleImport = async () => {
-    if (!jsonData || !selectedLenderId) {
-      alert("Please upload a file and select a lender.");
+    if (!jsonData || !Array.isArray(jsonData)) {
+      alert("Please upload a valid JSON file containing an array of loan programs.");
+      return;
+    }
+    if (!selectedLenderId) {
+      alert("Please select a lender.");
       return;
     }
 
@@ -74,7 +84,9 @@ const AdminJSONTools = () => {
         setJsonData(null);
         setSelectedLenderId("");
       } else {
-        alert("❌ Import failed.");
+        const errorData = await response.json();
+        console.error("❌ Import failed:", errorData);
+        alert(`❌ Import failed: ${errorData.message || "Unknown error"}`);
       }
     } catch (error) {
       console.error("❌ Import error:", error);
