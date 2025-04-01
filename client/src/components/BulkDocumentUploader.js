@@ -36,16 +36,15 @@ const BulkDocumentUploader = ({refreshDocuments}) => {
   const [lenders, setLenders] = useState([]); // ✅ Store lender list
 
   const validMimeTypes = [
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "application/vnd.ms-excel",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "text/plain",
-    "text/csv",
+    "application/pdf", // PDF
+    "application/msword", // DOC
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
+    "application/vnd.ms-excel", // XLS
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // XLSX
+    "image/png", // PNG
+    "image/jpeg", // JPEG
+    "text/plain", // TXT
+    "text/csv", // CSV
   ];
   
   const handleFileChange = (e) => {
@@ -98,7 +97,7 @@ const BulkDocumentUploader = ({refreshDocuments}) => {
     onDrop,
     multiple: true, // ✅ Allow multiple files
     accept: validMimeTypes.join(", "),
-  });
+  }); // Use the cleaned-up MIME types
 
   // ✅ Handle Bulk Upload
   const handleUpload = async () => {
@@ -110,85 +109,86 @@ const BulkDocumentUploader = ({refreshDocuments}) => {
       return;
     }
     if (selectedFiles.length === 0) { // ✅ Only check for files
+    if (selectedFiles.length === 0) { // ✅ Only check for files
       alert("⚠️ Please select files before uploading.");
       return;
     }
-  
     const formData = new FormData();
+    const formData = new FormData();rmData.append("files", file));
     selectedFiles.forEach(file => formData.append("files", file));
-    formData.append("lenderId", selectedLender);
+    formData.append("lenderId", selectedLender);default tag if none is selected
     formData.append("tag", finalTag);  // ✅ Use default tag if none is selected
-  
     try {
+    try {st response = await fetch("https://broker-cheetah-backend.onrender.com/api/documents/bulk-upload", {
       const response = await fetch("https://broker-cheetah-backend.onrender.com/api/documents/bulk-upload", {
         method: "POST",
         body: formData,
       });
-  
       if (response.ok) {
+      if (response.ok) {load successful!");
         alert("✅ Bulk upload successful!");
-        setSelectedFiles([]);
-        setSelectedLender("");
+        setSelectedFiles([]);;
+        setSelectedLender("");/ ✅ Reset selection after upload
         setSelectedTag("");  // ✅ Reset selection after upload
         refreshDocuments();  // ✅ Refresh documents list
-      } else {
+      } else {"❌ Error uploading documents.");
         alert("❌ Error uploading documents.");
-      }
-    } catch (error) {
+      }atch (error) {
+      console.error("❌ Error uploading documents:", error);
       console.error("❌ Error uploading documents:", error);
     }
   };
   
-
   return (
+  return (tyle={{ border: "1px solid #ccc", padding: "10px", marginTop: "20px" }}>
     <div style={{ border: "1px solid #ccc", padding: "10px", marginTop: "20px" }}>
       <h3>📂 Bulk Upload Documents</h3>
-
       {/* ✅ Lender Selection */}
-      <label>Assign Lender: </label>
+      {/* ✅ Lender Selection */}bel>
+      <label>Assign Lender: </label> onChange={(e) => setSelectedLender(e.target.value)}>
       <select value={selectedLender} onChange={(e) => setSelectedLender(e.target.value)}>
         <option value="">Unassigned</option>
-        {lenders.map((lender) => (
+        {lenders.map((lender) => ( value={lender._id}>{lender.name}</option>
           <option key={lender._id} value={lender._id}>{lender.name}</option>
-        ))}
+        ))}ect>
       </select>
-
       {/* ✅ Document Tag Selection */}
-      <label>Document Tag: </label>
+      {/* ✅ Document Tag Selection */}
+      <label>Document Tag: </label>nChange={(e) => setSelectedTag(e.target.value)}>
       <select value={selectedTag} onChange={(e) => setSelectedTag(e.target.value)}>
-        <option value="">Select Tag</option>
-        {DOCUMENT_CATEGORIES.map((category) => (
+        <option value="">Select Tag</option>=> (
+        {DOCUMENT_CATEGORIES.map((category) => (category.label}>
           <optgroup key={category.label} label={category.label}>
-            {category.options.map((tag) => (
+            {category.options.map((tag) => ({tag}</option>
               <option key={tag} value={tag}>{tag}</option>
-            ))}
+            ))}group>
           </optgroup>
-        ))}
+        ))}ect>
       </select>
-
       {/* ✅ Drag and Drop Area */}
+      {/* ✅ Drag and Drop Area */}le={{ border: "2px dashed gray", padding: "20px", cursor: "pointer", marginBottom: "10px" }}>
       <div {...getRootProps()} style={{ border: "2px dashed gray", padding: "20px", cursor: "pointer", marginBottom: "10px" }}>
-        <input {...getInputProps()} />
+        <input {...getInputProps()} />here, or click to select files</p>
         <p>Drag & drop multiple files here, or click to select files</p>
       </div>
-
       {/* ✅ Standard File Upload (For users who prefer clicking) */}
+      {/* ✅ Standard File Upload (For users who prefer clicking) */}{{ marginBottom: "10px" }} />
       <input type="file" multiple onChange={handleFileChange} style={{ marginBottom: "10px" }} />
-
+      {/* ✅ Display Selected Files */}
       {/* ✅ Display Selected Files */}
       {selectedFiles.length > 0 && (
-        <ul>
+        <ul>electedFiles.map((file, index) => (
           {selectedFiles.map((file, index) => (
             <li key={index}>{file.name}</li>
           ))}
         </ul>
       )}
-
       <br /><br />
-      {/* ✅ Upload Button */}
+      <br /><br /> Button */}
+      {/* ✅ Upload Button */}Upload}>Upload</button>
       <button onClick={handleUpload}>Upload</button>
     </div>
   );
 };
-
+export default BulkDocumentUploader;
 export default BulkDocumentUploader;

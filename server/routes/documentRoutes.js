@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { Upload } = require("@aws-sdk/lib-storage");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const Document = require("../models/Document");
 
 // ✅ Configure AWS S3 Client
@@ -127,10 +128,21 @@ router.get("/view/:documentId", async (req, res) => {
       return res.status(404).json({ success: false, message: "Document not found or missing file path." });
     }
 
-    res.redirect(document.filePath); // Redirect to S3 URL
+    const fileKey = document.filename; // S3 key
+    const bucketName = process.env.AWS_BUCKET_NAME;
+
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: fileKey,
+    });
+
+    // Generate a signed URL valid for 1 hour
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    res.redirect(signedUrl); // Redirect the user to the signed URL
   } catch (error) {
-    console.error("❌ Error serving document:", error);
-    res.status(500).json({ success: false, message: "Server error fetching document file." });
+    console.error("❌ Error generating signed URL:", error);
+    res.status(500).json({ success: false, message: "Error generating signed URL." });
   }
 });
 
