@@ -75,21 +75,21 @@ function FixAndFlipSearch() {
 
       // Filter results based on Fix and Flip loan program criteria
       const filteredResults = data.filter((lender) => {
-        // Skip lenders without Fix and Flip programs (no tiers or empty tiers array)
-        if (!Array.isArray(lender.tiers)) {
-          console.warn("⚠️ Skipping lender due to missing tiers array:", lender.name);
+        // Step 1: Check if the lender has a Fix and Flip loan program
+        const fixAndFlipProgram = lender.programs?.find(
+          (program) => program.type === "Fix and Flip"
+        );
+
+        if (!fixAndFlipProgram) {
+          console.warn("⚠️ Skipping lender without Fix and Flip program:", lender.name);
           return false;
         }
 
-        if (lender.tiers.length === 0) {
-          console.warn("⚠️ Skipping lender due to empty tiers array:", lender.name);
-          return false;
-        }
-
+        // Step 2: Check the tiers within the Fix and Flip loan program
         const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
         const totalCost = Number(purchasePrice) + Number(rehabNeeded);
 
-        const matchingTier = lender.tiers.find((tier) => {
+        const matchingTier = fixAndFlipProgram.tiers.find((tier) => {
           if (tier.minFICO && Number(fico) < tier.minFICO) return false;
           if (tier.minExperience && Number(experience) < tier.minExperience) return false;
 
@@ -114,10 +114,14 @@ function FixAndFlipSearch() {
 
       // Map and sort results based on loan options
       const sortedResults = filteredResults.map((lender) => {
+        const fixAndFlipProgram = lender.programs.find(
+          (program) => program.type === "Fix and Flip"
+        );
+
         const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
         const totalCost = Number(purchasePrice) + Number(rehabNeeded);
 
-        const matchingTier = lender.tiers.find((tier) => {
+        const matchingTier = fixAndFlipProgram.tiers.find((tier) => {
           const ltcAmount = Math.min(
             (tier.maxLTC / 100) * (purchasePrice > asIs ? asIs : purchasePrice),
             (tier.totalLTC / 100) * totalCost,
@@ -142,7 +146,7 @@ function FixAndFlipSearch() {
           highlightNote: lender.highlightNote || "",
           maxLTC: matchingTier?.maxLTC || "N/A",
           rehabPercent: matchingTier?.rehabPercent || "N/A",
-          termLengthMonths: lender.termLengthMonths || "N/A",
+          termLengthMonths: fixAndFlipProgram.termLengthMonths || "N/A",
           ltcAmount: matchingTier?.ltcAmount || 0,
           rehabAmount: matchingTier?.rehabAmount || 0,
           totalLoan: matchingTier?.totalLoan || 0,
