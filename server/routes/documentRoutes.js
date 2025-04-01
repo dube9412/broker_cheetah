@@ -1,22 +1,25 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const path = require("path");  // ✅ Import path module
-const fs = require("fs");      // ✅ Import fs module
-const Document = require("../models/Document"); // ✅ Ensure this model exists
+const multerS3 = require("multer-s3");
+const AWS = require("aws-sdk");
+const Document = require("../models/Document");
 
-/// ✅ Ensure "uploads/" directory exists
-const uploadPath = path.join(__dirname, "../../uploads");
-if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath, { recursive: true });
-}
+// ✅ Configure AWS S3
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
 
-// ✅ Multer Storage Config
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadPath); // ✅ Save files in /uploads/
+// ✅ Multer Storage Config for S3
+const storage = multerS3({
+  s3: s3,
+  bucket: process.env.AWS_BUCKET_NAME,
+  metadata: (req, file, cb) => {
+    cb(null, { fieldName: file.fieldname });
   },
-  filename: function (req, file, cb) {
+  key: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
@@ -36,14 +39,14 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     }
 
     const newDocument = new Document({
-      filename: req.file.filename,
+      filename: req.file.key, // S3 key
       originalName: req.file.originalname,
-      filePath: req.file ? `/uploads/${req.file.filename}` : "", // ✅ Relative Path
+      filePath: req.file.location, // S3 URL
       lenderId,
       programId: programId || null,
       tag,
     });
-    
+
     await newDocument.save();
     res.status(201).json({ success: true, message: "Document uploaded successfully!", document: newDocument });
   } catch (error) {
@@ -61,52 +64,26 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
 
     const { lenderId, programId, tag } = req.body;
 
-    // ✅ Ensure lenderId and tag exist
     if (!lenderId || !tag) {
       return res.status(400).json({ success: false, message: "Lender ID and Tag are required." });
     }
 
-      // ✅ Create document objects for bulk insertion
-      const uploadedDocs = req.files.map(file => ({
-        filename: file.filename, // ✅ Ensure filename is mapped
-        originalName: file.originalname,
-        filePath: `/uploads/${file.filename}`,// ✅ Ensure filePath is correct
-        lenderId,
-        programId: programId || null,
-        tag,
-      }));
-      
+    const uploadedDocs = req.files.map(file => ({
+      filename: file.key, // S3 key
+      originalName: file.originalname,
+      filePath: file.location, // S3 URL
+      lenderId,
+      programId: programId || null,
+      tag,
+    }));
 
-      await Document.insertMany(uploadedDocs); // ✅ Efficient bulk insert
-
-      res.status(201).json({ success: true, message: "Bulk documents uploaded successfully!", documents: uploadedDocs });
-    } catch (error) {
-      console.error("❌ Error in bulk upload:", error);
-      res.status(500).json({ success: false, message: "Error in bulk document upload." });
-    }
-  });
-
-  const getMimeType = (filePath) => {
-    if (!filePath || typeof filePath !== "string") {
-      console.error("❌ Invalid filePath:", filePath);
-      return "application/octet-stream"; // Default fallback MIME type
-    }
-  
-    const extension = filePath.split(".").pop().toLowerCase();
-    const mimeTypes = {
-      pdf: "application/pdf",
-      doc: "application/msword",
-      docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      xls: "application/vnd.ms-excel",
-      xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      jpg: "image/jpeg",
-      jpeg: "image/jpeg",
-      png: "image/png",
-      txt: "text/plain",
-    };
-    return mimeTypes[extension] || "application/octet-stream";
-  };
-  
+    await Document.insertMany(uploadedDocs);
+    res.status(201).json({ success: true, message: "Bulk documents uploaded successfully!", documents: uploadedDocs });
+  } catch (error) {
+    console.error("❌ Error in bulk upload:", error);
+    res.status(500).json({ success: false, message: "Error in bulk document upload." });
+  }
+});
 
 // ✅ Serve Uploaded Files
 router.get("/view/:documentId", async (req, res) => {
@@ -115,22 +92,10 @@ router.get("/view/:documentId", async (req, res) => {
     const document = await Document.findById(documentId);
 
     if (!document || !document.filePath) {
-      console.error("❌ Document missing filePath:", document);
       return res.status(404).json({ success: false, message: "Document not found or missing file path." });
     }
 
-    console.log("🛠 FILE PATH FROM DB:", document.filePath);
-
-    const filePath = path.join(__dirname, "../../", String(document.filePath));
-    if (!fs.existsSync(filePath)) {
-      console.error("❌ File not found on server:", filePath);
-      return res.status(404).json({ success: false, message: "File not found on server." });
-    }
-
-    const mimeType = getMimeType(document.filePath);
-    res.setHeader("Content-Type", mimeType);
-    res.setHeader("Content-Disposition", `inline; filename=${document.originalName}`);
-    res.sendFile(filePath);
+    res.redirect(document.filePath); // Redirect to S3 URL
   } catch (error) {
     console.error("❌ Error serving document:", error);
     res.status(500).json({ success: false, message: "Server error fetching document file." });
@@ -234,6 +199,5 @@ router.put("/:documentId/assign-tag", async (req, res) => {
     res.status(500).json({ success: false, message: "Error assigning tag." });
   }
 });
-
 
 module.exports = router;
