@@ -52,7 +52,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     await upload.done();
 
     const newDocument = new Document({
-      filename: fileKey, // S3 key
+      filename: fileKey, // ✅ Save the S3 object key
       originalName: req.file.originalname,
       filePath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`, // S3 URL
       lenderId,
@@ -97,9 +97,9 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
         await s3.send(command);
 
         uploadedDocs.push({
-          filename: fileKey,
+          filename: fileKey, // ✅ Save the S3 object key
           originalName: file.originalname,
-          filePath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`,
+          filePath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`, // S3 URL
           lenderId,
           programId: programId || null,
           tag,
