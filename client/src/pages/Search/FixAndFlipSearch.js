@@ -75,9 +75,14 @@ function FixAndFlipSearch() {
 
       // Filter results based on Fix and Flip loan program criteria
       const filteredResults = data.filter((lender) => {
-        // Skip lenders without Fix and Flip programs or tiers
-        if (!Array.isArray(lender.tiers) || lender.tiers.length === 0) {
-          console.warn("⚠️ Skipping lender without valid tiers:", lender.name);
+        // Skip lenders without Fix and Flip programs (no tiers or empty tiers array)
+        if (!Array.isArray(lender.tiers)) {
+          console.warn("⚠️ Skipping lender due to missing tiers array:", lender.name);
+          return false;
+        }
+
+        if (lender.tiers.length === 0) {
+          console.warn("⚠️ Skipping lender due to empty tiers array:", lender.name);
           return false;
         }
 
@@ -99,6 +104,10 @@ function FixAndFlipSearch() {
 
           return true;
         });
+
+        if (!matchingTier) {
+          console.warn(`⚠️ No matching tier found for lender: ${lender.name}`);
+        }
 
         return !!matchingTier;
       });
