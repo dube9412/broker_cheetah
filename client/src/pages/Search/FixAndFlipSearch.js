@@ -75,9 +75,9 @@ function FixAndFlipSearch() {
 
       // Filter results based on Fix and Flip loan program criteria
       const filteredResults = data.filter((lender) => {
-        // Skip lenders without Fix and Flip programs (no tiers or empty tiers array)
+        // Skip lenders without Fix and Flip programs or tiers
         if (!Array.isArray(lender.tiers) || lender.tiers.length === 0) {
-          console.warn("⚠️ Skipping lender without Fix and Flip programs:", lender.name);
+          console.warn("⚠️ Skipping lender without valid tiers:", lender.name);
           return false;
         }
 
