@@ -1,4 +1,5 @@
 .vercel
 *.csv
 testScraper.js
--e "\n# Scraper files and outputs\n*.csv\ntestScraper.js" 
+-e "\n# Scraper files and outputs\n*.csv\ntestScraper.js"
+/server/.env
