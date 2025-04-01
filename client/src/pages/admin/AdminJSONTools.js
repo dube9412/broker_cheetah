@@ -40,10 +40,11 @@ const AdminJSONTools = () => {
     reader.readAsText(file);
     reader.onload = (e) => {
       try {
-        const jsonContent = JSON.parse(e.target.result);
+        let jsonContent = JSON.parse(e.target.result);
 
+        // If the JSON is a single object, wrap it in an array
         if (!Array.isArray(jsonContent)) {
-          throw new Error("Uploaded JSON must be an array of objects.");
+          jsonContent = [jsonContent];
         }
 
         setJsonData(jsonContent);
