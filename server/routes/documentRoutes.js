@@ -125,6 +125,7 @@ router.get("/view/:documentId", async (req, res) => {
     const document = await Document.findById(documentId);
 
     if (!document) {
+      console.error("❌ Error: Document not found:", documentId);
       return res.status(404).json({ success: false, message: "Document not found." });
     }
 
@@ -135,6 +136,8 @@ router.get("/view/:documentId", async (req, res) => {
 
     const fileKey = document.filename; // S3 key
     const bucketName = process.env.AWS_BUCKET_NAME;
+
+    console.log("🔹 Generating signed URL for:", { bucketName, fileKey });
 
     const command = new GetObjectCommand({
       Bucket: bucketName,
