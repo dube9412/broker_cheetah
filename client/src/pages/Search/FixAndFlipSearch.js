@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Glossary from "../../components/hardMoneyClass/Glossary";
-import OneClickQuoteModal from "../../components/OneClickQuoteModal"; // Import the modal
+import OneClickQuoteModal from "../../components/OneClickQuoteModal";
 import "../../styles/SearchPages.css";
 
 const BASE_URL = "https://broker-cheetah-backend.onrender.com";
@@ -14,10 +14,11 @@ const US_STATES = [
   "UT", "VA", "VT", "WA", "WI", "WV", "WY"
 ];
 
-const TERM_LENGTH_OPTIONS = [6, 12, 18, 24, 36]; // Define term length options
+const TERM_LENGTH_OPTIONS = [6, 12, 13, 18, 24, 36];
 
 function FixAndFlipSearch() {
   const navigate = useNavigate();
+  
   const [state, setState] = useState("");
   const [fico, setFico] = useState("");
   const [purchasePrice, setPurchasePrice] = useState("");
@@ -27,285 +28,135 @@ function FixAndFlipSearch() {
   const [experience, setExperience] = useState("");
   const [liquidity, setLiquidity] = useState("");
   const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
-  const [interestType, setInterestType] = useState("");
+  const [interestType, setInterestType] = useState({ dutch: false, nonDutch: false });
   const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
-  const [termLengthMonths, setTermLengthMonths] = useState(""); // Update to string for radio buttons
+  const [termLengthMonths, setTermLengthMonths] = useState([]);
 
   const [results, setResults] = useState([]);
-  const [warning, setWarning] = useState("");
-  const [selectedLenders, setSelectedLenders] = useState([]); // Track selected lenders
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [selectedLenders, setSelectedLenders] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSearch = async () => {
-    setWarning("");
-
     if (!state || !fico || !experience) {
-      alert("Please fill in all required fields: State, FICO, and Experience.");
+      alert("Please fill in required fields: State, FICO, and Experience.");
       return;
     }
 
-    try {
-      const queryString = new URLSearchParams({
-        state,
-        fico,
-        purchasePrice,
-        rehabNeeded,
-        arv,
-        asisValue,
-        experience,
-        liquidity,
-      }).toString();
+    const queryString = new URLSearchParams({
+      state, fico, purchasePrice, rehabNeeded, arv, asisValue, experience, liquidity,
+      recourse: recourse.recourse, nonRecourse: recourse.nonRecourse,
+      interestTypeDutch: interestType.dutch, interestTypeNonDutch: interestType.nonDutch,
+      crossCollateralAllowed,
+    }).toString();
 
-      const url = `${BASE_URL}/api/fix-and-flip/search?${queryString}`;
-      console.log("🔍 Fetching:", url);
+    const response = await fetch(`${BASE_URL}/api/fix-and-flip/search?${queryString}`);
+    const data = await response.json();
 
-      const response = await fetch(url);
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`❌ Status ${response.status}: ${errorText}`);
+    const processedResults = data.map(lender => {
+      const asIs = asisValue ? Number(asisValue) : Number(purchasePrice);
+      const pp = Number(purchasePrice);
+      const rehab = Number(rehabNeeded);
+      const arvNum = Number(arv);
+      const totalCost = pp + rehab;
+
+      let bestTier = lender.tiers
+        .filter(t => (!t.minFICO || fico >= t.minFICO) && (!t.minExperience || experience >= t.minExperience))
+        .sort((a, b) => b.minExperience - a.minExperience)[0];
+
+      if (!bestTier) return null;
+
+      const loanBase = pp > asIs ? asIs : pp;
+      const initialLTCAmount = loanBase * (bestTier.maxLTC / 100);
+      const rehabAmount = rehab * (bestTier.rehabPercent / 100);
+      let totalLoan = initialLTCAmount + rehabAmount;
+
+      const tltcMaxLoan = bestTier.totalLTC ? totalCost * (bestTier.totalLTC / 100) : Infinity;
+      const arvMaxLoan = bestTier.maxARV ? arvNum * (bestTier.maxARV / 100) : Infinity;
+
+      let limitingFactor = "";
+      if (totalLoan > tltcMaxLoan && tltcMaxLoan < arvMaxLoan) {
+        totalLoan = tltcMaxLoan;
+        limitingFactor = `Loan limited to TLTC (${bestTier.totalLTC}%)`;
+      } else if (totalLoan > arvMaxLoan) {
+        totalLoan = arvMaxLoan;
+        limitingFactor = `Loan limited to ARV (${bestTier.maxARV}%)`;
       }
 
-      const data = await response.json();
+      return {
+        name: lender.name,
+        phone: lender.phone,
+        highlightNote: lender.highlightNote || "",
+        maxLTC: bestTier.maxLTC,
+        rehabPercent: bestTier.rehabPercent,
+        termLengthMonths: lender.termLengthMonths.join("/"),
+        totalLoan: totalLoan.toFixed(2),
+        limitingFactor,
+        lenderId: lender._id,
+      };
+    }).filter(Boolean);
 
-      // Ensure data is an array
-      if (!Array.isArray(data)) {
-        console.error("❌ Unexpected API response format:", data);
-        throw new Error("API response is not an array.");
-      }
-
-      // Filter results based on Fix and Flip loan program criteria
-      const filteredResults = data.filter((lender) => {
-        // Skip lenders without Fix and Flip programs (no tiers or empty tiers array)
-        if (!Array.isArray(lender.tiers) || lender.tiers.length === 0) {
-          console.warn("⚠️ Skipping lender without Fix and Flip programs:", lender.name);
-          return false;
-        }
-
-        const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
-        const totalCost = Number(purchasePrice) + Number(rehabNeeded);
-
-        const matchingTier = lender.tiers.find((tier) => {
-          if (tier.minFICO && Number(fico) < tier.minFICO) return false;
-          if (tier.minExperience && Number(experience) < tier.minExperience) return false;
-
-          // LTC and ARV calculations
-          const ltcLimit = tier.maxLTC ? (asIs * tier.maxLTC) / 100 : Infinity;
-          const totalLtcLimit = tier.totalLTC ? (arv * tier.totalLTC) / 100 : Infinity;
-          const arvLimit = tier.maxARV ? (arv * tier.maxARV) / 100 : Infinity;
-
-          if (purchasePrice > ltcLimit) return false;
-          if (totalCost > totalLtcLimit) return false;
-          if (totalCost > arvLimit) return false;
-
-          return true;
-        });
-
-        return !!matchingTier;
-      });
-
-      // Map and sort results based on loan options
-      const sortedResults = filteredResults.map((lender) => {
-        const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
-        const totalCost = Number(purchasePrice) + Number(rehabNeeded);
-
-        const matchingTier = lender.tiers.find((tier) => {
-          const ltcAmount = Math.min(
-            (tier.maxLTC / 100) * (purchasePrice > asIs ? asIs : purchasePrice),
-            (tier.totalLTC / 100) * totalCost,
-            (tier.maxARV / 100) * arv
-          );
-
-          const rehabAmount = (tier.rehabPercent / 100) * rehabNeeded;
-          const totalLoan = ltcAmount + rehabAmount;
-
-          return {
-            ...tier,
-            ltcAmount,
-            rehabAmount,
-            totalLoan,
-            limitedByARV: totalLoan > (tier.maxARV / 100) * arv,
-          };
-        });
-
-        return {
-          name: lender.name,
-          phone: lender.phone,
-          highlightNote: lender.highlightNote || "",
-          maxLTC: matchingTier?.maxLTC || "N/A",
-          rehabPercent: matchingTier?.rehabPercent || "N/A",
-          termLengthMonths: lender.termLengthMonths || "N/A",
-          ltcAmount: matchingTier?.ltcAmount || 0,
-          rehabAmount: matchingTier?.rehabAmount || 0,
-          totalLoan: matchingTier?.totalLoan || 0,
-          limitedByARV: matchingTier?.limitedByARV || false,
-          lenderId: lender._id,
-        };
-      });
-
-      setResults(sortedResults);
-    } catch (err) {
-      console.error("❌ Error searching:", err.message);
-      setResults([]);
-    }
+    setResults(processedResults);
   };
 
   const handleClear = () => {
-    setState("");
-    setFico("");
-    setPurchasePrice("");
-    setRehabNeeded("");
-    setArv("");
-    setAsisValue("");
-    setExperience("");
-    setLiquidity("");
-    setRecourse({ recourse: false, nonRecourse: false });
-    setInterestType({ dutch: false, nonDutch: false });
-    setCrossCollateralAllowed("");
-    setTermLengthMonths(""); // Clear term length
-    setResults([]);
-    setWarning("");
+    window.location.reload();
   };
 
-  const handleLenderSelect = (lenderId) => {
-    setSelectedLenders((prevSelected) =>
-        prevSelected.includes(lenderId)
-            ? prevSelected.filter((id) => id !== lenderId)
-            : [...prevSelected, lenderId]
-    );
+  const handleLenderSelect = id => {
+    setSelectedLenders(prev => prev.includes(id) ? prev.filter(lid => lid !== id) : [...prev, id]);
   };
 
-  const openQuoteModal = () => {
-    if (selectedLenders.length === 0) {
-        alert("Please select at least one lender.");
-        return;
-    }
-    setIsModalOpen(true);
-  };
+  const openQuoteModal = () => selectedLenders.length ? setIsModalOpen(true) : alert("Select a lender.");
 
   return (
     <div className="search-container">
-      <button className="back-button" onClick={() => navigate("/lender-search")}>🔙 Back to Loan Types</button>
-      <h1 className="search-title">Fix & Flip Search</h1>
-      <p className="search-subtitle">Enter one or more filters to find matching loan programs.</p>
-
-      <div className="search-row">
-        <fieldset className="search-fieldset">
-          <legend className="search-legend">🔹 Deal Details</legend>
-          <label className="search-label">State:</label>
-          <select className="search-select" value={state} onChange={(e) => setState(e.target.value)}>
-            <option value="">-- Select a state --</option>
-            {US_STATES.map((st) => (
-              <option key={st} value={st}>{st}</option>
-            ))}
-          </select>
-          <label className="search-label">Purchase Price:</label>
-          <input className="search-input" value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} />
-          <label className="search-label">Rehab Needed ($):</label>
-          <input className="search-input" value={rehabNeeded} onChange={(e) => setRehabNeeded(e.target.value)} />
-          <label className="search-label">ARV:</label>
-          <input className="search-input" value={arv} onChange={(e) => setArv(e.target.value)} />
-          <label className="search-label">As-Is Value:</label>
-          <input className="search-input" value={asisValue} onChange={(e) => setAsisValue(e.target.value)} />
-        </fieldset>
-
-        <fieldset className="search-fieldset">
-          <legend className="search-legend">🔹 Borrower Profile</legend>
-          <label className="search-label">FICO Score:</label>
-          <input className="search-input" value={fico} onChange={(e) => setFico(e.target.value)} />
-          <label className="search-label">Experience (Flips in past 36 mo):</label>
-          <input className="search-input" value={experience} onChange={(e) => setExperience(e.target.value)} />
-          <label className="search-label">Liquidity (cash, stocks, etc.):</label>
-          <input className="search-input" value={liquidity} onChange={(e) => setLiquidity(e.target.value)} />
-        </fieldset>
-      </div>
+      <button onClick={() => navigate("/lender-search")}>🔙 Back</button>
+      <h1>Fix & Flip Search</h1>
 
       <fieldset className="search-fieldset">
-        <legend className="search-legend">🔹 Loan Options</legend>
-        <label className="search-label">Recourse:</label>
-        <label><input type="checkbox" checked={recourse.recourse} onChange={() => setRecourse((prev) => ({ ...prev, recourse: !prev.recourse }))} /> Recourse</label>
-        <label><input type="checkbox" checked={recourse.nonRecourse} onChange={() => setRecourse((prev) => ({ ...prev, nonRecourse: !prev.nonRecourse }))} /> Non-Recourse</label>
-        <label className="search-label">Interest Type:</label>
-        <label><input type="checkbox" checked={interestType.dutch} onChange={() => setInterestType((prev) => ({ ...prev, dutch: !prev.dutch }))} /> Dutch</label>
-        <label><input type="checkbox" checked={interestType.nonDutch} onChange={() => setInterestType((prev) => ({ ...prev, nonDutch: !prev.nonDutch }))} /> Non-Dutch</label>
-        <label className="search-label">Cross Collateral Allowed:</label>
-        <select className="search-select" value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)}>
-          <option value="">-- Select --</option>
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
+        <legend>🔹 Deal Details</legend>
+        <select value={state} onChange={e => setState(e.target.value)}>
+          <option value="">Select State</option>
+          {US_STATES.map(st => <option key={st} value={st}>{st}</option>)}
         </select>
-        <label>Term Length (Months):</label>
-        <div>
-            {TERM_LENGTH_OPTIONS.map((length) => (
-                <label key={length} style={{ marginRight: "10px" }}>
-                    <input
-                        type="radio"
-                        name="termLengthMonths"
-                        value={length}
-                        checked={termLengthMonths === String(length)}
-                        onChange={(e) => setTermLengthMonths(e.target.value)}
-                    />
-                    {length} months
-                </label>
-            ))}
-        </div>
+        <input placeholder="Purchase Price" value={purchasePrice} onChange={e => setPurchasePrice(e.target.value)} />
+        <input placeholder="Rehab Needed" value={rehabNeeded} onChange={e => setRehabNeeded(e.target.value)} />
+        <input placeholder="ARV" value={arv} onChange={e => setArv(e.target.value)} />
+        <input placeholder="As-Is Value" value={asisValue} onChange={e => setAsisValue(e.target.value)} />
       </fieldset>
 
-      <div className="search-buttons-container">
-        <button className="search-button" onClick={handleSearch}>🔍 Search</button>
-        <button class="search-button" onClick={handleClear}>🔄 New Search</button>
-      </div>
+      <fieldset className="search-fieldset">
+        <legend>🔹 Borrower Profile</legend>
+        <input placeholder="FICO" value={fico} onChange={e => setFico(e.target.value)} />
+        <input placeholder="Experience" value={experience} onChange={e => setExperience(e.target.value)} />
+        <input placeholder="Liquidity" value={liquidity} onChange={e => setLiquidity(e.target.value)} />
+      </fieldset>
 
-      {warning && <p className="search-warning">{warning}</p>}
+      {/* Loan Options Fieldset (checkboxes etc.) */}
+      <fieldset className="search-fieldset">
+        <legend>🔹 Loan Options</legend>
+        {TERM_LENGTH_OPTIONS.map(len => (
+          <label key={len}>
+            <input type="checkbox" checked={termLengthMonths.includes(len)} onChange={e =>
+              setTermLengthMonths(prev => e.target.checked ? [...prev, len] : prev.filter(t => t !== len))
+            } />{len} months
+          </label>
+        ))}
+      </fieldset>
 
-      <div className="search-results">
-        {results.map((res, i) => (
-          <div key={i} className="search-result-item">
-            <strong>✅ {res.name}</strong>
-            <p>{res.highlightNote}</p> {/* Display dynamic note */}
-            <span>{res.phone || ""}</span>
-            <p>Expect <strong>{res.maxLTC || "N/A"}%</strong> of purchase, <strong>{res.rehabPercent || "N/A"}%</strong> rehab, <strong>{res.termLengthMonths || "N/A"}-month</strong> term.</p>
-            <p>Interest: <strong>{res.interestType || "Not Provided"}</strong> | Recourse: <strong>{res.recourse || "Not Provided"}</strong></p>
-            <p>Rehab Classification: <strong>{res.rehabType || "Not Specified"}</strong></p>
-            <p>📌 <em>Why this lender works:</em> {res.highlightNote || "Available Fix & Flip program"}</p>
-            <label>
-              <input
-                type="checkbox"
-                value={res.lenderId}
-                onChange={() => handleLenderSelect(res.lenderId)}
-              />{" "}
-              Request Quote
-            </label>
+      <button onClick={handleSearch}>🔍 Search</button>
+      <button onClick={handleClear}>🔄 Clear</button>
+
+      <div>
+        {results.map(r => (
+          <div key={r.lenderId}>
+            <p>{r.name}: ${r.totalLoan} ({r.limitingFactor})</p>
+            <input type="checkbox" onChange={() => handleLenderSelect(r.lenderId)} />
           </div>
         ))}
       </div>
 
-      {selectedLenders.length > 0 && (
-        <button
-          className="search-button"
-          onClick={openQuoteModal}
-          style={{ marginTop: "1rem" }}
-        >
-          Request One-Click Quote
-        </button>
-      )}
-
-      {isModalOpen && (
-        <OneClickQuoteModal
-          selectedLenders={selectedLenders}
-          onClose={() => setIsModalOpen(false)}
-          searchData={{
-            state,
-            fico,
-            purchasePrice,
-            rehabNeeded,
-            arv,
-            asisValue,
-            experience,
-            liquidity, // Pass liquidity to the modal
-          }}
-        />
-      )}
-
+      {isModalOpen && <OneClickQuoteModal selectedLenders={selectedLenders} />}
       <Glossary />
     </div>
   );
