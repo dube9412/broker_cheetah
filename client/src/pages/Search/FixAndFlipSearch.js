@@ -75,10 +75,16 @@ function FixAndFlipSearch() {
 
       // Filter results based on Fix and Flip loan program criteria
       const filteredResults = data.filter((lender) => {
-        const matchingTier = lender.tiers.find((tier) => {
-          const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
-          const totalCost = Number(purchasePrice) + Number(rehabNeeded);
+        // Ignore lenders without Fix and Flip programs (no tiers)
+        if (!Array.isArray(lender.tiers) || lender.tiers.length === 0) {
+          console.warn("⚠️ Skipping lender without Fix and Flip programs:", lender.name);
+          return false;
+        }
 
+        const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
+        const totalCost = Number(purchasePrice) + Number(rehabNeeded);
+
+        const matchingTier = lender.tiers.find((tier) => {
           if (tier.minFICO && Number(fico) < tier.minFICO) return false;
           if (tier.minExperience && Number(experience) < tier.minExperience) return false;
           if (tier.maxLTC && Number(purchasePrice) > (asIs * tier.maxLTC) / 100) return false;
@@ -91,7 +97,7 @@ function FixAndFlipSearch() {
         return !!matchingTier;
       });
 
-      // Sort results based on loan options
+      // Map and sort results based on loan options
       const sortedResults = filteredResults.map((lender) => {
         const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
         const totalCost = Number(purchasePrice) + Number(rehabNeeded);
@@ -119,13 +125,13 @@ function FixAndFlipSearch() {
           name: lender.name,
           phone: lender.phone,
           highlightNote: lender.highlightNote || "",
-          maxLTC: matchingTier.maxLTC || "N/A",
-          rehabPercent: matchingTier.rehabPercent || "N/A",
+          maxLTC: matchingTier?.maxLTC || "N/A",
+          rehabPercent: matchingTier?.rehabPercent || "N/A",
           termLengthMonths: lender.termLengthMonths || "N/A",
-          ltcAmount: matchingTier.ltcAmount,
-          rehabAmount: matchingTier.rehabAmount,
-          totalLoan: matchingTier.totalLoan,
-          limitedByARV: matchingTier.limitedByARV,
+          ltcAmount: matchingTier?.ltcAmount || 0,
+          rehabAmount: matchingTier?.rehabAmount || 0,
+          totalLoan: matchingTier?.totalLoan || 0,
+          limitedByARV: matchingTier?.limitedByARV || false,
           lenderId: lender._id,
         };
       });
