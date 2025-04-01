@@ -36,15 +36,16 @@ const BulkDocumentUploader = ({refreshDocuments}) => {
   const [lenders, setLenders] = useState([]); // ✅ Store lender list
 
   const validMimeTypes = [
-    "application/pdf", 
-    "application/msword", 
+    "application/pdf",
+    "application/msword",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     "image/png",
     "image/jpeg",
     "image/jpg",
     "text/plain",
-    "application/vnd.ms-excel",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    "text/csv",
   ];
   
   const handleFileChange = (e) => {

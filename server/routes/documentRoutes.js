@@ -75,14 +75,35 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
       return res.status(400).json({ success: false, message: "Lender ID and Tag are required." });
     }
 
-    const uploadedDocs = req.files.map(file => ({
-      filename: file.key, // S3 key
-      originalName: file.originalname,
-      filePath: file.location, // S3 URL
-      lenderId,
-      programId: programId || null,
-      tag,
-    }));
+    const uploadedDocs = [];
+
+    for (const file of req.files) {
+      const fileKey = `${Date.now()}-${file.originalname}`;
+      const uploadParams = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: fileKey,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      };
+
+      // Upload each file to S3
+      try {
+        const command = new PutObjectCommand(uploadParams);
+        await s3.send(command);
+
+        uploadedDocs.push({
+          filename: fileKey,
+          originalName: file.originalname,
+          filePath: `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`,
+          lenderId,
+          programId: programId || null,
+          tag,
+        });
+      } catch (uploadError) {
+        console.error(`❌ Error uploading file ${file.originalname}:`, uploadError);
+        return res.status(500).json({ success: false, message: `Error uploading file: ${file.originalname}` });
+      }
+    }
 
     await Document.insertMany(uploadedDocs);
     res.status(201).json({ success: true, message: "Bulk documents uploaded successfully!", documents: uploadedDocs });
