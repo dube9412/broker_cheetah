@@ -67,6 +67,12 @@ function FixAndFlipSearch() {
 
       const data = await response.json();
 
+      // Ensure data is an array
+      if (!Array.isArray(data)) {
+        console.error("❌ Unexpected API response format:", data);
+        throw new Error("API response is not an array.");
+      }
+
       // Filter results to include only lenders with matching programs
       const filteredResults = data.filter((lender) => {
         const matchingPrograms = lender.programs.filter((program) => {
