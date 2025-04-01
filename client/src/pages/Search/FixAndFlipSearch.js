@@ -75,8 +75,9 @@ function FixAndFlipSearch() {
 
       // Filter results based on Fix and Flip loan program criteria
       const filteredResults = data.filter((lender) => {
+        // Skip lenders without Fix and Flip programs (no tiers or empty tiers array)
         if (!Array.isArray(lender.tiers) || lender.tiers.length === 0) {
-          console.warn("⚠️ Skipping lender without valid tiers:", lender.name);
+          console.warn("⚠️ Skipping lender without Fix and Flip programs:", lender.name);
           return false;
         }
 
@@ -251,7 +252,7 @@ function FixAndFlipSearch() {
 
       <div className="search-buttons-container">
         <button className="search-button" onClick={handleSearch}>🔍 Search</button>
-        <button className="search-button" onClick={handleClear}>🔄 New Search</button>
+        <button class="search-button" onClick={handleClear}>🔄 New Search</button>
       </div>
 
       {warning && <p className="search-warning">{warning}</p>}
