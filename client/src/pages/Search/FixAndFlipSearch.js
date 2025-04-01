@@ -73,44 +73,61 @@ function FixAndFlipSearch() {
         throw new Error("API response is not an array.");
       }
 
-      // Filter results to include only lenders with matching programs
+      // Filter results based on Fix and Flip loan program criteria
       const filteredResults = data.filter((lender) => {
-        if (!Array.isArray(lender.programs)) {
-          console.warn("⚠️ Skipping lender due to missing or invalid 'programs' field:", lender);
-          return false;
-        }
+        const matchingTier = lender.tiers.find((tier) => {
+          const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
+          const totalCost = Number(purchasePrice) + Number(rehabNeeded);
 
-        const matchingPrograms = lender.programs.filter((program) => {
-          return (
-            program.state === state &&
-            program.minFICO <= fico &&
-            program.minExperience <= experience &&
-            program.minAsIsValue <= asisValue &&
-            program.maxARV >= arv
-          );
+          if (tier.minFICO && Number(fico) < tier.minFICO) return false;
+          if (tier.minExperience && Number(experience) < tier.minExperience) return false;
+          if (tier.maxLTC && Number(purchasePrice) > (asIs * tier.maxLTC) / 100) return false;
+          if (tier.totalLTC && totalCost > (arv * tier.totalLTC) / 100) return false;
+          if (tier.maxARV && totalCost > (arv * tier.maxARV) / 100) return false;
+
+          return true;
         });
 
-        if (matchingPrograms.length > 0) {
-          // Select the highest tier for each lender
-          lender.highestTier = matchingPrograms.reduce((highest, program) =>
-            program.tierRank > highest.tierRank ? program : highest
-          );
-          return true;
-        }
-
-        return false;
+        return !!matchingTier;
       });
 
       // Sort results based on loan options
-      const sortedResults = filteredResults.sort((a, b) => {
-        const aMatches = a.highestTier.recourse === recourse.recourse &&
-          a.highestTier.interestType === interestType &&
-          a.highestTier.crossCollateralAllowed === crossCollateralAllowed;
-        const bMatches = b.highestTier.recourse === recourse.recourse &&
-          b.highestTier.interestType === interestType &&
-          b.highestTier.crossCollateralAllowed === crossCollateralAllowed;
+      const sortedResults = filteredResults.map((lender) => {
+        const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
+        const totalCost = Number(purchasePrice) + Number(rehabNeeded);
 
-        return bMatches - aMatches;
+        const matchingTier = lender.tiers.find((tier) => {
+          const ltcAmount = Math.min(
+            (tier.maxLTC / 100) * (purchasePrice > asIs ? asIs : purchasePrice),
+            (tier.totalLTC / 100) * totalCost,
+            (tier.maxARV / 100) * arv
+          );
+
+          const rehabAmount = (tier.rehabPercent / 100) * rehabNeeded;
+          const totalLoan = ltcAmount + rehabAmount;
+
+          return {
+            ...tier,
+            ltcAmount,
+            rehabAmount,
+            totalLoan,
+            limitedByARV: totalLoan > (tier.maxARV / 100) * arv,
+          };
+        });
+
+        return {
+          name: lender.name,
+          phone: lender.phone,
+          highlightNote: lender.highlightNote || "",
+          maxLTC: matchingTier.maxLTC || "N/A",
+          rehabPercent: matchingTier.rehabPercent || "N/A",
+          termLengthMonths: lender.termLengthMonths || "N/A",
+          ltcAmount: matchingTier.ltcAmount,
+          rehabAmount: matchingTier.rehabAmount,
+          totalLoan: matchingTier.totalLoan,
+          limitedByARV: matchingTier.limitedByARV,
+          lenderId: lender._id,
+        };
       });
 
       setResults(sortedResults);
