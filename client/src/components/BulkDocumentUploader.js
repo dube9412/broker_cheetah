@@ -80,10 +80,15 @@ const BulkDocumentUploader = ({refreshDocuments}) => {
   }, []);
 
   // ✅ Handle drag-and-drop
-  const onDrop = useCallback((acceptedFiles) => {
+  const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
+    // Log rejected files for debugging
+    if (rejectedFiles.length > 0) {
+      console.warn("Rejected files:", rejectedFiles);
+    }
+
     const validFiles = acceptedFiles.filter(file => validMimeTypes.includes(file.type));
     if (validFiles.length === 0) {
-      alert("Invalid file type selected. Only PDF, Word, Excel, and images are allowed.");
+      alert("No valid files selected. Allowed types: PDF, Word, Excel, PNG, JPEG.");
       return;
     }
     setSelectedFiles((prev) => [...prev, ...validFiles]);

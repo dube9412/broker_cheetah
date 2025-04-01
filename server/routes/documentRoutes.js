@@ -6,6 +6,11 @@ const { Upload } = require("@aws-sdk/lib-storage");
 const Document = require("../models/Document");
 
 // ✅ Configure AWS S3 Client
+console.log("AWS_ACCESS_KEY_ID:", process.env.AWS_ACCESS_KEY_ID ? "Loaded" : "Not Loaded");
+console.log("AWS_SECRET_ACCESS_KEY:", process.env.AWS_SECRET_ACCESS_KEY ? "Loaded" : "Not Loaded");
+console.log("AWS_REGION:", process.env.AWS_REGION);
+console.log("AWS_BUCKET_NAME:", process.env.AWS_BUCKET_NAME); // Correct variable name
+ // Correct variable name
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -86,7 +91,6 @@ router.post("/bulk-upload", upload.array("files", 10), async (req, res) => {
         ContentType: file.mimetype,
       };
 
-      // Upload each file to S3
       try {
         const command = new PutObjectCommand(uploadParams);
         await s3.send(command);
