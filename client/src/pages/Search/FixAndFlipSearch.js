@@ -67,13 +67,8 @@ function FixAndFlipSearch() {
 
       const data = await response.json();
 
-      // Safeguard: Ensure programs exist before filtering
+      // Filter results to include only lenders with matching programs
       const filteredResults = data.filter((lender) => {
-        if (!lender.programs || !Array.isArray(lender.programs)) {
-          console.warn(`⚠️ Lender ${lender.name} has no programs.`);
-          return false;
-        }
-
         const matchingPrograms = lender.programs.filter((program) => {
           return (
             program.state === state &&
@@ -85,6 +80,7 @@ function FixAndFlipSearch() {
         });
 
         if (matchingPrograms.length > 0) {
+          // Select the highest tier for each lender
           lender.highestTier = matchingPrograms.reduce((highest, program) =>
             program.tierRank > highest.tierRank ? program : highest
           );
@@ -94,7 +90,19 @@ function FixAndFlipSearch() {
         return false;
       });
 
-      setResults(filteredResults);
+      // Sort results based on loan options
+      const sortedResults = filteredResults.sort((a, b) => {
+        const aMatches = a.highestTier.recourse === recourse.recourse &&
+          a.highestTier.interestType === interestType &&
+          a.highestTier.crossCollateralAllowed === crossCollateralAllowed;
+        const bMatches = b.highestTier.recourse === recourse.recourse &&
+          b.highestTier.interestType === interestType &&
+          b.highestTier.crossCollateralAllowed === crossCollateralAllowed;
+
+        return bMatches - aMatches;
+      });
+
+      setResults(sortedResults);
     } catch (err) {
       console.error("❌ Error searching:", err.message);
       setResults([]);
