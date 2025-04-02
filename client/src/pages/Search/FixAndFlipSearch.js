@@ -75,12 +75,19 @@ function FixAndFlipSearch() {
 
       // Map through lenders and their programs
       const filteredResults = data.map((lender) => {
-        const fixAndFlipPrograms = lender.programs?.filter(
+        // Check if lender has programs
+        if (!lender.programs || lender.programs.length === 0) {
+          console.warn(`⚠️ Lender ${lender.name} has no programs.`);
+          return null;
+        }
+
+        // Filter programs for "Fix and Flip"
+        const fixAndFlipPrograms = lender.programs.filter(
           (program) => program.type === "Fix and Flip"
         );
 
-        if (!fixAndFlipPrograms || fixAndFlipPrograms.length === 0) {
-          console.warn("⚠️ Skipping lender without Fix and Flip program:", lender.name);
+        if (fixAndFlipPrograms.length === 0) {
+          console.warn(`⚠️ Lender ${lender.name} has no Fix and Flip programs.`);
           return null;
         }
 
@@ -88,7 +95,7 @@ function FixAndFlipSearch() {
         const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
         const totalCost = Number(purchasePrice) + Number(rehabNeeded);
 
-        const matchingPrograms = fixAndFlipPrograms.map((program) => {
+        const validPrograms = fixAndFlipPrograms.map((program) => {
           const matchingTier = program.tiers.find((tier) => {
             if (tier.minFICO && Number(fico) < tier.minFICO) return false;
             if (tier.minExperience && Number(experience) < tier.minExperience) return false;
@@ -109,16 +116,16 @@ function FixAndFlipSearch() {
         });
 
         // Filter out programs without matching tiers
-        const validPrograms = matchingPrograms.filter(Boolean);
+        const programsWithMatchingTiers = validPrograms.filter(Boolean);
 
-        if (validPrograms.length === 0) {
-          console.warn(`⚠️ No matching programs found for lender: ${lender.name}`);
+        if (programsWithMatchingTiers.length === 0) {
+          console.warn(`⚠️ No matching tiers found for lender: ${lender.name}`);
           return null;
         }
 
         return {
           ...lender,
-          validPrograms,
+          validPrograms: programsWithMatchingTiers,
         };
       });
 
