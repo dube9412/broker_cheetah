@@ -14,7 +14,7 @@ const US_STATES = [
   "UT", "VA", "VT", "WA", "WI", "WV", "WY"
 ];
 
-const TERM_LENGTH_OPTIONS = [6, 12, 18, 24, 36]; // Define term length options
+const TERM_LENGTH_OPTIONS = [12, 13, 18, 19, 24]; // Define term length options
 
 function FixAndFlipSearch() {
   const navigate = useNavigate();
@@ -73,84 +73,74 @@ function FixAndFlipSearch() {
         throw new Error("API response is not an array.");
       }
 
-      // Filter results based on Fix and Flip loan program criteria
-      const filteredResults = data.filter((lender) => {
-        // Step 1: Check if the lender has a Fix and Flip loan program
-        const fixAndFlipProgram = lender.programs?.find(
+      // Map through lenders and their programs
+      const filteredResults = data.map((lender) => {
+        const fixAndFlipPrograms = lender.programs?.filter(
           (program) => program.type === "Fix and Flip"
         );
 
-        if (!fixAndFlipProgram) {
+        if (!fixAndFlipPrograms || fixAndFlipPrograms.length === 0) {
           console.warn("⚠️ Skipping lender without Fix and Flip program:", lender.name);
-          return false;
+          return null;
         }
 
-        // Step 2: Check the tiers within the Fix and Flip loan program
+        // Process each program to find matching tiers
         const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
         const totalCost = Number(purchasePrice) + Number(rehabNeeded);
 
-        const matchingTier = fixAndFlipProgram.tiers.find((tier) => {
-          if (tier.minFICO && Number(fico) < tier.minFICO) return false;
-          if (tier.minExperience && Number(experience) < tier.minExperience) return false;
+        const matchingPrograms = fixAndFlipPrograms.map((program) => {
+          const matchingTier = program.tiers.find((tier) => {
+            if (tier.minFICO && Number(fico) < tier.minFICO) return false;
+            if (tier.minExperience && Number(experience) < tier.minExperience) return false;
 
-          // LTC and ARV calculations
-          const ltcLimit = tier.maxLTC ? (asIs * tier.maxLTC) / 100 : Infinity;
-          const totalLtcLimit = tier.totalLTC ? (arv * tier.totalLTC) / 100 : Infinity;
-          const arvLimit = tier.maxARV ? (arv * tier.maxARV) / 100 : Infinity;
+            // LTC and ARV calculations
+            const ltcLimit = tier.maxLTC ? (asIs * tier.maxLTC) / 100 : Infinity;
+            const totalLtcLimit = tier.totalLTC ? (arv * tier.totalLTC) / 100 : Infinity;
+            const arvLimit = tier.maxARV ? (arv * tier.maxARV) / 100 : Infinity;
 
-          if (purchasePrice > ltcLimit) return false;
-          if (totalCost > totalLtcLimit) return false;
-          if (totalCost > arvLimit) return false;
+            if (purchasePrice > ltcLimit) return false;
+            if (totalCost > totalLtcLimit) return false;
+            if (totalCost > arvLimit) return false;
 
-          return true;
+            return true;
+          });
+
+          return matchingTier ? { ...program, matchingTier } : null;
         });
 
-        if (!matchingTier) {
-          console.warn(`⚠️ No matching tier found for lender: ${lender.name}`);
+        // Filter out programs without matching tiers
+        const validPrograms = matchingPrograms.filter(Boolean);
+
+        if (validPrograms.length === 0) {
+          console.warn(`⚠️ No matching programs found for lender: ${lender.name}`);
+          return null;
         }
 
-        return !!matchingTier;
+        return {
+          ...lender,
+          validPrograms,
+        };
       });
 
+      // Filter out lenders without valid programs
+      const validLenders = filteredResults.filter(Boolean);
+
       // Map and sort results based on loan options
-      const sortedResults = filteredResults.map((lender) => {
-        const fixAndFlipProgram = lender.programs.find(
-          (program) => program.type === "Fix and Flip"
-        );
-
-        const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
-        const totalCost = Number(purchasePrice) + Number(rehabNeeded);
-
-        const matchingTier = fixAndFlipProgram.tiers.find((tier) => {
-          const ltcAmount = Math.min(
-            (tier.maxLTC / 100) * (purchasePrice > asIs ? asIs : purchasePrice),
-            (tier.totalLTC / 100) * totalCost,
-            (tier.maxARV / 100) * arv
-          );
-
-          const rehabAmount = (tier.rehabPercent / 100) * rehabNeeded;
-          const totalLoan = ltcAmount + rehabAmount;
-
-          return {
-            ...tier,
-            ltcAmount,
-            rehabAmount,
-            totalLoan,
-            limitedByARV: totalLoan > (tier.maxARV / 100) * arv,
-          };
-        });
+      const sortedResults = validLenders.map((lender) => {
+        const program = lender.validPrograms[0]; // Use the first valid program for simplicity
+        const tier = program.matchingTier;
 
         return {
           name: lender.name,
           phone: lender.phone,
           highlightNote: lender.highlightNote || "",
-          maxLTC: matchingTier?.maxLTC || "N/A",
-          rehabPercent: matchingTier?.rehabPercent || "N/A",
-          termLengthMonths: fixAndFlipProgram.termLengthMonths || "N/A",
-          ltcAmount: matchingTier?.ltcAmount || 0,
-          rehabAmount: matchingTier?.rehabAmount || 0,
-          totalLoan: matchingTier?.totalLoan || 0,
-          limitedByARV: matchingTier?.limitedByARV || false,
+          maxLTC: tier.maxLTC || "N/A",
+          rehabPercent: tier.rehabPercent || "N/A",
+          termLengthMonths: program.termLengthMonths || "N/A",
+          ltcAmount: tier.ltcAmount || 0,
+          rehabAmount: tier.rehabAmount || 0,
+          totalLoan: tier.totalLoan || 0,
+          limitedByARV: tier.limitedByARV || false,
           lenderId: lender._id,
         };
       });
