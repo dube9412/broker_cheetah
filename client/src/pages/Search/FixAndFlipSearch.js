@@ -14,7 +14,7 @@ const US_STATES = [
   "UT", "VA", "VT", "WA", "WI", "WV", "WY"
 ];
 
-const TERM_LENGTH_OPTIONS = [6, 12, 18, 24, 36]; // Define term length options
+const TERM_LENGTH_OPTIONS = [12, 13, 18, 19, 24]; // Define term length options
 
 function FixAndFlipSearch() {
   const navigate = useNavigate();
@@ -67,42 +67,64 @@ function FixAndFlipSearch() {
 
       const data = await response.json();
 
-      // Filter results to include only lenders with matching programs
-      const filteredResults = data.filter((lender) => {
-        const matchingPrograms = lender.programs.filter((program) => {
-          return (
-            program.state === state &&
-            program.minFICO <= fico &&
-            program.minExperience <= experience &&
-            program.minAsIsValue <= asisValue &&
-            program.maxARV >= arv
-          );
-        });
-
-        if (matchingPrograms.length > 0) {
-          // Select the highest tier for each lender
-          lender.highestTier = matchingPrograms.reduce((highest, program) =>
-            program.tierRank > highest.tierRank ? program : highest
-          );
-          return true;
+      // Safeguard: Ensure programs exist before filtering
+      const filteredResults = data.map((lender) => {
+        if (!lender.programs || !Array.isArray(lender.programs)) {
+          console.warn(`⚠️ Lender ${lender.name} has no programs.`);
+          return null;
         }
 
-        return false;
+        const fixAndFlipPrograms = lender.programs.filter(
+          (program) => program.type === "Fix and Flip"
+        );
+
+        if (fixAndFlipPrograms.length === 0) {
+          console.warn(`⚠️ Lender ${lender.name} has no Fix and Flip programs.`);
+          return null;
+        }
+
+        // Process each program to find matching tiers
+        const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
+        const totalCost = Number(purchasePrice) + Number(rehabNeeded);
+
+        const validPrograms = fixAndFlipPrograms.map((program) => {
+          const matchingTier = program.tiers.find((tier) => {
+            if (tier.minFICO && Number(fico) < tier.minFICO) return false;
+            if (tier.minExperience && Number(experience) < tier.minExperience) return false;
+
+            // LTC and ARV calculations
+            const ltcLimit = tier.maxLTC ? (asIs * tier.maxLTC) / 100 : Infinity;
+            const totalLtcLimit = tier.totalLTC ? (arv * tier.totalLTC) / 100 : Infinity;
+            const arvLimit = tier.maxARV ? (arv * tier.maxARV) / 100 : Infinity;
+
+            if (purchasePrice > ltcLimit) return false;
+            if (totalCost > totalLtcLimit) return false;
+            if (totalCost > arvLimit) return false;
+
+            return true;
+          });
+
+          return matchingTier ? { ...program, matchingTier } : null;
+        });
+
+        // Filter out programs without matching tiers
+        const programsWithMatchingTiers = validPrograms.filter(Boolean);
+
+        if (programsWithMatchingTiers.length === 0) {
+          console.warn(`⚠️ No matching tiers found for lender: ${lender.name}`);
+          return null;
+        }
+
+        return {
+          ...lender,
+          validPrograms: programsWithMatchingTiers,
+        };
       });
 
-      // Sort results based on loan options
-      const sortedResults = filteredResults.sort((a, b) => {
-        const aMatches = a.highestTier.recourse === recourse.recourse &&
-          a.highestTier.interestType === interestType &&
-          a.highestTier.crossCollateralAllowed === crossCollateralAllowed;
-        const bMatches = b.highestTier.recourse === recourse.recourse &&
-          b.highestTier.interestType === interestType &&
-          b.highestTier.crossCollateralAllowed === crossCollateralAllowed;
+      // Filter out lenders without valid programs
+      const validLenders = filteredResults.filter(Boolean);
 
-        return bMatches - aMatches;
-      });
-
-      setResults(sortedResults);
+      setResults(validLenders);
     } catch (err) {
       console.error("❌ Error searching:", err.message);
       setResults([]);
@@ -212,7 +234,7 @@ function FixAndFlipSearch() {
 
       <div className="search-buttons-container">
         <button className="search-button" onClick={handleSearch}>🔍 Search</button>
-        <button className="search-button" onClick={handleClear}>🔄 New Search</button>
+        <button class="search-button" onClick={handleClear}>🔄 New Search</button>
       </div>
 
       {warning && <p className="search-warning">{warning}</p>}

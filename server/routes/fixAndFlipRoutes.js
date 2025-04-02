@@ -190,12 +190,24 @@ router.get("/search", async (req, res) => {
 
     if (propertyType) filters.propertyTypes = propertyType;
 
+    console.log("🔍 Filters being applied:", filters);
+
     const programs = await FixAndFlipLoan.find(filters).populate("lender");
+
+    if (!programs || programs.length === 0) {
+      console.warn("⚠️ No programs found matching the filters.");
+      return res.status(404).json({ message: "No matching programs found." });
+    }
+
+    console.log("🔍 Programs fetched from database:", programs);
 
     const matchingPrograms = [];
 
     for (const program of programs) {
-      if (state && !program.lender.states.includes(state)) continue;
+      if (state && (!program.lender || !program.lender.states.includes(state))) {
+        console.warn(`⚠️ Program ${program._id} skipped due to state mismatch.`);
+        continue;
+      }
 
       const matchingTier = program.tiers.find((tier) => {
         if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
@@ -246,6 +258,8 @@ router.get("/search", async (req, res) => {
         });
       }
     }
+
+    console.log("✅ Matching programs:", matchingPrograms);
 
     res.json(matchingPrograms);
   } catch (error) {
