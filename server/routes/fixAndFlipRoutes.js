@@ -190,7 +190,11 @@ router.get("/search", async (req, res) => {
 
     if (propertyType) filters.propertyTypes = propertyType;
 
+    console.log("🔍 Filters being applied:", filters);
+
     const programs = await FixAndFlipLoan.find(filters).populate("lender");
+
+    console.log("🔍 Programs fetched from database:", programs);
 
     const matchingPrograms = [];
 
@@ -246,6 +250,8 @@ router.get("/search", async (req, res) => {
         });
       }
     }
+
+    console.log("✅ Matching programs:", matchingPrograms);
 
     res.json(matchingPrograms);
   } catch (error) {
