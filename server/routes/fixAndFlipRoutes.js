@@ -204,7 +204,12 @@ router.get("/search", async (req, res) => {
     const matchingPrograms = [];
 
     for (const program of programs) {
-      if (state && (!program.lender || !program.lender.states.includes(state))) {
+      if (!program.lender) {
+        console.warn(`⚠️ Program ${program._id} skipped because it has no associated lender.`);
+        continue;
+      }
+
+      if (state && !program.lender.states.includes(state)) {
         console.warn(`⚠️ Program ${program._id} skipped due to state mismatch.`);
         continue;
       }
@@ -226,37 +231,40 @@ router.get("/search", async (req, res) => {
         return true;
       });
 
-      if (matchingTier) {
-        let rehabType = "Light";
-        if (purchasePrice && rehabNeeded) {
-          const rehabRatio = (Number(rehabNeeded) / Number(purchasePrice)) * 100;
-          if (rehabRatio > 100) rehabType = "Heavy";
-          else if (rehabRatio > 50) rehabType = "Medium";
-        }
-
-        let interestTypeDisplay = program.interestType?.dutch ? "Dutch" :
-                                  program.interestType?.nonDutch ? "Non-Dutch" : "N/A";
-
-        let recourseDisplay = program.recourse?.recourse
-          ? "Recourse"
-          : program.recourse?.nonRecourse
-          ? "Non-Recourse"
-          : "N/A";
-
-        matchingPrograms.push({
-          name: program.lender.name,
-          phone: program.lender.phone,
-          highlightNote: program.lender.highlightNote || "",
-          maxLTC: matchingTier.maxLTC || "N/A",
-          rehabPercent: matchingTier.rehabPercent || "N/A",
-          termLengthMonths: program.termLengthMonths || "N/A",
-          interestType: interestTypeDisplay,
-          recourse: recourseDisplay,
-          rehabType,
-          lenderId: program.lender._id,
-          programId: program._id,
-        });
+      if (!matchingTier) {
+        console.warn(`⚠️ No matching tiers found for program ${program._id}.`);
+        continue;
       }
+
+      let rehabType = "Light";
+      if (purchasePrice && rehabNeeded) {
+        const rehabRatio = (Number(rehabNeeded) / Number(purchasePrice)) * 100;
+        if (rehabRatio > 100) rehabType = "Heavy";
+        else if (rehabRatio > 50) rehabType = "Medium";
+      }
+
+      let interestTypeDisplay = program.interestType?.dutch ? "Dutch" :
+                                program.interestType?.nonDutch ? "Non-Dutch" : "N/A";
+
+      let recourseDisplay = program.recourse?.recourse
+        ? "Recourse"
+        : program.recourse?.nonRecourse
+        ? "Non-Recourse"
+        : "N/A";
+
+      matchingPrograms.push({
+        name: program.lender.name,
+        phone: program.lender.phone,
+        highlightNote: program.lender.highlightNote || "",
+        maxLTC: matchingTier.maxLTC || "N/A",
+        rehabPercent: matchingTier.rehabPercent || "N/A",
+        termLengthMonths: program.termLengthMonths || "N/A",
+        interestType: interestTypeDisplay,
+        recourse: recourseDisplay,
+        rehabType,
+        lenderId: program.lender._id,
+        programId: program._id,
+      });
     }
 
     console.log("✅ Matching programs:", matchingPrograms);

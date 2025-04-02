@@ -239,7 +239,7 @@ function FixAndFlipSearch() {
 
       {warning && <p className="search-warning">{warning}</p>}
 
-      <div className="search-results">
+      <div class="search-results">
         {results.map((res, i) => (
           <div key={i} className="search-result-item">
             <strong>✅ {res.name}</strong>
