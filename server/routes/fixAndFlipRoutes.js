@@ -224,7 +224,7 @@ router.get("/search", async (req, res) => {
       const asIs = Number(asisValue) || 0;
 
       if (program.minAsIsValue && asIs < program.minAsIsValue) {
-        console.warn(`⚠️ Program ${program._id} skipped due to as-is value mismatch.`);
+        console.warn(`⚠️ Program ${program._id} skipped due to as-is value mismatch. Min As-Is Value: ${program.minAsIsValue}, Provided: ${asIs}`);
         continue;
       }
 
@@ -232,8 +232,14 @@ router.get("/search", async (req, res) => {
       const matchingTier = program.tiers
         .sort((a, b) => (b.minExperience || 0) - (a.minExperience || 0)) // Sort tiers by experience descending
         .find((tier) => {
-          if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
-          if (experience && tier.minExperience && Number(experience) < tier.minExperience) return false;
+          if (fico && tier.minFICO && Number(fico) < tier.minFICO) {
+            console.warn(`⚠️ Tier skipped due to FICO mismatch. Tier Min FICO: ${tier.minFICO}, Provided: ${fico}`);
+            return false;
+          }
+          if (experience && tier.minExperience && Number(experience) < tier.minExperience) {
+            console.warn(`⚠️ Tier skipped due to experience mismatch. Tier Min Experience: ${tier.minExperience}, Provided: ${experience}`);
+            return false;
+          }
           return true; // User qualifies for this tier
         });
 
