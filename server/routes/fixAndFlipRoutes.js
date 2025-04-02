@@ -216,76 +216,14 @@ router.get("/search", async (req, res) => {
         continue;
       }
 
-      console.log(`🔹 Program tiers:`, program.tiers);
-
-      const matchingTier = program.tiers.find((tier) => {
-        if (fico && tier.minFICO && Number(fico) < tier.minFICO) {
-          console.warn(`⚠️ Tier skipped due to FICO mismatch. Tier minFICO: ${tier.minFICO}, User FICO: ${fico}`);
-          return false;
-        }
-        if (experience && tier.minExperience && Number(experience) < tier.minExperience) {
-          console.warn(`⚠️ Tier skipped due to experience mismatch. Tier minExperience: ${tier.minExperience}, User Experience: ${experience}`);
-          return false;
-        }
-
-        const pp = Number(purchasePrice) || 0;
-        const rehab = Number(rehabNeeded) || 0;
-        const arvNum = Number(arv) || 0;
-        const asIs = Number(asisValue) || 0;
-
-        if (tier.maxLTC && asIs && pp > (asIs * tier.maxLTC) / 100) {
-          console.warn(`⚠️ Tier skipped due to maxLTC mismatch. Tier maxLTC: ${tier.maxLTC}, Purchase Price: ${pp}, As-Is Value: ${asIs}`);
-          return false;
-        }
-        if (tier.totalLTC && (pp + rehab) > (arvNum * tier.totalLTC) / 100) {
-          console.warn(`⚠️ Tier skipped due to totalLTC mismatch. Tier totalLTC: ${tier.totalLTC}, Total Cost: ${pp + rehab}, ARV: ${arvNum}`);
-          return false;
-        }
-        if (tier.maxARV && (pp + rehab) > (arvNum * tier.maxARV) / 100) {
-          console.warn(`⚠️ Tier skipped due to maxARV mismatch. Tier maxARV: ${tier.maxARV}, Total Cost: ${pp + rehab}, ARV: ${arvNum}`);
-          return false;
-        }
-        if (tier.rehabPercent && rehab > (pp * tier.rehabPercent / 100)) {
-          console.warn(`⚠️ Tier skipped due to rehabPercent mismatch. Tier rehabPercent: ${tier.rehabPercent}, Rehab Needed: ${rehab}, Purchase Price: ${pp}`);
-          return false;
-        }
-
-        return true;
-      });
-
-      if (!matchingTier) {
-        console.warn(`⚠️ No matching tiers found for program ${program._id}.`);
-        continue;
-      }
-
-      console.log(`✅ Matching tier found for program ${program._id}:`, matchingTier);
-
-      let rehabType = "Light";
-      if (purchasePrice && rehabNeeded) {
-        const rehabRatio = (Number(rehabNeeded) / Number(purchasePrice)) * 100;
-        if (rehabRatio > 100) rehabType = "Heavy";
-        else if (rehabRatio > 50) rehabType = "Medium";
-      }
-
-      let interestTypeDisplay = program.interestType?.dutch ? "Dutch" :
-                                program.interestType?.nonDutch ? "Non-Dutch" : "N/A";
-
-      let recourseDisplay = program.recourse?.recourse
-        ? "Recourse"
-        : program.recourse?.nonRecourse
-        ? "Non-Recourse"
-        : "N/A";
+      // Temporarily bypass tier filtering
+      console.log(`✅ Including program ${program._id} for lender ${program.lender.name}`);
 
       matchingPrograms.push({
         name: program.lender.name,
         phone: program.lender.phone,
         highlightNote: program.lender.highlightNote || "",
-        maxLTC: matchingTier.maxLTC || "N/A",
-        rehabPercent: matchingTier.rehabPercent || "N/A",
         termLengthMonths: program.termLengthMonths || "N/A",
-        interestType: interestTypeDisplay,
-        recourse: recourseDisplay,
-        rehabType,
         lenderId: program.lender._id,
         programId: program._id,
       });

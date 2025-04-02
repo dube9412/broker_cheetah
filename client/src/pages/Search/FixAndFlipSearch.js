@@ -67,66 +67,25 @@ function FixAndFlipSearch() {
 
       const data = await response.json();
 
-      // Safeguard: Ensure programs exist before filtering
-      const filteredResults = data.map((lender) => {
-        if (!lender.programs || !Array.isArray(lender.programs)) {
-          console.warn(`⚠️ Lender ${lender.name} has no programs.`);
-          return null;
-        }
+      // Ensure data is an array
+      if (!Array.isArray(data)) {
+        console.error("❌ Unexpected API response format:", data);
+        throw new Error("API response is not an array.");
+      }
 
-        const fixAndFlipPrograms = lender.programs.filter(
-          (program) => program.type === "Fix and Flip"
-        );
+      // Map results to display basic lender and program information
+      const mappedResults = data.map((lender) => ({
+        name: lender.name,
+        phone: lender.phone,
+        highlightNote: lender.highlightNote || "",
+        termLengthMonths: lender.termLengthMonths || "N/A",
+        lenderId: lender.lenderId,
+      }));
 
-        if (fixAndFlipPrograms.length === 0) {
-          console.warn(`⚠️ Lender ${lender.name} has no Fix and Flip programs.`);
-          return null;
-        }
-
-        // Process each program to find matching tiers
-        const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
-        const totalCost = Number(purchasePrice) + Number(rehabNeeded);
-
-        const validPrograms = fixAndFlipPrograms.map((program) => {
-          const matchingTier = program.tiers.find((tier) => {
-            if (tier.minFICO && Number(fico) < tier.minFICO) return false;
-            if (tier.minExperience && Number(experience) < tier.minExperience) return false;
-
-            // LTC and ARV calculations
-            const ltcLimit = tier.maxLTC ? (asIs * tier.maxLTC) / 100 : Infinity;
-            const totalLtcLimit = tier.totalLTC ? (arv * tier.totalLTC) / 100 : Infinity;
-            const arvLimit = tier.maxARV ? (arv * tier.maxARV) / 100 : Infinity;
-
-            if (purchasePrice > ltcLimit) return false;
-            if (totalCost > totalLtcLimit) return false;
-            if (totalCost > arvLimit) return false;
-
-            return true;
-          });
-
-          return matchingTier ? { ...program, matchingTier } : null;
-        });
-
-        // Filter out programs without matching tiers
-        const programsWithMatchingTiers = validPrograms.filter(Boolean);
-
-        if (programsWithMatchingTiers.length === 0) {
-          console.warn(`⚠️ No matching tiers found for lender: ${lender.name}`);
-          return null;
-        }
-
-        return {
-          ...lender,
-          validPrograms: programsWithMatchingTiers,
-        };
-      });
-
-      // Filter out lenders without valid programs
-      const validLenders = filteredResults.filter(Boolean);
-
-      setResults(validLenders);
+      setResults(mappedResults);
     } catch (err) {
       console.error("❌ Error searching:", err.message);
+      setWarning("An error occurred while searching. Please try again.");
       setResults([]);
     }
   };
@@ -239,7 +198,7 @@ function FixAndFlipSearch() {
 
       {warning && <p className="search-warning">{warning}</p>}
 
-      <div class="search-results">
+      <div className="search-results">
         {results.map((res, i) => (
           <div key={i} className="search-result-item">
             <strong>✅ {res.name}</strong>
