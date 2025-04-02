@@ -100,15 +100,14 @@ router.put("/fix-and-flip-programs/:programId", async (req, res) => {
           : null,
 
       propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
-      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [],,
+      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [], // Removed the extra comma here
     };
-    
+
     const updatedProgram = await FixAndFlipLoan.findByIdAndUpdate(
       req.params.programId,
       { $set: updatePayload },
       { new: true, runValidators: true }
     );
-    
 
     if (!updatedProgram) {
       console.error("❌ Fix and Flip Loan Program not found:", req.params.programId);
