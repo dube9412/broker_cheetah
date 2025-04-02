@@ -100,7 +100,7 @@ router.put("/fix-and-flip-programs/:programId", async (req, res) => {
           : null,
 
       propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
-      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [],
+      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [],,
     };
     
     const updatedProgram = await FixAndFlipLoan.findByIdAndUpdate(
@@ -169,11 +169,13 @@ router.get("/search", async (req, res) => {
       interestTypeDutch,
       interestTypeNonDutch,
       crossCollateralAllowed,
+      termLengthMonths,
       propertyType,
     } = req.query;
 
     const filters = {};
 
+    // Apply loan option filters only if specified
     if (crossCollateralAllowed) filters.crossCollateralAllowed = crossCollateralAllowed;
 
     if (recourse === "true" || nonRecourse === "true") {
@@ -216,14 +218,60 @@ router.get("/search", async (req, res) => {
         continue;
       }
 
-      // Temporarily bypass tier filtering
-      console.log(`✅ Including program ${program._id} for lender ${program.lender.name}`);
+      // Check if the program is disqualified based on other inputs
+      const pp = Number(purchasePrice) || 0;
+      const rehab = Number(rehabNeeded) || 0;
+      const arvNum = Number(arv) || 0;
+      const asIs = Number(asisValue) || 0;
+
+      if (program.minAsIsValue && asIs < program.minAsIsValue) {
+        console.warn(`⚠️ Program ${program._id} skipped due to as-is value mismatch.`);
+        continue;
+      }
+
+      // Find the highest qualifying tier based on experience and FICO
+      const matchingTier = program.tiers
+        .sort((a, b) => (b.minExperience || 0) - (a.minExperience || 0)) // Sort tiers by experience descending
+        .find((tier) => {
+          if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
+          if (experience && tier.minExperience && Number(experience) < tier.minExperience) return false;
+          return true; // User qualifies for this tier
+        });
+
+      if (!matchingTier) {
+        console.warn(`⚠️ No matching tiers found for program ${program._id}.`);
+        continue;
+      }
+
+      console.log(`✅ Matching tier found for program ${program._id}:`, matchingTier);
+
+      let rehabType = "Light";
+      if (purchasePrice && rehabNeeded) {
+        const rehabRatio = (Number(rehabNeeded) / Number(purchasePrice)) * 100;
+        if (rehabRatio > 100) rehabType = "Heavy";
+        else if (rehabRatio > 50) rehabType = "Medium";
+      }
+
+      let interestTypeDisplay = program.interestType?.dutch ? "Dutch" :
+                                program.interestType?.nonDutch ? "Non-Dutch" : "N/A";
+
+      let recourseDisplay = program.recourse?.recourse
+        ? "Recourse"
+        : program.recourse?.nonRecourse
+        ? "Non-Recourse"
+        : "N/A";
 
       matchingPrograms.push({
         name: program.lender.name,
         phone: program.lender.phone,
         highlightNote: program.lender.highlightNote || "",
+        maxLTC: matchingTier.maxLTC || "N/A",
+        rehabPercent: matchingTier.rehabPercent || "N/A",
         termLengthMonths: program.termLengthMonths || "N/A",
+        interestType: interestTypeDisplay,
+        recourse: recourseDisplay,
+        rehabType,
+        tierName: matchingTier.tierName || "Default Tier",
         lenderId: program.lender._id,
         programId: program._id,
       });

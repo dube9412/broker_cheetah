@@ -73,16 +73,7 @@ function FixAndFlipSearch() {
         throw new Error("API response is not an array.");
       }
 
-      // Map results to display basic lender and program information
-      const mappedResults = data.map((lender) => ({
-        name: lender.name,
-        phone: lender.phone,
-        highlightNote: lender.highlightNote || "",
-        termLengthMonths: lender.termLengthMonths || "N/A",
-        lenderId: lender.lenderId,
-      }));
-
-      setResults(mappedResults);
+      setResults(data);
     } catch (err) {
       console.error("❌ Error searching:", err.message);
       setWarning("An error occurred while searching. Please try again.");
@@ -202,20 +193,18 @@ function FixAndFlipSearch() {
         {results.map((res, i) => (
           <div key={i} className="search-result-item">
             <strong>✅ {res.name}</strong>
-            <p>{res.highlightNote}</p> {/* Display dynamic note */}
+            <p>{res.highlightNote}</p>
             <span>{res.phone || ""}</span>
-            <p>Expect <strong>{res.maxLTC || "N/A"}%</strong> of purchase, <strong>{res.rehabPercent || "N/A"}%</strong> rehab, <strong>{res.termLengthMonths || "N/A"}-month</strong> term.</p>
-            <p>Interest: <strong>{res.interestType || "Not Provided"}</strong> | Recourse: <strong>{res.recourse || "Not Provided"}</strong></p>
+            <p>Tier: <strong>{res.tierName || "N/A"}</strong></p>
+            <p>Max LTC: <strong>{res.maxLTC || "N/A"}%</strong></p>
+            <p>Rehab Percent: <strong>{res.rehabPercent || "N/A"}%</strong></p>
+            <p>Term Length: <strong>{res.termLengthMonths || "N/A"} months</strong></p>
+            <p>Interest Type: <strong>{res.interestType || "Not Provided"}</strong></p>
+            <p>Recourse: <strong>{res.recourse || "Not Provided"}</strong></p>
             <p>Rehab Classification: <strong>{res.rehabType || "Not Specified"}</strong></p>
-            <p>📌 <em>Why this lender works:</em> {res.highlightNote || "Available Fix & Flip program"}</p>
-            <label>
-              <input
-                type="checkbox"
-                value={res.lenderId}
-                onChange={() => handleLenderSelect(res.lenderId)}
-              />{" "}
-              Request Quote
-            </label>
+            {purchasePrice && rehabNeeded && arv && asisValue && (
+              <p>Math Calculations: {/* Add math results here */}</p>
+            )}
           </div>
         ))}
       </div>
