@@ -211,16 +211,15 @@ function FixAndFlipSearch() {
                   Expect <strong>{res.maxLTC || "N/A"}%</strong> of purchase and <strong>{res.rehabPercent || "N/A"}%</strong> of rehab.
                 </div>
 
-                {/* Line 3: Expected Loan Amounts (Constrained by TLTC and ARV) */}
+                {/* Line 3: Unconstrained Loan Amounts */}
                 <div>
-                  Expected Loan Amount: <strong>${res.calculations?.totalLoanAmount?.toLocaleString() || "N/A"}</strong> 
-                  (<strong>${res.calculations?.purchaseLoanAmount?.toLocaleString() || "N/A"}</strong> toward purchase, 
-                  <strong>${res.calculations?.rehabLoanAmount?.toLocaleString() || "N/A"}</strong> toward rehab).
+                  Potential Loan Amount: <strong>${res.calculations?.purchaseLoanAmount?.toLocaleString() || "N/A"}</strong> toward purchase, 
+                  <strong>${res.calculations?.rehabLoanAmount?.toLocaleString() || "N/A"}</strong> toward rehab.
                 </div>
 
-                {/* Line 4: Total Loan Amount and Limits */}
+                {/* Line 4: Constrained Total Loan Amount */}
                 <div>
-                  Total Loan Amount: <strong>${res.calculations?.totalLoanAmount?.toLocaleString() || "N/A"}</strong> | 
+                  Total Loan Amount (Constrained): <strong>${res.calculations?.totalLoanAmount?.toLocaleString() || "N/A"}</strong> | 
                   TLTC Limit: <strong>${res.calculations?.tltcLimit?.toLocaleString() || "N/A"}</strong> | 
                   ARV Limit: <strong>${res.calculations?.arvLimit?.toLocaleString() || "N/A"}</strong>
                 </div>

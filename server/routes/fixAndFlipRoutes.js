@@ -201,12 +201,22 @@ router.get("/search", async (req, res) => {
           warnings.push("The loan amount exceeds the ARV limit.");
         }
 
+        // ✅ Calculate the reduction due to constraints
+        const reductionAmount = totalLoanAmount - constrainedLoanAmount;
+        if (reductionAmount > 0) {
+          const limitingFactor = constrainedLoanAmount === tltcLimit ? "TLTC" : "ARV";
+          warnings.push(
+            `Because the total loan amount is limited by ${limitingFactor}, this lender will likely reduce the purchase price or rehab amount by $${reductionAmount.toLocaleString()}.`
+          );
+        }
+
         program.calculations = {
-          purchaseLoanAmount: Math.min(purchaseLoanAmount, constrainedLoanAmount),
-          rehabLoanAmount: Math.min(rehabLoanAmount, constrainedLoanAmount - purchaseLoanAmount),
-          totalLoanAmount: constrainedLoanAmount,
+          purchaseLoanAmount, // Unconstrained purchase loan amount
+          rehabLoanAmount, // Unconstrained rehab loan amount
+          totalLoanAmount: constrainedLoanAmount, // Constrained total loan amount
           tltcLimit,
           arvLimit,
+          reductionAmount, // Amount reduced due to constraints
         };
 
         program.warnings = warnings;
