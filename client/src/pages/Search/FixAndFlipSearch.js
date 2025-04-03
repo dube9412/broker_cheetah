@@ -194,46 +194,41 @@ function FixAndFlipSearch() {
 
       <div className="search-results">
         {results.length > 0 ? (
-          <div className="results-container">
+          <div>
             {results.map((res, i) => (
-              <div key={i} className="lender-card">
+              <div key={i} className="search-result-item">
                 {/* Line 1: Lender Name, Phone, Email */}
-                <div className="lender-header">
-                  <span className="lender-name">{res.name}</span>
-                  <span className="lender-contact">📞 {res.phone}</span>
-                  <span className="lender-contact">✉️ {res.email}</span>
+                <div>
+                  <strong>🏦 {res.name}</strong> | 📞 {res.phone} | ✉️ {res.email}
                 </div>
 
                 {/* Line 2: Loan Expectations */}
-                <div className="lender-expectations">
+                <div>
                   Expect <strong>{res.maxLTC}%</strong> of purchase, <strong>{res.rehabPercent}%</strong> rehab.
                 </div>
 
                 {/* Line 3: Math Outputs */}
-                <div className="lender-math">
-                  <span>Loan Amount: ${res.calculations?.loanAmount?.toLocaleString() || "N/A"}</span>
-                  <span>LTC Limit: ${res.calculations?.ltcLimit?.toLocaleString() || "N/A"}</span>
-                  <span>TLTC Limit: ${res.calculations?.totalLtcLimit?.toLocaleString() || "N/A"}</span>
-                  <span>ARV Limit: ${res.calculations?.arvLimit?.toLocaleString() || "N/A"}</span>
+                <div>
+                  Loan Amount: <strong>${res.calculations?.loanAmount?.toLocaleString() || "N/A"}</strong> | 
+                  LTC Limit: <strong>${res.calculations?.ltcLimit?.toLocaleString() || "N/A"}</strong> | 
+                  TLTC Limit: <strong>${res.calculations?.totalLtcLimit?.toLocaleString() || "N/A"}</strong> | 
+                  ARV Limit: <strong>${res.calculations?.arvLimit?.toLocaleString() || "N/A"}</strong>
                 </div>
 
                 {/* Line 4: Warnings */}
-                <div className="lender-warning">
-                  {res.warning ? <span className="warning-text">⚠️ {res.warning}</span> : <span>No warnings</span>}
+                <div style={{ color: res.warning ? "red" : "inherit" }}>
+                  {res.warning ? `⚠️ ${res.warning}` : "No warnings"}
                 </div>
 
                 {/* Line 5: Request Quote */}
-                <div className="lender-quote">
-                  <label className="quote-label">
+                <div>
+                  <label>
                     <input
                       type="checkbox"
                       value={res.lenderId}
                       onChange={() => handleLenderSelect(res.lenderId)}
-                      className="quote-checkbox"
                     />
-                    <span className="quote-button">
-                      {selectedLenders.includes(res.lenderId) ? "✅ Quote Requested" : "Request Quote"}
-                    </span>
+                    {selectedLenders.includes(res.lenderId) ? " ✅ Quote Requested" : " Request Quote"}
                   </label>
                 </div>
               </div>
