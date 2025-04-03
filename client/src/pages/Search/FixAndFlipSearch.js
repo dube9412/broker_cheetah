@@ -194,48 +194,50 @@ function FixAndFlipSearch() {
 
       <div className="search-results">
         {results.length > 0 ? (
-          <table className="results-table">
-            <thead>
-              <tr>
-                <th>Lender</th>
-                <th>Contact</th>
-                <th>Loan Expectations</th>
-                <th>Interest Type</th>
-                <th>Recourse</th>
-                <th>Rehab Classification</th>
-                <th>Warnings</th>
-                <th>Request Quote</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.map((res, i) => (
-                <tr key={i}>
-                  <td>{res.name}</td>
-                  <td>
-                    <div>{res.phone}</div>
-                    <div>{res.email}</div>
-                  </td>
-                  <td>
-                    Expect <strong>{res.maxLTC}%</strong> of purchase, <strong>{res.rehabPercent}%</strong> rehab.
-                  </td>
-                  <td>{res.interestType || "N/A"}</td>
-                  <td>{res.recourse || "N/A"}</td>
-                  <td>{res.rehabType || "N/A"}</td>
-                  <td>{res.warning || "N/A"}</td>
-                  <td>
-                    <label>
-                      <input
-                        type="checkbox"
-                        value={res.lenderId}
-                        onChange={() => handleLenderSelect(res.lenderId)}
-                      />{" "}
-                      Request Quote
-                    </label>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="results-container">
+            {results.map((res, i) => (
+              <div key={i} className="lender-card">
+                {/* Line 1: Lender Name, Phone, Email */}
+                <div className="lender-header">
+                  <span className="lender-name">{res.name}</span>
+                  <span className="lender-contact">📞 {res.phone}</span>
+                  <span className="lender-contact">✉️ {res.email}</span>
+                </div>
+
+                {/* Line 2: Loan Expectations */}
+                <div className="lender-expectations">
+                  Expect <strong>{res.maxLTC}%</strong> of purchase, <strong>{res.rehabPercent}%</strong> rehab.
+                </div>
+
+                {/* Line 3: Interest Type, Recourse, Rehab Classification */}
+                <div className="lender-details">
+                  <span>Interest: {res.interestType || "N/A"}</span>
+                  <span>Recourse: {res.recourse || "N/A"}</span>
+                  <span>Rehab Classification: {res.rehabType || "N/A"}</span>
+                </div>
+
+                {/* Line 4: Warnings */}
+                <div className="lender-warning">
+                  {res.warning ? <span className="warning-text">⚠️ {res.warning}</span> : <span>No warnings</span>}
+                </div>
+
+                {/* Line 5: Request Quote */}
+                <div className="lender-quote">
+                  <label className="quote-label">
+                    <input
+                      type="checkbox"
+                      value={res.lenderId}
+                      onChange={() => handleLenderSelect(res.lenderId)}
+                      className="quote-checkbox"
+                    />
+                    <span className="quote-button">
+                      {selectedLenders.includes(res.lenderId) ? "✅ Quote Requested" : "Request Quote"}
+                    </span>
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : (
           <p>No results found. Please adjust your search criteria.</p>
         )}
