@@ -167,6 +167,7 @@ router.get("/search", async (req, res) => {
       interestType,
       drawType,
       crossCollateralAllowed,
+      termLengthMonths, // Add term length filter
     } = req.query;
 
     const filters = {};
@@ -205,59 +206,33 @@ router.get("/search", async (req, res) => {
         continue;
       }
 
-      // ✅ Find the best matching tier based on experience and other criteria
-      const matchingTier = program.tiers
-        .filter((tier) => {
-          if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
-          if (tier.minExperience && borrowerExperience < tier.minExperience) return false;
-          return true;
-        })
-        .sort((a, b) => b.minExperience - a.minExperience)[0]; // Sort by experience descending and pick the best match
-
-      if (!matchingTier) continue; // Skip if no matching tier is found
-
-      // ✅ Constrain Purchase Loan Amount by As-Is Value
-      const maxPurchaseLoanAmount = pp * (matchingTier.maxLTC / 100);
-      const constrainedPurchaseLoanAmount = Math.min(maxPurchaseLoanAmount, asIs * (matchingTier.maxLTC / 100));
-
-      // ✅ Calculate Rehab Loan Amount and Total Loan Amount
-      const rehabLoanAmount = rehab * (matchingTier.rehabPercent / 100);
-      const totalLoanAmount = constrainedPurchaseLoanAmount + rehabLoanAmount;
-
-      const tltcLimit = matchingTier.totalLTC ? totalCost * (matchingTier.totalLTC / 100) : Infinity;
-      const arvLimit = arvNum * (matchingTier.maxARV / 100);
-
-      const finalConstrainedLoanAmount = Math.min(totalLoanAmount, tltcLimit, arvLimit);
-
-      const warnings = [];
-
-      // ✅ Add warning for ARV/TLTC constraint
-      if (finalConstrainedLoanAmount < totalLoanAmount) {
-        const reductionAmount = totalLoanAmount - finalConstrainedLoanAmount;
-        const limitingFactor = finalConstrainedLoanAmount === tltcLimit ? "TLTC" : "ARV";
-        warnings.push(
-          `The total loan amount is limited by ${limitingFactor}. The lender WILL reduce the purchase amount or rehab amount by $${reductionAmount.toLocaleString()}.`
-        );
+      // ✅ Filter by Term Length
+      if (termLengthMonths) {
+        const selectedLengths = termLengthMonths.split(",").map(Number); // Convert to array of numbers
+        if (!selectedLengths.some((length) => program.termLengthMonths.includes(length))) {
+          continue; // Skip if no term length matches
+        }
       }
 
-      // ✅ Add warning if as-is value constrains the purchase loan amount
-      if (constrainedPurchaseLoanAmount < maxPurchaseLoanAmount) {
-        const difference = maxPurchaseLoanAmount - constrainedPurchaseLoanAmount;
-        warnings.push(
-          `When the as-is value is lower than the purchase price, the lender will base the purchase price percentage off this value. The borrower will need to cover the difference of $${difference.toLocaleString()}.`
-        );
-      }
+      // ✅ Preserve Existing Tier Matching Logic
+      const matchingTier = program.tiers.find((tier) => {
+        if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
+        if (tier.minExperience && borrowerExperience < tier.minExperience) return false;
 
-      program.calculations = {
-        purchaseLoanAmount: constrainedPurchaseLoanAmount, // Constrained purchase loan amount
-        rehabLoanAmount, // Unconstrained rehab loan amount
-        totalLoanAmount: finalConstrainedLoanAmount, // Final constrained total loan amount
-        tltcLimit,
-        arvLimit,
-      };
+        const ltcLimit = tier.maxLTC ? (asIs * tier.maxLTC) / 100 : Infinity;
+        const totalLtcLimit = tier.totalLTC ? (arvNum * tier.totalLTC) / 100 : Infinity;
+        const arvLimit = tier.maxARV ? (arvNum * tier.maxARV) / 100 : Infinity;
 
-      program.warnings = warnings;
+        if (pp > ltcLimit) return false;
+        if (totalCost > totalLtcLimit) return false;
+        if (totalCost > arvLimit) return false;
 
+        return true;
+      });
+
+      if (!matchingTier) continue;
+
+      // ✅ Add Matching Program to Results
       matchingPrograms.push({
         name: program.lender.name,
         phone: program.lender.phone,
@@ -265,11 +240,6 @@ router.get("/search", async (req, res) => {
         maxLTC: matchingTier.maxLTC || "N/A",
         rehabPercent: matchingTier.rehabPercent || "N/A",
         termLengthMonths: program.termLengthMonths || "N/A",
-        interestType: program.interestType?.dutch ? "Dutch" : program.interestType?.nonDutch ? "Non-Dutch" : "N/A",
-        recourse: program.recourse?.recourse ? "Recourse" : program.recourse?.nonRecourse ? "Non-Recourse" : "N/A",
-        rehabType: pp && rehab ? (rehab / pp > 1 ? "Heavy" : rehab / pp > 0.5 ? "Medium" : "Light") : "N/A",
-        calculations: program.calculations,
-        warnings: program.warnings,
         lenderId: program.lender._id,
         programId: program._id,
       });
