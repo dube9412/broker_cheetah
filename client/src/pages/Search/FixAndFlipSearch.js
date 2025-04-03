@@ -209,11 +209,12 @@ function FixAndFlipSearch() {
                   Expect <strong>{res.maxLTC}%</strong> of purchase, <strong>{res.rehabPercent}%</strong> rehab.
                 </div>
 
-                {/* Line 3: Interest Type, Recourse, Rehab Classification */}
-                <div className="lender-details">
-                  <span>Interest: {res.interestType || "N/A"}</span>
-                  <span>Recourse: {res.recourse || "N/A"}</span>
-                  <span>Rehab Classification: {res.rehabType || "N/A"}</span>
+                {/* Line 3: Math Outputs */}
+                <div className="lender-math">
+                  <span>Loan Amount: ${res.calculations?.loanAmount?.toLocaleString() || "N/A"}</span>
+                  <span>LTC Limit: ${res.calculations?.ltcLimit?.toLocaleString() || "N/A"}</span>
+                  <span>TLTC Limit: ${res.calculations?.totalLtcLimit?.toLocaleString() || "N/A"}</span>
+                  <span>ARV Limit: ${res.calculations?.arvLimit?.toLocaleString() || "N/A"}</span>
                 </div>
 
                 {/* Line 4: Warnings */}

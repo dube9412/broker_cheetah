@@ -164,37 +164,11 @@ router.get("/search", async (req, res) => {
       asisValue,
       experience,
       liquidity,
-      recourse,
-      nonRecourse,
-      interestTypeDutch,
-      interestTypeNonDutch,
-      crossCollateralAllowed,
-      propertyType,
     } = req.query;
 
     console.log("🔍 Search Query Parameters:", req.query);
 
     const filters = {};
-
-    // Apply loan option filters
-    if (crossCollateralAllowed) filters.crossCollateralAllowed = crossCollateralAllowed;
-
-    if (recourse === "true" || nonRecourse === "true") {
-      filters.$or = [];
-      if (recourse === "true") filters.$or.push({ "recourse.recourse": true });
-      if (nonRecourse === "true") filters.$or.push({ "recourse.nonRecourse": true });
-    }
-
-    if (interestTypeDutch === "true" || interestTypeNonDutch === "true") {
-      filters.$or = filters.$or || [];
-      if (interestTypeDutch === "true") filters.$or.push({ "interestType.dutch": true });
-      if (interestTypeNonDutch === "true") filters.$or.push({ "interestType.nonDutch": true });
-    }
-
-    if (propertyType) filters.propertyTypes = propertyType;
-
-    console.log("🔍 Filters Applied:", filters);
-
     const programs = await FixAndFlipLoan.find(filters).populate("lender");
 
     console.log("🔍 Matching Programs Found:", programs.length);
@@ -204,27 +178,37 @@ router.get("/search", async (req, res) => {
     for (const program of programs) {
       if (state && !program.lender.states.includes(state)) continue;
 
-      const pp = Number(purchasePrice) || 0; // Ensure `pp` is defined here
+      const pp = Number(purchasePrice) || 0;
       const rehab = Number(rehabNeeded) || 0;
       const arvNum = Number(arv) || 0;
       const asIs = Number(asisValue) || pp;
+
+      const totalCost = pp + rehab;
 
       const matchingTier = program.tiers.find((tier) => {
         if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
         if (experience && tier.minExperience && Number(experience) < tier.minExperience) return false;
 
-        if (pp > asIs) {
-          program.warning = "The purchase price difference will have to be covered by the borrower.";
-        }
-
-        const totalCost = pp + rehab;
         const ltcLimit = tier.maxLTC ? (asIs * tier.maxLTC) / 100 : Infinity;
         const totalLtcLimit = tier.totalLTC ? (totalCost * tier.totalLTC) / 100 : Infinity;
         const arvLimit = tier.maxARV ? (arvNum * tier.maxARV) / 100 : Infinity;
 
-        if (totalCost > totalLtcLimit || totalCost > arvLimit) {
+        const loanAmount = Math.min(ltcLimit, totalLtcLimit, arvLimit);
+
+        if (pp > asIs) {
+          program.warning = "The purchase price difference will have to be covered by the borrower.";
+        }
+
+        if (loanAmount < totalCost) {
           program.warning = "The loan amount may be further limited due to ARV or Total Loan to Cost factors.";
         }
+
+        program.calculations = {
+          loanAmount,
+          ltcLimit,
+          totalLtcLimit,
+          arvLimit,
+        };
 
         return true;
       });
@@ -241,13 +225,14 @@ router.get("/search", async (req, res) => {
           recourse: program.recourse?.recourse ? "Recourse" : program.recourse?.nonRecourse ? "Non-Recourse" : "N/A",
           rehabType: pp && rehab ? (rehab / pp > 1 ? "Heavy" : rehab / pp > 0.5 ? "Medium" : "Light") : "N/A",
           warning: program.warning || null,
+          calculations: program.calculations,
           lenderId: program.lender._id,
           programId: program._id,
         });
       }
     }
 
-    console.log("🔍 Final Matching Programs:", JSON.stringify(matchingPrograms, null, 2)); // Log full structure
+    console.log("🔍 Final Matching Programs:", matchingPrograms.length);
     res.json(matchingPrograms);
   } catch (error) {
     console.error("❌ Error in Fix and Flip Search:", error);
