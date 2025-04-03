@@ -180,7 +180,7 @@ router.get("/search", async (req, res) => {
       const pp = Number(purchasePrice) || 0;
       const rehab = Number(rehabNeeded) || 0;
       const arvNum = Number(arv) || 0;
-      const asIs = Number(asisValue) || pp;
+      const asIs = Number(asisValue) || pp; // Default to purchase price if as-is value is not provided
       const borrowerExperience = Number(experience) || 0;
 
       const totalCost = pp + rehab;
@@ -216,39 +216,41 @@ router.get("/search", async (req, res) => {
 
       if (!matchingTier) continue; // Skip if no matching tier is found
 
-      const purchaseLoanAmount = pp * (matchingTier.maxLTC / 100);
+      // ✅ Constrain Purchase Loan Amount by As-Is Value
+      const maxPurchaseLoanAmount = pp * (matchingTier.maxLTC / 100);
+      const constrainedPurchaseLoanAmount = Math.min(maxPurchaseLoanAmount, asIs * (matchingTier.maxLTC / 100));
+
+      // ✅ Calculate Rehab Loan Amount and Total Loan Amount
       const rehabLoanAmount = rehab * (matchingTier.rehabPercent / 100);
-      const totalLoanAmount = purchaseLoanAmount + rehabLoanAmount;
+      const totalLoanAmount = constrainedPurchaseLoanAmount + rehabLoanAmount;
 
       const tltcLimit = matchingTier.totalLTC ? totalCost * (matchingTier.totalLTC / 100) : Infinity;
       const arvLimit = arvNum * (matchingTier.maxARV / 100);
 
-      const constrainedLoanAmount = Math.min(totalLoanAmount, tltcLimit, arvLimit);
+      const finalConstrainedLoanAmount = Math.min(totalLoanAmount, tltcLimit, arvLimit);
 
       const warnings = [];
-      if (constrainedLoanAmount > tltcLimit) {
-        warnings.push("The loan amount exceeds the TLTC limit.");
+      if (finalConstrainedLoanAmount === tltcLimit) {
+        warnings.push("The loan amount is limited by the TLTC limit.");
       }
-      if (constrainedLoanAmount > arvLimit) {
-        warnings.push("The loan amount exceeds the ARV limit.");
+      if (finalConstrainedLoanAmount === arvLimit) {
+        warnings.push("The loan amount is limited by the ARV limit.");
       }
 
-      // ✅ Calculate the reduction due to constraints
-      const reductionAmount = totalLoanAmount - constrainedLoanAmount;
-      if (reductionAmount > 0) {
-        const limitingFactor = constrainedLoanAmount === tltcLimit ? "TLTC" : "ARV";
+      // ✅ Add warning if as-is value constrains the purchase loan amount
+      if (constrainedPurchaseLoanAmount < maxPurchaseLoanAmount) {
+        const difference = pp - constrainedPurchaseLoanAmount;
         warnings.push(
-          `Because the total loan amount is limited by ${limitingFactor}, this lender will likely reduce the purchase price or rehab amount by $${reductionAmount.toLocaleString()}.`
+          `The as-is value is lower than the purchase price. The borrower may need to cover the difference of $${difference.toLocaleString()}.`
         );
       }
 
       program.calculations = {
-        purchaseLoanAmount, // Unconstrained purchase loan amount
+        purchaseLoanAmount: constrainedPurchaseLoanAmount, // Constrained purchase loan amount
         rehabLoanAmount, // Unconstrained rehab loan amount
-        totalLoanAmount: constrainedLoanAmount, // Constrained total loan amount
+        totalLoanAmount: finalConstrainedLoanAmount, // Final constrained total loan amount
         tltcLimit,
         arvLimit,
-        reductionAmount, // Amount reduced due to constraints
       };
 
       program.warnings = warnings;
