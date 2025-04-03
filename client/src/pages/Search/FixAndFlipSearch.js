@@ -219,8 +219,10 @@ function FixAndFlipSearch() {
                 </div>
 
                 {/* Line 4: Warnings */}
-                <div style={{ color: res.warnings.length > 0 ? "red" : "inherit" }}>
-                  {res.warnings.length > 0 ? res.warnings.map((warning, idx) => <div key={idx}>⚠️ {warning}</div>) : "No warnings"}
+                <div style={{ color: (res.warnings || []).length > 0 ? "red" : "inherit" }}>
+                  {(res.warnings || []).length > 0
+                    ? (res.warnings || []).map((warning, idx) => <div key={idx}>⚠️ {warning}</div>)
+                    : "No warnings"}
                 </div>
 
                 {/* Line 5: Request Quote */}
