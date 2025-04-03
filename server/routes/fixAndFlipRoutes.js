@@ -100,14 +100,15 @@ router.put("/fix-and-flip-programs/:programId", async (req, res) => {
           : null,
 
       propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
-      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [], // Removed the extra comma here
+      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [],
     };
-
+    
     const updatedProgram = await FixAndFlipLoan.findByIdAndUpdate(
       req.params.programId,
       { $set: updatePayload },
       { new: true, runValidators: true }
     );
+    
 
     if (!updatedProgram) {
       console.error("❌ Fix and Flip Loan Program not found:", req.params.programId);
@@ -168,13 +169,11 @@ router.get("/search", async (req, res) => {
       interestTypeDutch,
       interestTypeNonDutch,
       crossCollateralAllowed,
-      termLengthMonths,
       propertyType,
     } = req.query;
 
     const filters = {};
 
-    // Apply loan option filters only if specified
     if (crossCollateralAllowed) filters.crossCollateralAllowed = crossCollateralAllowed;
 
     if (recourse === "true" || nonRecourse === "true") {
@@ -191,124 +190,55 @@ router.get("/search", async (req, res) => {
 
     if (propertyType) filters.propertyTypes = propertyType;
 
-    console.log("🔍 Filters being applied:", filters);
-
     const programs = await FixAndFlipLoan.find(filters).populate("lender");
-
-    if (!programs || programs.length === 0) {
-      console.warn("⚠️ No programs found matching the filters.");
-      return res.status(404).json({ message: "No matching programs found." });
-    }
-
-    console.log("🔍 Programs fetched from database:", programs);
 
     const matchingPrograms = [];
 
     for (const program of programs) {
-      console.log(`🔹 Processing program: ${program._id}, Lender: ${program.lender?.name || "Unknown"}`);
+      if (state && !program.lender.states.includes(state)) continue;
 
-      if (!program.lender) {
-        console.warn(`⚠️ Program ${program._id} skipped because it has no associated lender.`);
-        continue;
-      }
+      const matchingTier = program.tiers.find((tier) => {
+        if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
+        if (experience && tier.minExperience && Number(experience) < tier.minExperience) return false;
 
-      if (state && !program.lender.states.includes(state)) {
-        console.warn(`⚠️ Program ${program._id} skipped due to state mismatch.`);
-        continue;
-      }
+        const pp = Number(purchasePrice) || 0;
+        const rehab = Number(rehabNeeded) || 0;
+        const arvNum = Number(arv) || 0;
+        const asIs = Number(asisValue) || pp;
 
-      // Check if the program is disqualified based on other inputs
-      const pp = Number(purchasePrice) || 0;
-      const rehab = Number(rehabNeeded) || 0;
-      const arvNum = Number(arv) || 0;
-      const asIs = asisValue ? Number(asisValue) : null; // Use null if asisValue is not provided
+        if (pp > asIs) {
+          program.warning = "The purchase price difference will have to be covered by the borrower.";
+        }
 
-      if (asIs !== null && program.minAsIsValue && asIs < program.minAsIsValue) {
-        console.warn(`⚠️ Program ${program._id} skipped due to as-is value mismatch. Min As-Is Value: ${program.minAsIsValue}, Provided: ${asIs}`);
-        continue;
-      }
+        const totalCost = pp + rehab;
+        const ltcLimit = tier.maxLTC ? (asIs * tier.maxLTC) / 100 : Infinity;
+        const totalLtcLimit = tier.totalLTC ? (totalCost * tier.totalLTC) / 100 : Infinity;
+        const arvLimit = tier.maxARV ? (arvNum * tier.maxARV) / 100 : Infinity;
 
-      // Filter based on loan options
-      if (recourse === "true" && !program.recourse?.recourse) {
-        console.warn(`⚠️ Program ${program._id} skipped due to recourse mismatch.`);
-        continue;
-      }
-      if (nonRecourse === "true" && !program.recourse?.nonRecourse) {
-        console.warn(`⚠️ Program ${program._id} skipped due to non-recourse mismatch.`);
-        continue;
-      }
-      if (interestTypeDutch === "true" && !program.interestType?.dutch) {
-        console.warn(`⚠️ Program ${program._id} skipped due to interest type (Dutch) mismatch.`);
-        continue;
-      }
-      if (interestTypeNonDutch === "true" && !program.interestType?.nonDutch) {
-        console.warn(`⚠️ Program ${program._id} skipped due to interest type (Non-Dutch) mismatch.`);
-        continue;
-      }
-      if (crossCollateralAllowed === "true" && program.crossCollateralAllowed !== true) {
-        console.warn(`⚠️ Program ${program._id} skipped due to cross-collateral mismatch.`);
-        continue;
-      }
-      if (termLengthMonths && !program.termLengthMonths.includes(Number(termLengthMonths))) {
-        console.warn(`⚠️ Program ${program._id} skipped due to term length mismatch. Provided: ${termLengthMonths}`);
-        continue;
-      }
+        if (pp > ltcLimit || totalCost > totalLtcLimit || totalCost > arvLimit) {
+          program.warning = "The loan amount may be further limited due to ARV or Total Loan to Cost factors.";
+        }
 
-      // Find the highest qualifying tier based on experience and FICO
-      const matchingTier = program.tiers
-        .sort((a, b) => (b.minExperience || 0) - (a.minExperience || 0)) // Sort tiers by experience descending
-        .find((tier) => {
-          if (fico && tier.minFICO && Number(fico) < tier.minFICO) {
-            console.warn(`⚠️ Tier skipped due to FICO mismatch. Tier Min FICO: ${tier.minFICO}, Provided: ${fico}`);
-            return false;
-          }
-          if (experience && tier.minExperience && Number(experience) < tier.minExperience) {
-            console.warn(`⚠️ Tier skipped due to experience mismatch. Tier Min Experience: ${tier.minExperience}, Provided: ${experience}`);
-            return false;
-          }
-          return true; // User qualifies for this tier
-        });
-
-      if (!matchingTier) {
-        console.warn(`⚠️ No matching tiers found for program ${program._id}.`);
-        continue;
-      }
-
-      console.log(`✅ Matching tier found for program ${program._id}:`, matchingTier);
-
-      let rehabType = "Light";
-      if (purchasePrice && rehabNeeded) {
-        const rehabRatio = (Number(rehabNeeded) / Number(purchasePrice)) * 100;
-        if (rehabRatio > 100) rehabType = "Heavy";
-        else if (rehabRatio > 50) rehabType = "Medium";
-      }
-
-      let interestTypeDisplay = program.interestType?.dutch ? "Dutch" :
-                                program.interestType?.nonDutch ? "Non-Dutch" : "N/A";
-
-      let recourseDisplay = program.recourse?.recourse
-        ? "Recourse"
-        : program.recourse?.nonRecourse
-        ? "Non-Recourse"
-        : "N/A";
-
-      matchingPrograms.push({
-        name: program.lender.name,
-        phone: program.lender.phone,
-        highlightNote: program.lender.highlightNote || "",
-        maxLTC: matchingTier.maxLTC || "N/A",
-        rehabPercent: matchingTier.rehabPercent || "N/A",
-        termLengthMonths: program.termLengthMonths || "N/A",
-        interestType: interestTypeDisplay,
-        recourse: recourseDisplay,
-        rehabType,
-        tierName: matchingTier.tierName || "Default Tier",
-        lenderId: program.lender._id,
-        programId: program._id,
+        return true;
       });
-    }
 
-    console.log("✅ Matching programs:", matchingPrograms);
+      if (matchingTier) {
+        matchingPrograms.push({
+          name: program.lender.name,
+          phone: program.lender.phone,
+          email: program.lender.email,
+          maxLTC: matchingTier.maxLTC || "N/A",
+          rehabPercent: matchingTier.rehabPercent || "N/A",
+          termLengthMonths: program.termLengthMonths || "N/A",
+          interestType: program.interestType?.dutch ? "Dutch" : program.interestType?.nonDutch ? "Non-Dutch" : "N/A",
+          recourse: program.recourse?.recourse ? "Recourse" : program.recourse?.nonRecourse ? "Non-Recourse" : "N/A",
+          rehabType: pp && rehab ? (rehab / pp > 1 ? "Heavy" : rehab / pp > 0.5 ? "Medium" : "Light") : "N/A",
+          warning: program.warning || null,
+          lenderId: program.lender._id,
+          programId: program._id,
+        });
+      }
+    }
 
     res.json(matchingPrograms);
   } catch (error) {

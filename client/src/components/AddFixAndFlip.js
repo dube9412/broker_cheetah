@@ -26,7 +26,7 @@ function AddFixAndFlip() {
   const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
 
   const PROPERTY_OPTIONS = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
-  const TERM_LENGTH_OPTIONS = [6, 12, 18, 24, 36]; // Define term length options
+  const TERM_LENGTH_OPTIONS = [12, 13, 18, 19, 24]; // Updated term length options
 
   const handleCheckboxChange = (type, field) => {
     if (field === "drawType") {

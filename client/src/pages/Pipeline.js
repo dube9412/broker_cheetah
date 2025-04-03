@@ -1,0 +1,71 @@
+import React, { useEffect, useState } from "react";
+
+function Pipeline() {
+  const [pipeline, setPipeline] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPipeline = async () => {
+      try {
+        const response = await fetch("/api/pipeline", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          setPipeline(data.pipeline);
+        } else {
+          console.error("❌ Error fetching pipeline:", data.message);
+        }
+      } catch (error) {
+        console.error("❌ Error fetching pipeline:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPipeline();
+  }, []);
+
+  if (loading) return <p>Loading pipeline...</p>;
+
+  return (
+    <div>
+      <h1>📋 My Pipeline</h1>
+      {pipeline.length === 0 ? (
+        <p>No quotes sent yet.</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Address</th>
+              <th>FICO</th>
+              <th>Experience</th>
+              <th>Purchase Price</th>
+              <th>As-Is Value</th>
+              <th>Rehab Needed</th>
+              <th>ARV</th>
+              <th>Liquidity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pipeline.map((entry) => (
+              <tr key={entry._id}>
+                <td>{entry.address}</td>
+                <td>{entry.fico}</td>
+                <td>{entry.experience}</td>
+                <td>${entry.purchasePrice.toLocaleString()}</td>
+                <td>${entry.asisValue.toLocaleString()}</td>
+                <td>${entry.rehabNeeded.toLocaleString()}</td>
+                <td>${entry.arv.toLocaleString()}</td>
+                <td>${entry.liquidity.toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+}
+
+export default Pipeline;

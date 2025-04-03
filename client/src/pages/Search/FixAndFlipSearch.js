@@ -73,10 +73,91 @@ function FixAndFlipSearch() {
         throw new Error("API response is not an array.");
       }
 
-      setResults(data);
+      // Filter results based on Fix and Flip loan program criteria
+      const filteredResults = data.filter((lender) => {
+        // Step 1: Check if the lender has a Fix and Flip loan program
+        const fixAndFlipProgram = lender.programs?.find(
+          (program) => program.type === "Fix and Flip"
+        );
+
+        if (!fixAndFlipProgram) {
+          console.warn("⚠️ Skipping lender without Fix and Flip program:", lender.name);
+          return false;
+        }
+
+        // Step 2: Check the tiers within the Fix and Flip loan program
+        const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
+        const totalCost = Number(purchasePrice) + Number(rehabNeeded);
+
+        const matchingTier = fixAndFlipProgram.tiers.find((tier) => {
+          if (tier.minFICO && Number(fico) < tier.minFICO) return false;
+          if (tier.minExperience && Number(experience) < tier.minExperience) return false;
+
+          // LTC and ARV calculations
+          const ltcLimit = tier.maxLTC ? (asIs * tier.maxLTC) / 100 : Infinity;
+          const totalLtcLimit = tier.totalLTC ? (arv * tier.totalLTC) / 100 : Infinity;
+          const arvLimit = tier.maxARV ? (arv * tier.maxARV) / 100 : Infinity;
+
+          if (purchasePrice > ltcLimit) return false;
+          if (totalCost > totalLtcLimit) return false;
+          if (totalCost > arvLimit) return false;
+
+          return true;
+        });
+
+        if (!matchingTier) {
+          console.warn(`⚠️ No matching tier found for lender: ${lender.name}`);
+        }
+
+        return !!matchingTier;
+      });
+
+      // Map and sort results based on loan options
+      const sortedResults = filteredResults.map((lender) => {
+        const fixAndFlipProgram = lender.programs.find(
+          (program) => program.type === "Fix and Flip"
+        );
+
+        const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
+        const totalCost = Number(purchasePrice) + Number(rehabNeeded);
+
+        const matchingTier = fixAndFlipProgram.tiers.find((tier) => {
+          const ltcAmount = Math.min(
+            (tier.maxLTC / 100) * (purchasePrice > asIs ? asIs : purchasePrice),
+            (tier.totalLTC / 100) * totalCost,
+            (tier.maxARV / 100) * arv
+          );
+
+          const rehabAmount = (tier.rehabPercent / 100) * rehabNeeded;
+          const totalLoan = ltcAmount + rehabAmount;
+
+          return {
+            ...tier,
+            ltcAmount,
+            rehabAmount,
+            totalLoan,
+            limitedByARV: totalLoan > (tier.maxARV / 100) * arv,
+          };
+        });
+
+        return {
+          name: lender.name,
+          phone: lender.phone,
+          highlightNote: lender.highlightNote || "",
+          maxLTC: matchingTier?.maxLTC || "N/A",
+          rehabPercent: matchingTier?.rehabPercent || "N/A",
+          termLengthMonths: fixAndFlipProgram.termLengthMonths || "N/A",
+          ltcAmount: matchingTier?.ltcAmount || 0,
+          rehabAmount: matchingTier?.rehabAmount || 0,
+          totalLoan: matchingTier?.totalLoan || 0,
+          limitedByARV: matchingTier?.limitedByARV || false,
+          lenderId: lender._id,
+        };
+      });
+
+      setResults(sortedResults);
     } catch (err) {
       console.error("❌ Error searching:", err.message);
-      setWarning("An error occurred while searching. Please try again.");
       setResults([]);
     }
   };
@@ -190,23 +271,48 @@ function FixAndFlipSearch() {
       {warning && <p className="search-warning">{warning}</p>}
 
       <div className="search-results">
-        {results.map((res, i) => (
-          <div key={i} className="search-result-item">
-            <strong>✅ {res.name}</strong>
-            <p>{res.highlightNote}</p>
-            <span>{res.phone || ""}</span>
-            <p>Tier: <strong>{res.tierName || "N/A"}</strong></p>
-            <p>Max LTC: <strong>{res.maxLTC || "N/A"}%</strong></p>
-            <p>Rehab Percent: <strong>{res.rehabPercent || "N/A"}%</strong></p>
-            <p>Term Length: <strong>{res.termLengthMonths || "N/A"} months</strong></p>
-            <p>Interest Type: <strong>{res.interestType || "Not Provided"}</strong></p>
-            <p>Recourse: <strong>{res.recourse || "Not Provided"}</strong></p>
-            <p>Rehab Classification: <strong>{res.rehabType || "Not Specified"}</strong></p>
-            {purchasePrice && rehabNeeded && arv && asisValue && (
-              <p>Math Calculations: {/* Add math results here */}</p>
-            )}
-          </div>
-        ))}
+        {results.length > 0 ? (
+          <table className="results-table">
+            <thead>
+              <tr>
+                <th>Lender</th>
+                <th>Contact</th>
+                <th>Loan Expectations</th>
+                <th>Warnings</th>
+                <th>Rehab Classification</th>
+                <th>Request Quote</th>
+              </tr>
+            </thead>
+            <tbody>
+              {results.map((res, i) => (
+                <tr key={i}>
+                  <td>{res.name}</td>
+                  <td>
+                    <div>{res.phone}</div>
+                    <div>{res.email}</div>
+                  </td>
+                  <td>
+                    Expect <strong>{res.maxLTC}%</strong> of purchase, <strong>{res.rehabPercent}%</strong> rehab.
+                  </td>
+                  <td>{res.warning || "N/A"}</td>
+                  <td>{res.rehabType}</td>
+                  <td>
+                    <label>
+                      <input
+                        type="checkbox"
+                        value={res.lenderId}
+                        onChange={() => handleLenderSelect(res.lenderId)}
+                      />{" "}
+                      Request Quote
+                    </label>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>No results found. Please adjust your search criteria.</p>
+        )}
       </div>
 
       {selectedLenders.length > 0 && (

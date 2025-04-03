@@ -13,7 +13,7 @@ function EditFixAndFlip() {
   const [experienceWindowMonths, setExperienceWindowMonths] = useState("");
   const [minAsIsValue, setMinAsIsValue] = useState("");
   const [termLengthMonths, setTermLengthMonths] = useState([]); // Update to array for checkboxes
-  const TERM_LENGTH_OPTIONS = [6, 12, 18, 24, 36]; // Define term length options
+  const TERM_LENGTH_OPTIONS = [12, 13, 18, 19, 24]; // Updated term length options
   const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
   const [interestType, setInterestType] = useState({ dutch: false, nonDutch: false });
   const [drawType, setDrawType] = useState({ self: false, thirdParty: false });

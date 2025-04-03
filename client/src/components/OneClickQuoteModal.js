@@ -23,40 +23,20 @@ const OneClickQuoteModal = ({ selectedLenders, onClose, searchData }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting Quote Request to:", selectedLenders);
-    console.log("Form Data:", formData);
 
     try {
-      const response = await fetch(
-        "https://broker-cheetah-backend.onrender.com/api/quotes",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ selectedLenders, formData }),
-        }
+      await Promise.all(
+        selectedLenders.map((lenderId) =>
+          fetch(`/api/lenders/${lenderId}/send-email`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ formData }),
+          })
+        )
       );
 
-      if (response.ok) {
-        alert("Quote request submitted successfully!");
-        onClose();
-
-        // Send emails to selected lenders
-        await Promise.all(
-          selectedLenders.map((lenderId) =>
-            fetch(
-              `https://broker-cheetah-backend.onrender.com/api/lenders/${lenderId}/send-email`,
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ formData }),
-              }
-            )
-          )
-        );
-      } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.message}`);
-      }
+      alert("Quote request submitted successfully!");
+      onClose();
     } catch (error) {
       console.error("Error submitting quote request:", error);
       alert("An error occurred while submitting the quote request.");
