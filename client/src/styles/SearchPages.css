@@ -96,8 +96,9 @@
   color: #ffc107;
 }
 
+/* Update warning color to bright orange */
 .search-warning {
-  color: #d9534f;
+  color: #ff9800; /* Bright orange */
   font-weight: bold;
   margin-bottom: 20px;
   text-align: center;
@@ -244,10 +245,10 @@
   margin-bottom: 0.5rem;
 }
 
-/* Warnings */
+/* Update lender warning color to bright orange */
 .lender-warning {
-  font-size: 0.9rem;
-  color: red;
+  color: #ff9800; /* Bright orange */
+  font-weight: bold;
   margin-bottom: 0.5rem;
 }
 

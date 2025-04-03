@@ -230,19 +230,21 @@ router.get("/search", async (req, res) => {
       const finalConstrainedLoanAmount = Math.min(totalLoanAmount, tltcLimit, arvLimit);
 
       const warnings = [];
+
       // ✅ Add warning for ARV/TLTC constraint
       if (finalConstrainedLoanAmount < totalLoanAmount) {
         const reductionAmount = totalLoanAmount - finalConstrainedLoanAmount;
         const limitingFactor = finalConstrainedLoanAmount === tltcLimit ? "TLTC" : "ARV";
         warnings.push(
-          `The total loan amount is limited by ${limitingFactor} (whichever is lower). The lender may apply a reduction of $${reductionAmount.toLocaleString()} to the purchase amount or rehab amount.`
+          `The total loan amount is limited by ${limitingFactor}. The lender WILL reduce the purchase amount or rehab amount by $${reductionAmount.toLocaleString()}.`
         );
       }
 
       // ✅ Add warning if as-is value constrains the purchase loan amount
       if (constrainedPurchaseLoanAmount < maxPurchaseLoanAmount) {
+        const difference = maxPurchaseLoanAmount - constrainedPurchaseLoanAmount;
         warnings.push(
-          "When the as-is value is lower than the purchase price, the lender will base the purchase price percentage off this value."
+          `When the as-is value is lower than the purchase price, the lender will base the purchase price percentage off this value. The borrower will need to cover the difference of $${difference.toLocaleString()}.`
         );
       }
 
