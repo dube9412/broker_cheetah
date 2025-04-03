@@ -29,7 +29,7 @@ function FixAndFlipSearch() {
   const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
   const [interestType, setInterestType] = useState("");
   const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
-  const [termLengthMonths, setTermLengthMonths] = useState(""); // Update to string for radio buttons
+  const [termLengthMonths, setTermLengthMonths] = useState([]); // Initialize as an array
 
   const [results, setResults] = useState([]);
   const [warning, setWarning] = useState("");
@@ -96,7 +96,7 @@ function FixAndFlipSearch() {
     setRecourse({ recourse: false, nonRecourse: false });
     setInterestType({ dutch: false, nonDutch: false });
     setCrossCollateralAllowed("");
-    setTermLengthMonths(""); // Clear term length
+    setTermLengthMonths([]); // Clear term length
     setResults([]);
     setWarning("");
   };
@@ -173,11 +173,15 @@ function FixAndFlipSearch() {
             {TERM_LENGTH_OPTIONS.map((length) => (
                 <label key={length} style={{ marginRight: "10px" }}>
                     <input
-                        type="radio"
-                        name="termLengthMonths"
+                        type="checkbox"
                         value={length}
-                        checked={termLengthMonths === String(length)}
-                        onChange={(e) => setTermLengthMonths(e.target.value)}
+                        checked={Array.isArray(termLengthMonths) && termLengthMonths.includes(length)} // Ensure safe access
+                        onChange={(e) => {
+                          const updated = e.target.checked
+                            ? [...termLengthMonths, length]
+                            : termLengthMonths.filter((l) => l !== length);
+                          setTermLengthMonths(updated);
+                        }}
                     />
                     {length} months
                 </label>
