@@ -192,18 +192,20 @@ router.get("/search", async (req, res) => {
         const tltcLimit = tier.totalLTC ? totalCost * (tier.totalLTC / 100) : Infinity;
         const arvLimit = arvNum * (tier.maxARV / 100);
 
+        const constrainedLoanAmount = Math.min(totalLoanAmount, tltcLimit, arvLimit);
+
         const warnings = [];
-        if (totalLoanAmount > tltcLimit) {
+        if (constrainedLoanAmount > tltcLimit) {
           warnings.push("The loan amount exceeds the TLTC limit.");
         }
-        if (totalLoanAmount > arvLimit) {
+        if (constrainedLoanAmount > arvLimit) {
           warnings.push("The loan amount exceeds the ARV limit.");
         }
 
         program.calculations = {
-          purchaseLoanAmount,
-          rehabLoanAmount,
-          totalLoanAmount,
+          purchaseLoanAmount: Math.min(purchaseLoanAmount, constrainedLoanAmount),
+          rehabLoanAmount: Math.min(rehabLoanAmount, constrainedLoanAmount - purchaseLoanAmount),
+          totalLoanAmount: constrainedLoanAmount,
           tltcLimit,
           arvLimit,
         };
