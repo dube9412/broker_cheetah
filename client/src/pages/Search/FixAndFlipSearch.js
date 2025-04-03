@@ -204,20 +204,19 @@ function FixAndFlipSearch() {
 
                 {/* Line 2: Loan Expectations */}
                 <div>
-                  Expect <strong>{res.maxLTC}%</strong> of purchase, <strong>{res.rehabPercent}%</strong> rehab.
+                  Expect <strong>${res.calculations?.purchaseLoanAmount?.toLocaleString() || "N/A"}</strong> toward purchase and <strong>${res.calculations?.rehabLoanAmount?.toLocaleString() || "N/A"}</strong> toward rehab.
                 </div>
 
                 {/* Line 3: Math Outputs */}
                 <div>
-                  Loan Amount: <strong>${res.calculations?.loanAmount?.toLocaleString() || "N/A"}</strong> | 
-                  LTC Limit: <strong>${res.calculations?.ltcLimit?.toLocaleString() || "N/A"}</strong> | 
-                  TLTC Limit: <strong>${res.calculations?.totalLtcLimit?.toLocaleString() || "N/A"}</strong> | 
+                  Total Loan Amount: <strong>${res.calculations?.totalLoanAmount?.toLocaleString() || "N/A"}</strong> | 
+                  TLTC Limit: <strong>${res.calculations?.tltcLimit?.toLocaleString() || "N/A"}</strong> | 
                   ARV Limit: <strong>${res.calculations?.arvLimit?.toLocaleString() || "N/A"}</strong>
                 </div>
 
                 {/* Line 4: Warnings */}
-                <div style={{ color: res.warning ? "red" : "inherit" }}>
-                  {res.warning ? `⚠️ ${res.warning}` : "No warnings"}
+                <div style={{ color: res.warnings.length > 0 ? "red" : "inherit" }}>
+                  {res.warnings.length > 0 ? res.warnings.map((warning, idx) => <div key={idx}>⚠️ {warning}</div>) : "No warnings"}
                 </div>
 
                 {/* Line 5: Request Quote */}

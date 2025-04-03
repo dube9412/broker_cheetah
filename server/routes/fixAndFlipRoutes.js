@@ -100,7 +100,7 @@ router.put("/fix-and-flip-programs/:programId", async (req, res) => {
           : null,
 
       propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
-      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [],
+      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [],,
     };
     
     const updatedProgram = await FixAndFlipLoan.findByIdAndUpdate(
@@ -166,12 +166,8 @@ router.get("/search", async (req, res) => {
       liquidity,
     } = req.query;
 
-    console.log("🔍 Search Query Parameters:", req.query);
-
     const filters = {};
     const programs = await FixAndFlipLoan.find(filters).populate("lender");
-
-    console.log("🔍 Matching Programs Found:", programs.length);
 
     const matchingPrograms = [];
 
@@ -189,26 +185,30 @@ router.get("/search", async (req, res) => {
         if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
         if (experience && tier.minExperience && Number(experience) < tier.minExperience) return false;
 
-        const ltcLimit = tier.maxLTC ? (asIs * tier.maxLTC) / 100 : Infinity;
-        const totalLtcLimit = tier.totalLTC ? (totalCost * tier.totalLTC) / 100 : Infinity;
-        const arvLimit = tier.maxARV ? (arvNum * tier.maxARV) / 100 : Infinity;
+        const purchaseLoanAmount = pp * (tier.maxLTC / 100);
+        const rehabLoanAmount = rehab * (tier.rehabPercent / 100);
+        const totalLoanAmount = purchaseLoanAmount + rehabLoanAmount;
 
-        const loanAmount = Math.min(ltcLimit, totalLtcLimit, arvLimit);
+        const tltcLimit = tier.totalLTC ? totalCost * (tier.totalLTC / 100) : Infinity;
+        const arvLimit = arvNum * (tier.maxARV / 100);
 
-        if (pp > asIs) {
-          program.warning = "The purchase price difference will have to be covered by the borrower.";
+        const warnings = [];
+        if (totalLoanAmount > tltcLimit) {
+          warnings.push("The loan amount exceeds the TLTC limit.");
         }
-
-        if (loanAmount < totalCost) {
-          program.warning = "The loan amount may be further limited due to ARV or Total Loan to Cost factors.";
+        if (totalLoanAmount > arvLimit) {
+          warnings.push("The loan amount exceeds the ARV limit.");
         }
 
         program.calculations = {
-          loanAmount,
-          ltcLimit,
-          totalLtcLimit,
+          purchaseLoanAmount,
+          rehabLoanAmount,
+          totalLoanAmount,
+          tltcLimit,
           arvLimit,
         };
+
+        program.warnings = warnings;
 
         return true;
       });
@@ -224,15 +224,14 @@ router.get("/search", async (req, res) => {
           interestType: program.interestType?.dutch ? "Dutch" : program.interestType?.nonDutch ? "Non-Dutch" : "N/A",
           recourse: program.recourse?.recourse ? "Recourse" : program.recourse?.nonRecourse ? "Non-Recourse" : "N/A",
           rehabType: pp && rehab ? (rehab / pp > 1 ? "Heavy" : rehab / pp > 0.5 ? "Medium" : "Light") : "N/A",
-          warning: program.warning || null,
           calculations: program.calculations,
+          warnings: program.warnings,
           lenderId: program.lender._id,
           programId: program._id,
         });
       }
     }
 
-    console.log("🔍 Final Matching Programs:", matchingPrograms.length);
     res.json(matchingPrograms);
   } catch (error) {
     console.error("❌ Error in Fix and Flip Search:", error);
