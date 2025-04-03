@@ -177,70 +177,74 @@ router.get("/search", async (req, res) => {
       const rehab = Number(rehabNeeded) || 0;
       const arvNum = Number(arv) || 0;
       const asIs = Number(asisValue) || pp;
+      const borrowerExperience = Number(experience) || 0;
 
       const totalCost = pp + rehab;
 
-      const matchingTier = program.tiers.find((tier) => {
-        if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
-        if (experience && tier.minExperience && Number(experience) < tier.minExperience) return false;
+      // ✅ Find the best matching tier based on experience and other criteria
+      const matchingTier = program.tiers
+        .filter((tier) => {
+          // Ensure the tier matches the borrower's FICO and experience
+          if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
+          if (tier.minExperience && borrowerExperience < tier.minExperience) return false;
+          return true;
+        })
+        .sort((a, b) => b.minExperience - a.minExperience)[0]; // Sort by experience descending and pick the best match
 
-        const purchaseLoanAmount = pp * (tier.maxLTC / 100);
-        const rehabLoanAmount = rehab * (tier.rehabPercent / 100);
-        const totalLoanAmount = purchaseLoanAmount + rehabLoanAmount;
+      if (!matchingTier) continue; // Skip if no matching tier is found
 
-        const tltcLimit = tier.totalLTC ? totalCost * (tier.totalLTC / 100) : Infinity;
-        const arvLimit = arvNum * (tier.maxARV / 100);
+      const purchaseLoanAmount = pp * (matchingTier.maxLTC / 100);
+      const rehabLoanAmount = rehab * (matchingTier.rehabPercent / 100);
+      const totalLoanAmount = purchaseLoanAmount + rehabLoanAmount;
 
-        const constrainedLoanAmount = Math.min(totalLoanAmount, tltcLimit, arvLimit);
+      const tltcLimit = matchingTier.totalLTC ? totalCost * (matchingTier.totalLTC / 100) : Infinity;
+      const arvLimit = arvNum * (matchingTier.maxARV / 100);
 
-        const warnings = [];
-        if (constrainedLoanAmount > tltcLimit) {
-          warnings.push("The loan amount exceeds the TLTC limit.");
-        }
-        if (constrainedLoanAmount > arvLimit) {
-          warnings.push("The loan amount exceeds the ARV limit.");
-        }
+      const constrainedLoanAmount = Math.min(totalLoanAmount, tltcLimit, arvLimit);
 
-        // ✅ Calculate the reduction due to constraints
-        const reductionAmount = totalLoanAmount - constrainedLoanAmount;
-        if (reductionAmount > 0) {
-          const limitingFactor = constrainedLoanAmount === tltcLimit ? "TLTC" : "ARV";
-          warnings.push(
-            `Because the total loan amount is limited by ${limitingFactor}, this lender will likely reduce the purchase price or rehab amount by $${reductionAmount.toLocaleString()}.`
-          );
-        }
-
-        program.calculations = {
-          purchaseLoanAmount, // Unconstrained purchase loan amount
-          rehabLoanAmount, // Unconstrained rehab loan amount
-          totalLoanAmount: constrainedLoanAmount, // Constrained total loan amount
-          tltcLimit,
-          arvLimit,
-          reductionAmount, // Amount reduced due to constraints
-        };
-
-        program.warnings = warnings;
-
-        return true;
-      });
-
-      if (matchingTier) {
-        matchingPrograms.push({
-          name: program.lender.name,
-          phone: program.lender.phone,
-          email: program.lender.email,
-          maxLTC: matchingTier.maxLTC || "N/A",
-          rehabPercent: matchingTier.rehabPercent || "N/A",
-          termLengthMonths: program.termLengthMonths || "N/A",
-          interestType: program.interestType?.dutch ? "Dutch" : program.interestType?.nonDutch ? "Non-Dutch" : "N/A",
-          recourse: program.recourse?.recourse ? "Recourse" : program.recourse?.nonRecourse ? "Non-Recourse" : "N/A",
-          rehabType: pp && rehab ? (rehab / pp > 1 ? "Heavy" : rehab / pp > 0.5 ? "Medium" : "Light") : "N/A",
-          calculations: program.calculations,
-          warnings: program.warnings,
-          lenderId: program.lender._id,
-          programId: program._id,
-        });
+      const warnings = [];
+      if (constrainedLoanAmount > tltcLimit) {
+        warnings.push("The loan amount exceeds the TLTC limit.");
       }
+      if (constrainedLoanAmount > arvLimit) {
+        warnings.push("The loan amount exceeds the ARV limit.");
+      }
+
+      // ✅ Calculate the reduction due to constraints
+      const reductionAmount = totalLoanAmount - constrainedLoanAmount;
+      if (reductionAmount > 0) {
+        const limitingFactor = constrainedLoanAmount === tltcLimit ? "TLTC" : "ARV";
+        warnings.push(
+          `Because the total loan amount is limited by ${limitingFactor}, this lender will likely reduce the purchase price or rehab amount by $${reductionAmount.toLocaleString()}.`
+        );
+      }
+
+      program.calculations = {
+        purchaseLoanAmount, // Unconstrained purchase loan amount
+        rehabLoanAmount, // Unconstrained rehab loan amount
+        totalLoanAmount: constrainedLoanAmount, // Constrained total loan amount
+        tltcLimit,
+        arvLimit,
+        reductionAmount, // Amount reduced due to constraints
+      };
+
+      program.warnings = warnings;
+
+      matchingPrograms.push({
+        name: program.lender.name,
+        phone: program.lender.phone,
+        email: program.lender.email,
+        maxLTC: matchingTier.maxLTC || "N/A",
+        rehabPercent: matchingTier.rehabPercent || "N/A",
+        termLengthMonths: program.termLengthMonths || "N/A",
+        interestType: program.interestType?.dutch ? "Dutch" : program.interestType?.nonDutch ? "Non-Dutch" : "N/A",
+        recourse: program.recourse?.recourse ? "Recourse" : program.recourse?.nonRecourse ? "Non-Recourse" : "N/A",
+        rehabType: pp && rehab ? (rehab / pp > 1 ? "Heavy" : rehab / pp > 0.5 ? "Medium" : "Light") : "N/A",
+        calculations: program.calculations,
+        warnings: program.warnings,
+        lenderId: program.lender._id,
+        programId: program._id,
+      });
     }
 
     res.json(matchingPrograms);
