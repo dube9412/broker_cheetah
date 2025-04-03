@@ -1,294 +1,335 @@
-const express = require("express");
-const router = express.Router();
-const FixAndFlipLoan = require("../models/FixAndFlipLoan");
-const Lender = require("../models/Lender");
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Glossary from "../../components/hardMoneyClass/Glossary";
+import OneClickQuoteModal from "../../components/OneClickQuoteModal"; // Import the modal
+import "../../styles/SearchPages.css";
 
-// ✅ Debugging: Confirm this file is loaded
-console.log("✅ Fix and Flip Routes File Loaded");
+const BASE_URL = "https://broker-cheetah-backend.onrender.com";
 
-// ✅ GET all Fix and Flip programs for a lender
-router.get("/:lenderId/fix-and-flip-programs", async (req, res) => {
-  try {
-    console.log(`🔹 Fetching Fix and Flip programs for lenderId: ${req.params.lenderId}`);
-    const fixAndFlipPrograms = await FixAndFlipLoan.find({ lender: req.params.lenderId });
+const US_STATES = [
+  "AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA",
+  "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME",
+  "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM",
+  "NV", "NY", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX",
+  "UT", "VA", "VT", "WA", "WI", "WV", "WY"
+];
 
-    if (fixAndFlipPrograms.length === 0) {
-      console.warn("⚠️ No Fix and Flip programs found.");
-      return res.status(404).json({ message: "No Fix and Flip programs found." });
+const TERM_LENGTH_OPTIONS = [12, 13, 18, 19, 24]; // Define term length options
+
+function FixAndFlipSearch() {
+  const navigate = useNavigate();
+  const [state, setState] = useState("");
+  const [fico, setFico] = useState("");
+  const [purchasePrice, setPurchasePrice] = useState("");
+  const [rehabNeeded, setRehabNeeded] = useState("");
+  const [arv, setArv] = useState("");
+  const [asisValue, setAsisValue] = useState("");
+  const [experience, setExperience] = useState("");
+  const [liquidity, setLiquidity] = useState("");
+  const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
+  const [interestType, setInterestType] = useState("");
+  const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
+  const [termLengthMonths, setTermLengthMonths] = useState(""); // Update to string for radio buttons
+  const [drawType, setDrawType] = useState({ self: false, thirdParty: false }); // Add draw type state
+
+  const [results, setResults] = useState([]);
+  const [warning, setWarning] = useState("");
+  const [selectedLenders, setSelectedLenders] = useState([]); // Track selected lenders
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+
+  const handleSearch = async () => {
+    setWarning("");
+
+    if (!state || !fico || !experience) {
+      alert("Please fill in all required fields: State, FICO, and Experience.");
+      return;
     }
-
-    console.log("✅ Found Fix and Flip programs:", fixAndFlipPrograms);
-    res.json(fixAndFlipPrograms);
-  } catch (error) {
-    console.error("❌ Error fetching Fix and Flip programs:", error);
-    res.status(500).json({ message: "Failed to fetch Fix and Flip programs." });
-  }
-});
-
-// ✅ GET a specific Fix and Flip loan program by ID
-router.get("/fix-and-flip-programs/:programId", async (req, res) => {
-  try {
-    console.log(`🔹 Fetching Fix and Flip loan program: ${req.params.programId}`);
-    const program = await FixAndFlipLoan.findById(req.params.programId);
-
-    if (!program) {
-      console.error("❌ Fix and Flip Loan Program not found:", req.params.programId);
-      return res.status(404).json({ message: "Loan program not found" });
-    }
-
-    console.log("✅ Found Fix and Flip loan program:", program);
-    res.json(program);
-  } catch (error) {
-    console.error("❌ Error fetching Fix and Flip loan program:", error);
-    res.status(500).json({ message: "Failed to fetch loan program" });
-  }
-});
-
-// ✅ POST: Add a new Fix and Flip Loan Program
-router.post("/:lenderId/fix-and-flip-programs", async (req, res) => {
-  try {
-    const { lenderId } = req.params;
-
-    const newProgram = new FixAndFlipLoan({
-      name: req.body.name || "Fix and Flip",
-      type: req.body.type || "Fix and Flip",
-      lender: lenderId,
-
-      // ✅ Base-level fields
-      experienceWindowMonths: req.body.experienceWindowMonths || null,
-      minAsIsValue: req.body.minAsIsValue || null,
-      termLengthMonths: req.body.termLengthMonths || null,
-      recourse: req.body.recourse || { recourse: false, nonRecourse: false },
-      interestType: req.body.interestType || { dutch: false, nonDutch: false },
-      drawType: req.body.drawType || { self: false, thirdParty: false },
-      crossCollateralAllowed:
-      typeof req.body.crossCollateralAllowed === "boolean"
-        ? req.body.crossCollateralAllowed
-        : null,
-    
-      propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
-
-      // ✅ Tiers array
-      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [],
-    });
-
-    await newProgram.save();
-    res.status(201).json({ success: true, program: newProgram });
-  } catch (error) {
-    console.error("❌ Error creating Fix & Flip program:", error.message);
-    console.error("❌ Stack Trace:", error.stack);
-    res.status(500).json({ success: false, message: error.message });
-  }
-  
-});
-
-// ✅ PUT: Update a Fix and Flip Loan Program
-router.put("/fix-and-flip-programs/:programId", async (req, res) => {
-  try {
-    console.log(`🔹 Updating Fix and Flip loan program: ${req.params.programId}`);
-
-    const updatePayload = {
-      experienceWindowMonths: req.body.experienceWindowMonths || null,
-      minAsIsValue: req.body.minAsIsValue || null,
-      termLengthMonths: req.body.termLengthMonths || null,
-      recourse: req.body.recourse || { recourse: false, nonRecourse: false },
-      interestType: req.body.interestType || { dutch: false, nonDutch: false },
-      drawType: req.body.drawType || { self: false, thirdParty: false },
-      crossCollateralAllowed:
-        typeof req.body.crossCollateralAllowed === "boolean"
-          ? req.body.crossCollateralAllowed
-          : null,
-
-      propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
-      tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [], // Removed extra comma here
-    };
-
-    const updatedProgram = await FixAndFlipLoan.findByIdAndUpdate(
-      req.params.programId,
-      { $set: updatePayload },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedProgram) {
-      console.error("❌ Fix and Flip Loan Program not found:", req.params.programId);
-      return res.status(404).json({ message: "Loan program not found" });
-    }
-
-    console.log("✅ Fix and Flip Loan Program updated:", updatedProgram);
-    res.json({ success: true, program: updatedProgram });
-  } catch (error) {
-    console.error("❌ Error updating Fix and Flip Loan Program:", error);
-    res.status(500).json({ message: "Failed to update loan program" });
-  }
-});
-
-// ✅ DELETE: Remove a Fix and Flip Loan Program
-const mongoose = require("mongoose");
-
-router.delete("/:lenderId/fix-and-flip-programs/:programId", async (req, res) => {
-    console.log("🛠️ DELETE Request Received for Fix and Flip ID:", req.params.programId, "from Lender:", req.params.lenderId);
 
     try {
-        const programId = new mongoose.Types.ObjectId(req.params.programId); // Force conversion to ObjectId
+      const queryString = new URLSearchParams({
+        state,
+        fico,
+        purchasePrice,
+        rehabNeeded,
+        arv,
+        asisValue,
+        experience,
+        liquidity,
+      }).toString();
 
-        console.log("🔎 Checking if program exists in MongoDB...");
-        const program = await FixAndFlipLoan.findById(programId);
+      const url = `${BASE_URL}/api/fix-and-flip/search?${queryString}`;
+      console.log("🔍 Fetching:", url);
 
-        if (!program) {
-            console.error("❌ Loan program not found in DB:", req.params.programId);
-            return res.status(404).json({ error: "Loan program not found in database" });
+      const response = await fetch(url);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`❌ Status ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+
+      // Ensure data is an array
+      if (!Array.isArray(data)) {
+        console.error("❌ Unexpected API response format:", data);
+        throw new Error("API response is not an array.");
+      }
+
+      // Filter results based on Fix and Flip loan program criteria
+      const filteredResults = data.filter((lender) => {
+        // Step 1: Check if the lender has a Fix and Flip loan program
+        const fixAndFlipProgram = lender.programs?.find(
+          (program) => program.type === "Fix and Flip"
+        );
+
+        if (!fixAndFlipProgram) {
+          console.warn("⚠️ Skipping lender without Fix and Flip program:", lender.name);
+          return false;
         }
 
-        console.log("✅ Loan program found. Proceeding with deletion:", program);
-        await FixAndFlipLoan.findByIdAndDelete(programId);
+        // Step 2: Check the tiers within the Fix and Flip loan program
+        const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
+        const totalCost = Number(purchasePrice) + Number(rehabNeeded);
 
-        console.log("✅ Loan program successfully deleted.");
-        return res.status(200).json({ success: true, message: "Loan program deleted." });
+        const matchingTier = fixAndFlipProgram.tiers.find((tier) => {
+          if (tier.minFICO && Number(fico) < tier.minFICO) return false;
+          if (tier.minExperience && Number(experience) < tier.minExperience) return false;
 
-    } catch (error) {
-        console.error("❌ Error deleting Fix and Flip Loan Program:", error);
-        return res.status(500).json({ error: "Server error while deleting loan program" });
-    }
-});
+          // LTC and ARV calculations
+          const ltcLimit = tier.maxLTC ? (asIs * tier.maxLTC) / 100 : Infinity;
+          const totalLtcLimit = tier.totalLTC ? (arv * tier.totalLTC) / 100 : Infinity;
+          const arvLimit = tier.maxARV ? (arv * tier.maxARV) / 100 : Infinity;
 
-// ✅ SEARCH Fix and Flip Programs
-router.get("/search", async (req, res) => {
-  try {
-    const {
-      state,
-      fico,
-      purchasePrice,
-      rehabNeeded,
-      arv,
-      asisValue,
-      experience,
-      liquidity,
-      recourse,
-      interestType,
-      drawType,
-      crossCollateralAllowed,
-    } = req.query;
+          if (purchasePrice > ltcLimit) return false;
+          if (totalCost > totalLtcLimit) return false;
+          if (totalCost > arvLimit) return false;
 
-    const filters = {};
-    const programs = await FixAndFlipLoan.find(filters).populate("lender");
-
-    const matchingPrograms = [];
-
-    for (const program of programs) {
-      if (state && !program.lender.states.includes(state)) continue;
-
-      const pp = Number(purchasePrice) || 0;
-      const rehab = Number(rehabNeeded) || 0;
-      const arvNum = Number(arv) || 0;
-      const asIs = Number(asisValue) || pp; // Default to purchase price if as-is value is not provided
-      const borrowerExperience = Number(experience) || 0;
-
-      const totalCost = pp + rehab;
-
-      // ✅ Filter by Loan Options
-      if (recourse) {
-        const recourseOption = recourse === "recourse" ? program.recourse.recourse : program.recourse.nonRecourse;
-        if (!recourseOption) continue;
-      }
-
-      if (interestType) {
-        const interestOption = interestType === "dutch" ? program.interestType.dutch : program.interestType.nonDutch;
-        if (!interestOption) continue;
-      }
-
-      if (drawType) {
-        const drawOption = drawType === "self" ? program.drawType.self : program.drawType.thirdParty;
-        if (!drawOption) continue;
-      }
-
-      if (crossCollateralAllowed && program.crossCollateralAllowed !== (crossCollateralAllowed === "yes")) {
-        continue;
-      }
-
-      // ✅ Find the best matching tier based on experience and other criteria
-      const matchingTier = program.tiers
-        .filter((tier) => {
-          if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
-          if (tier.minExperience && borrowerExperience < tier.minExperience) return false;
           return true;
-        })
-        .sort((a, b) => b.minExperience - a.minExperience)[0]; // Sort by experience descending and pick the best match
+        });
 
-      if (!matchingTier) continue; // Skip if no matching tier is found
+        if (!matchingTier) {
+          console.warn(`⚠️ No matching tier found for lender: ${lender.name}`);
+        }
 
-      // ✅ Constrain Purchase Loan Amount by As-Is Value
-      const maxPurchaseLoanAmount = pp * (matchingTier.maxLTC / 100);
-      const constrainedPurchaseLoanAmount = Math.min(maxPurchaseLoanAmount, asIs * (matchingTier.maxLTC / 100));
-
-      // ✅ Calculate Rehab Loan Amount and Total Loan Amount
-      const rehabLoanAmount = rehab * (matchingTier.rehabPercent / 100);
-      const totalLoanAmount = constrainedPurchaseLoanAmount + rehabLoanAmount;
-
-      const tltcLimit = matchingTier.totalLTC ? totalCost * (matchingTier.totalLTC / 100) : Infinity;
-      const arvLimit = arvNum * (matchingTier.maxARV / 100);
-
-      const finalConstrainedLoanAmount = Math.min(totalLoanAmount, tltcLimit, arvLimit);
-
-      const warnings = [];
-
-      // ✅ Add warning for ARV/TLTC constraint
-      if (finalConstrainedLoanAmount < totalLoanAmount) {
-        const reductionAmount = totalLoanAmount - finalConstrainedLoanAmount;
-        const limitingFactor = finalConstrainedLoanAmount === tltcLimit ? "TLTC" : "ARV";
-        warnings.push(
-          `The total loan amount is limited by ${limitingFactor}. The lender WILL reduce the purchase amount or rehab amount by $${reductionAmount.toLocaleString()}.`
-        );
-      }
-
-      // ✅ Add warning if as-is value constrains the purchase loan amount
-      if (constrainedPurchaseLoanAmount < maxPurchaseLoanAmount) {
-        const difference = maxPurchaseLoanAmount - constrainedPurchaseLoanAmount;
-        warnings.push(
-          `When the as-is value is lower than the purchase price, the lender will base the purchase price percentage off this value. The borrower will need to cover the difference of $${difference.toLocaleString()}.`
-        );
-      }
-
-      program.calculations = {
-        purchaseLoanAmount: constrainedPurchaseLoanAmount, // Constrained purchase loan amount
-        rehabLoanAmount, // Unconstrained rehab loan amount
-        totalLoanAmount: finalConstrainedLoanAmount, // Final constrained total loan amount
-        tltcLimit,
-        arvLimit,
-      };
-
-      program.warnings = warnings;
-
-      matchingPrograms.push({
-        name: program.lender.name,
-        phone: program.lender.phone,
-        email: program.lender.email,
-        maxLTC: matchingTier.maxLTC || "N/A",
-        rehabPercent: matchingTier.rehabPercent || "N/A",
-        termLengthMonths: program.termLengthMonths || "N/A",
-        interestType: program.interestType?.dutch ? "Dutch" : program.interestType?.nonDutch ? "Non-Dutch" : "N/A",
-        recourse: program.recourse?.recourse ? "Recourse" : program.recourse?.nonRecourse ? "Non-Recourse" : "N/A",
-        rehabType: pp && rehab ? (rehab / pp > 1 ? "Heavy" : rehab / pp > 0.5 ? "Medium" : "Light") : "N/A",
-        calculations: program.calculations,
-        warnings: program.warnings,
-        lenderId: program.lender._id,
-        programId: program._id,
+        return !!matchingTier;
       });
+
+      // Map and sort results based on loan options
+      const sortedResults = filteredResults.map((lender) => {
+        const fixAndFlipProgram = lender.programs.find(
+          (program) => program.type === "Fix and Flip"
+        );
+
+        const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
+        const totalCost = Number(purchasePrice) + Number(rehabNeeded);
+
+        const matchingTier = fixAndFlipProgram.tiers.find((tier) => {
+          const ltcAmount = Math.min(
+            (tier.maxLTC / 100) * (purchasePrice > asIs ? asIs : purchasePrice),
+            (tier.totalLTC / 100) * totalCost,
+            (tier.maxARV / 100) * arv
+          );
+
+          const rehabAmount = (tier.rehabPercent / 100) * rehabNeeded;
+          const totalLoan = ltcAmount + rehabAmount;
+
+          return {
+            ...tier,
+            ltcAmount,
+            rehabAmount,
+            totalLoan,
+            limitedByARV: totalLoan > (tier.maxARV / 100) * arv,
+          };
+        });
+
+        return {
+          name: lender.name,
+          phone: lender.phone,
+          highlightNote: lender.highlightNote || "",
+          maxLTC: matchingTier?.maxLTC || "N/A",
+          rehabPercent: matchingTier?.rehabPercent || "N/A",
+          termLengthMonths: fixAndFlipProgram.termLengthMonths || "N/A",
+          ltcAmount: matchingTier?.ltcAmount || 0,
+          rehabAmount: matchingTier?.rehabAmount || 0,
+          totalLoan: matchingTier?.totalLoan || 0,
+          limitedByARV: matchingTier?.limitedByARV || false,
+          lenderId: lender._id,
+        };
+      });
+
+      setResults(sortedResults);
+    } catch (err) {
+      console.error("❌ Error searching:", err.message);
+      setResults([]);
     }
+  };
 
-    res.json(matchingPrograms);
-  } catch (error) {
-    console.error("❌ Error in Fix and Flip Search:", error);
-    res.status(500).json({ message: "Search failed" });
-  }
-});
+  const handleClear = () => {
+    setState("");
+    setFico("");
+    setPurchasePrice("");
+    setRehabNeeded("");
+    setArv("");
+    setAsisValue("");
+    setExperience("");
+    setLiquidity("");
+    setRecourse({ recourse: false, nonRecourse: false });
+    setInterestType({ dutch: false, nonDutch: false });
+    setCrossCollateralAllowed("");
+    setTermLengthMonths(""); // Clear term length
+    setResults([]);
+    setWarning("");
+  };
 
-  
-// ✅ Debugging: List Registered Routes
-console.log("✅ Registered Routes in Fix and Flip Routes:");
-router.stack.forEach((r) => {
-  if (r.route && r.route.path) {
-    console.log(`✅ ${Object.keys(r.route.methods).join(", ").toUpperCase()} ${r.route.path}`);
-  }
-});
+  const handleLenderSelect = (lenderId) => {
+    setSelectedLenders((prevSelected) =>
+        prevSelected.includes(lenderId)
+            ? prevSelected.filter((id) => id !== lenderId)
+            : [...prevSelected, lenderId]
+    );
+  };
 
-module.exports = router;
+  const openQuoteModal = () => {
+    if (selectedLenders.length === 0) {
+        alert("Please select at least one lender.");
+        return;
+    }
+    setIsModalOpen(true);
+  };
+
+  return (
+    <div className="search-container">
+      <button className="back-button" onClick={() => navigate("/lender-search")}>🔙 Back to Loan Types</button>
+      <h1 className="search-title">Fix & Flip Search</h1>
+      <p className="search-subtitle">Enter one or more filters to find matching loan programs.</p>
+
+      <div className="search-row">
+        <fieldset className="search-fieldset">
+          <legend className="search-legend">🔹 Deal Details</legend>
+          <label className="search-label">State:</label>
+          <select className="search-select" value={state} onChange={(e) => setState(e.target.value)}>
+            <option value="">-- Select a state --</option>
+            {US_STATES.map((st) => (
+              <option key={st} value={st}>{st}</option>
+            ))}
+          </select>
+          <label className="search-label">Purchase Price:</label>
+          <input className="search-input" value={purchasePrice} onChange={(e) => setPurchasePrice(e.target.value)} />
+          <label className="search-label">Rehab Needed ($):</label>
+          <input className="search-input" value={rehabNeeded} onChange={(e) => setRehabNeeded(e.target.value)} />
+          <label className="search-label">ARV:</label>
+          <input className="search-input" value={arv} onChange={(e) => setArv(e.target.value)} />
+          <label className="search-label">As-Is Value:</label>
+          <input className="search-input" value={asisValue} onChange={(e) => setAsisValue(e.target.value)} />
+        </fieldset>
+
+        <fieldset className="search-fieldset">
+          <legend className="search-legend">🔹 Borrower Profile</legend>
+          <label className="search-label">FICO Score:</label>
+          <input className="search-input" value={fico} onChange={(e) => setFico(e.target.value)} />
+          <label className="search-label">Experience (Flips in past 36 mo):</label>
+          <input className="search-input" value={experience} onChange={(e) => setExperience(e.target.value)} />
+          <label className="search-label">Liquidity (cash, stocks, etc.):</label>
+          <input className="search-input" value={liquidity} onChange={(e) => setLiquidity(e.target.value)} />
+        </fieldset>
+      </div>
+
+      <fieldset className="search-fieldset">
+        <legend className="search-legend">🔹 Loan Options</legend>
+        <label className="search-label">Recourse:</label>
+        <label><input type="checkbox" checked={recourse.recourse} onChange={() => setRecourse((prev) => ({ ...prev, recourse: !prev.recourse }))} /> Recourse</label>
+        <label><input type="checkbox" checked={recourse.nonRecourse} onChange={() => setRecourse((prev) => ({ ...prev, nonRecourse: !prev.nonRecourse }))} /> Non-Recourse</label>
+        
+        <label className="search-label">Interest Type:</label>
+        <label><input type="checkbox" checked={interestType.dutch} onChange={() => setInterestType((prev) => ({ ...prev, dutch: !prev.dutch }))} /> Dutch</label>
+        <label><input type="checkbox" checked={interestType.nonDutch} onChange={() => setInterestType((prev) => ({ ...prev, nonDutch: !prev.nonDutch }))} /> Non-Dutch</label>
+        
+        <label className="search-label">Draw Type:</label>
+        <label><input type="checkbox" checked={drawType.self} onChange={() => setDrawType((prev) => ({ ...prev, self: !prev.self }))} /> Self</label>
+        <label><input type="checkbox" checked={drawType.thirdParty} onChange={() => setDrawType((prev) => ({ ...prev, thirdParty: !prev.thirdParty }))} /> Third Party</label>
+        
+        <label className="search-label">Cross Collateral Allowed:</label>
+        <select className="search-select" value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)}>
+          <option value="">-- Select --</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+        
+        <label>Term Length (Months):</label>
+        <div>
+            {TERM_LENGTH_OPTIONS.map((length) => (
+                <label key={length} style={{ marginRight: "10px" }}>
+                    <input
+                        type="radio"
+                        name="termLengthMonths"
+                        value={length}
+                        checked={termLengthMonths === String(length)}
+                        onChange={(e) => setTermLengthMonths(e.target.value)}
+                    />
+                    {length} months
+                </label>
+            ))}
+        </div>
+      </fieldset>
+
+      <div className="search-buttons-container">
+        <button className="search-button" onClick={handleSearch}>🔍 Search</button>
+        <button class="search-button" onClick={handleClear}>🔄 New Search</button>
+      </div>
+
+      {warning && <p className="search-warning">{warning}</p>}
+
+      <div className="search-results">
+        {results.map((res, i) => (
+          <div key={i} className="search-result-item">
+            <strong>✅ {res.name}</strong>
+            <p>{res.highlightNote}</p> {/* Display dynamic note */}
+            <span>{res.phone || ""}</span>
+            <p>Expect <strong>{res.maxLTC || "N/A"}%</strong> of purchase, <strong>{res.rehabPercent || "N/A"}%</strong> rehab, <strong>{res.termLengthMonths || "N/A"}-month</strong> term.</p>
+            <p>Interest: <strong>{res.interestType || "Not Provided"}</strong> | Recourse: <strong>{res.recourse || "Not Provided"}</strong></p>
+            <p>Rehab Classification: <strong>{res.rehabType || "Not Specified"}</strong></p>
+            <p>📌 <em>Why this lender works:</em> {res.highlightNote || "Available Fix & Flip program"}</p>
+            <label>
+              <input
+                type="checkbox"
+                value={res.lenderId}
+                onChange={() => handleLenderSelect(res.lenderId)}
+              />{" "}
+              Request Quote
+            </label>
+          </div>
+        ))}
+      </div>
+
+      {selectedLenders.length > 0 && (
+        <button
+          className="search-button"
+          onClick={openQuoteModal}
+          style={{ marginTop: "1rem" }}
+        >
+          Request One-Click Quote
+        </button>
+      )}
+
+      {isModalOpen && (
+        <OneClickQuoteModal
+          selectedLenders={selectedLenders}
+          onClose={() => setIsModalOpen(false)}
+          searchData={{
+            state,
+            fico,
+            purchasePrice,
+            rehabNeeded,
+            arv,
+            asisValue,
+            experience,
+            liquidity, // Pass liquidity to the modal
+          }}
+        />
+      )}
+
+      <Glossary />
+    </div>
+  );
+}
+
+export default FixAndFlipSearch;

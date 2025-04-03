@@ -29,8 +29,7 @@ function FixAndFlipSearch() {
   const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
   const [interestType, setInterestType] = useState("");
   const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
-  const [termLengthMonths, setTermLengthMonths] = useState(""); // Update to string for radio buttons
-  const [drawType, setDrawType] = useState({ self: false, thirdParty: false }); // Add draw type state
+  const [termLengthMonths, setTermLengthMonths] = useState([]); // Initialize as an array
 
   const [results, setResults] = useState([]);
   const [warning, setWarning] = useState("");
@@ -68,95 +67,17 @@ function FixAndFlipSearch() {
 
       const data = await response.json();
 
+      // Log the backend response for debugging
+      console.log("🔍 Backend Response:", data);
+
       // Ensure data is an array
       if (!Array.isArray(data)) {
         console.error("❌ Unexpected API response format:", data);
         throw new Error("API response is not an array.");
       }
 
-      // Filter results based on Fix and Flip loan program criteria
-      const filteredResults = data.filter((lender) => {
-        // Step 1: Check if the lender has a Fix and Flip loan program
-        const fixAndFlipProgram = lender.programs?.find(
-          (program) => program.type === "Fix and Flip"
-        );
-
-        if (!fixAndFlipProgram) {
-          console.warn("⚠️ Skipping lender without Fix and Flip program:", lender.name);
-          return false;
-        }
-
-        // Step 2: Check the tiers within the Fix and Flip loan program
-        const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
-        const totalCost = Number(purchasePrice) + Number(rehabNeeded);
-
-        const matchingTier = fixAndFlipProgram.tiers.find((tier) => {
-          if (tier.minFICO && Number(fico) < tier.minFICO) return false;
-          if (tier.minExperience && Number(experience) < tier.minExperience) return false;
-
-          // LTC and ARV calculations
-          const ltcLimit = tier.maxLTC ? (asIs * tier.maxLTC) / 100 : Infinity;
-          const totalLtcLimit = tier.totalLTC ? (arv * tier.totalLTC) / 100 : Infinity;
-          const arvLimit = tier.maxARV ? (arv * tier.maxARV) / 100 : Infinity;
-
-          if (purchasePrice > ltcLimit) return false;
-          if (totalCost > totalLtcLimit) return false;
-          if (totalCost > arvLimit) return false;
-
-          return true;
-        });
-
-        if (!matchingTier) {
-          console.warn(`⚠️ No matching tier found for lender: ${lender.name}`);
-        }
-
-        return !!matchingTier;
-      });
-
-      // Map and sort results based on loan options
-      const sortedResults = filteredResults.map((lender) => {
-        const fixAndFlipProgram = lender.programs.find(
-          (program) => program.type === "Fix and Flip"
-        );
-
-        const asIs = asisValue || purchasePrice; // Assume as-is value equals purchase price if not provided
-        const totalCost = Number(purchasePrice) + Number(rehabNeeded);
-
-        const matchingTier = fixAndFlipProgram.tiers.find((tier) => {
-          const ltcAmount = Math.min(
-            (tier.maxLTC / 100) * (purchasePrice > asIs ? asIs : purchasePrice),
-            (tier.totalLTC / 100) * totalCost,
-            (tier.maxARV / 100) * arv
-          );
-
-          const rehabAmount = (tier.rehabPercent / 100) * rehabNeeded;
-          const totalLoan = ltcAmount + rehabAmount;
-
-          return {
-            ...tier,
-            ltcAmount,
-            rehabAmount,
-            totalLoan,
-            limitedByARV: totalLoan > (tier.maxARV / 100) * arv,
-          };
-        });
-
-        return {
-          name: lender.name,
-          phone: lender.phone,
-          highlightNote: lender.highlightNote || "",
-          maxLTC: matchingTier?.maxLTC || "N/A",
-          rehabPercent: matchingTier?.rehabPercent || "N/A",
-          termLengthMonths: fixAndFlipProgram.termLengthMonths || "N/A",
-          ltcAmount: matchingTier?.ltcAmount || 0,
-          rehabAmount: matchingTier?.rehabAmount || 0,
-          totalLoan: matchingTier?.totalLoan || 0,
-          limitedByARV: matchingTier?.limitedByARV || false,
-          lenderId: lender._id,
-        };
-      });
-
-      setResults(sortedResults);
+      // Directly use the backend response without additional filtering
+      setResults(data);
     } catch (err) {
       console.error("❌ Error searching:", err.message);
       setResults([]);
@@ -175,7 +96,7 @@ function FixAndFlipSearch() {
     setRecourse({ recourse: false, nonRecourse: false });
     setInterestType({ dutch: false, nonDutch: false });
     setCrossCollateralAllowed("");
-    setTermLengthMonths(""); // Clear term length
+    setTermLengthMonths([]); // Clear term length
     setResults([]);
     setWarning("");
   };
@@ -238,32 +159,29 @@ function FixAndFlipSearch() {
         <label className="search-label">Recourse:</label>
         <label><input type="checkbox" checked={recourse.recourse} onChange={() => setRecourse((prev) => ({ ...prev, recourse: !prev.recourse }))} /> Recourse</label>
         <label><input type="checkbox" checked={recourse.nonRecourse} onChange={() => setRecourse((prev) => ({ ...prev, nonRecourse: !prev.nonRecourse }))} /> Non-Recourse</label>
-        
         <label className="search-label">Interest Type:</label>
         <label><input type="checkbox" checked={interestType.dutch} onChange={() => setInterestType((prev) => ({ ...prev, dutch: !prev.dutch }))} /> Dutch</label>
         <label><input type="checkbox" checked={interestType.nonDutch} onChange={() => setInterestType((prev) => ({ ...prev, nonDutch: !prev.nonDutch }))} /> Non-Dutch</label>
-        
-        <label className="search-label">Draw Type:</label>
-        <label><input type="checkbox" checked={drawType.self} onChange={() => setDrawType((prev) => ({ ...prev, self: !prev.self }))} /> Self</label>
-        <label><input type="checkbox" checked={drawType.thirdParty} onChange={() => setDrawType((prev) => ({ ...prev, thirdParty: !prev.thirdParty }))} /> Third Party</label>
-        
         <label className="search-label">Cross Collateral Allowed:</label>
         <select className="search-select" value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)}>
           <option value="">-- Select --</option>
           <option value="yes">Yes</option>
           <option value="no">No</option>
         </select>
-        
         <label>Term Length (Months):</label>
         <div>
             {TERM_LENGTH_OPTIONS.map((length) => (
                 <label key={length} style={{ marginRight: "10px" }}>
                     <input
-                        type="radio"
-                        name="termLengthMonths"
+                        type="checkbox"
                         value={length}
-                        checked={termLengthMonths === String(length)}
-                        onChange={(e) => setTermLengthMonths(e.target.value)}
+                        checked={Array.isArray(termLengthMonths) && termLengthMonths.includes(length)} // Ensure safe access
+                        onChange={(e) => {
+                          const updated = e.target.checked
+                            ? [...termLengthMonths, length]
+                            : termLengthMonths.filter((l) => l !== length);
+                          setTermLengthMonths(updated);
+                        }}
                     />
                     {length} months
                 </label>
@@ -279,25 +197,57 @@ function FixAndFlipSearch() {
       {warning && <p className="search-warning">{warning}</p>}
 
       <div className="search-results">
-        {results.map((res, i) => (
-          <div key={i} className="search-result-item">
-            <strong>✅ {res.name}</strong>
-            <p>{res.highlightNote}</p> {/* Display dynamic note */}
-            <span>{res.phone || ""}</span>
-            <p>Expect <strong>{res.maxLTC || "N/A"}%</strong> of purchase, <strong>{res.rehabPercent || "N/A"}%</strong> rehab, <strong>{res.termLengthMonths || "N/A"}-month</strong> term.</p>
-            <p>Interest: <strong>{res.interestType || "Not Provided"}</strong> | Recourse: <strong>{res.recourse || "Not Provided"}</strong></p>
-            <p>Rehab Classification: <strong>{res.rehabType || "Not Specified"}</strong></p>
-            <p>📌 <em>Why this lender works:</em> {res.highlightNote || "Available Fix & Flip program"}</p>
-            <label>
-              <input
-                type="checkbox"
-                value={res.lenderId}
-                onChange={() => handleLenderSelect(res.lenderId)}
-              />{" "}
-              Request Quote
-            </label>
+        {results.length > 0 ? (
+          <div>
+            {results.map((res, i) => (
+              <div key={i} className="search-result-item">
+                {/* Line 1: Lender Name, Phone, Email */}
+                <div>
+                  <strong>🏦 {res.name}</strong> | 📞 {res.phone} | ✉️ {res.email}
+                </div>
+
+                {/* Line 2: Loan Expectations (Percentages) */}
+                <div>
+                  Expect <strong>{res.maxLTC || "N/A"}%</strong> of purchase and <strong>{res.rehabPercent || "N/A"}%</strong> of rehab.
+                </div>
+
+                {/* Line 3: Unconstrained Loan Amounts */}
+                <div>
+                  Potential Loan Amount: <strong>${res.calculations?.purchaseLoanAmount?.toLocaleString() || "N/A"}</strong> toward purchase, 
+                  <strong>${res.calculations?.rehabLoanAmount?.toLocaleString() || "N/A"}</strong> toward rehab.
+                </div>
+
+                {/* Line 4: Constrained Total Loan Amount */}
+                <div>
+                  Total Loan Amount (Constrained): <strong>${res.calculations?.totalLoanAmount?.toLocaleString() || "N/A"}</strong> | 
+                  TLTC Limit: <strong>${res.calculations?.tltcLimit?.toLocaleString() || "N/A"}</strong> | 
+                  ARV Limit: <strong>${res.calculations?.arvLimit?.toLocaleString() || "N/A"}</strong>
+                </div>
+
+                {/* Line 5: Warnings */}
+                <div style={{ color: (res.warnings || []).length > 0 ? "red" : "inherit" }}>
+                  {(res.warnings || []).length > 0
+                    ? (res.warnings || []).map((warning, idx) => <div key={idx}>⚠️ {warning}</div>)
+                    : "No warnings"}
+                </div>
+
+                {/* Line 6: Request Quote */}
+                <div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      value={res.lenderId}
+                      onChange={() => handleLenderSelect(res.lenderId)}
+                    />
+                    {selectedLenders.includes(res.lenderId) ? " ✅ Quote Requested" : " Request Quote"}
+                  </label>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        ) : (
+          <p>No results found. Please adjust your search criteria.</p>
+        )}
       </div>
 
       {selectedLenders.length > 0 && (
