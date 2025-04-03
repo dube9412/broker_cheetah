@@ -206,9 +206,9 @@ function FixAndFlipSearch() {
                   <strong>🏦 {res.name}</strong> | 📞 {res.phone} | ✉️ {res.email}
                 </div>
 
-                {/* Line 2: Loan Expectations */}
+                {/* Line 2: Loan Expectations (Percentages) */}
                 <div>
-                  Expect <strong>${res.calculations?.purchaseLoanAmount?.toLocaleString() || "N/A"}</strong> toward purchase and <strong>${res.calculations?.rehabLoanAmount?.toLocaleString() || "N/A"}</strong> toward rehab.
+                  Expect <strong>{res.maxLTC || "N/A"}%</strong> of purchase and <strong>{res.rehabPercent || "N/A"}%</strong> of rehab.
                 </div>
 
                 {/* Line 3: Math Outputs */}
