@@ -221,10 +221,36 @@ router.get("/search", async (req, res) => {
       const pp = Number(purchasePrice) || 0;
       const rehab = Number(rehabNeeded) || 0;
       const arvNum = Number(arv) || 0;
-      const asIs = Number(asisValue) || 0;
+      const asIs = asisValue ? Number(asisValue) : null; // Use null if asisValue is not provided
 
-      if (program.minAsIsValue && asIs < program.minAsIsValue) {
+      if (asIs !== null && program.minAsIsValue && asIs < program.minAsIsValue) {
         console.warn(`⚠️ Program ${program._id} skipped due to as-is value mismatch. Min As-Is Value: ${program.minAsIsValue}, Provided: ${asIs}`);
+        continue;
+      }
+
+      // Filter based on loan options
+      if (recourse === "true" && !program.recourse?.recourse) {
+        console.warn(`⚠️ Program ${program._id} skipped due to recourse mismatch.`);
+        continue;
+      }
+      if (nonRecourse === "true" && !program.recourse?.nonRecourse) {
+        console.warn(`⚠️ Program ${program._id} skipped due to non-recourse mismatch.`);
+        continue;
+      }
+      if (interestTypeDutch === "true" && !program.interestType?.dutch) {
+        console.warn(`⚠️ Program ${program._id} skipped due to interest type (Dutch) mismatch.`);
+        continue;
+      }
+      if (interestTypeNonDutch === "true" && !program.interestType?.nonDutch) {
+        console.warn(`⚠️ Program ${program._id} skipped due to interest type (Non-Dutch) mismatch.`);
+        continue;
+      }
+      if (crossCollateralAllowed === "true" && program.crossCollateralAllowed !== true) {
+        console.warn(`⚠️ Program ${program._id} skipped due to cross-collateral mismatch.`);
+        continue;
+      }
+      if (termLengthMonths && !program.termLengthMonths.includes(Number(termLengthMonths))) {
+        console.warn(`⚠️ Program ${program._id} skipped due to term length mismatch. Provided: ${termLengthMonths}`);
         continue;
       }
 
