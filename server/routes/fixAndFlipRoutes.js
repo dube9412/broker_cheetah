@@ -247,7 +247,7 @@ router.get("/search", async (req, res) => {
       }
     }
 
-    console.log("🔍 Final Matching Programs:", matchingPrograms.length);
+    console.log("🔍 Final Matching Programs:", JSON.stringify(matchingPrograms, null, 2)); // Log full structure
     res.json(matchingPrograms);
   } catch (error) {
     console.error("❌ Error in Fix and Flip Search:", error);
