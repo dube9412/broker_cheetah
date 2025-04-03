@@ -163,6 +163,10 @@ router.get("/search", async (req, res) => {
       asisValue,
       experience,
       liquidity,
+      recourse,
+      interestType,
+      drawType,
+      crossCollateralAllowed,
     } = req.query;
 
     const filters = {};
@@ -181,10 +185,29 @@ router.get("/search", async (req, res) => {
 
       const totalCost = pp + rehab;
 
+      // ✅ Filter by Loan Options
+      if (recourse) {
+        const recourseOption = recourse === "recourse" ? program.recourse.recourse : program.recourse.nonRecourse;
+        if (!recourseOption) continue;
+      }
+
+      if (interestType) {
+        const interestOption = interestType === "dutch" ? program.interestType.dutch : program.interestType.nonDutch;
+        if (!interestOption) continue;
+      }
+
+      if (drawType) {
+        const drawOption = drawType === "self" ? program.drawType.self : program.drawType.thirdParty;
+        if (!drawOption) continue;
+      }
+
+      if (crossCollateralAllowed && program.crossCollateralAllowed !== (crossCollateralAllowed === "yes")) {
+        continue;
+      }
+
       // ✅ Find the best matching tier based on experience and other criteria
       const matchingTier = program.tiers
         .filter((tier) => {
-          // Ensure the tier matches the borrower's FICO and experience
           if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
           if (tier.minExperience && borrowerExperience < tier.minExperience) return false;
           return true;
