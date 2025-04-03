@@ -30,6 +30,7 @@ function FixAndFlipSearch() {
   const [interestType, setInterestType] = useState("");
   const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
   const [termLengthMonths, setTermLengthMonths] = useState([]); // Initialize as an array
+  const [drawType, setDrawType] = useState({ self: false, thirdParty: false });
 
   const [results, setResults] = useState([]);
   const [warning, setWarning] = useState("");
@@ -162,6 +163,9 @@ function FixAndFlipSearch() {
         <label className="search-label">Interest Type:</label>
         <label><input type="checkbox" checked={interestType.dutch} onChange={() => setInterestType((prev) => ({ ...prev, dutch: !prev.dutch }))} /> Dutch</label>
         <label><input type="checkbox" checked={interestType.nonDutch} onChange={() => setInterestType((prev) => ({ ...prev, nonDutch: !prev.nonDutch }))} /> Non-Dutch</label>
+        <label className="search-label">Draw Type:</label>
+        <label><input type="checkbox" checked={drawType.self} onChange={() => setDrawType((prev) => ({ ...prev, self: !prev.self }))} /> Self-Draw</label>
+        <label><input type="checkbox" checked={drawType.thirdParty} onChange={() => setDrawType((prev) => ({ ...prev, thirdParty: !prev.thirdParty }))} /> Third-Party Draw</label>
         <label className="search-label">Cross Collateral Allowed:</label>
         <select className="search-select" value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)}>
           <option value="">-- Select --</option>
@@ -225,7 +229,7 @@ function FixAndFlipSearch() {
                 </div>
 
                 {/* Line 5: Warnings */}
-                <div style={{ color: (res.warnings || []).length > 0 ? "inherit" : "inherit" }}>
+                <div style={{ color: (res.warnings || []).length > 0 ? "orange" : "inherit" }}>
                   {(res.warnings || []).length > 0
                     ? (res.warnings || []).map((warning, idx) => <div key={idx}>⚠️ {warning}</div>)
                     : "No warnings"}
