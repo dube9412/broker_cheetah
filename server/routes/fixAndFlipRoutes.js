@@ -204,14 +204,14 @@ router.get("/search", async (req, res) => {
     for (const program of programs) {
       if (state && !program.lender.states.includes(state)) continue;
 
+      const pp = Number(purchasePrice) || 0; // Ensure `pp` is defined here
+      const rehab = Number(rehabNeeded) || 0;
+      const arvNum = Number(arv) || 0;
+      const asIs = Number(asisValue) || pp;
+
       const matchingTier = program.tiers.find((tier) => {
         if (fico && tier.minFICO && Number(fico) < tier.minFICO) return false;
         if (experience && tier.minExperience && Number(experience) < tier.minExperience) return false;
-
-        const pp = Number(purchasePrice) || 0;
-        const rehab = Number(rehabNeeded) || 0;
-        const arvNum = Number(arv) || 0;
-        const asIs = Number(asisValue) || pp;
 
         if (pp > asIs) {
           program.warning = "The purchase price difference will have to be covered by the borrower.";
