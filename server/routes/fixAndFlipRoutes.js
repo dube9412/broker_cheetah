@@ -174,6 +174,7 @@ router.get("/search", async (req, res) => {
 
     const filters = {};
 
+    // Apply loan option filters
     if (crossCollateralAllowed) filters.crossCollateralAllowed = crossCollateralAllowed;
 
     if (recourse === "true" || nonRecourse === "true") {
@@ -215,7 +216,7 @@ router.get("/search", async (req, res) => {
         const totalLtcLimit = tier.totalLTC ? (totalCost * tier.totalLTC) / 100 : Infinity;
         const arvLimit = tier.maxARV ? (arvNum * tier.maxARV) / 100 : Infinity;
 
-        if (pp > ltcLimit || totalCost > totalLtcLimit || totalCost > arvLimit) {
+        if (totalCost > totalLtcLimit || totalCost > arvLimit) {
           program.warning = "The loan amount may be further limited due to ARV or Total Loan to Cost factors.";
         }
 

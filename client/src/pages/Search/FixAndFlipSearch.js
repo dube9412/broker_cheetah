@@ -278,8 +278,10 @@ function FixAndFlipSearch() {
                 <th>Lender</th>
                 <th>Contact</th>
                 <th>Loan Expectations</th>
-                <th>Warnings</th>
+                <th>Interest Type</th>
+                <th>Recourse</th>
                 <th>Rehab Classification</th>
+                <th>Warnings</th>
                 <th>Request Quote</th>
               </tr>
             </thead>
@@ -294,8 +296,10 @@ function FixAndFlipSearch() {
                   <td>
                     Expect <strong>{res.maxLTC}%</strong> of purchase, <strong>{res.rehabPercent}%</strong> rehab.
                   </td>
+                  <td>{res.interestType || "N/A"}</td>
+                  <td>{res.recourse || "N/A"}</td>
+                  <td>{res.rehabType || "N/A"}</td>
                   <td>{res.warning || "N/A"}</td>
-                  <td>{res.rehabType}</td>
                   <td>
                     <label>
                       <input
