@@ -172,6 +172,8 @@ router.get("/search", async (req, res) => {
       propertyType,
     } = req.query;
 
+    console.log("🔍 Search Query Parameters:", req.query);
+
     const filters = {};
 
     // Apply loan option filters
@@ -191,7 +193,11 @@ router.get("/search", async (req, res) => {
 
     if (propertyType) filters.propertyTypes = propertyType;
 
+    console.log("🔍 Filters Applied:", filters);
+
     const programs = await FixAndFlipLoan.find(filters).populate("lender");
+
+    console.log("🔍 Matching Programs Found:", programs.length);
 
     const matchingPrograms = [];
 
@@ -241,6 +247,7 @@ router.get("/search", async (req, res) => {
       }
     }
 
+    console.log("🔍 Final Matching Programs:", matchingPrograms.length);
     res.json(matchingPrograms);
   } catch (error) {
     console.error("❌ Error in Fix and Flip Search:", error);
