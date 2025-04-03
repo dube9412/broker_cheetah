@@ -167,6 +167,7 @@ router.get("/search", async (req, res) => {
       interestType,
       drawType,
       crossCollateralAllowed,
+      termLengthMonths, // Add term length filter
     } = req.query;
 
     const filters = {};
@@ -185,24 +186,35 @@ router.get("/search", async (req, res) => {
 
       const totalCost = pp + rehab;
 
-      // ✅ Filter by Loan Options
+      // ✅ Filter by Recourse
       if (recourse) {
         const recourseOption = recourse === "recourse" ? program.recourse.recourse : program.recourse.nonRecourse;
         if (!recourseOption) continue;
       }
 
+      // ✅ Filter by Interest Type
       if (interestType) {
         const interestOption = interestType === "dutch" ? program.interestType.dutch : program.interestType.nonDutch;
         if (!interestOption) continue;
       }
 
+      // ✅ Filter by Draw Type
       if (drawType) {
         const drawOption = drawType === "self" ? program.drawType.self : program.drawType.thirdParty;
         if (!drawOption) continue;
       }
 
+      // ✅ Filter by Cross Collateral Allowed
       if (crossCollateralAllowed && program.crossCollateralAllowed !== (crossCollateralAllowed === "yes")) {
         continue;
+      }
+
+      // ✅ Filter by Term Length
+      if (termLengthMonths) {
+        const selectedLengths = termLengthMonths.split(",").map(Number); // Convert to array of numbers
+        if (!selectedLengths.some((length) => program.termLengthMonths.includes(length))) {
+          continue; // Skip if no term length matches
+        }
       }
 
       // ✅ Find the best matching tier based on experience and other criteria

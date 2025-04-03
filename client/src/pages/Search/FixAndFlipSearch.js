@@ -185,7 +185,6 @@ function FixAndFlipSearch() {
         prevSelected.includes(lenderId)
             ? prevSelected.filter((id) => id !== lenderId)
             : [...prevSelected, lenderId]
-    );
   };
 
   const openQuoteModal = () => {
@@ -238,22 +237,15 @@ function FixAndFlipSearch() {
         <label className="search-label">Recourse:</label>
         <label><input type="checkbox" checked={recourse.recourse} onChange={() => setRecourse((prev) => ({ ...prev, recourse: !prev.recourse }))} /> Recourse</label>
         <label><input type="checkbox" checked={recourse.nonRecourse} onChange={() => setRecourse((prev) => ({ ...prev, nonRecourse: !prev.nonRecourse }))} /> Non-Recourse</label>
-        
         <label className="search-label">Interest Type:</label>
         <label><input type="checkbox" checked={interestType.dutch} onChange={() => setInterestType((prev) => ({ ...prev, dutch: !prev.dutch }))} /> Dutch</label>
         <label><input type="checkbox" checked={interestType.nonDutch} onChange={() => setInterestType((prev) => ({ ...prev, nonDutch: !prev.nonDutch }))} /> Non-Dutch</label>
-        
-        <label className="search-label">Draw Type:</label>
-        <label><input type="checkbox" checked={drawType.self} onChange={() => setDrawType((prev) => ({ ...prev, self: !prev.self }))} /> Self</label>
-        <label><input type="checkbox" checked={drawType.thirdParty} onChange={() => setDrawType((prev) => ({ ...prev, thirdParty: !prev.thirdParty }))} /> Third Party</label>
-        
         <label className="search-label">Cross Collateral Allowed:</label>
         <select className="search-select" value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)}>
           <option value="">-- Select --</option>
           <option value="yes">Yes</option>
           <option value="no">No</option>
         </select>
-        
         <label>Term Length (Months):</label>
         <div>
             {TERM_LENGTH_OPTIONS.map((length) => (
