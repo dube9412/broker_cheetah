@@ -8,9 +8,16 @@ function AddDSCR() {
     const [lender, setLender] = useState(null);
     const [numTiers, setNumTiers] = useState(1);
     const [tiers, setTiers] = useState([
-        { minFICO: "", minExperience: "", maxLTVPurchase: "", maxLTVRateTerm: "", maxLTVCashOut: "", dscrRatioMin: "" }
+        {
+            tierName: "",
+            minFICO: "",
+            minExperience: "",
+            maxLTVPurchase: "",
+            maxLTVRateTerm: "",
+            maxLTVCashOut: "",
+            dscrRatioMin: "",
+        },
     ]);
-
     const [loanRange, setLoanRange] = useState({ min: "", max: "" });
     const [prepaymentPeriod, setPrepaymentPeriod] = useState("");
     const [propertyTypes, setPropertyTypes] = useState([]);
@@ -20,10 +27,10 @@ function AddDSCR() {
     const [taxes, setTaxes] = useState("");
     const [insurance, setInsurance] = useState("");
     const [hoaFees, setHoaFees] = useState("");
-    const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
+    const [highlightNote, setHighlightNote] = useState("");
     const [homeValue, setHomeValue] = useState("");
     const [purchasePrice, setPurchasePrice] = useState("");
-    const [loanTermYears, setLoanTermYears] = useState(""); // Add loan term
+    const [loanTermYears, setLoanTermYears] = useState("");
 
     const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
     const PROPERTY_USES = ["Standard Rental", "Short Term Rental", "Vacant"];
@@ -51,7 +58,15 @@ function AddDSCR() {
 
             if (newNumTiers > prevTiers.length) {
                 for (let i = prevTiers.length; i < newNumTiers; i++) {
-                    newTiers.push({ minFICO: "", minExperience: "", maxLTVPurchase: "", maxLTVRateTerm: "", maxLTVCashOut: "", dscrRatioMin: "" });
+                    newTiers.push({
+                        tierName: "",
+                        minFICO: "",
+                        minExperience: "",
+                        maxLTVPurchase: "",
+                        maxLTVRateTerm: "",
+                        maxLTVCashOut: "",
+                        dscrRatioMin: "",
+                    });
                 }
             } else {
                 newTiers.length = newNumTiers;
@@ -62,81 +77,92 @@ function AddDSCR() {
     };
 
     const handleTierChange = (index, field, value) => {
-        setTiers((prevTiers) => {
-            const updatedTiers = [...prevTiers];
-            updatedTiers[index][field] = value;
-            return updatedTiers;
-        });
+        const updatedTiers = [...tiers];
+        updatedTiers[index][field] = value;
+        setTiers(updatedTiers);
+    };
+
+    const handleAddTier = () => {
+        setTiers([
+            ...tiers,
+            {
+                tierName: "",
+                minFICO: "",
+                minExperience: "",
+                maxLTVPurchase: "",
+                maxLTVRateTerm: "",
+                maxLTVCashOut: "",
+                dscrRatioMin: "",
+            },
+        ]);
     };
 
     const handlePropertyTypeChange = (type) => {
         setPropertyTypes((prev) =>
-          prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+            prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
         );
-      };
+    };
 
-      const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-      
-        const formattedLoanRange = {
-          min: loanRange.min ? Number(loanRange.min) : undefined,
-          max: loanRange.max ? Number(loanRange.max) : undefined,
-        };
-      
-        const cleanedTiers = tiers.map((tier) => ({
-          ...tier,
-          minFICO: tier.minFICO ? Number(tier.minFICO) : undefined,
-          minExperience: tier.minExperience ? Number(tier.minExperience) : undefined,
-          maxLTVPurchase: tier.maxLTVPurchase ? Number(tier.maxLTVPurchase) : undefined,
-          maxLTVRateTerm: tier.maxLTVRateTerm ? Number(tier.maxLTVRateTerm) : undefined,
-          maxLTVCashOut: tier.maxLTVCashOut ? Number(tier.maxLTVCashOut) : undefined,
-          dscrRatioMin: tier.dscrRatioMin ? Number(tier.dscrRatioMin) : undefined,
-        }));
-      
-        try {
-          const response = await fetch(
-            `https://broker-cheetah-backend.onrender.com/api/dscr/${lenderId}/dscr-programs`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                name: "New DSCR Program",
-                type: "DSCR",
-                lender: lenderId,
-                loanRange: formattedLoanRange,
-                propertyTypes,
-                propertyUse: propertyUse || undefined,
-                prepaymentPeriod: prepaymentPeriod || undefined,
-                tiers: cleanedTiers,
-                dscrInputs: {
-                  currentRent: currentRent ? Number(currentRent) : undefined,
-                  marketRent: marketRent ? Number(marketRent) : undefined,
-                  taxes: taxes ? Number(taxes) : undefined,
-                  insurance: insurance ? Number(insurance) : undefined,
-                  hoaFees: hoaFees ? Number(hoaFees) : undefined,
-                },
-                highlightNote, // Include highlightNote in the payload
-              }),
-            }
-          );
-      
-          const data = await response.json();
-          if (response.ok) {
-            console.log("✅ DSCR Loan Program Saved:", data);
-            alert("Program added successfully!");
-            navigate(`/manage-loan-programs/${lenderId}`);
-          } else {
-            console.error("❌ Failed to add program:", data);
-            alert(`Failed to add program: ${data.message}`);
-          }
-        } catch (error) {
-          console.error("❌ Error adding program:", error);
-          alert("An error occurred while adding the program.");
-        }
-      };
-      
 
-      
+        const formattedLoanRange = {
+            min: loanRange.min ? Number(loanRange.min) : undefined,
+            max: loanRange.max ? Number(loanRange.max) : undefined,
+        };
+
+        const cleanedTiers = tiers.map((tier) => ({
+            ...tier,
+            minFICO: tier.minFICO ? Number(tier.minFICO) : undefined,
+            minExperience: tier.minExperience ? Number(tier.minExperience) : undefined,
+            maxLTVPurchase: tier.maxLTVPurchase ? Number(tier.maxLTVPurchase) : undefined,
+            maxLTVRateTerm: tier.maxLTVRateTerm ? Number(tier.maxLTVRateTerm) : undefined,
+            maxLTVCashOut: tier.maxLTVCashOut ? Number(tier.maxLTVCashOut) : undefined,
+            dscrRatioMin: tier.dscrRatioMin ? Number(tier.dscrRatioMin) : undefined,
+        }));
+
+        try {
+            const response = await fetch(
+                `https://broker-cheetah-backend.onrender.com/api/dscr/${lenderId}/dscr-programs`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name: "New DSCR Program",
+                        type: "DSCR",
+                        lender: lenderId,
+                        loanRange: formattedLoanRange,
+                        propertyTypes,
+                        propertyUse: propertyUse || undefined,
+                        prepaymentPeriod: prepaymentPeriod || undefined,
+                        tiers: cleanedTiers,
+                        dscrInputs: {
+                            currentRent: currentRent ? Number(currentRent) : undefined,
+                            marketRent: marketRent ? Number(marketRent) : undefined,
+                            taxes: taxes ? Number(taxes) : undefined,
+                            insurance: insurance ? Number(insurance) : undefined,
+                            hoaFees: hoaFees ? Number(hoaFees) : undefined,
+                        },
+                        highlightNote,
+                    }),
+                }
+            );
+
+            const data = await response.json();
+            if (response.ok) {
+                console.log("✅ DSCR Loan Program Saved:", data);
+                alert("Program added successfully!");
+                navigate(`/manage-loan-programs/${lenderId}`);
+            } else {
+                console.error("❌ Failed to add program:", data);
+                alert(`Failed to add program: ${data.message}`);
+            }
+        } catch (error) {
+            console.error("❌ Error adding program:", error);
+            alert("An error occurred while adding the program.");
+        }
+    };
+
     return (
         <div style={{ maxWidth: "500px", margin: "0 auto", padding: "20px" }}>
             <h2 style={{ textAlign: "center" }}>
@@ -152,19 +178,19 @@ function AddDSCR() {
                 <input type="number" value={prepaymentPeriod} onChange={(e) => setPrepaymentPeriod(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
 
                 <label>Property Types:</label>
-                  <div>
+                <div>
                     {PROPERTY_TYPES.map((type) => (
-                      <label key={type}>
-                        <input
-                          type="checkbox"
-                          value={type}
-                          checked={propertyTypes.includes(type)}
-                          onChange={() => handlePropertyTypeChange(type)} // ✅ Using the function here
-                        />
-                        {type}
-                      </label>
+                        <label key={type}>
+                            <input
+                                type="checkbox"
+                                value={type}
+                                checked={propertyTypes.includes(type)}
+                                onChange={() => handlePropertyTypeChange(type)}
+                            />
+                            {type}
+                        </label>
                     ))}
-                  </div>
+                </div>
 
                 <label>Property Use:</label>
                 {PROPERTY_USES.map((use) => (
@@ -189,6 +215,22 @@ function AddDSCR() {
                 <label>HOA Fees ($/month):</label>
                 <input type="number" value={hoaFees} onChange={(e) => setHoaFees(e.target.value)} style={{ width: "100%", marginBottom: "10px" }} />
 
+                <fieldset>
+                    <legend>Tiers</legend>
+                    {tiers.map((tier, index) => (
+                        <div key={index}>
+                            <label>Tier Name: <input value={tier.tierName} onChange={(e) => handleTierChange(index, "tierName", e.target.value)} /></label>
+                            <label>Min FICO: <input value={tier.minFICO} onChange={(e) => handleTierChange(index, "minFICO", e.target.value)} /></label>
+                            <label>Min Experience: <input value={tier.minExperience} onChange={(e) => handleTierChange(index, "minExperience", e.target.value)} /></label>
+                            <label>Max LTV Purchase: <input value={tier.maxLTVPurchase} onChange={(e) => handleTierChange(index, "maxLTVPurchase", e.target.value)} /></label>
+                            <label>Max LTV Rate Term: <input value={tier.maxLTVRateTerm} onChange={(e) => handleTierChange(index, "maxLTVRateTerm", e.target.value)} /></label>
+                            <label>Max LTV Cash-Out: <input value={tier.maxLTVCashOut} onChange={(e) => handleTierChange(index, "maxLTVCashOut", e.target.value)} /></label>
+                            <label>DSCR Ratio Min: <input value={tier.dscrRatioMin} onChange={(e) => handleTierChange(index, "dscrRatioMin", e.target.value)} /></label>
+                        </div>
+                    ))}
+                    <button type="button" onClick={handleAddTier}>+ Add Tier</button>
+                </fieldset>
+
                 <label>Highlight Note:</label>
                 <textarea
                     value={highlightNote}
@@ -211,13 +253,13 @@ function AddDSCR() {
                     ))}
                 </select>
 
-            <button style={{ backgroundColor: 'green', color: 'white', padding: '10px 20px' }}>
-            Add DSCR Loan Program
-            </button>
-            <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button" style={{ padding: '10px 20px', backgroundColor: 'red', color: 'white' }}>
-            Cancel
-            </button>
-          </form>
+                <button style={{ backgroundColor: 'green', color: 'white', padding: '10px 20px' }}>
+                    Add DSCR Loan Program
+                </button>
+                <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button" style={{ padding: '10px 20px', backgroundColor: 'red', color: 'white' }}>
+                    Cancel
+                </button>
+            </form>
         </div>
     );
 }

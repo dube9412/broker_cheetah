@@ -72,6 +72,7 @@ const AdminJSONTools = () => {
       const enrichedData = jsonData.map((program) => ({
         ...program,
         lender: selectedLenderId,
+        type: program.type.toLowerCase(), // Normalize type to lowercase
       }));
 
       const response = await fetch("https://broker-cheetah-backend.onrender.com/api/import-json", {

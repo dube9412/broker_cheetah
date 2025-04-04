@@ -52,18 +52,16 @@ function EditDSCR() {
     setTiers((prev) => {
       const newTiers = [...prev];
       while (newTiers.length < newCount) {
-        newTiers.push({ minFICO: "", minExperience: "", maxLTVPurchase: "", maxLTVRateTerm: "", maxLTVCashOut: "", dscrRatioMin: "" });
+        newTiers.push({ tierName: "", minFICO: "", minExperience: "", maxLTVPurchase: "", maxLTVRateTerm: "", maxLTVCashOut: "", dscrRatioMin: "" });
       }
       return newTiers.slice(0, newCount);
     });
   };
 
   const handleTierChange = (index, field, value) => {
-    setTiers((prevTiers) => {
-      const updated = [...prevTiers];
-      updated[index][field] = value;
-      return updated;
-    });
+    const updatedTiers = [...tiers];
+    updatedTiers[index][field] = value;
+    setTiers(updatedTiers);
   };
 
   const handlePropertyTypeChange = (type) => {
@@ -78,18 +76,28 @@ function EditDSCR() {
       max: loanRange.max ? parseInt(loanRange.max) : undefined,
     };
 
+    const payload = {
+      loanRange: formattedLoanRange,
+      propertyTypes,
+      propertyUse: propertyUse || undefined,
+      prepaymentPeriod,
+      tiers: tiers.map((tier) => ({
+        ...tier,
+        minFICO: tier.minFICO ? Number(tier.minFICO) : undefined,
+        minExperience: tier.minExperience ? Number(tier.minExperience) : undefined,
+        maxLTVPurchase: tier.maxLTVPurchase ? Number(tier.maxLTVPurchase) : undefined,
+        maxLTVRateTerm: tier.maxLTVRateTerm ? Number(tier.maxLTVRateTerm) : undefined,
+        maxLTVCashOut: tier.maxLTVCashOut ? Number(tier.maxLTVCashOut) : undefined,
+        dscrRatioMin: tier.dscrRatioMin ? Number(tier.dscrRatioMin) : undefined,
+      })),
+      highlightNote, // Include highlightNote in the payload
+    };
+
     try {
       const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/dscr/dscr-programs/${programId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          loanRange: formattedLoanRange,
-          propertyTypes,
-          propertyUse: propertyUse || undefined,
-          prepaymentPeriod,
-          tiers,
-          highlightNote, // Include highlightNote in the payload
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -121,6 +129,7 @@ function EditDSCR() {
       {tiers.map((tier, index) => (
         <div key={index} style={{ padding: "10px", border: "1px solid #ccc", marginBottom: "10px" }}>
           <h3>Tier {index + 1}</h3>
+          <label>Tier Name: <input value={tier.tierName || ""} onChange={(e) => handleTierChange(index, "tierName", e.target.value)} /></label><br />
           <label>Min FICO: <input value={tier.minFICO || ""} onChange={(e) => handleTierChange(index, "minFICO", e.target.value)} /></label><br />
           <label>Min Experience: <input value={tier.minExperience || ""} onChange={(e) => handleTierChange(index, "minExperience", e.target.value)} /></label><br />
           <label>Max LTV (Purchase): <input value={tier.maxLTVPurchase || ""} onChange={(e) => handleTierChange(index, "maxLTVPurchase", e.target.value)} /></label><br />

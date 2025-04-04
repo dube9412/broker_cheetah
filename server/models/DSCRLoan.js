@@ -37,6 +37,18 @@ const DscrLoanSchema = new mongoose.Schema(
       insurance: { type: Number },
       hoaFees: { type: Number },
     },
+
+    tiers: [
+      {
+        minFICO: { type: Number },
+        minExperience: { type: Number },
+        maxLTVPurchase: { type: Number }, // Add max LTV for purchase
+        maxLTVRateTerm: { type: Number }, // Add max LTV for rate & term
+        maxLTVCashOut: { type: Number }, // Add max LTV for cash-out
+        dscrRatioMin: { type: Number },
+      },
+    ],
+    highlightNote: { type: String }, // Add highlight note
   },
   { timestamps: true }
 );

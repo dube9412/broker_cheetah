@@ -19,6 +19,9 @@ router.post("/", async (req, res) => {
         continue;
       }
 
+      // Normalize the type field to lowercase
+      program.type = program.type.toLowerCase();
+
       const newProgram = new FixAndFlipLoan(program);
       await newProgram.save();
       inserted.push(newProgram);
