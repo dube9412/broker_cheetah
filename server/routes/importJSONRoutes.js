@@ -1,7 +1,22 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
-const FixAndFlipLoan = require("../models/FixAndFlipLoan"); // Only this one for now
+
+// Import all loan program models
+const FixAndFlipLoan = require("../models/FixAndFlipLoan");
+const GroundUpLoan = require("../models/GroundUpLoan");
+const DSCRLoan = require("../models/DSCRLoan");
+const PortfolioLoan = require("../models/PortfolioLoan");
+const StabilizedBridgeLoan = require("../models/StabilizedBridgeLoan");
+
+// Map loan program types to their corresponding models
+const loanProgramModels = {
+  "fix and flip": FixAndFlipLoan,
+  "ground up": GroundUpLoan,
+  "dscr": DSCRLoan,
+  "portfolio": PortfolioLoan,
+  "stabilized bridge": StabilizedBridgeLoan,
+};
 
 router.post("/", async (req, res) => {
   try {
@@ -14,21 +29,33 @@ router.post("/", async (req, res) => {
     const inserted = [];
 
     for (const program of payload) {
-      // Check required fields
-      if (!program.name || !program.type || !program.lender) {
-        console.warn("Skipping program due to missing required fields:", program);
-        continue;
+      try {
+        // Check required fields
+        if (!program.name || !program.type || !program.lender) {
+          console.warn("Skipping program due to missing required fields:", program);
+          continue;
+        }
+
+        // Normalize the type field to lowercase
+        program.type = program.type.toLowerCase();
+
+        // Get the corresponding model for the program type
+        const LoanModel = loanProgramModels[program.type];
+        if (!LoanModel) {
+          console.warn(`Skipping program with unsupported type: ${program.type}`);
+          continue;
+        }
+
+        // Convert lender to ObjectId
+        program.lender = mongoose.Types.ObjectId(program.lender);
+
+        // Save the program using the correct model
+        const newProgram = new LoanModel(program);
+        await newProgram.save();
+        inserted.push(newProgram);
+      } catch (innerError) {
+        console.error("❌ Error processing program:", program, innerError.message);
       }
-
-      // Normalize the type field to lowercase
-      program.type = program.type.toLowerCase();
-
-      // Convert lender to ObjectId
-      program.lender = mongoose.Types.ObjectId(program.lender);
-
-      const newProgram = new FixAndFlipLoan(program);
-      await newProgram.save();
-      inserted.push(newProgram);
     }
 
     res.status(200).json({ success: true, insertedCount: inserted.length, inserted });
