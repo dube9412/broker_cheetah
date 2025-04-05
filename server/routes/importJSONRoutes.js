@@ -36,16 +36,6 @@ router.post("/", async (req, res) => {
           continue;
         }
 
-        // Normalize the type field to match API endpoint structure
-        const typeMapping = {
-          "Fix and Flip": "fix-and-flip",
-          "Ground Up": "ground-up",
-          "DSCR": "dscr",
-          "Portfolio": "portfolio",
-          "Stabilized Bridge": "stabilized-bridge",
-        };
-        program.type = typeMapping[program.type.toLowerCase()] || program.type.toLowerCase();
-
         // Get the corresponding model for the program type
         const LoanModel = loanProgramModels[program.type];
         if (!LoanModel) {
