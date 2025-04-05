@@ -56,6 +56,24 @@ const SubmitHelpTicket = () => {
             style={{ width: "100%", height: "100px", padding: "8px", margin: "5px 0" }}
           />
         </div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <button
+            type="button"
+            onClick={handleCancel}
+            style={{ padding: "10px 20px", background: "#6c757d", color: "white", border: "none" }}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            style={{ padding: "10px 20px", background: "#007BFF", color: "white", border: "none" }}
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+      {message && <p style={{ marginTop: "10px", color: "green" }}>{message}</p>}
+    </div>
   );
 };
 
