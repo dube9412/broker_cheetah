@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SubmitHelpTicket = () => {
   const [issue, setIssue] = useState("");
   const [desiredOutcome, setDesiredOutcome] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,6 +30,10 @@ const SubmitHelpTicket = () => {
     }
   };
 
+  const handleCancel = () => {
+    navigate("/dashboard");
+  };
+
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <h1>Submit a Help Ticket</h1>
@@ -38,7 +44,7 @@ const SubmitHelpTicket = () => {
             value={issue}
             onChange={(e) => setIssue(e.target.value)}
             required
-            style={{ width: "100%", padding: "8px", margin: "5px 0" }}
+            style={{ width: "100%", height: "100px", padding: "8px", margin: "5px 0" }}
           />
         </div>
         <div style={{ marginBottom: "10px" }}>
@@ -47,15 +53,9 @@ const SubmitHelpTicket = () => {
             value={desiredOutcome}
             onChange={(e) => setDesiredOutcome(e.target.value)}
             required
-            style={{ width: "100%", padding: "8px", margin: "5px 0" }}
+            style={{ width: "100%", height: "100px", padding: "8px", margin: "5px 0" }}
           />
         </div>
-        <button type="submit" style={{ padding: "10px 20px", background: "#007BFF", color: "white", border: "none" }}>
-          Submit
-        </button>
-      </form>
-      {message && <p style={{ marginTop: "10px", color: "green" }}>{message}</p>}
-    </div>
   );
 };
 

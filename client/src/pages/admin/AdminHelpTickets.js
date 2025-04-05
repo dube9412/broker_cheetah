@@ -57,7 +57,6 @@ const AdminHelpTickets = () => {
 
   return (
     <div className="admin-dashboard" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <AdminNav />
       <h1 style={{ textAlign: "center", color: "#333" }}>Admin Help Tickets</h1>
       <p style={{ textAlign: "center", fontSize: "1.1em" }}>View and manage help tickets submitted by users.</p>
 
