@@ -56,10 +56,15 @@ router.post("/", async (req, res) => {
         // Convert lender to ObjectId
         program.lender = mongoose.Types.ObjectId(program.lender);
 
+        // Log the program being saved
+        console.log("🔹 Saving program:", program);
+
         // Save the program using the correct model
         const newProgram = new LoanModel(program);
-        await newProgram.save();
-        inserted.push(newProgram);
+        const savedProgram = await newProgram.save();
+        console.log("✅ Program saved:", savedProgram);
+
+        inserted.push(savedProgram);
       } catch (innerError) {
         console.error("❌ Error processing program:", program, innerError.message);
       }
