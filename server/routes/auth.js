@@ -41,6 +41,11 @@ router.post('/login', async (req, res) => {
     if (!match) {
       return res.status(404).json({ success: false, message: 'Invalid credentials.' });
     }
+
+    // Update lastLogin field
+    user.lastLogin = new Date();
+    await user.save();
+
     const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
 
     res.json({ 
@@ -48,7 +53,10 @@ router.post('/login', async (req, res) => {
       token, 
       role: user.role,  
       isAdmin: user.role === 'admin' || user.role === 'superadmin', 
-      isSuperAdmin: user.role === 'superadmin' 
+      isSuperAdmin: user.role === 'superadmin',
+      firstName: user.firstName, // Include first name
+      lastName: user.lastName,  // Include last name
+      lastLogin: user.lastLogin // Include last login
     });
   } catch (error) {
     console.error('Login error:', error);

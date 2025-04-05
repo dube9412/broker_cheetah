@@ -28,7 +28,10 @@ const AdminUsers = () => {
           throw new Error(`Error fetching users: ${response.statusText}`);
         }
         const data = await response.json();
-        setUsers(data);
+        setUsers(data.map(user => ({
+          ...user,
+          fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim() // Compute full name
+        })));
       } catch (error) {
         console.error("Error fetching users:", error);
         setError("Failed to fetch users. Please try again later.");
@@ -86,12 +89,12 @@ const AdminUsers = () => {
   const filteredUsers = useMemo(() => {
     return users
       .filter(user =>
-        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+        user.fullName.toLowerCase().includes(searchTerm.toLowerCase())
       )
       .sort((a, b) =>
         sortOrder === "asc"
-          ? `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
-          : `${b.firstName} ${b.lastName}`.localeCompare(`${a.firstName} ${a.lastName}`)
+          ? a.fullName.localeCompare(b.fullName)
+          : b.fullName.localeCompare(a.fullName)
       );
   }, [users, searchTerm, sortOrder]);
 
@@ -138,7 +141,7 @@ const AdminUsers = () => {
           {filteredUsers.length > 0 ? (
             filteredUsers.map((user) => (
               <tr key={user._id}>
-                <td>{`${user.firstName} ${user.lastName}`}</td>
+                <td>{user.fullName || "N/A"}</td> {/* Use fullName or fallback to "N/A" */}
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td>{new Date(user.createdAt).toLocaleString()}</td>

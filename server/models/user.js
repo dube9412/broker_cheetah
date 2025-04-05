@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   userType: { type: String, enum: ["Broker", "Investor", "Other"], required: true },
+  lastLogin: { type: Date }, // Add lastLogin field
 });
 
 module.exports = mongoose.model("User", userSchema);
