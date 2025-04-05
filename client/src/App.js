@@ -65,6 +65,7 @@ import LenderAwaitingAssignment from './pages/LenderPortal/LenderAwaitingAssignm
 import LenderAwaitingApproval from './pages/LenderPortal/LenderAwaitingApproval';
 
 import SubmitHelpTicket from './pages/SubmitHelpTicket'; // Import SubmitHelpTicket
+import Notifications from "./pages/Notifications"; // Import Notifications
 
 import NotFound from './pages/NotFound';
 
@@ -185,6 +186,9 @@ function App() {
 
               {/* Help Tickets */}
               <Route path="/help-tickets" element={<SubmitHelpTicket />} />
+
+              {/* Notifications */}
+              <Route path="/notifications" element={<Notifications />} />
 
              {/* Lender Portal (protected) */}
              <Route path="/lender/*" element={<LenderProtectedRoutes />}>

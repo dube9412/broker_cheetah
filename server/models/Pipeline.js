@@ -1,21 +1,38 @@
 const mongoose = require("mongoose");
 
-const PipelineSchema = new mongoose.Schema(
-  {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    address: { type: String, required: true },
-    fico: { type: Number, required: true },
-    experience: { type: Number, required: true },
-    purchasePrice: { type: Number, required: true },
-    asisValue: { type: Number, required: true },
-    rehabNeeded: { type: Number, required: true },
-    arv: { type: Number, required: true },
-    liquidity: { type: Number, required: true },
-    createdAt: { type: Date, default: Date.now },
-  },
-  { timestamps: true }
-);
+const milestoneSchema = new mongoose.Schema({
+  name: String,
+  status: { type: String, enum: ["pending", "completed"], default: "pending" },
+  updatedAt: { type: Date, default: Date.now },
+});
 
-const Pipeline = mongoose.model("Pipeline", PipelineSchema);
+const documentSchema = new mongoose.Schema({
+  name: String,
+  status: { type: String, enum: ["pending", "submitted"], default: "pending" },
+  fileUrl: String, // Optional: URL for uploaded files
+});
 
-module.exports = Pipeline;
+const contactSchema = new mongoose.Schema({
+  role: String, // e.g., "borrower", "lender", "title company"
+  name: String,
+  email: String,
+  phone: String,
+});
+
+const pipelineSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  address: String,
+  fico: Number,
+  experience: Number,
+  purchasePrice: Number,
+  asisValue: Number,
+  rehabNeeded: Number,
+  arv: Number,
+  liquidity: Number,
+  milestones: [milestoneSchema],
+  documents: [documentSchema],
+  contacts: [contactSchema],
+  createdAt: { type: Date, default: Date.now },
+});
+
+module.exports = mongoose.model("Pipeline", pipelineSchema);

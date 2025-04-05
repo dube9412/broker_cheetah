@@ -64,6 +64,60 @@ function Pipeline() {
           </tbody>
         </table>
       )}
+      {pipeline.map((entry) => (
+        <PipelineDetails key={entry._id} entry={entry} />
+      ))}
+    </div>
+  );
+}
+
+function PipelineDetails({ entry }) {
+  const [milestones, setMilestones] = useState(entry.milestones || []);
+  const [documents, setDocuments] = useState(entry.documents || []);
+  const [contacts, setContacts] = useState(entry.contacts || []);
+
+  const updateMilestones = async () => {
+    // API call to update milestones
+  };
+
+  const updateDocuments = async () => {
+    // API call to update documents
+  };
+
+  const updateContacts = async () => {
+    // API call to update contacts
+  };
+
+  return (
+    <div>
+      <h2>Details for {entry.address}</h2>
+
+      <h3>Milestones</h3>
+      <ul>
+        {milestones.map((milestone, index) => (
+          <li key={index}>
+            {milestone.name}: {milestone.status}
+          </li>
+        ))}
+      </ul>
+
+      <h3>Documents</h3>
+      <ul>
+        {documents.map((doc, index) => (
+          <li key={index}>
+            {doc.name}: {doc.status}
+          </li>
+        ))}
+      </ul>
+
+      <h3>Contacts</h3>
+      <ul>
+        {contacts.map((contact, index) => (
+          <li key={index}>
+            {contact.role}: {contact.name} ({contact.email})
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
