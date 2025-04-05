@@ -101,7 +101,7 @@ const AdminJSONTools = () => {
       
 
       <h1>📦 Admin JSON Tools</h1>
-      <p>Upload Fix and Flip loan programs using a JSON file.</p>
+      <p>Upload loan program JSON files.</p>
 
       <input type="file" accept=".json" onChange={handleUpload} disabled={loading} />
       <br /><br />

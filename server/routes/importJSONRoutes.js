@@ -11,11 +11,11 @@ const StabilizedBridgeLoan = require("../models/StabilizedBridgeLoan");
 
 // Map loan program types to their corresponding models
 const loanProgramModels = {
-  "fix and flip": FixAndFlipLoan,
-  "ground up": GroundUpLoan,
+  "fix-and-flip": FixAndFlipLoan,
+  "ground-up": GroundUpLoan,
   "dscr": DSCRLoan,
   "portfolio": PortfolioLoan,
-  "stabilized bridge": StabilizedBridgeLoan,
+  "stabilized-bridge": StabilizedBridgeLoan,
 };
 
 router.post("/", async (req, res) => {
@@ -36,8 +36,15 @@ router.post("/", async (req, res) => {
           continue;
         }
 
-        // Normalize the type field to lowercase
-        program.type = program.type.toLowerCase();
+        // Normalize the type field to match API endpoint structure
+        const typeMapping = {
+          "fix and flip": "fix-and-flip",
+          "ground up": "ground-up",
+          "dscr": "dscr",
+          "portfolio": "portfolio",
+          "stabilized bridge": "stabilized-bridge",
+        };
+        program.type = typeMapping[program.type.toLowerCase()] || program.type.toLowerCase();
 
         // Get the corresponding model for the program type
         const LoanModel = loanProgramModels[program.type];
