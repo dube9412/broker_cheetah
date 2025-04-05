@@ -11,11 +11,11 @@ const StabilizedBridgeLoan = require("../models/StabilizedBridgeLoan");
 
 // Map loan program types to their corresponding models
 const loanProgramModels = {
-  "fix-and-flip": FixAndFlipLoan,
-  "ground-up": GroundUpLoan,
+  "fix and flip": FixAndFlipLoan,
+  "ground up": GroundUpLoan,
   "dscr": DSCRLoan,
   "portfolio": PortfolioLoan,
-  "stabilized-bridge": StabilizedBridgeLoan,
+  "stabilized bridge": StabilizedBridgeLoan,
 };
 
 router.post("/", async (req, res) => {
@@ -32,21 +32,21 @@ router.post("/", async (req, res) => {
       try {
         // Check required fields
         if (!program.name || !program.type || !program.lender) {
-          console.warn("Skipping program due to missing required fields:", program);
+          console.warn("⚠️ Skipping program due to missing required fields:", program);
           continue;
         }
 
         // Validate the type field
         const validTypes = ["Fix and Flip", "Ground Up", "Portfolio", "Stabilized Bridge", "DSCR"];
         if (!validTypes.includes(program.type)) {
-          console.warn(`Skipping program with unsupported type: ${program.type}`);
+          console.warn(`⚠️ Skipping program with unsupported type: ${program.type}`);
           continue;
         }
 
         // Get the corresponding model for the program type
         const LoanModel = loanProgramModels[program.type.toLowerCase().replace(/ /g, "-")];
         if (!LoanModel) {
-          console.warn(`Skipping program with unsupported type: ${program.type}`);
+          console.warn(`⚠️ Skipping program with unsupported type: ${program.type}`);
           continue;
         }
 
