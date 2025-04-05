@@ -11,11 +11,11 @@ const StabilizedBridgeLoan = require("../models/StabilizedBridgeLoan");
 
 // Map loan program types to their corresponding models
 const loanProgramModels = {
-  "fix and flip": FixAndFlipLoan,
-  "ground up": GroundUpLoan,
+  "fix-and-flip": FixAndFlipLoan,
+  "ground-up": GroundUpLoan,
   "dscr": DSCRLoan,
   "portfolio": PortfolioLoan,
-  "stabilized bridge": StabilizedBridgeLoan,
+  "stabilized-bridge": StabilizedBridgeLoan,
 };
 
 router.post("/", async (req, res) => {
@@ -32,21 +32,24 @@ router.post("/", async (req, res) => {
       try {
         // Check required fields
         if (!program.name || !program.type || !program.lender) {
-          console.warn("⚠️ Skipping program due to missing required fields:", program);
+          console.warn("Skipping program due to missing required fields:", program);
           continue;
         }
 
-        // Validate the type field
-        const validTypes = ["Fix and Flip", "Ground Up", "Portfolio", "Stabilized Bridge", "DSCR"];
-        if (!validTypes.includes(program.type)) {
-          console.warn(`⚠️ Skipping program with unsupported type: ${program.type}`);
-          continue;
-        }
+        // Normalize the type field to match API endpoint structure
+        const typeMapping = {
+          "fix and flip": "fix-and-flip",
+          "ground up": "ground-up",
+          "dscr": "dscr",
+          "portfolio": "portfolio",
+          "stabilized bridge": "stabilized-bridge",
+        };
+        program.type = typeMapping[program.type.toLowerCase()] || program.type.toLowerCase();
 
         // Get the corresponding model for the program type
-        const LoanModel = loanProgramModels[program.type.toLowerCase().replace(/ /g, "-")];
+        const LoanModel = loanProgramModels[program.type];
         if (!LoanModel) {
-          console.warn(`⚠️ Skipping program with unsupported type: ${program.type}`);
+          console.warn(`Skipping program with unsupported type: ${program.type}`);
           continue;
         }
 
@@ -56,6 +59,22 @@ router.post("/", async (req, res) => {
           continue;
         }
         program.lender = new mongoose.Types.ObjectId(program.lender);
+
+        // Validate and restructure tiers
+        if (Array.isArray(program.tiers)) {
+          program.tiers = program.tiers.map((tier) => {
+            if (tier.loanRange && typeof tier.loanRange === "object") {
+              tier.loanRange = {
+                min: tier.loanRange.min || 0,
+                max: tier.loanRange.max || 0,
+              };
+            }
+            return tier;
+          });
+        }
+
+        // Log the program being saved
+        console.log("🔹 Saving program:", program);
 
         // Save the program using the correct model
         const newProgram = new LoanModel(program);
