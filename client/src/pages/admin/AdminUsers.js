@@ -30,7 +30,7 @@ const AdminUsers = () => {
         const data = await response.json();
         setUsers(data.map(user => ({
           ...user,
-          fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim() // Compute full name
+          fullName: `${user.firstName || "Unknown"} ${user.lastName || "Unknown"}`.trim() // Ensure fullName is computed
         })));
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -89,7 +89,7 @@ const AdminUsers = () => {
   const filteredUsers = useMemo(() => {
     return users
       .filter(user =>
-        user.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+        user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) // Search by fullName
       )
       .sort((a, b) =>
         sortOrder === "asc"
@@ -145,7 +145,7 @@ const AdminUsers = () => {
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td>{new Date(user.createdAt).toLocaleString()}</td>
-                <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}</td> {/* Display Last Login */}
+                <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}</td> {/* Ensure lastLogin is displayed */}
                 <td>
                   {user.role !== "superadmin" && (
                     <>

@@ -10,7 +10,9 @@ function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      <h1 className="dashboard-title">{user?.firstName} Welcome to Your Dashboard</h1>
+      <h1 className="dashboard-title">
+        {user?.firstName ? `${user.firstName} Welcome to Your Dashboard` : "Welcome to Your Dashboard"}
+      </h1>
       <p className="dashboard-subtitle">Select an option below to get started:</p>
 
       <div className="dashboard-cards">
