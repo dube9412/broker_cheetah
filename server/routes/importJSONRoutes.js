@@ -36,18 +36,18 @@ router.post("/", async (req, res) => {
           continue;
         }
 
-        // Normalize the type field to match API endpoint structure
+        // Normalize the type field to title case
         const typeMapping = {
-          "fix and flip": "fix-and-flip",
-          "ground up": "ground-up",
-          "dscr": "dscr",
-          "portfolio": "portfolio",
-          "stabilized bridge": "stabilized-bridge",
+          "fix and flip": "Fix and Flip",
+          "ground up": "Ground Up",
+          "dscr": "DSCR",
+          "portfolio": "Portfolio",
+          "stabilized bridge": "Stabilized Bridge",
         };
-        program.type = typeMapping[program.type.toLowerCase()] || program.type.toLowerCase();
+        program.type = typeMapping[program.type.toLowerCase()] || program.type;
 
         // Get the corresponding model for the program type
-        const LoanModel = loanProgramModels[program.type];
+        const LoanModel = loanProgramModels[program.type.toLowerCase()];
         if (!LoanModel) {
           console.warn(`Skipping program with unsupported type: ${program.type}`);
           continue;
@@ -59,22 +59,6 @@ router.post("/", async (req, res) => {
           continue;
         }
         program.lender = new mongoose.Types.ObjectId(program.lender);
-
-        // Validate and restructure tiers
-        if (Array.isArray(program.tiers)) {
-          program.tiers = program.tiers.map((tier) => {
-            if (tier.loanRange && typeof tier.loanRange === "object") {
-              tier.loanRange = {
-                min: tier.loanRange.min || 0,
-                max: tier.loanRange.max || 0,
-              };
-            }
-            return tier;
-          });
-        }
-
-        // Log the program being saved
-        console.log("🔹 Saving program:", program);
 
         // Save the program using the correct model
         const newProgram = new LoanModel(program);

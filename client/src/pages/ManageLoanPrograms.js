@@ -22,11 +22,9 @@ function ManageLoanPrograms() {
   // ✅ Fetch function for loan programs
   const fetchPrograms = async (url, stateSetter) => {
     try {
-      console.log(`🔹 Fetching programs from: ${url}`);
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
-        console.log("✅ Programs fetched:", data);
         stateSetter(Array.isArray(data) ? data : []);
       } else {
         console.warn(`⚠️ No programs found for ${url}`);
