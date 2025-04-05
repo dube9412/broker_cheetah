@@ -1,24 +1,24 @@
 import React, { useState } from "react";
 
 const SubmitHelpTicket = () => {
-  const [userEmail, setUserEmail] = useState("");
   const [issue, setIssue] = useState("");
+  const [desiredOutcome, setDesiredOutcome] = useState("");
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin/help-tickets", {
+      const response = await fetch("/api/admin/help-tickets", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userEmail, issue }),
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
+        body: JSON.stringify({ issue, desiredOutcome }),
       });
 
       const data = await response.json();
       if (response.ok) {
         setMessage("Help ticket submitted successfully!");
-        setUserEmail("");
         setIssue("");
+        setDesiredOutcome("");
       } else {
         setMessage(`Error: ${data.message}`);
       }
@@ -33,20 +33,19 @@ const SubmitHelpTicket = () => {
       <h1>Submit a Help Ticket</h1>
       <form onSubmit={handleSubmit} style={{ maxWidth: "400px", margin: "0 auto" }}>
         <div style={{ marginBottom: "10px" }}>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={userEmail}
-            onChange={(e) => setUserEmail(e.target.value)}
+          <label>Issue:</label>
+          <textarea
+            value={issue}
+            onChange={(e) => setIssue(e.target.value)}
             required
             style={{ width: "100%", padding: "8px", margin: "5px 0" }}
           />
         </div>
         <div style={{ marginBottom: "10px" }}>
-          <label>Issue:</label>
+          <label>Desired Outcome:</label>
           <textarea
-            value={issue}
-            onChange={(e) => setIssue(e.target.value)}
+            value={desiredOutcome}
+            onChange={(e) => setDesiredOutcome(e.target.value)}
             required
             style={{ width: "100%", padding: "8px", margin: "5px 0" }}
           />
