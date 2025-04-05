@@ -112,10 +112,10 @@ function ManageLoanPrograms() {
 
       const loanTypeMapping = {
         "Fix and Flip": "fix-and-flip",
-        "DSCR": "dscr",
         "Ground Up": "ground-up",
         "Portfolio": "portfolio",
         "Stabilized Bridge": "stabilized-bridge",
+        "DSCR": "dscr",
       };
 
       const loanTypePath = loanTypeMapping[programType];

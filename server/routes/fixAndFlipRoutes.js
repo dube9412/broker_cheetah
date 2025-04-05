@@ -10,12 +10,7 @@ console.log("✅ Fix and Flip Routes File Loaded");
 router.get("/:lenderId/fix-and-flip-programs", async (req, res) => {
   try {
     console.log(`🔹 Fetching Fix and Flip programs for lenderId: ${req.params.lenderId}`);
-    if (!mongoose.Types.ObjectId.isValid(req.params.lenderId)) {
-      console.error(`❌ Invalid lenderId: ${req.params.lenderId}`);
-      return res.status(400).json({ message: "Invalid lenderId" });
-    }
-
-    const fixAndFlipPrograms = await FixAndFlipLoan.find({ lender: req.params.lenderId });
+    const fixAndFlipPrograms = await FixAndFlipLoan.find({ lender: req.params.lenderId, type: "Fix and Flip" });
 
     if (fixAndFlipPrograms.length === 0) {
       console.warn("⚠️ No Fix and Flip programs found.");

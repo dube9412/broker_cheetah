@@ -36,18 +36,15 @@ router.post("/", async (req, res) => {
           continue;
         }
 
-        // Normalize the type field to title case
-        const typeMapping = {
-          "fix and flip": "Fix and Flip",
-          "ground up": "Ground Up",
-          "dscr": "DSCR",
-          "portfolio": "Portfolio",
-          "stabilized bridge": "Stabilized Bridge",
-        };
-        program.type = typeMapping[program.type.toLowerCase()] || program.type;
+        // Validate the type field
+        const validTypes = ["Fix and Flip", "Ground Up", "Portfolio", "Stabilized Bridge", "DSCR"];
+        if (!validTypes.includes(program.type)) {
+          console.warn(`Skipping program with unsupported type: ${program.type}`);
+          continue;
+        }
 
         // Get the corresponding model for the program type
-        const LoanModel = loanProgramModels[program.type.toLowerCase()];
+        const LoanModel = loanProgramModels[program.type.toLowerCase().replace(/ /g, "-")];
         if (!LoanModel) {
           console.warn(`Skipping program with unsupported type: ${program.type}`);
           continue;
