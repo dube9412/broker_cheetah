@@ -54,7 +54,24 @@ router.post("/", async (req, res) => {
         }
 
         // Convert lender to ObjectId
-        program.lender = mongoose.Types.ObjectId(program.lender);
+        if (!mongoose.Types.ObjectId.isValid(program.lender)) {
+          console.error(`❌ Invalid lender ObjectId: ${program.lender}`);
+          continue;
+        }
+        program.lender = new mongoose.Types.ObjectId(program.lender);
+
+        // Validate and restructure tiers
+        if (Array.isArray(program.tiers)) {
+          program.tiers = program.tiers.map((tier) => {
+            if (tier.loanRange && typeof tier.loanRange === "object") {
+              tier.loanRange = {
+                min: tier.loanRange.min || 0,
+                max: tier.loanRange.max || 0,
+              };
+            }
+            return tier;
+          });
+        }
 
         // Log the program being saved
         console.log("🔹 Saving program:", program);
