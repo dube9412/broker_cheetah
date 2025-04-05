@@ -82,16 +82,16 @@ const AdminUsers = () => {
     }
   };
 
-  // Filter and sort users based on search term and role
+  // Filter and sort users based on search term and full name
   const filteredUsers = useMemo(() => {
     return users
       .filter(user =>
-        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
       )
       .sort((a, b) =>
         sortOrder === "asc"
-          ? a.role.localeCompare(b.role)
-          : b.role.localeCompare(a.role)
+          ? `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
+          : `${b.firstName} ${b.lastName}`.localeCompare(`${a.firstName} ${a.lastName}`)
       );
   }, [users, searchTerm, sortOrder]);
 
@@ -126,6 +126,7 @@ const AdminUsers = () => {
       <table border="1" cellPadding="6" style={{ marginTop: "1rem" }}>
         <thead>
           <tr>
+            <th>Name</th>
             <th>Email</th>
             <th>Role</th>
             <th>Created At</th>
@@ -137,6 +138,7 @@ const AdminUsers = () => {
           {filteredUsers.length > 0 ? (
             filteredUsers.map((user) => (
               <tr key={user._id}>
+                <td>{`${user.firstName} ${user.lastName}`}</td>
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td>{new Date(user.createdAt).toLocaleString()}</td>
@@ -164,7 +166,7 @@ const AdminUsers = () => {
             ))
           ) : (
             <tr>
-              <td colSpan="5">No users found.</td> {/* Update colspan to match new column count */}
+              <td colSpan="6">No users found.</td> {/* Update colspan to match new column count */}
             </tr>
           )}
         </tbody>

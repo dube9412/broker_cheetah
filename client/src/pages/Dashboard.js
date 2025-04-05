@@ -1,14 +1,16 @@
 // Dashboard.js
 
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import "../styles/Dashboard.css";
 
-
 function Dashboard() {
+  const { user } = useContext(AuthContext);
+
   return (
     <div className="dashboard-container">
-      <h1 className="dashboard-title">Welcome to Your Dashboard</h1>
+      <h1 className="dashboard-title">{user?.firstName} Welcome to Your Dashboard</h1>
       <p className="dashboard-subtitle">Select an option below to get started:</p>
 
       <div className="dashboard-cards">

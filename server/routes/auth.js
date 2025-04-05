@@ -9,14 +9,17 @@ const JWT_SECRET =  process.env.JWT_SECRET || 'YOUR_SECRET_KEY';
 
 // Sign Up
 router.post('/signup', async (req, res) => {
-  const { email, password, marketingOptIn } = req.body;
+  const { email, password, marketingOptIn, firstName, lastName, userType } = req.body; // Add new fields
   try {
+    if (!firstName || !lastName || !userType) {
+      return res.json({ success: false, message: 'First name, last name, and user type are required.' });
+    }
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.json({ success: false, message: 'User already exists.' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ email, password: hashedPassword, marketingOptIn });
+    const newUser = new User({ email, password: hashedPassword, marketingOptIn, firstName, lastName, userType }); // Include new fields
     await newUser.save();
     res.json({ success: true });
   } catch (error) {
