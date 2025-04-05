@@ -31,10 +31,10 @@ function Dashboard() {
           <p>Analyze your deals with precision.</p>
         </Link>
 
-        <div className="dashboard-card disabled">
+        <Link to ="/pipeline" className="dashboard-card">
           <h3>Pipeline</h3>
-          <p>Coming soon</p>
-        </div>
+          <p>Take a deal from the Quote to Submission</p>
+        </Link>
 
         <div className="dashboard-card disabled">
           <h3>Help / Tickets</h3>

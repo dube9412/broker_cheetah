@@ -25,6 +25,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
+import Pipeline from "./pages/Pipeline";
 
 // Admin Pages
 import AdminDashboard from "./pages/AdminDashboard";
@@ -132,6 +133,7 @@ function App() {
               <Route path="/hard-money-class/:lessonId" element={<LessonPage />} />
               <Route path="/fix-and-flip-calculator" element={<FixAndFlipCalc />} />
               <Route path="/one-click-quote" element={<OneClickQuoteModal />} />
+              <Route path="/pipeline" element={<Pipeline />} />
 
               {/* Loan type & search */}
               <Route path="/lender-search" element={<LoanTypeSelection />} />
