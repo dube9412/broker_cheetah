@@ -38,11 +38,11 @@ router.post("/", async (req, res) => {
 
         // Normalize the type field to match API endpoint structure
         const typeMapping = {
-          "fix and flip": "fix-and-flip",
-          "ground up": "ground-up",
-          "dscr": "dscr",
-          "portfolio": "portfolio",
-          "stabilized bridge": "stabilized-bridge",
+          "Fix and Flip": "fix-and-flip",
+          "Ground Up": "ground-up",
+          "DSCR": "dscr",
+          "Portfolio": "portfolio",
+          "Stabilized Bridge": "stabilized-bridge",
         };
         program.type = typeMapping[program.type.toLowerCase()] || program.type.toLowerCase();
 
