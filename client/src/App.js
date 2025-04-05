@@ -64,7 +64,7 @@ import LenderSignup from './pages/LenderPortal/LenderSignup';
 import LenderAwaitingAssignment from './pages/LenderPortal/LenderAwaitingAssignment'; //Import
 import LenderAwaitingApproval from './pages/LenderPortal/LenderAwaitingApproval';
 
-
+import SubmitHelpTicket from './pages/SubmitHelpTicket'; // Import SubmitHelpTicket
 
 import NotFound from './pages/NotFound';
 
@@ -123,7 +123,7 @@ function App() {
                     </ProtectedAdminRoute>
                   }
                 />
-              <Route path="/admin/help-tickets" element={<AdminHelpTickets />} />
+              <Route path="/admin/help-tickets" element={<ProtectedAdminRoute><AdminHelpTickets /></ProtectedAdminRoute>} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/scrapers" element={<AdminScrapers />} />
               <Route path="/admin/json-tools" element={<AdminJSONTools />} />
@@ -183,6 +183,8 @@ function App() {
                 <Route path="/lender/edit-stabilized-bridge-program/:lenderId/:programId" element={<ProtectedLenderRoute><EditStabilizedBridge /></ProtectedLenderRoute>} />
                 <Route path="/lender/edit-lender/:lenderId" element={<ProtectedLenderRoute><EditLender /></ProtectedLenderRoute>} />
 
+              {/* Help Tickets */}
+              <Route path="/help-tickets" element={<SubmitHelpTicket />} />
 
              {/* Lender Portal (protected) */}
              <Route path="/lender/*" element={<LenderProtectedRoutes />}>

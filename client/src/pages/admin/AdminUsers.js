@@ -141,7 +141,7 @@ const AdminUsers = () => {
           {filteredUsers.length > 0 ? (
             filteredUsers.map((user) => (
               <tr key={user._id}>
-                <td>{user.fullName || "N/A"}</td> {/* Display full name */}
+                <td>{user.fullName  || "N/A"}</td> {/* Display full name */}
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td>{new Date(user.createdAt).toLocaleString()}</td>

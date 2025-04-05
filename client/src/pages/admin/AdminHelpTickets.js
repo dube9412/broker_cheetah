@@ -9,8 +9,25 @@ const AdminHelpTickets = () => {
   const { isAdmin, isSuperAdmin } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  <AdminNav />
+  const resolveTicket = async (ticketId) => {
+    try {
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/admin/help-tickets/${ticketId}/resolve`, {
+        method: "POST",
+      });
 
+      if (response.ok) {
+        setTickets((prevTickets) =>
+          prevTickets.map((ticket) =>
+            ticket._id === ticketId ? { ...ticket, status: "Resolved" } : ticket
+          )
+        );
+      } else {
+        console.error("Failed to resolve ticket");
+      }
+    } catch (error) {
+      console.error("Error resolving ticket:", error);
+    }
+  };
 
   useEffect(() => {
     if (!isAdmin && !isSuperAdmin) {
@@ -40,8 +57,7 @@ const AdminHelpTickets = () => {
 
   return (
     <div className="admin-dashboard" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      
-      
+      <AdminNav />
       <h1 style={{ textAlign: "center", color: "#333" }}>Admin Help Tickets</h1>
       <p style={{ textAlign: "center", fontSize: "1.1em" }}>View and manage help tickets submitted by users.</p>
 
@@ -52,6 +68,7 @@ const AdminHelpTickets = () => {
               <th>User</th>
               <th>Issue</th>
               <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -61,11 +78,21 @@ const AdminHelpTickets = () => {
                   <td>{ticket.userEmail}</td>
                   <td>{ticket.issue}</td>
                   <td>{ticket.status}</td>
+                  <td>
+                    {ticket.status !== "Resolved" && (
+                      <button
+                        onClick={() => resolveTicket(ticket._id)}
+                        style={{ padding: "5px 10px", background: "#28a745", color: "white", border: "none", cursor: "pointer" }}
+                      >
+                        Resolve
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="3" style={{ textAlign: "center", padding: "10px", fontSize: "1.2em" }}>No help tickets available.</td>
+                <td colSpan="4" style={{ textAlign: "center", padding: "10px", fontSize: "1.2em" }}>No help tickets available.</td>
               </tr>
             )}
           </tbody>

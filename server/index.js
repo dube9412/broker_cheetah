@@ -20,6 +20,7 @@ const portfolioRoutes = require("./routes/portfolioRoutes");
 const documentRoutes = require('./routes/documentRoutes');
 const scraperRoutes = process.env.HOST_ENV !== "render" ? require("./routes/scraperRoutes") : null; // Only load scraper in non-render environments
 const importJSONRoutes = require("./routes/importJSONRoutes"); // ✅ Import JSON routes
+const pipelineRoutes = require("./routes/pipelineRoutes"); // ✅ Pipeline routes
 
 const app = express();
 
@@ -59,7 +60,8 @@ if (scraperRoutes) {
 }
 app.use("/api/import-json", importJSONRoutes); // ✅ Import JSON routes
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
+app.use("/api/pipeline", pipelineRoutes); // ✅ Pipeline routes
+// ✅ Serve static files from the React frontend app
 
 // ✅ Debug: List all available routes after mounting
 app.use((req, res, next) => {

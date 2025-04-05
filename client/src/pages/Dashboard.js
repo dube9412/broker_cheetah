@@ -36,10 +36,11 @@ function Dashboard() {
           <p>Take a deal from the Quote to Submission</p>
         </Link>
 
-        <div className="dashboard-card disabled">
-          <h3>Help / Tickets</h3>
-          <p>Coming soon</p>
-        </div>
+        <Link to ="/help-tickets" className="dashboard-card">
+          <h3>Help</h3>
+          <p>Need assistance? Get help here.</p>
+        </Link>
+          
 
         <div className="dashboard-card disabled">
           <h3>Knowledge Base</h3>

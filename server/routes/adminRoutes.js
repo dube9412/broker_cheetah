@@ -133,7 +133,7 @@ router.post("/toggle-optin", async (req, res) => {
   }
 });
 
-router.post('/assign-lender', adminController.assignLenderToUser);  //THIS RIGHT HERE HAS NO FUCKING CODE UNDER IT.  SHOULDN'T IT
+router.post('/assign-lender', adminController.assignLenderToUser);
 
 const HelpTicket = require("../models/HelpTicket");
 
@@ -145,6 +145,25 @@ router.get("/help-tickets", async (req, res) => {
   } catch (error) {
     console.error("❌ Error fetching help tickets:", error);
     res.status(500).json({ message: "Failed to fetch help tickets" });
+  }
+});
+
+// ✅ Create a new help ticket
+router.post("/help-tickets", async (req, res) => {
+  try {
+    const { userEmail, issue } = req.body;
+
+    if (!userEmail || !issue) {
+      return res.status(400).json({ message: "User email and issue are required" });
+    }
+
+    const newTicket = new HelpTicket({ userEmail, issue });
+    await newTicket.save();
+
+    res.status(201).json({ success: true, message: "Help ticket created successfully", ticket: newTicket });
+  } catch (error) {
+    console.error("❌ Error creating help ticket:", error);
+    res.status(500).json({ message: "Failed to create help ticket" });
   }
 });
 
