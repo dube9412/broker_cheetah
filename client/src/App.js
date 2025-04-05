@@ -64,7 +64,7 @@ import LenderSignup from './pages/LenderPortal/LenderSignup';
 import LenderAwaitingAssignment from './pages/LenderPortal/LenderAwaitingAssignment'; //Import
 import LenderAwaitingApproval from './pages/LenderPortal/LenderAwaitingApproval';
 
-import SubmitHelpTicket from './pages/SubmitHelpTicket'; // Import SubmitHelpTicket
+import SubmitHelpTicket from './pages/user/SubmitHelpTicket'; // ✅ Corrected path
 import Notifications from "./pages/Notifications"; // Import Notifications
 
 import NotFound from './pages/NotFound';
