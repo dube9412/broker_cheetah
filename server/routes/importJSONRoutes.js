@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const router = express.Router();
 const FixAndFlipLoan = require("../models/FixAndFlipLoan"); // Only this one for now
 
@@ -21,6 +22,9 @@ router.post("/", async (req, res) => {
 
       // Normalize the type field to lowercase
       program.type = program.type.toLowerCase();
+
+      // Convert lender to ObjectId
+      program.lender = mongoose.Types.ObjectId(program.lender);
 
       const newProgram = new FixAndFlipLoan(program);
       await newProgram.save();
