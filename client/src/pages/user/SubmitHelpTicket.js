@@ -10,20 +10,20 @@ const SubmitHelpTicket = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/admin/help-tickets", { // ✅ Fixed syntax error
+      const response = await fetch("/api/admin/help-tickets", { // ✅ Ensure correct backend URL
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ issue, desiredOutcome }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({ message: "Unknown error occurred." }));
         setMessage(`Error: ${errorData.message}`);
         return;
       }
 
-      const data = await response.json();
-      setMessage("Help ticket submitted successfully!");
+      const data = await response.json().catch(() => ({ message: "Help ticket submitted successfully!" }));
+      setMessage(data.message);
       setIssue("");
       setDesiredOutcome("");
     } catch (error) {
