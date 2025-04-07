@@ -10,7 +10,7 @@ const SubmitHelpTicket = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/admin/help-tickets", { // ✅ Ensure correct backend URL
+      const response = await fetch("https://www.brokercheetah.com/api/admin/help-tickets", { // ✅ Ensure correct backend URL
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ issue, desiredOutcome }),
