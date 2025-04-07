@@ -30,9 +30,6 @@ const AdminUsers = () => {
         const data = await response.json();
         setUsers(data.map(user => ({
           ...user,
-          firstName: user.firstName || "N/A", // Ensure firstName is not undefined
-          lastName: user.lastName || "N/A",  // Ensure lastName is not undefined
-          lastLogin: user.lastLogin ? new Date(user.lastLogin) : null // Parse lastLogin as a Date object
         })));
       } catch (error) {
         console.error("Error fetching users:", error);

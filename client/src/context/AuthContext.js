@@ -4,20 +4,20 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
- const isLoggedIn = !!user; // ✅ Boolean for login state
+  const isLoggedIn = !!user; // ✅ Boolean for login state
   const isAdmin = user?.role === "admin" || user?.role === "superadmin";
   const isSuperAdmin = user?.role === "superadmin";
   const isLender = user?.role === "lender";
 
-
   useEffect(() => {
     // ✅ Restore login state from localStorage
     const storedToken = localStorage.getItem("token");
-    const storedRole = localStorage.getItem("userRole");
+    const storedUser = localStorage.getItem("user");
 
-    if (storedToken && storedRole) {
-      console.log("Restoring user from localStorage:", { token: storedToken, role: storedRole });
-      setUser({ token: storedToken, role: storedRole });
+    if (storedToken && storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      console.log("Restoring user from localStorage:", parsedUser);
+      setUser({ ...parsedUser, token: storedToken });
     }
   }, []);
 
@@ -26,16 +26,27 @@ export const AuthProvider = ({ children }) => {
     setUser(userData); // ✅ Update state to trigger re-render
 
     localStorage.setItem("token", userData.token);
-    localStorage.setItem("userRole", userData.role);
+    localStorage.setItem("user", JSON.stringify(userData)); // Store full user data
   };
 
-  const logout = () => {setUser(null);
+  const logout = () => {
+    setUser(null);
     localStorage.removeItem("token");
-    localStorage.removeItem("userRole");
+    localStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, isAdmin, isSuperAdmin, isLender, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoggedIn,
+        isAdmin,
+        isSuperAdmin,
+        isLender,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
