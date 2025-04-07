@@ -10,26 +10,13 @@ const LenderUser = require("../models/LenderUser");
 router.use("/documents", documentRoutes);
 
 // ✅ GET all users (Admin Only)
-// Fetch users for admin list
-router.get('/admin/users', async (req, res) => {
+router.get("/users", async (req, res) => {
   try {
-    const users = await User.find(); // ← REMOVED field restrictions entirely
-
-    console.log('Fetched users from database:', users);
-
-    res.json(users.map(user => ({
-      _id: user._id,
-      email: user.email,
-      role: user.role,
-      createdAt: user.createdAt,
-      firstName: user.firstName || "N/A",
-      lastName: user.lastName || "N/A",
-      lastLogin: user.lastLogin || null,
-      marketingOptIn: user.marketingOptIn ?? false,
-    })));
+    const users = await User.find(); // Fetch all fields for users
+    res.status(200).json(users);
   } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ success: false, message: 'Error fetching users' });
+    console.error("❌ Error fetching users:", error);
+    res.status(500).json({ message: "Failed to fetch users" });
   }
 });
 
