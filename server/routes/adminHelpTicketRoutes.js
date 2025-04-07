@@ -14,7 +14,7 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
-// ✅ Submit a new help ticket
+// ✅ Ensure the POST route is correctly defined and accessible
 router.post("/", verifyToken, async (req, res) => {
   console.log("🔹 POST /api/admin/help-tickets called");
   console.log("🔹 Request body:", req.body);

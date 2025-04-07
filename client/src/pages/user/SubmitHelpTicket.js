@@ -10,11 +10,16 @@ const SubmitHelpTicket = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://www.brokercheetah.com/api/admin/help-tickets", { // ✅ Ensure correct backend URL
+      const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin/help-tickets", { // ✅ Ensure correct backend URL
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ issue, desiredOutcome }),
       });
+
+      if (response.status === 405) {
+        setMessage("Error: Method Not Allowed. Please contact support.");
+        return;
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: "Unknown error occurred." }));
