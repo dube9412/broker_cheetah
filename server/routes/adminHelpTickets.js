@@ -5,6 +5,7 @@ const verifyToken = require("../middleware/verifyToken");
 
 // ✅ Submit a new help ticket
 router.post("/", verifyToken, async (req, res) => {
+  console.log("🔹 Help ticket submission received:", req.body); // ✅ Log the request body
   try {
     const { issue, desiredOutcome } = req.body;
 
@@ -19,6 +20,7 @@ router.post("/", verifyToken, async (req, res) => {
     });
 
     await newHelpTicket.save();
+    console.log("✅ Help ticket saved:", newHelpTicket); // ✅ Log the saved ticket
     res.status(201).json({ success: true, message: "Help ticket submitted successfully." });
   } catch (error) {
     console.error("❌ Error submitting help ticket:", error);

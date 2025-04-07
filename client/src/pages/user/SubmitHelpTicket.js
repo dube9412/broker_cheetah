@@ -10,20 +10,22 @@ const SubmitHelpTicket = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/admin/help-tickets", {
+      const response = await fetch("/api/admin/help-tickets", {dmin/help-tickets", { // ✅ Use local backend URL
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ issue, desiredOutcome }),
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        setMessage("Help ticket submitted successfully!");
-        setIssue("");
-        setDesiredOutcome("");
-      } else {
-        setMessage(`Error: ${data.message}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        setMessage(`Error: ${errorData.message}`);
+        return;
       }
+
+      const data = await response.json();
+      setMessage("Help ticket submitted successfully!");
+      setIssue("");
+      setDesiredOutcome("");
     } catch (error) {
       console.error("Error submitting help ticket:", error);
       setMessage("Failed to submit help ticket.");
