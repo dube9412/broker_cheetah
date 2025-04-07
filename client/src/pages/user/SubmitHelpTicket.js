@@ -10,7 +10,7 @@ const SubmitHelpTicket = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/admin/help-tickets", {dmin/help-tickets", { // ✅ Use local backend URL
+      const response = await fetch("/api/admin/help-tickets", { // ✅ Fixed syntax error
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ issue, desiredOutcome }),
