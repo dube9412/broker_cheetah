@@ -1,15 +1,12 @@
-import React, { useEffect, useState, useContext, useMemo } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
-
-
 const AdminUsers = () => {
-  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [users, setUsers] = useState([]);
   const { isAdmin, isSuperAdmin } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -28,9 +25,7 @@ const AdminUsers = () => {
           throw new Error(`Error fetching users: ${response.statusText}`);
         }
         const data = await response.json();
-        setUsers(data.map(user => ({
-          ...user,
-        })));
+        setUsers(data);
       } catch (error) {
         console.error("Error fetching users:", error);
         setError("Failed to fetch users. Please try again later.");
@@ -84,36 +79,28 @@ const AdminUsers = () => {
     }
   };
 
-  // Filter and sort users based on search term and full name
-  const filteredUsers = useMemo(() => {
-    return users
-      .filter(user =>
-        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) // Search by first and last name
-      )
-      .sort((a, b) =>
-        sortOrder === "asc"
-          ? `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
-          : `${b.firstName} ${b.lastName}`.localeCompare(`${a.firstName} ${a.lastName}`)
-      );
-  }, [users, searchTerm, sortOrder]);
+  // Filter users based on search term
+  const filteredUsers = users.filter((user) =>
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (loading) return <div>Loading users...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <div className="admin-dashboard" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-        <div style={{ padding: "20px" }}>
-      <h1>Admin Users</h1>
-      <p>Manage all registered users (Brokers, Admins, Superadmins).</p>
+      <div style={{ padding: "20px" }}>
+        <h1>Admin Users</h1>
+        <p>Manage all registered users (Brokers, Admins, Superadmins).</p>
 
-      {/* Search Field */}
-      <input
-        type="text"
-        placeholder="Search by email..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ padding: '8px', width: '200px', marginBottom: '20px' }}
-      />
+        {/* Search Field */}
+        <input
+          type="text"
+          placeholder="Search by email..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ padding: '8px', width: '200px', marginBottom: '20px' }}
+        />
 
       {/* Sort Dropdown */}
       <select
@@ -125,55 +112,57 @@ const AdminUsers = () => {
         <option value="desc">Role: Z-A</option>
       </select>
 
-      <table border="1" cellPadding="6" style={{ marginTop: "1rem" }}>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Created At</th>
-            <th>Last Login</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
-              <tr key={user._id}>
-                <td>{user.firstName} {user.lastName}</td> {/* Display first and last name */}
-                <td>{user.email}</td>
-                <td>{user.role}</td>
-                <td>{new Date(user.createdAt).toLocaleString()}</td> {/* Display createdAt */}
-                <td>{user.lastLogin ? user.lastLogin.toLocaleString() : "Never"}</td> {/* Display last login */}
-                <td>
-                  {user.role !== "superadmin" && (
-                    <>
-                      {user.role === "user" && (
-                        <button onClick={() => handleRoleChange(user._id, "promote")}>Promote to Admin</button>
-                      )}
-                      {user.role === "user" && (
-                        <button onClick={() => handleRoleChange(user._id, "suspend")}>Suspend</button>
-                      )}
-                      {user.role === "suspended" && (
-                        <button onClick={() => handleRoleChange(user._id, "reactivate")}>Reactivate</button>
-                      )}
-                      {user.role === "admin" && (
-                        <button onClick={() => handleRoleChange(user._id, "demote")}>Demote to User</button>
-                      )}
-                      <button onClick={() => handleDelete(user._id)}>Delete</button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))
-          ) : (
+      <table border="1" cellpadding="10" style={{ width: "100%", marginTop: "20px", borderCollapse: "collapse" }}>
+          <thead>
             <tr>
-              <td colSpan="6">No users found.</td> {/* Update colspan to match new column count */}
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Created At</th>
+              <th>Last Login</th>
+              <th>Marketing Opt-In</th>
+              <th>Actions</th>
             </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map((user) => (
+                <tr key={user._id}>
+                  <td>{user.firstName} {user.lastName}</td>
+                  <td>{user.email}</td>
+                  <td>{user.role}</td>
+                  <td>{new Date(user.createdAt).toLocaleString()}</td>
+                  <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}</td>
+                  <td>{user.marketingOptIn ? "Yes" : "No"}</td>
+                  <td>
+                    {user.role !== "superadmin" && (
+                      <>
+                        {user.role === "user" && (
+                          <button onClick={() => handleRoleChange(user._id, "promote")}>Promote to Admin</button>
+                        )}
+                        {user.role === "user" && (
+                          <button onClick={() => handleRoleChange(user._id, "suspend")}>Suspend</button>
+                        )}
+                        {user.role === "suspended" && (
+                          <button onClick={() => handleRoleChange(user._id, "reactivate")}>Reactivate</button>
+                        )}
+                        {user.role === "admin" && (
+                          <button onClick={() => handleRoleChange(user._id, "demote")}>Demote to User</button>
+                        )}
+                        <button onClick={() => handleDelete(user._id)}>Delete</button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7">No users found.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

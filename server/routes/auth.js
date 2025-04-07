@@ -62,10 +62,10 @@ router.post('/login', async (req, res) => {
 // Fetch users for admin list
 router.get('/admin/users', async (req, res) => {
   try {
-    const users = await User.find({}, 'firstName lastName email role createdAt lastLogin'); // Fetch required fields
+    const users = await User.find({}, 'firstName lastName email role createdAt lastLogin marketingOptIn'); // Fetch required fields
     res.json(users.map(user => ({
       ...user.toObject(),
-      lastLogin: user.lastLogin || null, // Ensure lastLogin is not undefined
+     
     })));
   } catch (error) {
     console.error('Error fetching users:', error);
