@@ -62,13 +62,22 @@ router.post('/login', async (req, res) => {
 // Fetch users for admin list
 router.get('/admin/users', async (req, res) => {
   try {
-    const users = await User.find({}, 'firstName lastName email role createdAt lastLogin marketingOptIn');
-    console.log('Fetched users from database:', users); // Log fetched users to verify data
-    res.json(users.map(user => user.toObject())); // Ensure data is sent as plain objects
+    const users = await User.find({});
+
+    console.log('Fetched users from database:', users);
+
+    res.json(users.map(user => ({
+      ...user.toObject(),
+      firstName: user.firstName,
+      lastName: user.lastName,
+      lastLogin: user.lastLogin || null,
+      marketingOptIn: user.marketingOptIn ?? false,
+    })));
   } catch (error) {
     console.error('Error fetching users:', error);
     res.status(500).json({ success: false, message: 'Error fetching users' });
   }
 });
+
 
 module.exports = router;

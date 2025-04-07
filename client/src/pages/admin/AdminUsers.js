@@ -141,11 +141,13 @@ const AdminUsers = () => {
             {filteredUsers.length > 0 ? (
               filteredUsers.map((user) => (
                 <tr key={user._id}>
-                  <td>{user.firstName} {user.lastName}</td> {/* Display firstName and lastName */}
+                 
+                  <td>{user.firstName || "N/A"} {user.lastName || "N/A"}</td>
+
                   <td>{user.email}</td>
                   <td>{user.role}</td>
                   <td>{new Date(user.createdAt).toLocaleString()}</td>
-                  <td>{new Date(user.lastLogin).toLocaleString()}</td> {/* Display lastLogin */}
+                  <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}</td>
                   <td>
                     <input
                       type="checkbox"
