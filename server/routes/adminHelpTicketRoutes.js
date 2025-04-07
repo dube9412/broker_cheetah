@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const HelpTicket = require("../models/HelpTicket");
 
-// ✅ GET all help tickets
-router.get("/", verifyToken, async (req, res) => {
+// ✅ GET all help tickets (no token required)
+router.get("/", async (req, res) => {
   try {
     const tickets = await HelpTicket.find();
     res.status(200).json({ tickets });
@@ -40,8 +40,8 @@ router.post("/", async (req, res) => {
   }
 });
 
-// ✅ Resolve a help ticket
-router.post("/:ticketId/resolve", verifyToken, async (req, res) => {
+// ✅ Resolve a help ticket (no token required)
+router.post("/:ticketId/resolve", async (req, res) => {
   try {
     const ticket = await HelpTicket.findById(req.params.ticketId);
     if (!ticket) return res.status(404).json({ message: "Ticket not found" });
