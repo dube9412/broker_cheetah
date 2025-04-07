@@ -94,6 +94,8 @@ const AdminUsers = () => {
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  console.log("Filtered Users:", filteredUsers); // Log filtered users after filtering
+
   if (loading) return <div>Loading users...</div>;
   if (error) return <div>{error}</div>;
 
@@ -178,6 +180,7 @@ const AdminUsers = () => {
             )}
           </tbody>
         </table>
+        {console.log("Rendered Table Data:", filteredUsers)} {/* Log table data after rendering */}
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ["user", "admin", "superadmin"], default: "user" },
   userType: { type: String, enum: ["Broker", "Investor", "Other"], required: true },
   createdAt: { type: Date, default: Date.now },
-  lastLogin: { type: Date },
+  lastLogin: { type: Date, default: Date.now },
   marketingOptIn: { type: Boolean, default: false },
 });
 

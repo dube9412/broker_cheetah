@@ -63,9 +63,9 @@ router.post('/login', async (req, res) => {
 router.get('/admin/users', async (req, res) => {
   try {
     const users = await User.find({}, 'firstName lastName email role createdAt lastLogin marketingOptIn'); // Fetch required fields
-    console.log('Fetched users:', users); // Debugging: Log fetched users
     res.json(users.map(user => ({
       ...user.toObject(),
+     
     })));
   } catch (error) {
     console.error('Error fetching users:', error);
