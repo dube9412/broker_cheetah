@@ -7,6 +7,7 @@ const AdminUsers = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
+  const [sortOrder, setSortOrder] = useState("asc"); // Define sortOrder state
   const { isAdmin, isSuperAdmin } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -79,8 +80,17 @@ const AdminUsers = () => {
     }
   };
 
+  // Sort users based on role
+  const sortedUsers = [...users].sort((a, b) => {
+    if (sortOrder === "asc") {
+      return a.role.localeCompare(b.role);
+    } else {
+      return b.role.localeCompare(a.role);
+    }
+  });
+
   // Filter users based on search term
-  const filteredUsers = users.filter((user) =>
+  const filteredUsers = sortedUsers.filter((user) =>
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -102,17 +112,17 @@ const AdminUsers = () => {
           style={{ padding: '8px', width: '200px', marginBottom: '20px' }}
         />
 
-      {/* Sort Dropdown */}
-      <select
-        value={sortOrder}
-        onChange={(e) => setSortOrder(e.target.value)}
-        style={{ padding: '8px', marginLeft: '10px' }}
-      >
-        <option value="asc">Role: A-Z</option>
-        <option value="desc">Role: Z-A</option>
-      </select>
+        {/* Sort Dropdown */}
+        <select
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+          style={{ padding: '8px', marginLeft: '10px' }}
+        >
+          <option value="asc">Role: A-Z</option>
+          <option value="desc">Role: Z-A</option>
+        </select>
 
-      <table border="1" cellpadding="10" style={{ width: "100%", marginTop: "20px", borderCollapse: "collapse" }}>
+        <table border="1" cellPadding="10" style={{ width: "100%", marginTop: "20px", borderCollapse: "collapse" }}>
           <thead>
             <tr>
               <th>Name</th>
