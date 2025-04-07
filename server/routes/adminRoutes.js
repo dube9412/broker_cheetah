@@ -12,7 +12,7 @@ router.use("/documents", documentRoutes);
 // ✅ GET all users (Admin Only)
 router.get("/users", async (req, res) => {
   try {
-    const users = await User.find(); // Fetch all fields for users
+    const users = await User.find({}, "firstName lastName email role createdAt lastLogin marketingOptIn");  // Only return relevant fields
     res.status(200).json(users);
   } catch (error) {
     console.error("❌ Error fetching users:", error);

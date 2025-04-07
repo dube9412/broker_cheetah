@@ -21,12 +21,12 @@ const AdminUsers = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin");
+        const response = await fetch("/api/admin/users"); // Correct backend route
         if (!response.ok) {
           throw new Error(`Error fetching users: ${response.statusText}`);
         }
         const data = await response.json();
-        console.log("Fetched users from backend:", data); // Log fetched users to verify data
+        console.log("Fetched users from backend:", data);
         setUsers(data);
       } catch (error) {
         console.error("Error fetching users:", error);

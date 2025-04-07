@@ -42,7 +42,7 @@ mongoose.connect("mongodb+srv://dube9412:ReGuLaRoLdPaSsWoRd@brokercheetahdb.rdbe
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // ✅ API Routes
-app.use("/api/admin", adminRoutes);
+app.use("/api/admin", adminRoutes); // Mount admin routes
 app.use("/api/auth", authRoutes);
 app.use("/api/lenders", lenderRoutes);
 app.use("/api/lender-auth", lenderAuthRoutes);
