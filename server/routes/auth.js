@@ -70,9 +70,7 @@ router.get('/admin/users', async (req, res) => {
     const users = await User.find({}, 'firstName lastName email role createdAt lastLogin'); // Fetch required fields
     res.json(users.map(user => ({
       ...user.toObject(),
-      firstName: user.firstName || "N/A", // Ensure firstName is not undefined
-      lastName: user.lastName || "N/A",  // Ensure lastName is not undefined
-      lastLogin: user.lastLogin || null  // Ensure lastLogin is not undefined
+      lastLogin: user.lastLogin || null, // Ensure lastLogin is not undefined
     })));
   } catch (error) {
     console.error('Error fetching users:', error);

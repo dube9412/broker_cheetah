@@ -30,7 +30,9 @@ const AdminUsers = () => {
         const data = await response.json();
         setUsers(data.map(user => ({
           ...user,
-          fullName: `${user.firstName || "N/A"} ${user.lastName || "N/A"}`.trim() // Ensure fullName is computed
+          firstName: user.firstName || "N/A", // Ensure firstName is not undefined
+          lastName: user.lastName || "N/A",  // Ensure lastName is not undefined
+          lastLogin: user.lastLogin ? new Date(user.lastLogin) : null // Parse lastLogin as a Date object
         })));
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -89,12 +91,12 @@ const AdminUsers = () => {
   const filteredUsers = useMemo(() => {
     return users
       .filter(user =>
-        user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) // Search by fullName
+        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) // Search by first and last name
       )
       .sort((a, b) =>
         sortOrder === "asc"
-          ? a.fullName.localeCompare(b.fullName)
-          : b.fullName.localeCompare(a.fullName)
+          ? `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
+          : `${b.firstName} ${b.lastName}`.localeCompare(`${a.firstName} ${a.lastName}`)
       );
   }, [users, searchTerm, sortOrder]);
 
@@ -133,7 +135,7 @@ const AdminUsers = () => {
             <th>Email</th>
             <th>Role</th>
             <th>Created At</th>
-            <th>Last Login</th> {/* New column for Last Login */}
+            <th>Last Login</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -141,11 +143,11 @@ const AdminUsers = () => {
           {filteredUsers.length > 0 ? (
             filteredUsers.map((user) => (
               <tr key={user._id}>
-                <td>{user.fullName}</td> {/* Display full name */}
+                <td>{`${user.firstName} ${user.lastName}`}</td> {/* Display first and last name */}
                 <td>{user.email}</td>
                 <td>{user.role}</td>
-                <td>{new Date(user.createdAt).toLocaleString()}</td>
-                <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}</td> {/* Display last login */}
+                <td>{new Date(user.createdAt).toLocaleString()}</td> {/* Display createdAt */}
+                <td>{user.lastLogin ? user.lastLogin.toLocaleString() : "Never"}</td> {/* Display last login */}
                 <td>
                   {user.role !== "superadmin" && (
                     <>
