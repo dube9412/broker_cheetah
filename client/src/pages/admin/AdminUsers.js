@@ -21,7 +21,7 @@ const AdminUsers = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("/api/admin/users"); // Correct backend route
+        const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin/users"); // Use full backend URL
         if (!response.ok) {
           throw new Error(`Error fetching users: ${response.statusText}`);
         }
