@@ -59,28 +59,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Fetch users for admin list
-router.get('/admin/users', async (req, res) => {
-  try {
-    const users = await User.find(); // ← REMOVE field restrictions entirely
 
-    console.log('Fetched users from database:', users);
-
-    res.json(users.map(user => ({
-      _id: user._id,
-      email: user.email,
-      role: user.role,
-      createdAt: user.createdAt,
-      firstName: user.firstName || "N/A",
-      lastName: user.lastName || "N/A",
-      lastLogin: user.lastLogin || null,
-      marketingOptIn: user.marketingOptIn ?? false,
-    })));
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ success: false, message: 'Error fetching users' });
-  }
-});
 
 
 
