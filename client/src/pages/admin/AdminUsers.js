@@ -26,7 +26,7 @@ const AdminUsers = () => {
           throw new Error(`Error fetching users: ${response.statusText}`);
         }
         const data = await response.json();
-        setUsers(data);
+        setUsers(data); // Ensure all fields are fetched and set
       } catch (error) {
         console.error("Error fetching users:", error);
         setError("Failed to fetch users. Please try again later.");
@@ -138,12 +138,18 @@ const AdminUsers = () => {
             {filteredUsers.length > 0 ? (
               filteredUsers.map((user) => (
                 <tr key={user._id}>
-                  <td>{user.firstName} {user.lastName}</td>
+                  <td>{user.firstName} {user.lastName}</td> {/* Display firstName and lastName */}
                   <td>{user.email}</td>
                   <td>{user.role}</td>
                   <td>{new Date(user.createdAt).toLocaleString()}</td>
-                  <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}</td>
-                  <td>{user.marketingOptIn ? "Yes" : "No"}</td>
+                  <td>{new Date(user.lastLogin).toLocaleString()}</td> {/* Display lastLogin */}
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={user.marketingOptIn} // Display marketingOptIn as a checkbox
+                      readOnly
+                    />
+                  </td>
                   <td>
                     {user.role !== "superadmin" && (
                       <>
