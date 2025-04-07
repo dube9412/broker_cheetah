@@ -24,7 +24,7 @@ function Login() {
       .then(data => {
         if (data.success) {
           alert("Login successful");
-          
+
           // ✅ Pass full role data clearly into your AuthContext
           login({
             email: email,
@@ -33,7 +33,7 @@ function Login() {
             role: data.role,
             lenderId: data.lenderId
           });
-  
+
           // ✅ Redirect clearly based on role
           if (data.role === "superadmin" || data.role === "admin") {
             navigate("/admin-dashboard");
@@ -51,7 +51,6 @@ function Login() {
         alert("An error occurred during login.");
       });
   };
-  
 
   return (
     <div>

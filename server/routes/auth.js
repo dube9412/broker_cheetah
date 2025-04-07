@@ -34,33 +34,28 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'Invalid credentials.' });
-    }
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return res.status(404).json({ success: false, message: 'Invalid credentials.' });
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
-    // Update lastLogin field
+    // Update last login timestamp
     user.lastLogin = new Date();
     await user.save();
 
-    const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
 
-    res.json({ 
-      success: true, 
-      token, 
-      role: user.role,  
-      isAdmin: user.role === 'admin' || user.role === 'superadmin', 
+    res.status(200).json({
+      success: true,
+      token,
+      role: user.role,
+      isAdmin: user.role === 'admin',
       isSuperAdmin: user.role === 'superadmin',
-      firstName: user.firstName, // Include first name
-      lastName: user.lastName,  // Include last name
-      lastLogin: user.lastLogin // Include last login
+      lenderId: user.lenderId || null,
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ success: false, message: 'Login error' });
+    res.status(500).json({ success: false, message: 'Server error during login' });
   }
 });
 
