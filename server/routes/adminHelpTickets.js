@@ -5,7 +5,10 @@ const verifyToken = require("../middleware/verifyToken");
 
 // ✅ Submit a new help ticket
 router.post("/", verifyToken, async (req, res) => {
-  console.log("🔹 Help ticket submission received:", req.body); // ✅ Log the request body
+  console.log("🔹 POST /api/admin/help-tickets called");
+  console.log("🔹 Request body:", req.body);
+  console.log("🔹 Authenticated user:", req.user); // Log the authenticated user
+  console.log("🔹 Help ticket submission received:", req.body); // Log the request body
   try {
     const { issue, desiredOutcome } = req.body;
 

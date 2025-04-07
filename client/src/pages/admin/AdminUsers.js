@@ -30,7 +30,7 @@ const AdminUsers = () => {
         const data = await response.json();
         setUsers(data.map(user => ({
           ...user,
-          fullName: `${user.firstName} ${user.lastName}`.trim() // Ensure fullName is computed
+          fullName: `${user.firstName || "N/A"} ${user.lastName || "N/A"}`.trim() // Ensure fullName is computed
         })));
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -141,7 +141,7 @@ const AdminUsers = () => {
           {filteredUsers.length > 0 ? (
             filteredUsers.map((user) => (
               <tr key={user._id}>
-                <td>{user.fullName  || "N/A"}</td> {/* Display full name */}
+                <td>{user.fullName}</td> {/* Display full name */}
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td>{new Date(user.createdAt).toLocaleString()}</td>
