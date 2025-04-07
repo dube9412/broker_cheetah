@@ -42,25 +42,6 @@ router.post("/", verifyToken, async (req, res) => {
   }
 });
 
-// ✅ Create a new help ticket
-router.post("/", verifyToken, async (req, res) => {
-  try {
-    const { userEmail, issue } = req.body;
-
-    if (!userEmail || !issue) {
-      return res.status(400).json({ message: "User email and issue are required" });
-    }
-
-    const newTicket = new HelpTicket({ userEmail, issue });
-    await newTicket.save();
-
-    res.status(201).json({ success: true, message: "Help ticket created successfully", ticket: newTicket });
-  } catch (error) {
-    console.error("❌ Error creating help ticket:", error);
-    res.status(500).json({ message: "Failed to create help ticket" });
-  }
-});
-
 // ✅ Resolve a help ticket
 router.post("/:ticketId/resolve", verifyToken, async (req, res) => {
   try {
