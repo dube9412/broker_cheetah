@@ -12,7 +12,7 @@ const SubmitHelpTicket = () => {
     try {
       const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin/help-tickets", { // ✅ Ensure correct backend URL
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { "Content-Type": "application/json" }, // Removed Authorization header
         body: JSON.stringify({ issue, desiredOutcome }),
       });
 

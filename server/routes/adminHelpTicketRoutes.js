@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const HelpTicket = require("../models/HelpTicket");
-const verifyToken = require("../middleware/verifyToken");
 
 // ✅ GET all help tickets
 router.get("/", verifyToken, async (req, res) => {
@@ -14,27 +13,26 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
-// ✅ Ensure the POST route is correctly defined and accessible
-router.post("/", verifyToken, async (req, res) => {
+// ✅ Submit a new help ticket (no token required)
+router.post("/", async (req, res) => {
   console.log("🔹 POST /api/admin/help-tickets called");
   console.log("🔹 Request body:", req.body);
-  console.log("🔹 Authenticated user:", req.user); // Log the authenticated user
-  console.log("🔹 Help ticket submission received:", req.body); // Log the request body
+
   try {
-    const { issue, desiredOutcome } = req.body;
+    const { issue, desiredOutcome, userEmail } = req.body;
 
     if (!issue || !desiredOutcome) {
       return res.status(400).json({ success: false, message: "Issue and desired outcome are required." });
     }
 
     const newHelpTicket = new HelpTicket({
-      userEmail: req.user.email, // Use the email from the authenticated user
+      userEmail: userEmail || "Anonymous", // Allow anonymous submissions
       issue,
       desiredOutcome,
     });
 
     await newHelpTicket.save();
-    console.log("✅ Help ticket saved:", newHelpTicket); // ✅ Log the saved ticket
+    console.log("✅ Help ticket saved:", newHelpTicket);
     res.status(201).json({ success: true, message: "Help ticket submitted successfully." });
   } catch (error) {
     console.error("❌ Error submitting help ticket:", error);
