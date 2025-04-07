@@ -26,7 +26,8 @@ const AdminUsers = () => {
           throw new Error(`Error fetching users: ${response.statusText}`);
         }
         const data = await response.json();
-        setUsers(data); // Ensure all fields are fetched and set
+        console.log("Fetched users from backend:", data); // Log fetched users to verify data
+        setUsers(data);
       } catch (error) {
         console.error("Error fetching users:", error);
         setError("Failed to fetch users. Please try again later.");
