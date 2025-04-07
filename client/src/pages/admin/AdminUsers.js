@@ -142,7 +142,7 @@ const AdminUsers = () => {
               filteredUsers.map((user) => (
                 <tr key={user._id}>
                  
-                  <td>{user.firstName || "N/A"} {user.lastName || "N/A"}</td>
+                 <td>{user.firstName} {user.lastName}</td>
 
                   <td>{user.email}</td>
                   <td>{user.role}</td>

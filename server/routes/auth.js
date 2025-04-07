@@ -62,14 +62,17 @@ router.post('/login', async (req, res) => {
 // Fetch users for admin list
 router.get('/admin/users', async (req, res) => {
   try {
-    const users = await User.find({});
+    const users = await User.find(); // ← REMOVE field restrictions entirely
 
     console.log('Fetched users from database:', users);
 
     res.json(users.map(user => ({
-      ...user.toObject(),
-      firstName: user.firstName,
-      lastName: user.lastName,
+      _id: user._id,
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      firstName: user.firstName || "N/A",
+      lastName: user.lastName || "N/A",
       lastLogin: user.lastLogin || null,
       marketingOptIn: user.marketingOptIn ?? false,
     })));
@@ -78,6 +81,7 @@ router.get('/admin/users', async (req, res) => {
     res.status(500).json({ success: false, message: 'Error fetching users' });
   }
 });
+
 
 
 module.exports = router;
