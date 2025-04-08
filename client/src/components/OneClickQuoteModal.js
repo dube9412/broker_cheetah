@@ -27,7 +27,7 @@ const OneClickQuoteModal = ({ selectedLenders, onClose, searchData }) => {
     try {
       await Promise.all(
         selectedLenders.map((lenderId) =>
-          fetch("/api/quotes", {
+          fetch("https://broker-cheetah-backend.onrender.com/api/quotes", {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
             body: JSON.stringify({
@@ -39,6 +39,7 @@ const OneClickQuoteModal = ({ selectedLenders, onClose, searchData }) => {
               rehabNeeded: formData.rehabNeeded,
               arv: formData.arv,
               liquidity: formData.liquidity,
+              loanType, // Ensure loanType is included
             }),
           })
         )

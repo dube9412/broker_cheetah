@@ -4,16 +4,32 @@ const Quote = require("../models/Quote");
 const Lender = require("../models/Lender");
 const Pipeline = require("../models/Pipeline");
 const verifyToken = require("../middleware/verifyToken");
-const sendEmail = require("../utils/email"); // Import email utility
-const User = require("../models/User"); // Import User model
+const sendEmail = require("../utils/email");
+const User = require("../models/User");
 
 // ✅ Submit a quote request
 router.post("/", verifyToken, async (req, res) => {
   try {
-    const { lenderId, propertyAddress, ficoScore, experience, purchasePrice, rehabNeeded, arv, liquidity, rentRate, taxes, insurance, hoa, loanType } = req.body;
+    console.log("Incoming Request Body:", req.body); // Log the request body
 
-    if (!lenderId || !propertyAddress || !ficoScore || !experience || !purchasePrice || !rehabNeeded || !arv || !liquidity) {
-      return res.status(400).json({ success: false, message: "All fields are required." });
+    const {
+      lenderId,
+      propertyAddress,
+      ficoScore,
+      experience,
+      purchasePrice,
+      rehabNeeded,
+      arv,
+      liquidity,
+      rentRate = null,
+      taxes = null,
+      insurance = null,
+      hoa = null,
+      loanType,
+    } = req.body;
+
+    if (!lenderId || !propertyAddress || !ficoScore || !loanType) {
+      return res.status(400).json({ success: false, message: "Required fields are missing." });
     }
 
     // Fetch user's email
@@ -22,7 +38,7 @@ router.post("/", verifyToken, async (req, res) => {
       return res.status(400).json({ success: false, message: "User email not found." });
     }
 
-    // Determine borrower's tier (example logic)
+    // Determine borrower's tier
     let tier = "Tier 3";
     if (ficoScore >= 720 && experience >= 5) {
       tier = "Tier 1";
@@ -96,15 +112,15 @@ router.post("/", verifyToken, async (req, res) => {
     } else if (loanType === "dscr") {
       emailBody += `
         Loan Details:
-        - Rent Rate: $${rentRate}/month
-        - Taxes: $${taxes}/year
-        - Insurance: $${insurance}/year
+        - Rent Rate: $${rentRate || "N/A"}/month
+        - Taxes: $${taxes || "N/A"}/year
+        - Insurance: $${insurance || "N/A"}/year
         - HOA Fees: $${hoa || "N/A"}/month
       `;
     }
 
     // Send email notification to the lender
-    await sendEmail(lender.email, `New Quote Request for ${propertyAddress} (${tier})`, emailBody, user.email); // Include user's email as replyTo
+    await sendEmail(lender.email, `New Quote Request for ${propertyAddress} (${tier})`, emailBody, user.email);
 
     // Add the quote request to the user's pipeline
     const pipelineEntry = new Pipeline({
@@ -113,7 +129,7 @@ router.post("/", verifyToken, async (req, res) => {
       fico: ficoScore,
       experience,
       purchasePrice,
-      asisValue: purchasePrice, // Assuming as-is value is the same as purchase price
+      asisValue: purchasePrice,
       rehabNeeded,
       arv,
       liquidity,
