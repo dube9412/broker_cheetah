@@ -15,10 +15,9 @@ const AdminHelpTickets = () => {
       });
 
       if (response.ok) {
+        const { ticket } = await response.json();
         setTickets((prevTickets) =>
-          prevTickets.map((ticket) =>
-            ticket._id === ticketId ? { ...ticket, status: "Resolved" } : ticket
-          )
+          prevTickets.map((t) => (t._id === ticketId ? ticket : t))
         );
       } else {
         console.error("Failed to resolve ticket");
@@ -65,6 +64,7 @@ const AdminHelpTickets = () => {
             <tr style={{ background: "#007BFF", color: "white" }}>
               <th>User</th>
               <th>Issue</th>
+              <th>Desired Outcome</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
