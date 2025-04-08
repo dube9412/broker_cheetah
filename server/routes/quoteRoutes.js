@@ -27,15 +27,31 @@ router.post("/", async (req, res) => {
       loanType,
     } = req.body;
 
+    console.log("Parsed Request Data:", {
+      lenderId,
+      propertyAddress,
+      ficoScore,
+      experience,
+      purchasePrice,
+      rehabNeeded,
+      arv,
+      liquidity,
+      loanType,
+    });
+
     if (!lenderId || !propertyAddress || !ficoScore || !loanType) {
+      console.log("❌ Missing required fields");
       return res.status(400).json({ success: false, message: "Required fields are missing." });
     }
 
     // Fetch user's email
     const user = await User.findById(req.user._id);
     if (!user || !user.email) {
+      console.log("❌ User not found or email missing");
       return res.status(400).json({ success: false, message: "User email not found." });
     }
+
+    console.log("✅ User found:", user.email);
 
     // Determine borrower's tier
     let tier = "Tier 3";
@@ -72,12 +88,16 @@ router.post("/", async (req, res) => {
       loanType,
     });
     await newQuote.save();
+    console.log("✅ Quote saved to database");
 
     // Fetch lender details
     const lender = await Lender.findById(lenderId);
     if (!lender) {
+      console.log("❌ Lender not found");
       return res.status(404).json({ success: false, message: "Lender not found." });
     }
+
+    console.log("✅ Lender found:", lender.email);
 
     // Construct email content
     let emailBody = `
@@ -120,6 +140,7 @@ router.post("/", async (req, res) => {
 
     // Send email notification to the lender
     await sendEmail(lender.email, `New Quote Request for ${propertyAddress} (${tier})`, emailBody, user.email);
+    console.log("✅ Email sent to lender");
 
     // Add the quote request to the user's pipeline
     const pipelineEntry = new Pipeline({
