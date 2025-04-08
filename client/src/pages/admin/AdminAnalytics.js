@@ -49,7 +49,8 @@ const AdminAnalytics = () => {
           <h2>Site Usage</h2>
           <p>Total Users: {analytics.totalUsers}</p>
           <p>Total Lenders: {analytics.totalLenders}</p>
-          <p>Active Loans: {analytics.activeLoans}</p>
+          <p>Total Quotes Requested: {analytics.totalQuotes}</p>
+          <p>Total Deals Submitted: {analytics.totalDeals}</p>
           <h2>Financial Data</h2>
           <p>Total Revenue: ${analytics.totalRevenue}</p>
           <p>Subscription Users: {analytics.subscriptionUsers}</p>

@@ -27,10 +27,19 @@ const OneClickQuoteModal = ({ selectedLenders, onClose, searchData }) => {
     try {
       await Promise.all(
         selectedLenders.map((lenderId) =>
-          fetch(`/api/lenders/${lenderId}/send-email`, {
+          fetch("/api/quotes", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ formData }),
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
+            body: JSON.stringify({
+              lenderId,
+              propertyAddress: formData.address,
+              ficoScore: formData.ficoScore,
+              experience: formData.experience,
+              purchasePrice: formData.purchasePrice,
+              rehabNeeded: formData.rehabNeeded,
+              arv: formData.arv,
+              liquidity: formData.liquidity,
+            }),
           })
         )
       );

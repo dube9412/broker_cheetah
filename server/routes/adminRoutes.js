@@ -5,6 +5,9 @@ const User = require("../models/user");
 const adminController = require('../controllers/adminController');
 const documentRoutes = require('./documentRoutes');
 const LenderUser = require("../models/LenderUser");
+const Lender = require("../models/Lender");
+const Quote = require("../models/Quote"); // Add Quote model
+const Deal = require("../models/Deal");   // Add Deal model
 
 // ✅ Use existing document routes inside /api/admin/documents
 router.use("/documents", documentRoutes);
@@ -135,18 +138,20 @@ router.post("/toggle-optin", async (req, res) => {
 
 router.post('/assign-lender', adminController.assignLenderToUser);
 
-const Lender = require("../models/Lender");
-
 router.get("/analytics", async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
     const totalLenders = await Lender.countDocuments();
+    const totalQuotes = await Quote.countDocuments(); // Count total quotes
+    const totalDeals = await Deal.countDocuments();   // Count total deals
     const totalRevenue = 10000; // Placeholder (replace with real revenue data)
     const subscriptionUsers = 500; // Placeholder
 
     res.status(200).json({
       totalUsers,
       totalLenders,
+      totalQuotes,
+      totalDeals,
       totalRevenue,
       subscriptionUsers,
     });
