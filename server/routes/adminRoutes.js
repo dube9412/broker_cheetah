@@ -1,7 +1,7 @@
 // adminRoutes.js
 const express = require("express");
 const router = express.Router();
-const User = require("../models/user");
+const User = require("../models/user"); // Corrected to match the actual file name
 const adminController = require('../controllers/adminController');
 const documentRoutes = require('./documentRoutes');
 const LenderUser = require("../models/LenderUser");
