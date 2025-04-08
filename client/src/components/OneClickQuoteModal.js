@@ -29,7 +29,10 @@ const OneClickQuoteModal = ({ selectedLenders, onClose, searchData }) => {
         selectedLenders.map((lenderId) =>
           fetch("https://broker-cheetah-backend.onrender.com/api/quotes", {
             method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure token is stored in localStorage
+            },
             body: JSON.stringify({
               lenderId,
               propertyAddress: formData.address,
@@ -39,7 +42,7 @@ const OneClickQuoteModal = ({ selectedLenders, onClose, searchData }) => {
               rehabNeeded: formData.rehabNeeded,
               arv: formData.arv,
               liquidity: formData.liquidity,
-              loanType, // Ensure loanType is included
+              loanType,
             }),
           })
         )

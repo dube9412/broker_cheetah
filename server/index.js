@@ -28,7 +28,7 @@ const app = express();
 
 // Enable CORS using corsOptions
 const corsOptions = {
-  origin: "https://www.brokercheetah.com", // Allow requests from this frontend domain
+  origin: "https://www.brokercheetah.com", // Frontend domain
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -64,7 +64,7 @@ if (scraperRoutes) {
 app.use("/api/import-json", importJSONRoutes);
 app.use("/api/pipeline", pipelineRoutes);
 app.use("/api/admin/help-tickets", adminHelpTicketRoutes);
-app.use("/api/quotes", quoteRoutes);
+app.use("/api/quotes", quoteRoutes); // Ensure this is the only route handling /api/quotes
 
 // Serve static files (if applicable)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

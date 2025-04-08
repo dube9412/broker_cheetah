@@ -3,14 +3,13 @@ const router = express.Router();
 const Quote = require("../models/Quote");
 const Lender = require("../models/Lender");
 const Pipeline = require("../models/Pipeline");
-const verifyToken = require("../middleware/verifyToken");
 const sendEmail = require("../utils/email");
 const User = require("../models/user"); // Corrected to match the actual file name
 
 // ✅ Submit a quote request
-router.post("/", verifyToken, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    console.log("Incoming Request Body:", req.body); // Log the request body
+    console.log("Incoming Request Body:", req.body); // Debugging
 
     const {
       lenderId,
@@ -137,7 +136,7 @@ router.post("/", verifyToken, async (req, res) => {
     });
     await pipelineEntry.save();
 
-    res.status(201).json({ success: true, message: "Quote request submitted successfully and added to pipeline." });
+    res.status(201).json({ success: true, message: "Quote request submitted successfully." });
   } catch (error) {
     console.error("❌ Error submitting quote request:", error);
     res.status(500).json({ success: false, message: "Server error while submitting quote request." });
