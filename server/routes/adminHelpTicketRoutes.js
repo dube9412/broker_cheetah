@@ -29,6 +29,7 @@ router.post("/", async (req, res) => {
       userEmail: userEmail || "Anonymous", // Allow anonymous submissions
       issue,
       desiredOutcome,
+      status: "Open", // Default status
     });
 
     await newHelpTicket.save();
@@ -48,7 +49,11 @@ router.post("/:ticketId/resolve", async (req, res) => {
 
     ticket.status = "Resolved";
     await ticket.save();
-    res.status(200).json({ success: true, message: "Ticket resolved" });
+
+    // Notify the user (e.g., via email or a message field)
+    console.log(`✅ Notifying user ${ticket.userEmail} about resolution.`);
+
+    res.status(200).json({ success: true, message: "Ticket resolved", ticket });
   } catch (error) {
     console.error("❌ Error resolving help ticket:", error);
     res.status(500).json({ message: "Failed to resolve ticket" });

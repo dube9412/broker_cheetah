@@ -75,6 +75,7 @@ const AdminHelpTickets = () => {
                 <tr key={ticket._id}>
                   <td>{ticket.userEmail}</td>
                   <td>{ticket.issue}</td>
+                  <td>{ticket.desiredOutcome}</td>
                   <td>{ticket.status}</td>
                   <td>
                     {ticket.status !== "Resolved" && (
@@ -90,7 +91,7 @@ const AdminHelpTickets = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="4" style={{ textAlign: "center", padding: "10px", fontSize: "1.2em" }}>No help tickets available.</td>
+                <td colSpan="5" style={{ textAlign: "center", padding: "10px", fontSize: "1.2em" }}>No help tickets available.</td>
               </tr>
             )}
           </tbody>
