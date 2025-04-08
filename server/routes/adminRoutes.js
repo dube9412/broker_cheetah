@@ -7,7 +7,6 @@ const documentRoutes = require('./documentRoutes');
 const LenderUser = require("../models/LenderUser");
 const Lender = require("../models/Lender");
 const Quote = require("../models/Quote"); // Add Quote model
-const Deal = require("../models/Deal");   // Add Deal model
 
 // ✅ Use existing document routes inside /api/admin/documents
 router.use("/documents", documentRoutes);
@@ -142,8 +141,7 @@ router.get("/analytics", async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
     const totalLenders = await Lender.countDocuments();
-    const totalQuotes = await Quote.countDocuments(); // Count total quotes
-    const totalDeals = await Deal.countDocuments();   // Count total deals
+    const totalQuotes = await Quote.countDocuments();
     const totalRevenue = 10000; // Placeholder (replace with real revenue data)
     const subscriptionUsers = 500; // Placeholder
 
@@ -151,7 +149,6 @@ router.get("/analytics", async (req, res) => {
       totalUsers,
       totalLenders,
       totalQuotes,
-      totalDeals,
       totalRevenue,
       subscriptionUsers,
     });
