@@ -41,11 +41,19 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
+    // Check if JWT_SECRET is defined
+    if (!JWT_SECRET) {
+      console.error("❌ JWT_SECRET is not defined. Please set it in the environment variables.");
+      return res.status(500).json({ success: false, message: "Server configuration error." });
+    }
+
     // Update last login timestamp
     user.lastLogin = new Date();
     await user.save();
 
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
+
+    console.log("🔑 Generated Token:", token);
 
     res.status(200).json({
       success: true,

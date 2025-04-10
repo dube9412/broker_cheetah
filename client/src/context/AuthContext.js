@@ -23,6 +23,10 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     console.log("Logging in user:", userData);
+    console.log("🔍 Login Response Data:", userData);
+    if (!userData.token) {
+      console.error("❌ No token received in login response.");
+    }
     setUser(userData); // ✅ Update state to trigger re-render
 
     localStorage.setItem("token", userData.token);
