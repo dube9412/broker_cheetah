@@ -38,11 +38,23 @@ const OneClickQuoteModal = ({ selectedLenders, onClose, searchData }) => {
         }),
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Failed to submit quote request");
+      if (response.status === 405) {
+        console.error("❌ 405 Error: Method Not Allowed. Check the backend route.");
+        alert("The server does not allow this request. Please contact support.");
+        return;
+      }
 
-      alert("Quote request submitted successfully!");
-      onClose();
+      const data = await response.text();
+      try {
+        const jsonData = JSON.parse(data);
+        if (!response.ok) throw new Error(jsonData.message || "Failed to submit quote request");
+
+        alert("Quote request submitted successfully!");
+        onClose();
+      } catch (error) {
+        console.error("Error parsing response:", data);
+        alert("An error occurred while submitting the quote request.");
+      }
     } catch (error) {
       console.error("Error submitting quote request:", error);
       alert("An error occurred while submitting the quote request.");

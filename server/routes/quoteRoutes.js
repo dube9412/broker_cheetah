@@ -9,6 +9,7 @@ const verifyToken = require("../middleware/verifyToken");
 
 // ✅ Submit a quote request
 router.post("/", verifyToken, async (req, res) => {
+  console.log("🔹 Received POST request to /api/quotes with body:", req.body);
   try {
     const {
       lenderId,
