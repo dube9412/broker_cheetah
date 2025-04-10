@@ -5,6 +5,7 @@ const Lender = require("../models/Lender");
 const Pipeline = require("../models/Pipeline");
 const sendEmail = require("../utils/email");
 const User = require("../models/user"); // Corrected to match the actual file name
+const verifyToken = require("../middleware/verifyToken");
 
 // ✅ Submit a quote request
 router.post("/", verifyToken, async (req, res) => {
