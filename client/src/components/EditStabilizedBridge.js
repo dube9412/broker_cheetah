@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { BASE_URL } from "../constants";
 
 function EditStabilizedBridge() {
   const { lenderId, programId } = useParams();
@@ -21,7 +22,7 @@ function EditStabilizedBridge() {
   useEffect(() => {
     const fetchProgram = async () => {
       try {
-        const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/stabilized-bridge/stabilized-bridge-programs/${programId}`);
+        const response = await fetch(`${BASE_URL}/api/stabilized-bridge/stabilized-bridge-programs/${programId}`);
         const data = await response.json();
 
         if (response.ok && data) {
@@ -66,7 +67,7 @@ function EditStabilizedBridge() {
   const handleSave = async () => {
     try {
       console.log(`🔹 Saving Stabilized Bridge Loan Program: ${programId}`);
-      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/stabilized-bridge/stabilized-bridge-programs/${programId}`, {
+      const response = await fetch(`${BASE_URL}/api/stabilized-bridge/stabilized-bridge-programs/${programId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -102,7 +103,7 @@ function EditStabilizedBridge() {
     try {
       console.log(`🔹 Deleting Stabilized Bridge Loan Program: ${programId}`);
 
-      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/stabilized-bridge/${lenderId}/stabilized-bridge-programs/${programId}`, {
+      const response = await fetch(`${BASE_URL}/api/stabilized-bridge/${lenderId}/stabilized-bridge-programs/${programId}`, {
         method: "DELETE",
       });
 

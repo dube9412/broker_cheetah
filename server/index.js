@@ -28,7 +28,7 @@ const app = express();
 
 // Enable CORS using corsOptions
 const corsOptions = {
-  origin: "https://www.brokercheetah.com", // Frontend domain
+  origin: process.env.FRONTEND_URL || "https://www.brokercheetah.com", // Frontend domain
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,

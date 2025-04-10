@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { BASE_URL } from "../constants";
 
 function EditGroundUp() {
   const { lenderId, programId } = useParams();
@@ -23,7 +24,7 @@ function EditGroundUp() {
   useEffect(() => {
     const fetchProgram = async () => {
       try {
-        const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/ground-up/ground-up-programs/${programId}`);
+        const response = await fetch(`${BASE_URL}/api/ground-up/ground-up-programs/${programId}`);
         const data = await response.json();
 
         if (response.ok && data) {
@@ -67,7 +68,7 @@ function EditGroundUp() {
   const handleSave = async () => {
     try {
       console.log(`🔹 Saving Ground Up program ${programId}`);
-      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/ground-up/ground-up-programs/${programId}`, {
+      const response = await fetch(`${BASE_URL}/api/ground-up/ground-up-programs/${programId}`, {
         method: "PUT", // ✅ Added missing method
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -102,7 +103,7 @@ function EditGroundUp() {
     try {
       console.log(`🔹 Deleting loan program: ${programId}`);
 
-      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/ground-up/${lenderId}/ground-up-programs/${programId}`, {
+      const response = await fetch(`${BASE_URL}/api/ground-up/${lenderId}/ground-up-programs/${programId}`, {
         method: "DELETE",
       });
 

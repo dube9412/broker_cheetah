@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext} from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import StatesCheckboxList from "./StatesCheckboxList";
 import { AuthContext } from "../context/AuthContext";
+import { BASE_URL } from "../constants";
 
 const BACKGROUND_LIMITATIONS_OPTIONS = ["Financial Crimes", "Felony Convictions"];
 
@@ -44,7 +45,7 @@ function EditLender() {
       return;
     }
 
-    fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${id}`)
+    fetch(`${BASE_URL}/api/lenders/${id}`)
       .then((res) => res.json())
       .then((lender) => {
         console.log("✅ Fetched lender:", lender);
@@ -104,7 +105,7 @@ function EditLender() {
       backgroundLimitations,
     };
 
-    fetch(`https://broker-cheetah-backend.onrender.com/api/lenders/${id}`, {
+    fetch(`${BASE_URL}/api/lenders/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedLenderData),

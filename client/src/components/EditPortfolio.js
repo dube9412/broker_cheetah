@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { BASE_URL } from "../constants";
 
 function EditPortfolio() {
   const { lenderId, programId } = useParams();
@@ -19,7 +20,7 @@ function EditPortfolio() {
   useEffect(() => {
     const fetchProgram = async () => {
       try {
-        const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/portfolio/portfolio-programs/${programId}`);
+        const response = await fetch(`${BASE_URL}/api/portfolio/portfolio-programs/${programId}`);
         const data = await response.json();
 
         if (response.ok && data) {
@@ -62,7 +63,7 @@ function EditPortfolio() {
   const handleSave = async () => {
     try {
       console.log(`🔹 Saving Portfolio Loan Program: ${programId}`);
-      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/portfolio/portfolio-programs/${programId}`, {
+      const response = await fetch(`${BASE_URL}/api/portfolio/portfolio-programs/${programId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -96,7 +97,7 @@ function EditPortfolio() {
     try {
       console.log(`🔹 Deleting Portfolio Loan Program: ${programId}`);
 
-      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/portfolio/${lenderId}/portfolio-programs/${programId}`, {
+      const response = await fetch(`${BASE_URL}/api/portfolio/${lenderId}/portfolio-programs/${programId}`, {
         method: "DELETE",
       });
 
