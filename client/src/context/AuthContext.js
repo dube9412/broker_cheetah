@@ -24,8 +24,10 @@ export const AuthProvider = ({ children }) => {
   const login = (userData) => {
     console.log("Logging in user:", userData);
     console.log("🔍 Login Response Data:", userData);
-    if (!userData.token) {
-      console.error("❌ No token received in login response.");
+    console.log("🔍 Full Login Response:", userData);
+    if (!userData || !userData.token) {
+      console.error("❌ No token received in login response.", userData);
+      return;
     }
     setUser(userData); // ✅ Update state to trigger re-render
 
