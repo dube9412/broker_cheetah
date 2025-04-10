@@ -24,6 +24,16 @@ const OneClickQuoteModal = ({ selectedLenders, onClose, searchData }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log("🔍 Request Headers:", {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "application/json",
+    });
+    console.log("🔍 Request Payload:", {
+      lenderId: selectedLenders[0],
+      loanType,
+      ...formData,
+    });
+
     try {
       const response = await fetch("/api/quotes", {
         method: "POST",
