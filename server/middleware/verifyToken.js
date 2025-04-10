@@ -8,6 +8,7 @@ function verifyToken(req, res, next) {
     }
 
     const token = authHeader.split(" ")[1];
+    console.log("🔑 Token received:", token);
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
