@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   userType: { type: String, enum: ["Broker", "Investor", "Other"], required: true },
   lastLogin: { type: Date, default: null }, // Default to null if the user has never logged in
+  resetToken: { type: String },
+  resetTokenExpiry: { type: Date },
 });
 
 module.exports = mongoose.model("User", userSchema);

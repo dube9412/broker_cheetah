@@ -35,6 +35,21 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("user");
   };
 
+  const requestPasswordReset = async (email) => {
+    try {
+      const response = await fetch('/api/auth/password-reset/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.message);
+      console.log('Password reset email sent');
+    } catch (error) {
+      console.error('Error requesting password reset:', error);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -45,6 +60,7 @@ export const AuthProvider = ({ children }) => {
         isLender,
         login,
         logout,
+        requestPasswordReset,
       }}
     >
       {children}

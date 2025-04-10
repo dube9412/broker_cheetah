@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const sendEmail = require('../utils/email'); // Import email utility
+const crypto = require('crypto');
 
 // Keep your JWT secret in an environment variable for security
 const JWT_SECRET =  process.env.JWT_SECRET || 'YOUR_SECRET_KEY';
@@ -59,8 +61,59 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Request password reset
+router.post('/password-reset/request', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    user.resetToken = resetToken;
+    user.resetTokenExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
+    await user.save();
 
+    const resetLink = `${req.protocol}://${req.get('host')}/reset-password?token=${resetToken}`;
+    await sendEmail(email, 'Password Reset Request', `Reset your password using this link: ${resetLink}`);
 
+    res.status(200).json({ success: true, message: 'Password reset email sent' });
+  } catch (error) {
+    console.error('Error requesting password reset:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Verify reset token
+router.post('/password-reset/verify', async (req, res) => {
+  const { token } = req.body;
+  try {
+    const user = await User.findOne({ resetToken: token, resetTokenExpiry: { $gt: Date.now() } });
+    if (!user) return res.status(400).json({ success: false, message: 'Invalid or expired token' });
+
+    res.status(200).json({ success: true, message: 'Token verified' });
+  } catch (error) {
+    console.error('Error verifying reset token:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Reset password
+router.post('/password-reset/reset', async (req, res) => {
+  const { token, newPassword } = req.body;
+  try {
+    const user = await User.findOne({ resetToken: token, resetTokenExpiry: { $gt: Date.now() } });
+    if (!user) return res.status(400).json({ success: false, message: 'Invalid or expired token' });
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.resetToken = undefined;
+    user.resetTokenExpiry = undefined;
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Password reset successful' });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
 
 module.exports = router;

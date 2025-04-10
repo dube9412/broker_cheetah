@@ -25,28 +25,21 @@ const OneClickQuoteModal = ({ selectedLenders, onClose, searchData }) => {
     e.preventDefault();
 
     try {
-      await Promise.all(
-        selectedLenders.map((lenderId) =>
-          fetch("https://broker-cheetah-backend.onrender.com/api/quotes", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`, // Ensure token is stored in localStorage
-            },
-            body: JSON.stringify({
-              lenderId,
-              propertyAddress: formData.address,
-              ficoScore: formData.ficoScore,
-              experience: formData.experience,
-              purchasePrice: formData.purchasePrice,
-              rehabNeeded: formData.rehabNeeded,
-              arv: formData.arv,
-              liquidity: formData.liquidity,
-              loanType,
-            }),
-          })
-        )
-      );
+      const response = await fetch("/api/quotes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          lenderId: selectedLenders[0], // Assuming one lender is selected
+          loanType,
+          ...formData,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to submit quote request");
 
       alert("Quote request submitted successfully!");
       onClose();
