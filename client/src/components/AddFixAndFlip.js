@@ -24,6 +24,7 @@ function AddFixAndFlip() {
     rehabPercent: "",
   }]);
   const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
+  const [formData, setFormData] = useState({ rural: false, averageTimeToClose: "" }); // Add formData state
 
   const PROPERTY_OPTIONS = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
   const TERM_LENGTH_OPTIONS = [12, 13, 18, 19, 24]; // Updated term length options
@@ -81,6 +82,8 @@ function AddFixAndFlip() {
       propertyTypes,
       tiers,
       highlightNote, // Include highlightNote in the payload
+      rural: formData.rural, // Include rural in the payload
+      averageTimeToClose: formData.averageTimeToClose, // Include averageTimeToClose in the payload
     };
 
     console.log("🔍 SUBMIT PAYLOAD", payload);
@@ -220,6 +223,32 @@ function AddFixAndFlip() {
         placeholder="Enter a note explaining why this program is a good fit"
         style={{ width: "100%", height: "100px", marginBottom: "10px" }}
       />
+
+      <label>
+        <input
+          type="checkbox"
+          checked={formData.rural}
+          onChange={(e) => setFormData({ ...formData, rural: e.target.checked })}
+        />
+        Rural
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          checked={!formData.rural}
+          onChange={(e) => setFormData({ ...formData, rural: !e.target.checked })}
+        />
+        Non-Rural
+      </label>
+      <label>
+        Average Time to Close (days):
+        <input
+          type="number"
+          value={formData.averageTimeToClose || ""}
+          onChange={(e) => setFormData({ ...formData, averageTimeToClose: e.target.value })}
+          min="0"
+        />
+      </label>
 
       <div style={{ marginTop: "20px", textAlign: "center" }}>
           <button onClick={handleSubmit} style={{ marginRight: "10px" }}>Save Program</button>

@@ -167,9 +167,21 @@ router.get("/search", async (req, res) => {
       interestType,
       drawType,
       crossCollateralAllowed,
+      propertyType,
+      rural,
+      sortBy, // New sorting option
     } = req.query;
 
     const filters = {};
+
+    if (propertyType) {
+      filters.propertyTypes = propertyType;
+    }
+
+    if (rural) {
+      filters.rural = rural === "yes";
+    }
+
     const programs = await FixAndFlipLoan.find(filters).populate("lender");
 
     const matchingPrograms = [];
@@ -273,6 +285,12 @@ router.get("/search", async (req, res) => {
         lenderId: program.lender._id,
         programId: program._id,
       });
+    }
+
+    if (sortBy === "ltc") {
+      matchingPrograms.sort((a, b) => b.maxLTC - a.maxLTC);
+    } else if (sortBy === "loanAmount") {
+      matchingPrograms.sort((a, b) => b.calculations.totalLoanAmount - a.calculations.totalLoanAmount);
     }
 
     res.json(matchingPrograms);

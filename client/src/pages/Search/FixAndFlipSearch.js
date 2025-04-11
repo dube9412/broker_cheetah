@@ -31,6 +31,9 @@ function FixAndFlipSearch() {
   const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
   const [termLengthMonths, setTermLengthMonths] = useState([]); // Initialize as an array
   const [drawType, setDrawType] = useState({ self: false, thirdParty: false });
+  const [propertyType, setPropertyType] = useState("");
+  const [rural, setRural] = useState("");
+  const [sortBy, setSortBy] = useState("");
 
   const [results, setResults] = useState([]);
   const [warning, setWarning] = useState("");
@@ -55,6 +58,9 @@ function FixAndFlipSearch() {
         asisValue,
         experience,
         liquidity,
+        propertyType,
+        rural,
+        sortBy, // Include sorting option
       }).toString();
 
       const url = `${BASE_URL}/api/fix-and-flip/search?${queryString}`;
@@ -191,6 +197,31 @@ function FixAndFlipSearch() {
                 </label>
             ))}
         </div>
+      </fieldset>
+
+      <fieldset className="search-fieldset">
+        <legend className="search-legend">🔹 Additional Filters</legend>
+        <label className="search-label">Property Type:</label>
+        <select className="search-select" value={propertyType} onChange={(e) => setPropertyType(e.target.value)}>
+          <option value="">-- Select Property Type --</option>
+          <option value="singleFamily">Single Family</option>
+          <option value="multiFamily">Multi-Family</option>
+          <option value="commercial">Commercial</option>
+        </select>
+
+        <label className="search-label">Rural/Non-Rural:</label>
+        <select className="search-select" value={rural} onChange={(e) => setRural(e.target.value)}>
+          <option value="">-- Select --</option>
+          <option value="yes">Rural</option>
+          <option value="no">Non-Rural</option>
+        </select>
+
+        <label className="search-label">Sort By:</label>
+        <select className="search-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="">-- Select Sorting Option --</option>
+          <option value="ltc">LTC (Loan-to-Cost)</option>
+          <option value="loanAmount">Loan Amount</option>
+        </select>
       </fieldset>
 
       <div className="search-buttons-container">

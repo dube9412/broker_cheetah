@@ -20,6 +20,7 @@ function EditFixAndFlip() {
   const [crossCollateralAllowed, setCrossCollateralAllowed] = useState(null);
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
+  const [formData, setFormData] = useState({ rural: false, averageTimeToClose: "" }); // Add formData state
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
 
@@ -41,6 +42,7 @@ function EditFixAndFlip() {
           setCrossCollateralAllowed(data.crossCollateralAllowed ?? null);
           setPropertyTypes(data.propertyTypes || []);
           setHighlightNote(data.highlightNote || ""); // Load highlightNote
+          setFormData({ rural: data.rural || false, averageTimeToClose: data.averageTimeToClose || "" }); // Load rural and averageTimeToClose
         }
       } catch (error) {
         console.error("Error fetching program:", error);
@@ -108,6 +110,8 @@ function EditFixAndFlip() {
         propertyTypes,
         tiers,
         highlightNote, // Include highlightNote in the payload
+        rural: formData.rural, // Include rural in the payload
+        averageTimeToClose: formData.averageTimeToClose, // Include averageTimeToClose in the payload
       };
 
       const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/fix-and-flip/fix-and-flip-programs/${programId}`, {
@@ -251,7 +255,33 @@ function EditFixAndFlip() {
         style={{ width: "100%", height: "100px", marginBottom: "10px" }}
       />
 
-      <div style={{ marginTop: "20px", textAlign: "center" }}>
+      <label>
+        <input
+          type="checkbox"
+          checked={formData.rural}
+          onChange={(e) => setFormData({ ...formData, rural: e.target.checked })}
+        />
+        Rural
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          checked={!formData.rural}
+          onChange={(e) => setFormData({ ...formData, rural: !e.target.checked })}
+        />
+        Non-Rural
+      </label>
+      <label>
+        Average Time to Close (days):
+        <input
+          type="number"
+          value={formData.averageTimeToClose || ""}
+          onChange={(e) => setFormData({ ...formData, averageTimeToClose: e.target.value })}
+          min="0"
+        />
+      </label>
+
+      <div style={{ marginTop: "20px", textAlign: "center" }}></div>
         <button onClick={handleSave} style={{ marginRight: "10px" }}>💾 Save Program</button>
         <button onClick={handleDelete} style={{ marginRight: "10px" }}>❌ Delete</button>
         <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button">Cancel</button>
