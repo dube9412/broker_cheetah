@@ -93,4 +93,11 @@ router.post("/", verifyToken, async (req, res) => {
   }
 });
 
+// Handle both /api/quotes and /api/quotes/ by adding a route without a trailing slash
+router.post("", verifyToken, async (req, res) => {
+  console.log("🔹 Received POST request to /api/quotes (no trailing slash) with body:", req.body);
+  // Delegate to the existing route handler
+  return router.stack.find(r => r.route.path === "/").route.stack[0].handle(req, res);
+});
+
 module.exports = router;
