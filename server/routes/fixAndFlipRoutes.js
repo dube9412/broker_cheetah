@@ -182,6 +182,25 @@ router.get("/search", async (req, res) => {
       filters.rural = rural === "yes";
     }
 
+    if (req.query.loanOptions) {
+      const loanOptionsArray = req.query.loanOptions.split(",");
+      filters.loanOptions = { $in: loanOptionsArray };
+    }
+
+    if (req.query.termLength) {
+      filters.termLengthMonths = { $in: req.query.termLength.split(",").map(Number) };
+    }
+
+    if (req.query.propertyType) {
+      const validPropertyTypes = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
+      const requestedTypes = req.query.propertyType.split(",");
+      filters.propertyTypes = { $in: requestedTypes.filter((type) => validPropertyTypes.includes(type)) };
+    }
+
+    if (req.query.rural) {
+      filters.rural = req.query.rural === "yes";
+    }
+
     const programs = await FixAndFlipLoan.find(filters).populate("lender");
 
     const matchingPrograms = [];

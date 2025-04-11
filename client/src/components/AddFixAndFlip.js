@@ -180,6 +180,32 @@ function AddFixAndFlip() {
           <label key={type} style={{ marginRight: "10px" }}>
             <input type="checkbox" checked={propertyTypes.includes(type)} onChange={() => handlePropertyTypeChange(type)} /> {type}<br /></label>
         ))}
+       <label>Setting:</label> 
+      <label>
+        <input
+          type="checkbox"
+          checked={formData.rural}
+          onChange={(e) => setFormData({ ...formData, rural: e.target.checked })}
+        />
+        Rural
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          checked={!formData.rural}
+          onChange={(e) => setFormData({ ...formData, rural: !e.target.checked })}
+        />
+        Non-Rural
+      </label><br />
+      <label>
+        Average Time to Close (days):
+        <input
+          type="number"
+          value={formData.averageTimeToClose || ""}
+          onChange={(e) => setFormData({ ...formData, averageTimeToClose: e.target.value })}
+          min="0"
+        />
+      </label>
       </fieldset>
 
       <fieldset style={{ border: "1px solid #aaa", padding: "10px", marginBottom: "15px" }}>
@@ -223,32 +249,6 @@ function AddFixAndFlip() {
         placeholder="Enter a note explaining why this program is a good fit"
         style={{ width: "100%", height: "100px", marginBottom: "10px" }}
       />
-
-      <label>
-        <input
-          type="checkbox"
-          checked={formData.rural}
-          onChange={(e) => setFormData({ ...formData, rural: e.target.checked })}
-        />
-        Rural
-      </label>
-      <label>
-        <input
-          type="checkbox"
-          checked={!formData.rural}
-          onChange={(e) => setFormData({ ...formData, rural: !e.target.checked })}
-        />
-        Non-Rural
-      </label>
-      <label>
-        Average Time to Close (days):
-        <input
-          type="number"
-          value={formData.averageTimeToClose || ""}
-          onChange={(e) => setFormData({ ...formData, averageTimeToClose: e.target.value })}
-          min="0"
-        />
-      </label>
 
       <div style={{ marginTop: "20px", textAlign: "center" }}>
           <button onClick={handleSubmit} style={{ marginRight: "10px" }}>Save Program</button>

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 function Pipeline() {
   const [pipeline, setPipeline] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [analytics, setAnalytics] = useState([]);
 
   useEffect(() => {
     const fetchPipeline = async () => {
@@ -27,11 +28,40 @@ function Pipeline() {
     fetchPipeline();
   }, []);
 
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const response = await fetch("/api/quotes/analytics/loan-type", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          setAnalytics(data.analytics);
+        } else {
+          console.error("❌ Error fetching analytics:", data.message);
+        }
+      } catch (error) {
+        console.error("❌ Error fetching analytics:", error);
+      }
+    };
+
+    fetchAnalytics();
+  }, []);
+
   if (loading) return <p>Loading pipeline...</p>;
 
   return (
     <div>
       <h1>📋 My Pipeline</h1>
+
+      <h2>Analytics</h2>
+      <ul>
+        {analytics.map((item) => (
+          <li key={item._id}>{item._id}: {item.count} submissions</li>
+        ))}
+      </ul>
+
       {pipeline.length === 0 ? (
         <p>No quotes sent yet.</p>
       ) : (

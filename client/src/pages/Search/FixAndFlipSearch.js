@@ -231,6 +231,18 @@ function FixAndFlipSearch() {
 
       {warning && <p className="search-warning">{warning}</p>}
 
+      <div className="sort-by-container">
+        <label htmlFor="sortBy">Sort By:</label>
+        <select
+          id="sortBy"
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+        >
+          <option value="ltc">Loan-to-Cost (LTC)</option>
+          <option value="loanAmount">Loan Amount</option>
+        </select>
+      </div>
+
       <div className="search-results">
         {results.length > 0 ? (
           <div>

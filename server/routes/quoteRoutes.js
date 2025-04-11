@@ -117,6 +117,57 @@ router.post("/dscr", verifyToken, async (req, res) => {
   }
 });
 
+// Log every quote submission
+router.post("/fix-and-flip", verifyToken, async (req, res) => {
+  try {
+    const { lenderIds, loanType, ...quoteData } = req.body;
+
+    // Log the quote submission
+    const quoteLogs = lenderIds.map((lenderId) => ({
+      userId: req.user._id,
+      lenderId,
+      loanType,
+      ...quoteData,
+    }));
+
+    await Quote.insertMany(quoteLogs);
+
+    res.status(201).json({ success: true, message: "Quote logged successfully." });
+  } catch (error) {
+    console.error("❌ Error logging quote submission:", error);
+    res.status(500).json({ success: false, message: "Server error while logging quote." });
+  }
+});
+
+// Analytics endpoint: Total submissions by loan type
+router.get("/analytics/loan-type", verifyToken, async (req, res) => {
+  try {
+    const analytics = await Quote.aggregate([
+      { $group: { _id: "$loanType", count: { $sum: 1 } } },
+    ]);
+
+    res.status(200).json({ success: true, analytics });
+  } catch (error) {
+    console.error("❌ Error fetching analytics:", error);
+    res.status(500).json({ success: false, message: "Server error while fetching analytics." });
+  }
+});
+
+// Analytics endpoint: User-specific counts
+router.get("/analytics/user", verifyToken, async (req, res) => {
+  try {
+    const userAnalytics = await Quote.aggregate([
+      { $match: { userId: req.user._id } },
+      { $group: { _id: "$loanType", count: { $sum: 1 } } },
+    ]);
+
+    res.status(200).json({ success: true, userAnalytics });
+  } catch (error) {
+    console.error("❌ Error fetching user analytics:", error);
+    res.status(500).json({ success: false, message: "Server error while fetching user analytics." });
+  }
+});
+
 // Add similar routes for other loan types (e.g., stabilized bridge, ground up, portfolio)
 
 module.exports = router;

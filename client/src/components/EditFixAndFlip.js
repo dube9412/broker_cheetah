@@ -195,24 +195,24 @@ function EditFixAndFlip() {
         <label><input type="checkbox" checked={drawType.self} onChange={() => handleCheckboxChange(setDrawType, "self")} /> Self</label>
         <label><input type="checkbox" checked={drawType.thirdParty} onChange={() => handleCheckboxChange(setDrawType, "thirdParty")} /> 3rd Party</label><br />
 
-        <label>Cross Collateral Allowed:</label><br />
-<label>
-  <input
-    type="radio"
-    name="crossCollateral"
-    checked={crossCollateralAllowed === true}
-    onChange={() => setCrossCollateralAllowed(true)}
-  /> Yes
-</label>
-<label>
-  <input
-    type="radio"
-    name="crossCollateral"
-    checked={crossCollateralAllowed === false}
-    onChange={() => setCrossCollateralAllowed(false)}
-  /> No
-</label>
-<br />
+        <label>Cross Collateral Allowed:</label>
+          <label>
+            <input
+              type="radio"
+              name="crossCollateral"
+              checked={crossCollateralAllowed === true}
+              onChange={() => setCrossCollateralAllowed(true)}
+            /> Yes
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="crossCollateral"
+              checked={crossCollateralAllowed === false}
+              onChange={() => setCrossCollateralAllowed(false)}
+            /> No
+          </label>
+          <br />
 
         <label>Property Types:</label><br />
         {PROPERTY_TYPES.map(type => (
@@ -220,7 +220,36 @@ function EditFixAndFlip() {
             <input type="checkbox" checked={propertyTypes.includes(type)} onChange={() => handlePropertyTypeChange(type)} />
             {type}
           </label>
+
         ))}
+
+<label>Setting:</label>
+        <label>
+          <input
+            type="checkbox"
+            checked={formData.rural}
+            onChange={(e) => setFormData({ ...formData, rural: e.target.checked })}
+          />
+          Rural
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={!formData.rural}
+            onChange={(e) => setFormData({ ...formData, rural: !e.target.checked })}
+          />
+          Non-Rural
+        </label><br />
+        <label>
+          Average Time to Close (days):
+          <input
+            type="number"
+            value={formData.averageTimeToClose || ""}
+            onChange={(e) => setFormData({ ...formData, averageTimeToClose: e.target.value })}
+            min="0"
+          />
+        </label>
+    
       </fieldset>
 
       <label>Number of Tiers:
@@ -254,34 +283,6 @@ function EditFixAndFlip() {
         placeholder="Enter a note explaining why this program is a good fit"
         style={{ width: "100%", height: "100px", marginBottom: "10px" }}
       />
-
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={formData.rural}
-            onChange={(e) => setFormData({ ...formData, rural: e.target.checked })}
-          />
-          Rural
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={!formData.rural}
-            onChange={(e) => setFormData({ ...formData, rural: !e.target.checked })}
-          />
-          Non-Rural
-        </label>
-        <label>
-          Average Time to Close (days):
-          <input
-            type="number"
-            value={formData.averageTimeToClose || ""}
-            onChange={(e) => setFormData({ ...formData, averageTimeToClose: e.target.value })}
-            min="0"
-          />
-        </label>
-      </div>
 
       <div style={{ marginTop: "20px", textAlign: "center" }}>
         <button onClick={handleSave} style={{ marginRight: "10px" }}>💾 Save Program</button>
