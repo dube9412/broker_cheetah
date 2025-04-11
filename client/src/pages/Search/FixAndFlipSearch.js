@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Glossary from "../../components/hardMoneyClass/Glossary";
-import OneClickQuoteModal from "../../components/OneClickQuoteModal"; // Import the modal
+import FixAndFlipQuoteModal from "../../components/FixAndFlipQuoteModal"; // Import the modal
 import "../../styles/SearchPages.css";
 
 const BASE_URL = "https://broker-cheetah-backend.onrender.com";
@@ -265,7 +265,7 @@ function FixAndFlipSearch() {
       )}
 
       {isModalOpen && (
-        <OneClickQuoteModal
+        <FixAndFlipQuoteModal
           selectedLenders={selectedLenders}
           onClose={() => setIsModalOpen(false)}
           searchData={{

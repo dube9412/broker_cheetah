@@ -19,6 +19,7 @@ import EditPortfolio from "./components/EditPortfolio";
 import AddGroundUp from "./components/AddGroundUp";
 import EditGroundUp from "./components/EditGroundUp";
 import OneClickQuoteModal from "./components/OneClickQuoteModal";
+import FixAndFlipQuoteModal from "./components/FixAndFlipQuoteModal"; // Import FixAndFlipQuoteModal
 
 // Pages
 import Home from "./pages/Home";
@@ -201,6 +202,7 @@ function App() {
   
   {/* Fallback Route */}
   <Route path="*" element={<NotFound />} />
+  <Route path="/fix-and-flip-quote" element={<FixAndFlipQuoteModal />} />
             </Routes>
           </div>
           <footer className="bg-blue-700 text-white p-4 text-center shadow-inner">
