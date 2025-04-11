@@ -28,6 +28,7 @@ function Login() {
           // ✅ Pass full role data clearly into your AuthContext
           login({
             email: email,
+            token: data.token, // Include the token in the login function
             isAdmin: data.isAdmin,
             isSuperAdmin: data.isSuperAdmin,
             role: data.role,

@@ -57,7 +57,8 @@ router.post('/login', async (req, res) => {
 
     res.status(200).json({
       success: true,
-      token,
+      token, // Ensure the token is included in the response
+      email: user.email,
       role: user.role,
       isAdmin: user.role === 'admin',
       isSuperAdmin: user.role === 'superadmin',
