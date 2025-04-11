@@ -19,7 +19,7 @@ const FixAndFlipQuoteModal = ({ selectedLenders, onClose, searchData }) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/quotes", {
+      const response = await fetch("/api/quotes/fix-and-flip", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
