@@ -255,31 +255,33 @@ function EditFixAndFlip() {
         style={{ width: "100%", height: "100px", marginBottom: "10px" }}
       />
 
-      <label>
-        <input
-          type="checkbox"
-          checked={formData.rural}
-          onChange={(e) => setFormData({ ...formData, rural: e.target.checked })}
-        />
-        Rural
-      </label>
-      <label>
-        <input
-          type="checkbox"
-          checked={!formData.rural}
-          onChange={(e) => setFormData({ ...formData, rural: !e.target.checked })}
-        />
-        Non-Rural
-      </label>
-      <label>
-        Average Time to Close (days):
-        <input
-          type="number"
-          value={formData.averageTimeToClose || ""}
-          onChange={(e) => setFormData({ ...formData, averageTimeToClose: e.target.value })}
-          min="0"
-        />
-      </label>
+      <>
+        <label>
+          <input
+            type="checkbox"
+            checked={formData.rural}
+            onChange={(e) => setFormData({ ...formData, rural: e.target.checked })}
+          />
+          Rural
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={!formData.rural}
+            onChange={(e) => setFormData({ ...formData, rural: !e.target.checked })}
+          />
+          Non-Rural
+        </label>
+        <label>
+          Average Time to Close (days):
+          <input
+            type="number"
+            value={formData.averageTimeToClose || ""}
+            onChange={(e) => setFormData({ ...formData, averageTimeToClose: e.target.value })}
+            min="0"
+          />
+        </label>
+      </>
 
       <div style={{ marginTop: "20px", textAlign: "center" }}></div>
         <button onClick={handleSave} style={{ marginRight: "10px" }}>💾 Save Program</button>
