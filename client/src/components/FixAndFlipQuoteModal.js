@@ -24,7 +24,7 @@ const FixAndFlipQuoteModal = ({ selectedLenders, onClose, searchData }) => {
       });
       console.log("🔍 Request Payload:", {
         lenderId: selectedLenders[0],
-        loanType,
+        loanType: "fixAndFlip", // Replace undefined loanType with hardcoded value
         ...formData,
       });
 

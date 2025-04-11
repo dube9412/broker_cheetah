@@ -255,7 +255,7 @@ function EditFixAndFlip() {
         style={{ width: "100%", height: "100px", marginBottom: "10px" }}
       />
 
-      <>
+      <div>
         <label>
           <input
             type="checkbox"
@@ -281,14 +281,13 @@ function EditFixAndFlip() {
             min="0"
           />
         </label>
-      </>
+      </div>
 
-      <div style={{ marginTop: "20px", textAlign: "center" }}></div>
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
         <button onClick={handleSave} style={{ marginRight: "10px" }}>💾 Save Program</button>
         <button onClick={handleDelete} style={{ marginRight: "10px" }}>❌ Delete</button>
         <button onClick={() => navigate(`/manage-loan-programs/${lenderId}`)} type="button">Cancel</button>
       </div>
-    
     </div>
   );
 }

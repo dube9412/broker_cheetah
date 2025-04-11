@@ -36,9 +36,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    // Clear user session
     setUser(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+
+    // Redirect to login screen
+    window.location.href = "/login";
   };
 
   const requestPasswordReset = async (email) => {
