@@ -20,6 +20,7 @@ import AddGroundUp from "./components/AddGroundUp";
 import EditGroundUp from "./components/EditGroundUp";
 import OneClickQuoteModal from "./components/OneClickQuoteModal";
 import FixAndFlipQuoteModal from "./components/FixAndFlipQuoteModal"; // Import FixAndFlipQuoteModal
+import ChatHead from "./components/ChatHead"; // Import ChatHead
 
 // Pages
 import Home from "./pages/Home";
@@ -205,6 +206,7 @@ function App() {
   <Route path="/fix-and-flip-quote" element={<FixAndFlipQuoteModal />} />
             </Routes>
           </div>
+          <ChatHead /> {/* Add ChatHead component */}
           <footer className="bg-blue-700 text-white p-4 text-center shadow-inner">
             &copy; {new Date().getFullYear()} Broker Cheetah. All rights reserved.
           </footer>
