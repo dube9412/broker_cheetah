@@ -175,31 +175,27 @@ router.get("/search", async (req, res) => {
 
     const filters = {};
 
-    if (req.query.propertyType) {
-      const validPropertyTypes = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
-      const requestedTypes = req.query.propertyType.split(",");
-      filters.propertyTypes = { $in: requestedTypes.filter((type) => validPropertyTypes.includes(type)) };
-    }
+    console.log("🔍 Applying filters:", {
+      recourse,
+      interestType,
+      drawType,
+      crossCollateralAllowed,
+      termLengthMonths,
+    });
 
-    if (req.query.rural) {
-      filters.rural = req.query.rural === "yes";
-    }
-
-    // Removed unnecessary loanOptions filter logic
-    // Directly filter on specific loan option fields
     if (recourse) {
-      if (recourse.recourse) filters["recourse.recourse"] = true;
-      if (recourse.nonRecourse) filters["recourse.nonRecourse"] = true;
+      if (recourse === "recourse") filters["recourse.recourse"] = true;
+      if (recourse === "nonRecourse") filters["recourse.nonRecourse"] = true;
     }
 
     if (interestType) {
-      if (interestType.dutch) filters["interestType.dutch"] = true;
-      if (interestType.nonDutch) filters["interestType.nonDutch"] = true;
+      if (interestType === "dutch") filters["interestType.dutch"] = true;
+      if (interestType === "nonDutch") filters["interestType.nonDutch"] = true;
     }
 
     if (drawType) {
-      if (drawType.self) filters["drawType.self"] = true;
-      if (drawType.thirdParty) filters["drawType.thirdParty"] = true;
+      if (drawType === "self") filters["drawType.self"] = true;
+      if (drawType === "thirdParty") filters["drawType.thirdParty"] = true;
     }
 
     if (crossCollateralAllowed !== undefined) {
@@ -208,6 +204,18 @@ router.get("/search", async (req, res) => {
 
     if (termLengthMonths && termLengthMonths.length > 0) {
       filters.termLengthMonths = { $in: termLengthMonths.map(Number) };
+    }
+
+    console.log("🔍 Final filters applied to query:", filters);
+
+    if (req.query.propertyType) {
+      const validPropertyTypes = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
+      const requestedTypes = req.query.propertyType.split(",");
+      filters.propertyTypes = { $in: requestedTypes.filter((type) => validPropertyTypes.includes(type)) };
+    }
+
+    if (req.query.rural) {
+      filters.rural = req.query.rural === "yes";
     }
 
     const programs = await FixAndFlipLoan.find(filters).populate("lender");

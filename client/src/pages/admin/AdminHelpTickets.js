@@ -27,6 +27,27 @@ const AdminHelpTickets = () => {
     }
   };
 
+  const updateTicketStatus = async (ticketId, newStatus) => {
+    try {
+      const response = await fetch(`https://broker-cheetah-backend.onrender.com/api/admin/help-tickets/${ticketId}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (response.ok) {
+        const { ticket } = await response.json();
+        setTickets((prevTickets) =>
+          prevTickets.map((t) => (t._id === ticketId ? ticket : t))
+        );
+      } else {
+        console.error("Failed to update ticket status");
+      }
+    } catch (error) {
+      console.error("Error updating ticket status:", error);
+    }
+  };
+
   useEffect(() => {
     if (!isAdmin && !isSuperAdmin) {
       navigate("/dashboard");
@@ -76,7 +97,17 @@ const AdminHelpTickets = () => {
                   <td>{ticket.userEmail}</td>
                   <td>{ticket.issue}</td>
                   <td>{ticket.desiredOutcome}</td>
-                  <td>{ticket.status}</td>
+                  <td>
+                    <select
+                      value={ticket.status}
+                      onChange={(e) => updateTicketStatus(ticket._id, e.target.value)}
+                      style={{ padding: "5px", border: "1px solid #ccc" }}
+                    >
+                      <option value="Open">Open</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Resolved">Resolved</option>
+                    </select>
+                  </td>
                   <td>
                     {ticket.status !== "Resolved" && (
                       <button
