@@ -169,15 +169,11 @@ router.get("/search", async (req, res) => {
       crossCollateralAllowed,
       propertyType,
       rural,
+      termLengthMonths,
       sortBy, // New sorting option
     } = req.query;
 
     const filters = {};
-
-    if (req.query.loanOptions) {
-      const loanOptionsArray = req.query.loanOptions.split(",");
-      filters.loanOptions = { $in: loanOptionsArray };
-    }
 
     if (req.query.propertyType) {
       const validPropertyTypes = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
@@ -187,6 +183,31 @@ router.get("/search", async (req, res) => {
 
     if (req.query.rural) {
       filters.rural = req.query.rural === "yes";
+    }
+
+    // Removed unnecessary loanOptions filter logic
+    // Directly filter on specific loan option fields
+    if (recourse) {
+      if (recourse.recourse) filters["recourse.recourse"] = true;
+      if (recourse.nonRecourse) filters["recourse.nonRecourse"] = true;
+    }
+
+    if (interestType) {
+      if (interestType.dutch) filters["interestType.dutch"] = true;
+      if (interestType.nonDutch) filters["interestType.nonDutch"] = true;
+    }
+
+    if (drawType) {
+      if (drawType.self) filters["drawType.self"] = true;
+      if (drawType.thirdParty) filters["drawType.thirdParty"] = true;
+    }
+
+    if (crossCollateralAllowed !== undefined) {
+      filters.crossCollateralAllowed = crossCollateralAllowed === "yes";
+    }
+
+    if (termLengthMonths && termLengthMonths.length > 0) {
+      filters.termLengthMonths = { $in: termLengthMonths.map(Number) };
     }
 
     const programs = await FixAndFlipLoan.find(filters).populate("lender");
