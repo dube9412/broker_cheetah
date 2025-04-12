@@ -5,6 +5,13 @@ const axios = require("axios");
 router.post("/", async (req, res) => {
   const { message } = req.body;
 
+  if (req.method !== "POST") {
+    console.error("❌ Invalid HTTP method. Only POST is allowed.");
+    return res.status(405).json({ message: "Method Not Allowed" });
+  }
+
+  console.log("🔍 Received Chat Message:", message);
+
   if (!message) {
     return res.status(400).json({ message: "Message is required." });
   }

@@ -41,22 +41,60 @@ router.post("/", async (req, res) => {
   }
 });
 
+// ✅ Update the status of a help ticket (no token required)
+router.put('/:ticketId/status', async (req, res) => {
+  const { ticketId } = req.params;
+  const { status } = req.body;
+
+  console.log("🔍 Updating status for ticket:", ticketId, "to:", status);
+
+  if (!status) {
+    return res.status(400).json({ success: false, message: "Status is required." });
+  }
+
+  try {
+    const ticket = await HelpTicket.findByIdAndUpdate(
+      ticketId,
+      { status },
+      { new: true, runValidators: true }
+    );
+
+    if (!ticket) {
+      console.error("❌ Ticket not found:", ticketId);
+      return res.status(404).json({ success: false, message: "Ticket not found." });
+    }
+
+    console.log("✅ Ticket status updated:", ticket);
+    res.json({ success: true, ticket });
+  } catch (error) {
+    console.error("❌ Error updating ticket status:", error);
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+});
+
 // ✅ Resolve a help ticket (no token required)
 router.post("/:ticketId/resolve", async (req, res) => {
+  const { ticketId } = req.params;
+
+  console.log("🔍 Resolving ticket:", ticketId);
+
   try {
-    const ticket = await HelpTicket.findById(req.params.ticketId);
-    if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+    const ticket = await HelpTicket.findByIdAndUpdate(
+      ticketId,
+      { status: "Resolved" },
+      { new: true, runValidators: true }
+    );
 
-    ticket.status = "Resolved";
-    await ticket.save();
+    if (!ticket) {
+      console.error("❌ Ticket not found:", ticketId);
+      return res.status(404).json({ success: false, message: "Ticket not found." });
+    }
 
-    // Notify the user (e.g., via email or a message field)
-    console.log(`✅ Notifying user ${ticket.userEmail} about resolution.`);
-
-    res.status(200).json({ success: true, message: "Ticket resolved", ticket });
+    console.log("✅ Ticket resolved:", ticket);
+    res.json({ success: true, ticket });
   } catch (error) {
-    console.error("❌ Error resolving help ticket:", error);
-    res.status(500).json({ message: "Failed to resolve ticket" });
+    console.error("❌ Error resolving ticket:", error);
+    res.status(500).json({ success: false, message: "Server error." });
   }
 });
 

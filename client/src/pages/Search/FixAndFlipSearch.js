@@ -60,7 +60,12 @@ function FixAndFlipSearch() {
         liquidity,
         propertyType,
         rural,
-        sortBy, // Include sorting option
+        sortBy,
+        recourse: recourse.recourse ? "recourse" : recourse.nonRecourse ? "nonRecourse" : undefined,
+        interestType: interestType.dutch ? "dutch" : interestType.nonDutch ? "nonDutch" : undefined,
+        drawType: drawType.self ? "self" : drawType.thirdParty ? "thirdParty" : undefined,
+        crossCollateralAllowed,
+        termLengthMonths: termLengthMonths.join(","),
       }).toString();
 
       const url = `${BASE_URL}/api/fix-and-flip/search?${queryString}`;

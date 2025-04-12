@@ -175,6 +175,8 @@ router.get("/search", async (req, res) => {
 
     const filters = {};
 
+    console.log("🔍 Received Query Parameters:", req.query);
+
     console.log("🔍 Applying filters:", {
       recourse,
       interestType,
@@ -184,29 +186,34 @@ router.get("/search", async (req, res) => {
     });
 
     if (recourse) {
+      console.log("🔍 Filtering by Recourse:", recourse);
       if (recourse === "recourse") filters["recourse.recourse"] = true;
       if (recourse === "nonRecourse") filters["recourse.nonRecourse"] = true;
     }
 
     if (interestType) {
+      console.log("🔍 Filtering by Interest Type:", interestType);
       if (interestType === "dutch") filters["interestType.dutch"] = true;
       if (interestType === "nonDutch") filters["interestType.nonDutch"] = true;
     }
 
     if (drawType) {
+      console.log("🔍 Filtering by Draw Type:", drawType);
       if (drawType === "self") filters["drawType.self"] = true;
       if (drawType === "thirdParty") filters["drawType.thirdParty"] = true;
     }
 
     if (crossCollateralAllowed !== undefined) {
+      console.log("🔍 Filtering by Cross Collateral Allowed:", crossCollateralAllowed);
       filters.crossCollateralAllowed = crossCollateralAllowed === "yes";
     }
 
     if (termLengthMonths && termLengthMonths.length > 0) {
+      console.log("🔍 Filtering by Term Length Months:", termLengthMonths);
       filters.termLengthMonths = { $in: termLengthMonths.map(Number) };
     }
 
-    console.log("🔍 Final filters applied to query:", filters);
+    console.log("🔍 Final Filters Applied:", filters);
 
     if (req.query.propertyType) {
       const validPropertyTypes = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
