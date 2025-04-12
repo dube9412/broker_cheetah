@@ -11,6 +11,7 @@ const DOCUMENT_CATEGORIES = [
   ]},
   { label: "General Underwriting & Processing Docs", options: [
     "Borrower Experience Sheet", 
+    "Primary Guarantor Application",
     "Co-Signor (Guarantor) Sheet", 
     "Canadian National Credit Report Worksheet", 
     "Contractor Onboarding Worksheet", 
