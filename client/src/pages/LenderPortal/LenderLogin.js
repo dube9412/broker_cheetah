@@ -79,6 +79,9 @@ const LenderLogin = () => {
             <p>
                 Don't have an account? <Link to="/lender/signup">Sign Up</Link>
             </p>
+            <p>
+                <Link to="/lender-password-reset">Forgot Password?</Link>
+            </p>
         </div>
     );
 };

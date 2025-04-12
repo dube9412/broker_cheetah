@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Add Link for navigation
 import { AuthContext } from "../context/AuthContext";
 
 function Login() {
@@ -79,6 +79,9 @@ function Login() {
         <br />
         <button type="submit">Log In</button>
       </form>
+      <p>
+        <Link to="/password-reset">Forgot Password?</Link>
+      </p>
     </div>
   );
 }

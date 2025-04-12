@@ -174,23 +174,9 @@ router.get("/search", async (req, res) => {
 
     const filters = {};
 
-    if (propertyType) {
-      const validPropertyTypes = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
-      const requestedTypes = req.query.propertyType.split(",");
-      filters.propertyTypes = { $in: requestedTypes.filter((type) => validPropertyTypes.includes(type)) };
-    }
-
-    if (rural) {
-      filters.rural = req.query.rural === "yes";
-    }
-
     if (req.query.loanOptions) {
       const loanOptionsArray = req.query.loanOptions.split(",");
       filters.loanOptions = { $in: loanOptionsArray };
-    }
-
-    if (req.query.termLength) {
-      filters.termLengthMonths = { $in: req.query.termLength.split(",").map(Number) };
     }
 
     if (req.query.propertyType) {

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.png"; // Import the Broker Cheetah logo
+import "./ChatHead.css";
 
 const ChatHead = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -80,6 +81,19 @@ const ChatHead = () => {
             overflow: "hidden",
           }}
         >
+          <button
+            onClick={toggleChat}
+            style={{
+              background: "#FF6F00",
+              color: "white",
+              border: "none",
+              padding: "10px",
+              cursor: "pointer",
+              width: "100%",
+            }}
+          >
+            Close
+          </button>
           <div style={{ padding: "10px", maxHeight: "400px", overflowY: "auto" }}>
             {messages.map((msg, index) => (
               <div
