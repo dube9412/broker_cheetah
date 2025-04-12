@@ -175,11 +175,13 @@ router.get("/search", async (req, res) => {
     const filters = {};
 
     if (propertyType) {
-      filters.propertyTypes = propertyType;
+      const validPropertyTypes = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
+      const requestedTypes = req.query.propertyType.split(",");
+      filters.propertyTypes = { $in: requestedTypes.filter((type) => validPropertyTypes.includes(type)) };
     }
 
     if (rural) {
-      filters.rural = rural === "yes";
+      filters.rural = req.query.rural === "yes";
     }
 
     if (req.query.loanOptions) {
