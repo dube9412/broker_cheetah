@@ -1,0 +1,65 @@
+/* ChatHead.css */
+
+.chat-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+.chat-circle {
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #ffc107; /* Cheetah-themed yellow */
+  border: 2px solid #ff6f00; /* Cheetah-themed orange */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+}
+
+.chat-box {
+  width: 300px;
+  background: #fff8e1; /* Light cheetah-themed background */
+  border: 1px solid #ff6f00;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.close-button {
+  background: #ff6f00;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.chat-content {
+  padding: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.chat-input {
+  display: flex;
+  border-top: 1px solid #ff6f00;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+}
+
+.chat-input button {
+  padding: 10px;
+  background: #ff6f00;
+  color: white;
+  border: none;
+}
