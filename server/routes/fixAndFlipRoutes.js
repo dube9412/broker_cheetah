@@ -177,25 +177,25 @@ router.get("/search", async (req, res) => {
 
     console.log("🔍 Received Query Parameters:", req.query);
 
-    if (recourse) {
+    if (recourse && (recourse === "recourse" || recourse === "nonRecourse")) {
       console.log("🔍 Filtering by Recourse:", recourse);
-      if (recourse === "recourse") filters["recourse.recourse"] = true;
-      if (recourse === "nonRecourse") filters["recourse.nonRecourse"] = true;
+      filters["recourse.recourse"] = recourse === "recourse";
+      filters["recourse.nonRecourse"] = recourse === "nonRecourse";
     }
 
-    if (interestType) {
+    if (interestType && (interestType === "dutch" || interestType === "nonDutch")) {
       console.log("🔍 Filtering by Interest Type:", interestType);
-      if (interestType === "dutch") filters["interestType.dutch"] = true;
-      if (interestType === "nonDutch") filters["interestType.nonDutch"] = true;
+      filters["interestType.dutch"] = interestType === "dutch";
+      filters["interestType.nonDutch"] = interestType === "nonDutch";
     }
 
-    if (drawType) {
+    if (drawType && (drawType === "self" || drawType === "thirdParty")) {
       console.log("🔍 Filtering by Draw Type:", drawType);
-      if (drawType === "self") filters["drawType.self"] = true;
-      if (drawType === "thirdParty") filters["drawType.thirdParty"] = true;
+      filters["drawType.self"] = drawType === "self";
+      filters["drawType.thirdParty"] = drawType === "thirdParty";
     }
 
-    if (crossCollateralAllowed) {
+    if (crossCollateralAllowed && (crossCollateralAllowed === "yes" || crossCollateralAllowed === "no")) {
       console.log("🔍 Filtering by Cross Collateral Allowed:", crossCollateralAllowed);
       filters.crossCollateralAllowed = crossCollateralAllowed === "yes";
     }
@@ -211,16 +211,8 @@ router.get("/search", async (req, res) => {
 
     if (propertyType) {
       console.log("🔍 Filtering by Property Type:", propertyType);
-      const validPropertyTypes = ["Single Family 1-4", "Townhome", "Warrantable Condo", "Cabins"];
-      const requestedTypes = propertyType.split(",");
-      filters.propertyTypes = { $in: requestedTypes.filter((type) => validPropertyTypes.includes(type)) };
-    }
-
-    console.log("🔍 Final Filters Applied:", filters);
-
-    if (req.query.propertyType) {
       const validPropertyTypes = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
-      const requestedTypes = req.query.propertyType.split(",");
+      const requestedTypes = propertyType.split(",");
       filters.propertyTypes = { $in: requestedTypes.filter((type) => validPropertyTypes.includes(type)) };
     }
 
