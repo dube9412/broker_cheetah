@@ -177,14 +177,6 @@ router.get("/search", async (req, res) => {
 
     console.log("🔍 Received Query Parameters:", req.query);
 
-    console.log("🔍 Applying filters:", {
-      recourse,
-      interestType,
-      drawType,
-      crossCollateralAllowed,
-      termLengthMonths,
-    });
-
     if (recourse) {
       console.log("🔍 Filtering by Recourse:", recourse);
       if (recourse === "recourse") filters["recourse.recourse"] = true;
@@ -203,14 +195,25 @@ router.get("/search", async (req, res) => {
       if (drawType === "thirdParty") filters["drawType.thirdParty"] = true;
     }
 
-    if (crossCollateralAllowed !== undefined) {
+    if (crossCollateralAllowed) {
       console.log("🔍 Filtering by Cross Collateral Allowed:", crossCollateralAllowed);
       filters.crossCollateralAllowed = crossCollateralAllowed === "yes";
     }
 
-    if (termLengthMonths && termLengthMonths.length > 0) {
-      console.log("🔍 Filtering by Term Length Months:", termLengthMonths);
-      filters.termLengthMonths = { $in: termLengthMonths.map(Number) };
+    if (termLengthMonths) {
+      console.log("🔍 Filtering by Term Length Months (raw):", termLengthMonths);
+      const termLengths = Array.isArray(termLengthMonths)
+        ? termLengthMonths
+        : termLengthMonths.split(",").map(Number);
+      console.log("🔍 Parsed Term Length Months:", termLengths);
+      filters.termLengthMonths = { $in: termLengths };
+    }
+
+    if (propertyType) {
+      console.log("🔍 Filtering by Property Type:", propertyType);
+      const validPropertyTypes = ["Single Family 1-4", "Townhome", "Warrantable Condo", "Cabins"];
+      const requestedTypes = propertyType.split(",");
+      filters.propertyTypes = { $in: requestedTypes.filter((type) => validPropertyTypes.includes(type)) };
     }
 
     console.log("🔍 Final Filters Applied:", filters);

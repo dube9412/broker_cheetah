@@ -209,9 +209,11 @@ function FixAndFlipSearch() {
         <label className="search-label">Property Type:</label>
         <select className="search-select" value={propertyType} onChange={(e) => setPropertyType(e.target.value)}>
           <option value="">-- Select Property Type --</option>
-          <option value="singleFamily">Single Family</option>
-          <option value="multiFamily">Multi-Family</option>
-          <option value="commercial">Commercial</option>
+          <option value="Single Family 1-4">Single Family 1-4</option>
+          <option value="Condo">Condo</option>
+          <option value="Townhome">Townhome</option>
+          <option value="Manufactured">Manufactured</option>
+          <option value="Cabins">Cabins</option>
         </select>
 
         <label className="search-label">Rural/Non-Rural:</label>

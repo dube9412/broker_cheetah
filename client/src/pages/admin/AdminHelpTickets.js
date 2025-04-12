@@ -72,6 +72,29 @@ const AdminHelpTickets = () => {
     fetchTickets();
   }, [isAdmin, isSuperAdmin, navigate]);
 
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const response = await fetch("https://broker-cheetah-backend.onrender.com/api/admin/help-tickets");
+        const data = await response.json();
+        if (response.ok) {
+          setTickets(Array.isArray(data.tickets) ? data.tickets : []);
+        } else {
+          console.error("Failed to fetch help tickets:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching help tickets:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTickets();
+  }, []); // Ensure tickets are fetched on component mount
+
+  const filterResolvedTickets = (tickets) => {
+    return tickets.filter((ticket) => ticket.status !== "Resolved");
+  };
+
   if (loading) return <div className="loading">Loading help tickets...</div>;
 
   return (
@@ -91,8 +114,8 @@ const AdminHelpTickets = () => {
             </tr>
           </thead>
           <tbody>
-            {tickets.length > 0 ? (
-              tickets.map((ticket) => (
+            {filterResolvedTickets(tickets).length > 0 ? (
+              filterResolvedTickets(tickets).map((ticket) => (
                 <tr key={ticket._id}>
                   <td>{ticket.userEmail}</td>
                   <td>{ticket.issue}</td>
