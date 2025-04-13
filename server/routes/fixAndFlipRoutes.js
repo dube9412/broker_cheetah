@@ -177,10 +177,15 @@ router.get("/search", async (req, res) => {
 
     console.log("🔍 Received Query Parameters:", req.query);
 
-    if (recourse && (recourse === "recourse" || recourse === "nonRecourse")) {
+    if (recourse) {
       console.log("🔍 Filtering by Recourse:", recourse);
-      filters["recourse.recourse"] = recourse === "recourse";
-      filters["recourse.nonRecourse"] = recourse === "nonRecourse";
+      if (recourse === "recourse") {
+        filters["recourse.recourse"] = true;
+      } else if (recourse === "nonRecourse") {
+        filters["recourse.nonRecourse"] = true;
+      }
+    } else {
+      console.log("🔍 No Recourse filter applied.");
     }
 
     if (interestType && (interestType === "dutch" || interestType === "nonDutch")) {
