@@ -190,7 +190,7 @@ router.get("/search", async (req, res) => {
         filters.$or = filters.$or ? [...filters.$or, ...recourseFilters] : recourseFilters;
       }
     } else {
-      console.log("🔍 No Recourse filter applied.");
+      console.log("🔍 No Recourse filter applied. Skipping recourse filter.");
     }
 
     if (interestType && interestType.length > 0) {
