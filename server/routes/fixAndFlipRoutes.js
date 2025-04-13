@@ -177,45 +177,45 @@ router.get("/search", async (req, res) => {
 
     console.log("🔍 Received Query Parameters:", req.query);
 
-    if (recourse) {
+    if (recourse && recourse.length > 0) {
       console.log("🔍 Filtering by Recourse:", recourse);
-      if (recourse.includes("recourse") && recourse.includes("nonRecourse")) {
-        filters.$or = [
-          { "recourse.recourse": true },
-          { "recourse.nonRecourse": true },
-        ];
-      } else if (recourse.includes("recourse")) {
-        filters["recourse.recourse"] = true;
-      } else if (recourse.includes("nonRecourse")) {
-        filters["recourse.nonRecourse"] = true;
+      const recourseFilters = [];
+      if (recourse.includes("recourse")) {
+        recourseFilters.push({ "recourse.recourse": true });
+      }
+      if (recourse.includes("nonRecourse")) {
+        recourseFilters.push({ "recourse.nonRecourse": true });
+      }
+      if (recourseFilters.length > 0) {
+        filters.$or = recourseFilters;
       }
     }
 
-    if (interestType) {
+    if (interestType && interestType.length > 0) {
       console.log("🔍 Filtering by Interest Type:", interestType);
-      if (interestType.includes("dutch") && interestType.includes("nonDutch")) {
-        filters.$or = [
-          { "interestType.dutch": true },
-          { "interestType.nonDutch": true },
-        ];
-      } else if (interestType.includes("dutch")) {
-        filters["interestType.dutch"] = true;
-      } else if (interestType.includes("nonDutch")) {
-        filters["interestType.nonDutch"] = true;
+      const interestFilters = [];
+      if (interestType.includes("dutch")) {
+        interestFilters.push({ "interestType.dutch": true });
+      }
+      if (interestType.includes("nonDutch")) {
+        interestFilters.push({ "interestType.nonDutch": true });
+      }
+      if (interestFilters.length > 0) {
+        filters.$or = filters.$or ? [...filters.$or, ...interestFilters] : interestFilters;
       }
     }
 
-    if (drawType) {
+    if (drawType && drawType.length > 0) {
       console.log("🔍 Filtering by Draw Type:", drawType);
-      if (drawType.includes("self") && drawType.includes("thirdParty")) {
-        filters.$or = [
-          { "drawType.self": true },
-          { "drawType.thirdParty": true },
-        ];
-      } else if (drawType.includes("self")) {
-        filters["drawType.self"] = true;
-      } else if (drawType.includes("thirdParty")) {
-        filters["drawType.thirdParty"] = true;
+      const drawFilters = [];
+      if (drawType.includes("self")) {
+        drawFilters.push({ "drawType.self": true });
+      }
+      if (drawType.includes("thirdParty")) {
+        drawFilters.push({ "drawType.thirdParty": true });
+      }
+      if (drawFilters.length > 0) {
+        filters.$or = filters.$or ? [...filters.$or, ...drawFilters] : drawFilters;
       }
     }
 
