@@ -177,7 +177,7 @@ router.get("/search", async (req, res) => {
 
     console.log("🔍 Received Query Parameters:", req.query);
 
-    if (recourse && recourse.length > 0) {
+    if (recourse && recourse !== 'undefined' && recourse.length > 0) {
       console.log("🔍 Filtering by Recourse:", recourse);
       const recourseFilters = [];
       if (recourse.includes("recourse")) {
