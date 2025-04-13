@@ -179,30 +179,72 @@ router.get("/search", async (req, res) => {
 
     if (recourse) {
       console.log("🔍 Filtering by Recourse:", recourse);
-      if (recourse === "recourse") {
+      if (recourse.includes("recourse") && recourse.includes("nonRecourse")) {
+        filters.$or = [
+          { "recourse.recourse": true },
+          { "recourse.nonRecourse": true },
+        ];
+      } else if (recourse.includes("recourse")) {
         filters["recourse.recourse"] = true;
-      } else if (recourse === "nonRecourse") {
+      } else if (recourse.includes("nonRecourse")) {
         filters["recourse.nonRecourse"] = true;
       }
-    } else {
-      console.log("🔍 No Recourse filter applied.");
     }
 
-    if (interestType && (interestType === "dutch" || interestType === "nonDutch")) {
+    if (interestType) {
       console.log("🔍 Filtering by Interest Type:", interestType);
-      filters["interestType.dutch"] = interestType === "dutch";
-      filters["interestType.nonDutch"] = interestType === "nonDutch";
+      if (interestType.includes("dutch") && interestType.includes("nonDutch")) {
+        filters.$or = [
+          { "interestType.dutch": true },
+          { "interestType.nonDutch": true },
+        ];
+      } else if (interestType.includes("dutch")) {
+        filters["interestType.dutch"] = true;
+      } else if (interestType.includes("nonDutch")) {
+        filters["interestType.nonDutch"] = true;
+      }
     }
 
-    if (drawType && (drawType === "self" || drawType === "thirdParty")) {
+    if (drawType) {
       console.log("🔍 Filtering by Draw Type:", drawType);
-      filters["drawType.self"] = drawType === "self";
-      filters["drawType.thirdParty"] = drawType === "thirdParty";
+      if (drawType.includes("self") && drawType.includes("thirdParty")) {
+        filters.$or = [
+          { "drawType.self": true },
+          { "drawType.thirdParty": true },
+        ];
+      } else if (drawType.includes("self")) {
+        filters["drawType.self"] = true;
+      } else if (drawType.includes("thirdParty")) {
+        filters["drawType.thirdParty"] = true;
+      }
     }
 
-    if (crossCollateralAllowed && (crossCollateralAllowed === "yes" || crossCollateralAllowed === "no")) {
+    if (crossCollateralAllowed) {
       console.log("🔍 Filtering by Cross Collateral Allowed:", crossCollateralAllowed);
-      filters.crossCollateralAllowed = crossCollateralAllowed === "yes";
+      if (crossCollateralAllowed.includes("yes") && crossCollateralAllowed.includes("no")) {
+        filters.$or = [
+          { crossCollateralAllowed: true },
+          { crossCollateralAllowed: false },
+        ];
+      } else if (crossCollateralAllowed.includes("yes")) {
+        filters.crossCollateralAllowed = true;
+      } else if (crossCollateralAllowed.includes("no")) {
+        filters.crossCollateralAllowed = false;
+      }
+    }
+
+    if (rural) {
+      console.log("🔍 Filtering by Rural/Non-Rural:", rural);
+      if (rural.includes("yes") && rural.includes("no")) {
+        filters.$or = [
+          { rural: true },
+          { rural: false },
+        ];
+      } else if (rural.includes("yes")) {
+        filters.rural = true;
+      } else if (rural.includes("no")) {
+        filters.rural = false;
+      }
     }
 
     if (termLengthMonths) {
@@ -219,10 +261,6 @@ router.get("/search", async (req, res) => {
       const validPropertyTypes = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
       const requestedTypes = propertyType.split(",");
       filters.propertyTypes = { $in: requestedTypes.filter((type) => validPropertyTypes.includes(type)) };
-    }
-
-    if (req.query.rural) {
-      filters.rural = req.query.rural === "yes";
     }
 
     const programs = await FixAndFlipLoan.find(filters).populate("lender");
