@@ -30,7 +30,7 @@ function EditLender() {
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const returnTo = searchParams.get("returnTo") || "/admin-dashboard"; // Default to admin
+  const returnTo = searchParams.get("returnTo") || "/admin/lenders"; // Default to admin
 
 
   useEffect(() => {
@@ -40,7 +40,7 @@ function EditLender() {
     if (!id) {
       console.error("EditLender: No ID provided in URL");
       alert("Invalid lender ID.");
-      navigate(isAdmin || isSuperAdmin ? "/admin-dashboard" : "/dashboard");
+      navigate(isAdmin || isSuperAdmin ? "/admin/lenders" : "/dashboard");
 
       return;
     }
@@ -53,7 +53,7 @@ function EditLender() {
         if (!lender || !lender._id) {
           console.error("Lender not found.");
           alert("Lender not found.");
-          navigate(isAdmin || isSuperAdmin ? "/admin-dashboard" : "/dashboard");
+          navigate(isAdmin || isSuperAdmin ? "/admin/lenders" : "/dashboard");
 
           return;
         }
@@ -79,7 +79,7 @@ function EditLender() {
       .catch((err) => {
         console.error("❌ Error fetching lender:", err);
         alert("Error fetching lender data.");
-        navigate(isAdmin || isSuperAdmin ? "/admin-dashboard" : "/dashboard");
+        navigate(isAdmin || isSuperAdmin ? "/admin/lenders" : "/dashboard");
 
       });
   }, [id, navigate]);

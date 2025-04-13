@@ -26,11 +26,11 @@ function FixAndFlipSearch() {
   const [asisValue, setAsisValue] = useState("");
   const [experience, setExperience] = useState("");
   const [liquidity, setLiquidity] = useState("");
-  const [recourse, setRecourse] = useState({ recourse: false, nonRecourse: false });
+  const [recourse, setRecourse] = useState("");
   const [interestType, setInterestType] = useState("");
   const [crossCollateralAllowed, setCrossCollateralAllowed] = useState("");
   const [termLengthMonths, setTermLengthMonths] = useState([]); // Initialize as an array
-  const [drawType, setDrawType] = useState({ self: false, thirdParty: false });
+  const [drawType, setDrawType] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [rural, setRural] = useState("");
   const [sortBy, setSortBy] = useState("");
@@ -61,9 +61,9 @@ function FixAndFlipSearch() {
         propertyType,
         rural,
         sortBy,
-        recourse: recourse.recourse ? "recourse" : recourse.nonRecourse ? "nonRecourse" : undefined,
-        interestType: interestType.dutch ? "dutch" : interestType.nonDutch ? "nonDutch" : undefined,
-        drawType: drawType.self ? "self" : drawType.thirdParty ? "thirdParty" : undefined,
+        recourse,
+        interestType,
+        drawType,
         crossCollateralAllowed,
         termLengthMonths: termLengthMonths.join(","),
       }).toString();
@@ -105,8 +105,8 @@ function FixAndFlipSearch() {
     setAsisValue("");
     setExperience("");
     setLiquidity("");
-    setRecourse({ recourse: false, nonRecourse: false });
-    setInterestType({ dutch: false, nonDutch: false });
+    setRecourse("");
+    setInterestType("");
     setCrossCollateralAllowed("");
     setTermLengthMonths([]); // Clear term length
     setResults([]);
@@ -168,15 +168,73 @@ function FixAndFlipSearch() {
 
       <fieldset className="search-fieldset">
         <legend className="search-legend">🔹 Loan Options</legend>
+
         <label className="search-label">Recourse:</label>
-        <label><input type="checkbox" checked={recourse.recourse} onChange={() => setRecourse((prev) => ({ ...prev, recourse: !prev.recourse }))} /> Recourse</label>
-        <label><input type="checkbox" checked={recourse.nonRecourse} onChange={() => setRecourse((prev) => ({ ...prev, nonRecourse: !prev.nonRecourse }))} /> Non-Recourse</label>
+        <label>
+          <input
+            type="radio"
+            name="recourse"
+            value="recourse"
+            checked={recourse === "recourse"}
+            onChange={() => setRecourse("recourse")}
+          />
+          Recourse
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="recourse"
+            value="nonRecourse"
+            checked={recourse === "nonRecourse"}
+            onChange={() => setRecourse("nonRecourse")}
+          />
+          Non-Recourse
+        </label>
+
         <label className="search-label">Interest Type:</label>
-        <label><input type="checkbox" checked={interestType.dutch} onChange={() => setInterestType((prev) => ({ ...prev, dutch: !prev.dutch }))} /> Dutch</label>
-        <label><input type="checkbox" checked={interestType.nonDutch} onChange={() => setInterestType((prev) => ({ ...prev, nonDutch: !prev.nonDutch }))} /> Non-Dutch</label>
+        <label>
+          <input
+            type="radio"
+            name="interestType"
+            value="dutch"
+            checked={interestType === "dutch"}
+            onChange={() => setInterestType("dutch")}
+          />
+          Dutch
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="interestType"
+            value="nonDutch"
+            checked={interestType === "nonDutch"}
+            onChange={() => setInterestType("nonDutch")}
+          />
+          Non-Dutch
+        </label>
+
         <label className="search-label">Draw Type:</label>
-        <label><input type="checkbox" checked={drawType.self} onChange={() => setDrawType((prev) => ({ ...prev, self: !prev.self }))} /> Self-Draw</label>
-        <label><input type="checkbox" checked={drawType.thirdParty} onChange={() => setDrawType((prev) => ({ ...prev, thirdParty: !prev.thirdParty }))} /> Third-Party Draw</label>
+        <label>
+          <input
+            type="radio"
+            name="drawType"
+            value="self"
+            checked={drawType === "self"}
+            onChange={() => setDrawType("self")}
+          />
+          Self-Draw
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="drawType"
+            value="thirdParty"
+            checked={drawType === "thirdParty"}
+            onChange={() => setDrawType("thirdParty")}
+          />
+          Third-Party Draw
+        </label>
+
         <label className="search-label">Cross Collateral Allowed:</label>
         <select className="search-select" value={crossCollateralAllowed} onChange={(e) => setCrossCollateralAllowed(e.target.value)}>
           <option value="">-- Select --</option>
