@@ -78,6 +78,7 @@ function EditFixAndFlip() {
           totalLTC: "",
           maxARV: "",
           rehabPercent: "",
+          maxRehabBudget: "", // Add maxRehabBudget field
         });
       }
       return newTiers.slice(0, count);
@@ -272,7 +273,7 @@ function EditFixAndFlip() {
           <label>  Total LTC:<input placeholder="Total or Blended LTC" value={tier.totalLTC || ""} onChange={(e) => handleTierChange(i, "totalLTC", e.target.value)} /></label>
           <label>  Max ARV:<input placeholder="Max ARV" value={tier.maxARV || ""} onChange={(e) => handleTierChange(i, "maxARV", e.target.value)} /></label>
           <label>  Rehab % Covered:<input placeholder="Max Rehab %" value={tier.rehabPercent || ""} onChange={(e) => handleTierChange(i, "rehabPercent", e.target.value)} /></label>
-
+          <label>  Max Rehab Budget:<input placeholder="Max Rehab Budget" value={tier.maxRehabBudget || ""} onChange={(e) => handleTierChange(i, "maxRehabBudget", e.target.value)} /></label>
            </fieldset>
       ))}
 

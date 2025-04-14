@@ -48,6 +48,7 @@ const FixAndFlipLoanSchema = new mongoose.Schema(
         totalLTC: { type: Number },     // Blended LTC
         maxARV: { type: Number },       // ARV Cap
         rehabPercent: { type: Number }, // Percent of rehab costs covered
+        maxRehabBudget: { type: Number, default: 0 }, // Add maxRehabBudget field
       },
     ],
   },

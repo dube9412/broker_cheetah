@@ -275,7 +275,11 @@ function FixAndFlipSearch() {
         </select>
 
         <label className="search-label">Rural/Non-Rural:</label>
-        <select className="search-select" value={rural} onChange={(e) => setRural(e.target.value)}>
+        <select
+          className="search-select"
+          value={rural}
+          onChange={(e) => setRural(e.target.value === "yes" ? true : e.target.value === "no" ? false : "")}
+        >
           <option value="">-- Select --</option>
           <option value="yes">Rural</option>
           <option value="no">Non-Rural</option>

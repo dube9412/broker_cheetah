@@ -22,6 +22,7 @@ function AddFixAndFlip() {
     totalLTC: "",
     maxARV: "",
     rehabPercent: "",
+    maxRehabBudget: "", // Add maxRehabBudget field
   }]);
   const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
   const [formData, setFormData] = useState({ rural: false, averageTimeToClose: "" }); // Add formData state
@@ -67,6 +68,7 @@ function AddFixAndFlip() {
       totalLTC: "",
       maxARV: "",
       rehabPercent: "",
+      maxRehabBudget: "", // Add maxRehabBudget field
     }]);
   };
 
@@ -236,6 +238,9 @@ function AddFixAndFlip() {
               </label>
               <label>  Max Rehab %:
               <input placeholder="Max Rehab %" value={tier.rehabPercent} onChange={(e) => handleTierChange(index, "rehabPercent", e.target.value)} />
+              </label>
+              <label>  Max Rehab Budget:
+              <input placeholder="Max Rehab Budget" value={tier.maxRehabBudget} onChange={(e) => handleTierChange(index, "maxRehabBudget", e.target.value)} />
               </label>
           </div>
         ))}
