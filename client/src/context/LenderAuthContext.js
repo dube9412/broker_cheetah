@@ -46,6 +46,8 @@ export const LenderAuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     localStorage.removeItem("lenderUserId");
     localStorage.removeItem("role");
+
+    login({ token: null, role: null }); // Reset AuthContext to show login/signup navbar
   };
 
   return (
