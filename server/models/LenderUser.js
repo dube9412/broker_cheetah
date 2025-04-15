@@ -10,7 +10,8 @@ const lenderUserSchema = new mongoose.Schema({
     approved: { type: Boolean, default: false },
     lenderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Lender', default: null }, // Reference to assigned lender
     suspended: { type: Boolean, default: false },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    lastLogin: { type: Date, default: null }
 });
 
 module.exports = mongoose.model("LenderUser", lenderUserSchema);

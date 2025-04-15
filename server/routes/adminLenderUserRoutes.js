@@ -6,7 +6,16 @@ const LenderUser = require("../models/LenderUser"); // Ensure the case matches t
 router.get("/", async (req, res) => {
   try {
     const lenderUsers = await LenderUser.find();
-    res.status(200).json(lenderUsers);
+    const response = lenderUsers.map(lenderUser => ({
+      _id: lenderUser._id,
+      name: lenderUser.name,
+      email: lenderUser.email,
+      approved: lenderUser.approved,
+      suspended: lenderUser.suspended,
+      lenderId: lenderUser.lenderId,
+      lastLogin: lenderUser.lastLogin,
+    }));
+    res.status(200).json(response);
   } catch (error) {
     console.error("❌ Error fetching lender users:", error);
     res.status(500).json({ message: "Failed to fetch lender users" });

@@ -234,6 +234,7 @@ const [sortBy, setSortBy] = useState("name"); // State for sorting criteria
                         <th>Lender</th>
                         <th>Status</th>
                         <th>Actions</th>
+                        <th>Last Login</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -283,6 +284,7 @@ const [sortBy, setSortBy] = useState("name"); // State for sorting criteria
                         <th>Lender</th>
                         <th>Status</th>
                         <th>Actions</th>
+                        <th>Last Login</th>
                     </tr>
                 </thead>
                 <tbody>

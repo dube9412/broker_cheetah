@@ -64,6 +64,9 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ success: false, message: 'Invalid credentials.' });
         }
 
+        lenderUser.lastLogin = new Date();
+        await lenderUser.save();
+
         const token = jwt.sign({ lenderUserId: lenderUser._id, role: "lender" }, process.env.JWT_SECRET, { expiresIn: "1d" });
         console.log("🔑 Generated Token:", token);
 

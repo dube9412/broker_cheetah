@@ -345,6 +345,11 @@ router.get("/search", async (req, res) => {
         );
       }
 
+      // Filter out lenders that do not meet the minimum loan range or as-is value
+      if (asisValue < program.lender.minAsIsValue || finalConstrainedLoanAmount < program.lender.minLoanAmount) {
+        continue;
+      }
+
       program.calculations = {
         purchaseLoanAmount: constrainedPurchaseLoanAmount, // Constrained purchase loan amount
         rehabLoanAmount, // Unconstrained rehab loan amount
