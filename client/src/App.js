@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 import { LenderAuthProvider } from "./context/LenderAuthContext"; // ✅ Import LenderAuthProvider
-import RequestQuote from "./components/RequestQuote";
 import { useContext } from "react";
 
 
@@ -18,7 +17,6 @@ import AddPortfolio from "./components/AddPortfolio";
 import EditPortfolio from "./components/EditPortfolio";
 import AddGroundUp from "./components/AddGroundUp";
 import EditGroundUp from "./components/EditGroundUp";
-import OneClickQuoteModal from "./components/OneClickQuoteModal";
 import FixAndFlipQuoteModal from "./components/FixAndFlipQuoteModal"; // Import FixAndFlipQuoteModal
 import ChatHead from "./components/ChatHead"; // Import ChatHead
 
@@ -135,7 +133,6 @@ function App() {
               <Route path="/hard-money-class" element={<HardMoneyClass />} />
               <Route path="/hard-money-class/:lessonId" element={<LessonPage />} />
               <Route path="/fix-and-flip-calculator" element={<FixAndFlipCalc />} />
-              <Route path="/one-click-quote" element={<OneClickQuoteModal />} />
               <Route path="/pipeline" element={<Pipeline />} />
 
               {/* Loan type & search */}
@@ -156,8 +153,7 @@ function App() {
                 }
               />
 
-              {/* Request Quote */}
-              <Route path="/request-quote/:lenderId" element={<RequestQuote />} />
+          
 
               {/* Admin only routes for adding & editing lenders */}
               <Route path="/add-lender" element={<AddLender />} />
