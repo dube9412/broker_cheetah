@@ -345,8 +345,16 @@ router.get("/search", async (req, res) => {
         );
       }
 
-      // Filter out lenders that do not meet the minimum loan range or as-is value
+      console.log("🔍 Filtering lender:", {
+        lenderName: program.lender.name,
+        asisValue,
+        minAsIsValue: program.lender.minAsIsValue,
+        finalConstrainedLoanAmount,
+        minLoanAmount: program.lender.minLoanAmount,
+      });
+
       if (asisValue < program.lender.minAsIsValue || finalConstrainedLoanAmount < program.lender.minLoanAmount) {
+        console.log("❌ Excluding lender due to as-is value or loan amount constraints.");
         continue;
       }
 
