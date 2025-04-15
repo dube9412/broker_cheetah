@@ -20,7 +20,8 @@ function EditFixAndFlip() {
   const [crossCollateralAllowed, setCrossCollateralAllowed] = useState(null);
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
-  const [formData, setFormData] = useState({ rural: false, averageTimeToClose: "" }); // Add formData state
+  const [setting, setSetting] = useState("Non-Rural"); // Renamed from 'rural' to 'setting'
+  const [formData, setFormData] = useState({ averageTimeToClose: "" }); // Update formData state
 
   const PROPERTY_TYPES = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
 
@@ -42,7 +43,8 @@ function EditFixAndFlip() {
           setCrossCollateralAllowed(data.crossCollateralAllowed ?? null);
           setPropertyTypes(data.propertyTypes || []);
           setHighlightNote(data.highlightNote || ""); // Load highlightNote
-          setFormData({ rural: data.rural || false, averageTimeToClose: data.averageTimeToClose || "" }); // Load rural and averageTimeToClose
+          setSetting(data.setting || "Non-Rural"); // Load setting
+          setFormData({ averageTimeToClose: data.averageTimeToClose || "" }); // Load averageTimeToClose
         }
       } catch (error) {
         console.error("Error fetching program:", error);
@@ -111,7 +113,7 @@ function EditFixAndFlip() {
         propertyTypes,
         tiers,
         highlightNote, // Include highlightNote in the payload
-        rural: formData.rural, // Include rural in the payload
+        setting, // Renamed from 'rural' to 'setting'
         averageTimeToClose: formData.averageTimeToClose, // Include averageTimeToClose in the payload
       };
 
@@ -224,23 +226,30 @@ function EditFixAndFlip() {
 
         ))}
 
-<label>Setting:</label>
-        <label>
-          <input
-            type="checkbox"
-            checked={formData.rural}
-            onChange={(e) => setFormData({ ...formData, rural: e.target.checked })}
-          />
-          Rural
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={!formData.rural}
-            onChange={(e) => setFormData({ ...formData, rural: !e.target.checked })}
-          />
-          Non-Rural
-        </label><br />
+        <fieldset>
+          <legend>Setting</legend>
+          <label>
+            <input
+              type="radio"
+              name="setting"
+              value="Rural"
+              checked={setting === "Rural"}
+              onChange={() => setSetting("Rural")}
+            />
+            Rural
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="setting"
+              value="Non-Rural"
+              checked={setting === "Non-Rural"}
+              onChange={() => setSetting("Non-Rural")}
+            />
+            Non-Rural
+          </label>
+        </fieldset>
+
         <label>
           Average Time to Close (days):
           <input

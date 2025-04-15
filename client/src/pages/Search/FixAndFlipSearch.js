@@ -32,8 +32,8 @@ function FixAndFlipSearch() {
   const [termLengthMonths, setTermLengthMonths] = useState([]); // Initialize as an array
   const [drawType, setDrawType] = useState("");
   const [propertyType, setPropertyType] = useState("");
-  const [rural, setRural] = useState("");
   const [sortBy, setSortBy] = useState("");
+  const [setting, setSetting] = useState(""); // Renamed from 'rural' to 'setting'
 
   const [results, setResults] = useState([]);
   const [warning, setWarning] = useState("");
@@ -59,13 +59,13 @@ function FixAndFlipSearch() {
         experience,
         liquidity,
         propertyType,
-        rural,
         sortBy,
         recourse,
         interestType,
         drawType,
         crossCollateralAllowed,
         termLengthMonths: termLengthMonths.join(","),
+        setting, // Renamed from 'rural' to 'setting'
       }).toString();
 
       const url = `${BASE_URL}/api/fix-and-flip/search?${queryString}`;
@@ -130,7 +130,7 @@ function FixAndFlipSearch() {
   };
 
   return (
-    <div className="search-container">
+    <div className="search-container"></div>
       <button className="back-button" onClick={() => navigate("/lender-search")}>🔙 Back to Loan Types</button>
       <h1 className="search-title">Fix & Flip Search</h1>
       <p className="search-subtitle">Enter one or more filters to find matching loan programs.<br />
@@ -275,23 +275,44 @@ function FixAndFlipSearch() {
           <option value="Cabins">Cabins</option>
         </select>
 
-        <label className="search-label">Rural/Non-Rural:</label>
-        <select
-          className="search-select"
-          value={rural}
-          onChange={(e) => setRural(e.target.value === "yes" ? true : e.target.value === "no" ? false : "")}
-        >
-          <option value="">-- Select --</option>
-          <option value="yes">Rural</option>
-          <option value="no">Non-Rural</option>
-        </select>
-
         <label className="search-label">Sort By:</label>
         <select className="search-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="">-- Select Sorting Option --</option>
           <option value="ltc">LTC (Loan-to-Cost)</option>
           <option value="loanAmount">Loan Amount</option>
         </select>
+
+        <label className="search-label">Setting:</label>
+        <label>
+          <input
+            type="radio"
+            name="setting"
+            value="Rural"
+            checked={setting === "Rural"}
+            onChange={() => setSetting("Rural")}
+          />
+          Rural
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="setting"
+            value="Non-Rural"
+            checked={setting === "Non-Rural"}
+            onChange={() => setSetting("Non-Rural")}
+          />
+          Non-Rural
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="setting"
+            value=""
+            checked={setting === ""}
+            onChange={() => setSetting("")}
+          />
+          Any
+        </label>
       </fieldset>
 
       <div className="search-buttons-container">

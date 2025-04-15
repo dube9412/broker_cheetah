@@ -28,6 +28,7 @@ const FixAndFlipLoanSchema = new mongoose.Schema(
         thirdParty: { type: Boolean, default: false },
     },
     crossCollateralAllowed: { type: Boolean },
+    setting: { type: String, enum: ["Rural", "Non-Rural"], default: "Non-Rural" }, // Renamed from 'rural' to 'setting'
 
     termLengthMonths: { type: [Number], default: [] }, // Update to array for multiple term lengths
 

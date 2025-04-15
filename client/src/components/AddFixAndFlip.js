@@ -25,7 +25,8 @@ function AddFixAndFlip() {
     maxRehabBudget: "", // Add maxRehabBudget field
   }]);
   const [highlightNote, setHighlightNote] = useState(""); // Add highlightNote state
-  const [formData, setFormData] = useState({ rural: false, averageTimeToClose: "" }); // Add formData state
+  const [setting, setSetting] = useState("Non-Rural"); // Renamed from 'rural' to 'setting'
+  const [formData, setFormData] = useState({ averageTimeToClose: "" }); // Add formData state
 
   const PROPERTY_OPTIONS = ["Single Family 1-4", "Condo", "Townhome", "Manufactured", "Cabins"];
   const TERM_LENGTH_OPTIONS = [12, 13, 18, 19, 24]; // Updated term length options
@@ -84,7 +85,7 @@ function AddFixAndFlip() {
       propertyTypes,
       tiers,
       highlightNote, // Include highlightNote in the payload
-      rural: formData.rural, // Include rural in the payload
+      setting, // Renamed from 'rural' to 'setting'
       averageTimeToClose: formData.averageTimeToClose, // Include averageTimeToClose in the payload
     };
 
@@ -158,56 +159,61 @@ function AddFixAndFlip() {
         <input type="checkbox" checked={drawType.thirdParty} onChange={() => handleCheckboxChange("thirdParty", "drawType")} /> 3rd Party<br />
 
         <label>Cross Collateral Allowed:</label><br />
-<label>
-  <input
-    type="radio"
-    name="crossCollateral"
-    checked={crossCollateralAllowed === true}
-    onChange={() => setCrossCollateralAllowed(true)}
-  /> Yes
-</label>
-<label>
-  <input
-    type="radio"
-    name="crossCollateral"
-    checked={crossCollateralAllowed === false}
-    onChange={() => setCrossCollateralAllowed(false)}
-  /> No
-</label>
-
-            <br />
+        <label>
+          <input
+            type="radio"
+            name="crossCollateral"
+            checked={crossCollateralAllowed === true}
+            onChange={() => setCrossCollateralAllowed(true)}
+          /> Yes
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="crossCollateral"
+            checked={crossCollateralAllowed === false}
+            onChange={() => setCrossCollateralAllowed(false)}
+          /> No
+        </label>
+        <br />
 
         <label>Property Types:</label><br />
         {PROPERTY_OPTIONS.map((type) => (
           <label key={type} style={{ marginRight: "10px" }}>
             <input type="checkbox" checked={propertyTypes.includes(type)} onChange={() => handlePropertyTypeChange(type)} /> {type}<br /></label>
         ))}
-       <label>Setting:</label> 
-      <label>
-        <input
-          type="checkbox"
-          checked={formData.rural}
-          onChange={(e) => setFormData({ ...formData, rural: e.target.checked })}
-        />
-        Rural
-      </label>
-      <label>
-        <input
-          type="checkbox"
-          checked={!formData.rural}
-          onChange={(e) => setFormData({ ...formData, rural: !e.target.checked })}
-        />
-        Non-Rural
-      </label><br />
-      <label>
-        Average Time to Close (days):
-        <input
-          type="number"
-          value={formData.averageTimeToClose || ""}
-          onChange={(e) => setFormData({ ...formData, averageTimeToClose: e.target.value })}
-          min="0"
-        />
-      </label>
+        <fieldset>
+          <legend>Setting</legend>
+          <label>
+            <input
+              type="radio"
+              name="setting"
+              value="Rural"
+              checked={setting === "Rural"}
+              onChange={() => setSetting("Rural")}
+            />
+            Rural
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="setting"
+              value="Non-Rural"
+              checked={setting === "Non-Rural"}
+              onChange={() => setSetting("Non-Rural")}
+            />
+            Non-Rural
+          </label>
+        </fieldset>
+        <label>
+          Average Time to Close (days):
+          <input
+            type="number"
+            value={formData.averageTimeToClose || ""}
+            onChange={(e) => setFormData({ ...formData, averageTimeToClose: e.target.value })}
+            min="0"
+          />
+        </label>
       </fieldset>
 
       <fieldset style={{ border: "1px solid #aaa", padding: "10px", marginBottom: "15px" }}>

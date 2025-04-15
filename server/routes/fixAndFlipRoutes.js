@@ -65,6 +65,7 @@ router.post("/:lenderId/fix-and-flip-programs", async (req, res) => {
       typeof req.body.crossCollateralAllowed === "boolean"
         ? req.body.crossCollateralAllowed
         : null,
+      setting: req.body.setting || "Non-Rural", // Renamed from 'rural' to 'setting'
     
       propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
 
@@ -98,6 +99,7 @@ router.put("/fix-and-flip-programs/:programId", async (req, res) => {
         typeof req.body.crossCollateralAllowed === "boolean"
           ? req.body.crossCollateralAllowed
           : null,
+      setting: req.body.setting || "Non-Rural", // Renamed from 'rural' to 'setting'
 
       propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
       tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [], // Removed extra comma here
