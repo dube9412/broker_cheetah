@@ -133,12 +133,13 @@ function FixAndFlipSearch() {
     <div className="search-container">
       <button className="back-button" onClick={() => navigate("/lender-search")}>🔙 Back to Loan Types</button>
       <h1 className="search-title">Fix & Flip Search</h1>
-      <p className="search-subtitle">Enter one or more filters to find matching loan programs.</p>
+      <p className="search-subtitle">Enter one or more filters to find matching loan programs.<br />
+      * = required</p>
 
       <div className="search-row">
         <fieldset className="search-fieldset">
           <legend className="search-legend">🔹 Deal Details</legend>
-          <label className="search-label">State:</label>
+          <label className="search-label">*State:</label>
           <select className="search-select" value={state} onChange={(e) => setState(e.target.value)}>
             <option value="">-- Select a state --</option>
             {US_STATES.map((st) => (
@@ -157,9 +158,9 @@ function FixAndFlipSearch() {
 
         <fieldset className="search-fieldset">
           <legend className="search-legend">🔹 Borrower Profile</legend>
-          <label className="search-label">FICO Score:</label>
+          <label className="search-label">*FICO Score:</label>
           <input className="search-input" value={fico} onChange={(e) => setFico(e.target.value)} />
-          <label className="search-label">Experience (Flips in past 36 mo):</label>
+          <label className="search-label">*Experience (Flips in past 36 mo):</label>
           <input className="search-input" value={experience} onChange={(e) => setExperience(e.target.value)} />
           <label className="search-label">Liquidity (cash, stocks, etc.):</label>
           <input className="search-input" value={liquidity} onChange={(e) => setLiquidity(e.target.value)} />

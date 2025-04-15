@@ -12,8 +12,10 @@ const verifyToken = require("../middleware/verifyToken");
 // Fix and Flip Quotes
 router.post("/fix-and-flip", verifyToken, async (req, res) => {
   try {
-    console.log("🔍 Request Body:", req.body);
+    console.log("🔍 Incoming Request Body:", req.body);
     console.log("🔍 User ID from Token:", req.user?._id);
+    console.log("🔍 Lender IDs:", req.body.lenderIds);
+    console.log("🔍 Loan Type:", req.body.loanType);
 
     const {
       lenderIds,

@@ -338,8 +338,10 @@ router.get("/search", async (req, res) => {
       // ✅ Add warning if as-is value constrains the purchase loan amount
       if (constrainedPurchaseLoanAmount < maxPurchaseLoanAmount) {
         const difference = maxPurchaseLoanAmount - constrainedPurchaseLoanAmount;
+        const originalDownPayment = pp - (pp * (matchingTier.maxLTC / 100));
+        const totalBorrowerCoverage = difference + originalDownPayment;
         warnings.push(
-          `When the as-is value is lower than the purchase price, the lender will base the purchase price percentage off this value. The borrower will need to cover the difference of $${difference.toLocaleString()}.`
+          `When the as-is value is lower than the purchase price, the lender will base the purchase price percentage off this value. The borrower will need to cover the difference of $${difference.toLocaleString()} plus the original expected down payment of $${originalDownPayment.toLocaleString()}, totaling $${totalBorrowerCoverage.toLocaleString()}.`
         );
       }
 
