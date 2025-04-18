@@ -170,7 +170,7 @@ router.get("/search", async (req, res) => {
       drawType,
       crossCollateralAllowed,
       propertyType,
-      rural,
+      setting,
       termLengthMonths,
       sortBy, // New sorting option
     } = req.query;
@@ -237,18 +237,15 @@ router.get("/search", async (req, res) => {
       }
     }
 
-    if (rural) {
-      console.log("🔍 Filtering by Rural/Non-Rural:", rural);
-      if (rural.includes("yes") && rural.includes("no")) {
-        filters.$or = [
-          { rural: true },
-          { rural: false },
-        ];
-      } else if (rural.includes("yes")) {
-        filters.rural = true;
-      } else if (rural.includes("no")) {
-        filters.rural = false;
-      }
+    if (setting && setting.includes("Rural") && setting.includes("Non-Rural")) {
+      filters.$or = [
+        { setting: "Rural" },
+        { setting: "Non-Rural" },
+      ];
+    } else if (setting && setting.includes("Rural")) {
+      filters.setting = "Rural";
+    } else if (setting && setting.includes("Non-Rural")) {
+      filters.setting = "Non-Rural";
     }
 
     if (termLengthMonths) {
@@ -299,6 +296,18 @@ router.get("/search", async (req, res) => {
       }
 
       if (crossCollateralAllowed && program.crossCollateralAllowed !== (crossCollateralAllowed === "yes")) {
+        continue;
+      }
+
+      // Exclude lenders if purchase price is below their minimum loan amount
+      if (purchasePrice < program.lender.minLoanAmount) {
+        console.log("❌ Excluding lender due to purchase price below minimum loan amount.");
+        continue;
+      }
+
+      // Exclude lenders if as-is value is below their minimum as-is value
+      if (asisValue < program.lender.minAsIsValue) {
+        console.log("❌ Excluding lender due to as-is value below minimum as-is value.");
         continue;
       }
 
