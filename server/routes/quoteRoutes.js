@@ -10,6 +10,7 @@ const verifyToken = require("../middleware/verifyToken");
 // Organize routes by loan program type
 
 // Fix and Flip Quotes
+// Add detailed debug logs to the /fix-and-flip route
 router.post("/fix-and-flip", verifyToken, async (req, res) => {
   try {
     console.log("🔍 Incoming Request Body:", req.body);
@@ -29,11 +30,13 @@ router.post("/fix-and-flip", verifyToken, async (req, res) => {
     } = req.body;
 
     if (!lenderIds || lenderIds.length === 0 || !propertyAddress || !ficoScore || !experience || !purchasePrice || !rehabNeeded || !arv || !liquidity) {
+      console.error("❌ Missing required fields:", req.body);
       return res.status(400).json({ success: false, message: "Required fields are missing." });
     }
 
     const user = await User.findById(req.user._id);
     if (!user || !user.email) {
+      console.error("❌ User not found or email missing:", req.user._id);
       return res.status(400).json({ success: false, message: "User email not found." });
     }
 
@@ -42,6 +45,7 @@ router.post("/fix-and-flip", verifyToken, async (req, res) => {
     for (const lenderId of lenderIds) {
       const lender = await Lender.findById(lenderId);
       if (!lender) {
+        console.error("❌ Lender not found:", lenderId);
         return res.status(404).json({ success: false, message: `Lender with ID ${lenderId} not found.` });
       }
 
@@ -57,10 +61,12 @@ router.post("/fix-and-flip", verifyToken, async (req, res) => {
         arv,
         liquidity,
       });
+      console.log("📝 Saving new quote:", newQuote);
       await newQuote.save();
       quotes.push(newQuote);
     }
 
+    console.log("✅ Quotes submitted successfully:", quotes);
     res.status(201).json({ success: true, message: "Quotes submitted successfully.", quotes });
   } catch (error) {
     console.error("❌ Error submitting Fix and Flip quotes:", error);
