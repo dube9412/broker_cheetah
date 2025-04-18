@@ -122,8 +122,8 @@ router.post("/dscr", verifyToken, async (req, res) => {
   }
 });
 
-// Log every quote submission
-router.post("/fix-and-flip", verifyToken, async (req, res) => {
+// Change the second route to a unique path for logging quotes
+router.post("/fix-and-flip/log", verifyToken, async (req, res) => {
   try {
     const { lenderIds, loanType, ...quoteData } = req.body;
 
