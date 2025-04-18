@@ -23,6 +23,7 @@ const importJSONRoutes = require("./routes/importJSONRoutes");
 const pipelineRoutes = require("./routes/pipelineRoutes");
 const adminHelpTicketRoutes = require("./routes/adminHelpTicketRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const quoteRoutes = require("./routes/quoteRoutes");
 
 const app = express();
 
@@ -65,6 +66,7 @@ app.use("/api/import-json", importJSONRoutes);
 app.use("/api/pipeline", pipelineRoutes);
 app.use("/api/admin/help-tickets", adminHelpTicketRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/quotes", quoteRoutes);
 
 // Serve static files (if applicable)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
