@@ -130,11 +130,17 @@ function FixAndFlipSearch() {
   };
 
   return (
-    <div className="search-container"></div>
-      <button className="back-button" onClick={() => navigate("/lender-search")}>🔙 Back to Loan Types</button>
-      <h1 className="search-title">Fix & Flip Search</h1>
-      <p className="search-subtitle">Enter one or more filters to find matching loan programs.<br />
-      * = required</p>
+    <div className="search-container">
+      <>
+        <button className="back-button" onClick={() => navigate("/lender-search")}>
+          🔙 Back to Loan Types
+        </button>
+        <h1 className="search-title">Fix & Flip Search</h1>
+        <p className="search-subtitle">
+          Enter one or more filters to find matching loan programs.<br />
+          * = required
+        </p>
+      </>
 
       <div className="search-row">
         <fieldset className="search-fieldset">
