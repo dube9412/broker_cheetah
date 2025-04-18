@@ -65,7 +65,7 @@ router.post("/:lenderId/fix-and-flip-programs", async (req, res) => {
       typeof req.body.crossCollateralAllowed === "boolean"
         ? req.body.crossCollateralAllowed
         : null,
-      setting: req.body.setting || "Non-Rural", // Renamed from 'rural' to 'setting'
+      setting: req.body.setting || "Non-Rural", // Ensure setting is saved
     
       propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
 
@@ -99,7 +99,7 @@ router.put("/fix-and-flip-programs/:programId", async (req, res) => {
         typeof req.body.crossCollateralAllowed === "boolean"
           ? req.body.crossCollateralAllowed
           : null,
-      setting: req.body.setting || "Non-Rural", // Renamed from 'rural' to 'setting'
+      setting: req.body.setting || "Non-Rural", // Ensure setting is updated
 
       propertyTypes: Array.isArray(req.body.propertyTypes) ? req.body.propertyTypes : [],
       tiers: Array.isArray(req.body.tiers) ? req.body.tiers : [], // Removed extra comma here
@@ -286,12 +286,12 @@ router.get("/search", async (req, res) => {
       }
 
       if (interestType) {
-        const interestOption = interestType === "dutch" ? program.interestType.dutch : program.interestType.nonDutch;
+        const interestOption = interestType === "dutch" ? program.interestType.dutch : interestType === "nonDutch" ? program.interestType.nonDutch : null;
         if (!interestOption) continue;
       }
 
       if (drawType) {
-        const drawOption = drawType === "self" ? program.drawType.self : program.drawType.thirdParty;
+        const drawOption = drawType === "self" ? program.drawType.self : drawType === "thirdParty" ? program.drawType.thirdParty : null;
         if (!drawOption) continue;
       }
 
@@ -370,6 +370,21 @@ router.get("/search", async (req, res) => {
         constrainedLoanAmount: finalConstrainedLoanAmount,
         minLoanAmount: program.lender.minLoanAmount,
       });
+
+      if (asisValue < program.minAsIsValue) {
+        console.log("❌ Excluding lender due to as-is value below minimum.");
+        continue;
+      }
+
+      if (matchingTier.loanRange && matchingTier.loanRange.min && finalConstrainedLoanAmount < matchingTier.loanRange.min) {
+        console.log("❌ Excluding lender due to loan amount below minimum tier range.");
+        continue;
+      }
+
+      if (matchingTier.loanRange && matchingTier.loanRange.max && finalConstrainedLoanAmount > matchingTier.loanRange.max) {
+        console.log("❌ Excluding lender due to loan amount above maximum tier range.");
+        continue;
+      }
 
       if (asisValue < program.lender.minAsIsValue) {
         console.log("❌ Excluding lender due to as-is value below minimum as-is value.");
