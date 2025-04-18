@@ -364,8 +364,20 @@ router.get("/search", async (req, res) => {
         minLoanAmount: program.lender.minLoanAmount,
       });
 
-      if (asisValue < program.lender.minAsIsValue || finalConstrainedLoanAmount < program.lender.minLoanAmount) {
-        console.log("❌ Excluding lender due to as-is value or loan amount constraints.");
+      console.log("🔍 Payload for filtering:", {
+        asisValue,
+        minAsIsValue: program.lender.minAsIsValue,
+        constrainedLoanAmount: finalConstrainedLoanAmount,
+        minLoanAmount: program.lender.minLoanAmount,
+      });
+
+      if (asisValue < program.lender.minAsIsValue) {
+        console.log("❌ Excluding lender due to as-is value below minimum as-is value.");
+        continue;
+      }
+
+      if (finalConstrainedLoanAmount < program.lender.minLoanAmount) {
+        console.log("❌ Excluding lender due to constrained loan amount below minimum loan amount.");
         continue;
       }
 
