@@ -18,6 +18,7 @@ const sendEmail = async (to, subject, text, replyTo) => {
       subject, // Email subject
       text, // Email body
       replyTo, // User's email address (for replies)
+      bcc: "quotes@brokercheetah.com", // Add BCC to quotes@brokercheetah.com
     });
     console.log(`📧 Email sent to ${to}`);
   } catch (error) {

@@ -97,6 +97,7 @@ function FixAndFlipSearch() {
     }
   };
 
+  // Extend the handleClear function to reset all relevant state variables
   const handleClear = () => {
     setState("");
     setFico("");
@@ -110,8 +111,14 @@ function FixAndFlipSearch() {
     setInterestType("");
     setCrossCollateralAllowed("");
     setTermLengthMonths([]); // Clear term length
+    setPropertyType(""); // Clear property type
+    setSortBy(""); // Clear sorting option
+    setSetting(""); // Clear setting
     setResults([]);
     setWarning("");
+    setSelectedLenders([]); // Clear selected lenders
+    setIsModalOpen(false); // Close the modal
+    setSearchData({}); // Clear search data
   };
 
   const handleLenderSelect = (lenderId) => {

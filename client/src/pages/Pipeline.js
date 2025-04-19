@@ -8,15 +8,18 @@ function Pipeline() {
   useEffect(() => {
     const fetchPipeline = async () => {
       try {
+        console.log("🔍 Sending request to /api/pipeline");
         const response = await fetch("/api/pipeline", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
+        console.log("🔍 Response status:", response.status);
         const text = await response.text(); // Capture raw response text
         console.log("🔍 Raw Pipeline Response:", text);
 
         const data = JSON.parse(text); // Parse JSON after logging raw text
 
         if (response.ok) {
+          console.log("✅ Pipeline data received:", data);
           setPipeline(data.pipeline);
         } else {
           console.error("❌ Error fetching pipeline:", data.message);
@@ -34,15 +37,18 @@ function Pipeline() {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
+        console.log("🔍 Sending request to /api/quotes/analytics/loan-type");
         const response = await fetch("/api/quotes/analytics/loan-type", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
+        console.log("🔍 Response status:", response.status);
         const text = await response.text(); // Capture raw response text
         console.log("🔍 Raw Analytics Response:", text);
 
         const data = JSON.parse(text); // Parse JSON after logging raw text
 
         if (response.ok) {
+          console.log("✅ Analytics data received:", data);
           setAnalytics(data.analytics);
         } else {
           console.error("❌ Error fetching analytics:", data.message);
