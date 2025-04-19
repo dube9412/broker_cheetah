@@ -2,6 +2,10 @@ const express = require("express");
 const router = express.Router();
 const FixAndFlipLoan = require("../models/FixAndFlipLoan");
 const Lender = require("../models/Lender");
+const verifyToken = require("../middleware/verifyToken");
+const Pipeline = require("../models/Pipeline");
+const sendEmail = require("../utils/email");
+const Quote = require("../models/Quote");
 
 // ✅ Debugging: Confirm this file is loaded
 console.log("✅ Fix and Flip Routes File Loaded");
