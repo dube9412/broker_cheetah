@@ -36,6 +36,7 @@ router.post("/", verifyToken, async (req, res) => {
 // ✅ Fetch pipeline data for the logged-in user
 router.get("/", verifyToken, async (req, res) => {
   try {
+    console.log("🔍 Fetching pipeline data for user:", req.user._id);
     const pipeline = await Pipeline.find({ userId: req.user._id }).sort({ address: 1 });
     res.status(200).json({ success: true, pipeline });
   } catch (error) {
