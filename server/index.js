@@ -39,6 +39,12 @@ app.use(cors(corsOptions));
 // Middleware
 app.use(express.json());
 
+// Add global middleware to log all incoming requests
+app.use((req, res, next) => {
+  console.log(`🔍 Incoming Request: ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 // Connect to MongoDB
 mongoose.connect("mongodb+srv://dube9412:ReGuLaRoLdPaSsWoRd@brokercheetahdb.rdbel.mongodb.net/?retryWrites=true&w=majority", {})
   .then(() => console.log("✅ MongoDB connected"))
