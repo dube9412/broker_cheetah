@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+const BASE_URL = "https://www.brokercheetah.com/api/quotes/fix-and-flip"; // Updated to explicitly use the correct route
+
 const FixAndFlipQuoteModal = ({ selectedLenders, onClose, searchData }) => {
   const [formData, setFormData] = useState({
     address: searchData.address || "",
@@ -19,17 +21,17 @@ const FixAndFlipQuoteModal = ({ selectedLenders, onClose, searchData }) => {
     e.preventDefault();
 
     console.log("🔍 Request Headers:", {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json",
-      });
-      console.log("🔍 Request Payload:", {
-        lenderId: selectedLenders[0],
-        loanType: "fixAndFlip", // Replace undefined loanType with hardcoded value
-        ...formData,
-      });
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "application/json",
+    });
+    console.log("🔍 Request Payload:", {
+      lenderId: selectedLenders[0],
+      loanType: "fixAndFlip", // Replace undefined loanType with hardcoded value
+      ...formData,
+    });
 
     try {
-      const response = await fetch("/api/quotes/fix-and-flip", {
+      const response = await fetch(BASE_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
