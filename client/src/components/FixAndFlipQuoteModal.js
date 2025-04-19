@@ -94,9 +94,11 @@ const FixAndFlipQuoteModal = ({ selectedLenders, onClose, searchData }) => {
             <option value="Manufactured">Manufactured</option>
             <option value="Cabins">Cabins</option>
           </select>
+          <br />
 
           <button type="submit">Submit</button>
-          <button type="button" onClick={onClose}>Cancel</button>
+          <button type="button" onClick={onClose}>Cancel</button><br />
+          <h3>Upon clicking Submit, please wait a few seconds to receive "success" message.  :)</h3>
         </form>
       </div>
     </div>

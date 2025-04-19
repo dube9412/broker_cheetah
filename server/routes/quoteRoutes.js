@@ -66,10 +66,11 @@ router.post("/fix-and-flip", verifyToken, async (req, res) => {
       quotes.push(newQuote);
 
       // Send email notification to the lender
-      const emailSubject = `${propertyAddress} Broker Cheetah FnF Quote Request`;
-      const emailBody = `You have received a new FnF quote request from ${user.email}:
-` +
-        `Loan Type: Fix and Flip
+      const emailSubject = `New Broker Cheetah FnF Quote Request for ${propertyAddress}`;
+      const emailBody = `You have received a new Fix and Flip quote request from ${user.email} through Broker Cheetah.:
+
+        ` + `Replying to this email will send a message to the user that requested it.
+
 ` +
         `Property Address: ${propertyAddress}
 ` +
@@ -88,6 +89,10 @@ router.post("/fix-and-flip", verifyToken, async (req, res) => {
         (req.body.propertyType ? `Property Type: ${req.body.propertyType}
 ` : "") +
         (req.body.loanOptions ? `Loan Options: ${JSON.stringify(req.body.loanOptions, null, 2)}
+` : "") +
+        (req.body.tierLevel ? `Tier Level: ${req.body.tierLevel} (Purchase: ${req.body.purchasePercent || "N/A"}%, Rehab: ${req.body.rehabPercent || "N/A"}%)
+` : "") +
+        (req.body.constrainedLoanAmount ? `Constrained Loan Amount: $${req.body.constrainedLoanAmount.toLocaleString()} ${req.body.loanConstraints ? `(${req.body.loanConstraints.join(", ")})` : ""}
 ` : "");
 
       try {
