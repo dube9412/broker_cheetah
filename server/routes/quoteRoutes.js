@@ -64,6 +64,16 @@ router.post("/fix-and-flip", verifyToken, async (req, res) => {
       console.log("📝 Saving new quote:", newQuote);
       await newQuote.save();
       quotes.push(newQuote);
+
+      // Send email notification to the lender
+      const emailSubject = `New Fix and Flip Quote Request`;
+      const emailBody = `You have received a new Fix and Flip quote request for the property at ${propertyAddress}.`;
+      try {
+        await sendEmail(lender.email, emailSubject, emailBody, user.email);
+        console.log(`📧 Email sent to lender: ${lender.email}`);
+      } catch (error) {
+        console.error("❌ Error sending email to lender:", error);
+      }
     }
 
     console.log("✅ Quotes submitted successfully:", quotes);

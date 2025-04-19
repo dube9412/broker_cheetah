@@ -11,7 +11,10 @@ function Pipeline() {
         const response = await fetch("/api/pipeline", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-        const data = await response.json();
+        const text = await response.text(); // Capture raw response text
+        console.log("🔍 Raw Pipeline Response:", text);
+
+        const data = JSON.parse(text); // Parse JSON after logging raw text
 
         if (response.ok) {
           setPipeline(data.pipeline);
@@ -34,7 +37,10 @@ function Pipeline() {
         const response = await fetch("/api/quotes/analytics/loan-type", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-        const data = await response.json();
+        const text = await response.text(); // Capture raw response text
+        console.log("🔍 Raw Analytics Response:", text);
+
+        const data = JSON.parse(text); // Parse JSON after logging raw text
 
         if (response.ok) {
           setAnalytics(data.analytics);
