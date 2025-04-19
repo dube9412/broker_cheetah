@@ -4,47 +4,6 @@ const Pipeline = require("../models/Pipeline");
 const Notification = require("../models/Notification");
 const verifyToken = require("../middleware/verifyToken"); // ✅ Use verifyToken middleware
 
-// ✅ Add a new quote to the pipeline
-router.post("/", verifyToken, async (req, res) => {
-  try {
-    const { address, fico, experience, purchasePrice, asisValue, rehabNeeded, arv, liquidity } = req.body;
-
-    if (!address || !fico || !experience || !purchasePrice || !asisValue || !rehabNeeded || !arv || !liquidity) {
-      return res.status(400).json({ success: false, message: "All fields are required." });
-    }
-
-    const newPipelineEntry = new Pipeline({
-      userId: req.user._id, // User ID is now available from verifyToken
-      address,
-      fico,
-      experience,
-      purchasePrice,
-      asisValue,
-      rehabNeeded,
-      arv,
-      liquidity,
-    });
-
-    await newPipelineEntry.save();
-    res.status(201).json({ success: true, message: "Pipeline entry added successfully." });
-  } catch (error) {
-    console.error("❌ Error adding pipeline entry:", error);
-    res.status(500).json({ success: false, message: "Server error while adding pipeline entry." });
-  }
-});
-
-// ✅ Fetch pipeline data for the logged-in user
-router.get("/", verifyToken, async (req, res) => {
-  try {
-    console.log("🔍 Fetching pipeline data for user:", req.user._id);
-    const pipeline = await Pipeline.find({ userId: req.user._id }).sort({ address: 1 });
-    res.status(200).json({ success: true, pipeline });
-  } catch (error) {
-    console.error("❌ Error fetching pipeline data:", error);
-    res.status(500).json({ success: false, message: "Server error while fetching pipeline data." });
-  }
-});
-
 // ✅ Fetch all pipeline data (Admin Only)
 router.get("/admin", verifyToken, async (req, res) => {
   try {
@@ -115,6 +74,19 @@ router.put("/:id/contacts", verifyToken, async (req, res) => {
   } catch (error) {
     console.error("❌ Error updating contacts:", error);
     res.status(500).json({ success: false, message: "Server error while updating contacts." });
+  }
+});
+
+// ✅ Fetch quotes for the logged-in user
+router.get("/quotes", verifyToken, async (req, res) => {
+  try {
+    console.log("🔍 Fetching quotes for user:", req.user._id);
+    const quotes = await Quote.find({ userId: req.user._id }).sort({ propertyAddress: 1 });
+    console.log("✅ Quotes fetched:", quotes);
+    res.status(200).json({ success: true, quotes });
+  } catch (error) {
+    console.error("❌ Error fetching quotes:", error);
+    res.status(500).json({ success: false, message: "Server error while fetching quotes." });
   }
 });
 
