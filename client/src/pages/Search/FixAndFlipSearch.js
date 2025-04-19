@@ -39,6 +39,7 @@ function FixAndFlipSearch() {
   const [warning, setWarning] = useState("");
   const [selectedLenders, setSelectedLenders] = useState([]); // Track selected lenders
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [searchData, setSearchData] = useState({}); // Store search data
 
   const handleSearch = async () => {
     setWarning("");
@@ -126,7 +127,21 @@ function FixAndFlipSearch() {
         alert("Please select at least one lender.");
         return;
     }
+    setSearchData({
+      state,
+      fico,
+      purchasePrice,
+      rehabNeeded,
+      arv,
+      asisValue,
+      experience,
+      liquidity,
+    });
     setIsModalOpen(true);
+  };
+
+  const closeQuoteModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -407,17 +422,8 @@ function FixAndFlipSearch() {
       {isModalOpen && (
         <FixAndFlipQuoteModal
           selectedLenders={selectedLenders}
-          onClose={() => setIsModalOpen(false)}
-          searchData={{
-            state,
-            fico,
-            purchasePrice,
-            rehabNeeded,
-            arv,
-            asisValue,
-            experience,
-            liquidity, // Pass liquidity to the modal
-          }}
+          onClose={closeQuoteModal}
+          searchData={searchData}
         />
       )}
 
