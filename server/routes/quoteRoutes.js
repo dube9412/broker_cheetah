@@ -66,8 +66,30 @@ router.post("/fix-and-flip", verifyToken, async (req, res) => {
       quotes.push(newQuote);
 
       // Send email notification to the lender
-      const emailSubject = `New Fix and Flip Quote Request`;
-      const emailBody = `You have received a new Fix and Flip quote request for the property at ${propertyAddress}.`;
+      const emailSubject = `${propertyAddress} Broker Cheetah FnF Quote Request`;
+      const emailBody = `You have received a new FnF quote request from ${user.email}:
+` +
+        `Loan Type: Fix and Flip
+` +
+        `Property Address: ${propertyAddress}
+` +
+        `FICO Score: ${ficoScore}
+` +
+        `Experience: ${experience} flips in the past 36 months
+` +
+        `Purchase Price: $${purchasePrice.toLocaleString()}
+` +
+        `Rehab Needed: $${rehabNeeded.toLocaleString()}
+` +
+        `ARV: $${arv.toLocaleString()}
+` +
+        `Liquidity: $${liquidity.toLocaleString()}
+` +
+        (req.body.propertyType ? `Property Type: ${req.body.propertyType}
+` : "") +
+        (req.body.loanOptions ? `Loan Options: ${JSON.stringify(req.body.loanOptions, null, 2)}
+` : "");
+
       try {
         await sendEmail(lender.email, emailSubject, emailBody, user.email);
         console.log(`📧 Email sent to lender: ${lender.email}`);

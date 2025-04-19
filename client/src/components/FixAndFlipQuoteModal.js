@@ -11,6 +11,7 @@ const FixAndFlipQuoteModal = ({ selectedLenders, onClose, searchData }) => {
     rehabNeeded: searchData.rehabNeeded || "",
     arv: searchData.arv || "",
     liquidity: searchData.liquidity || "",
+    propertyType: searchData.propertyType || "", // New field
   });
 
   const handleChange = (e) => {
@@ -37,6 +38,7 @@ const FixAndFlipQuoteModal = ({ selectedLenders, onClose, searchData }) => {
           rehabNeeded: formData.rehabNeeded,
           arv: formData.arv,
           liquidity: formData.liquidity,
+          propertyType: formData.propertyType, // Include propertyType
         }),
       });
 
@@ -77,6 +79,21 @@ const FixAndFlipQuoteModal = ({ selectedLenders, onClose, searchData }) => {
 
           <label>Liquidity</label>
           <input type="number" name="liquidity" value={formData.liquidity} onChange={handleChange} required />
+
+          <label>Property Type</label>
+          <select
+            name="propertyType"
+            value={formData.propertyType}
+            onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
+            required
+          >
+            <option value="">-- Select Property Type --</option>
+            <option value="Single Family 1-4">Single Family 1-4</option>
+            <option value="Condo">Condo</option>
+            <option value="Townhome">Townhome</option>
+            <option value="Manufactured">Manufactured</option>
+            <option value="Cabins">Cabins</option>
+          </select>
 
           <button type="submit">Submit</button>
           <button type="button" onClick={onClose}>Cancel</button>
