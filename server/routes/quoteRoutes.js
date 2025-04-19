@@ -9,6 +9,70 @@ const verifyToken = require("../middleware/verifyToken");
 
 // Organize routes by loan program type
 
+// Fix and Flip Quotes
+// Add detailed debug logs to the /fix-and-flip route
+router.post("/fix-and-flip", verifyToken, async (req, res) => {
+  try {
+    console.log("🔍 Incoming Request Body:", req.body);
+    console.log("🔍 User ID from Token:", req.user?._id);
+    console.log("🔍 Lender IDs:", req.body.lenderIds);
+    console.log("🔍 Loan Type:", req.body.loanType);
+
+    const {
+      lenderIds,
+      propertyAddress,
+      ficoScore,
+      experience,
+      purchasePrice,
+      rehabNeeded,
+      arv,
+      liquidity,
+    } = req.body;
+
+    if (!lenderIds || lenderIds.length === 0 || !propertyAddress || !ficoScore || !experience || !purchasePrice || !rehabNeeded || !arv || !liquidity) {
+      console.error("❌ Missing required fields:", req.body);
+      return res.status(400).json({ success: false, message: "Required fields are missing." });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user || !user.email) {
+      console.error("❌ User not found or email missing:", req.user._id);
+      return res.status(400).json({ success: false, message: "User email not found." });
+    }
+
+    const quotes = [];
+
+    for (const lenderId of lenderIds) {
+      const lender = await Lender.findById(lenderId);
+      if (!lender) {
+        console.error("❌ Lender not found:", lenderId);
+        return res.status(404).json({ success: false, message: `Lender with ID ${lenderId} not found.` });
+      }
+
+      const newQuote = new Quote({
+        userId: req.user._id,
+        lenderId,
+        loanType: "fixAndFlip",
+        propertyAddress,
+        ficoScore,
+        experience,
+        purchasePrice,
+        rehabNeeded,
+        arv,
+        liquidity,
+      });
+      console.log("📝 Saving new quote:", newQuote);
+      await newQuote.save();
+      quotes.push(newQuote);
+    }
+
+    console.log("✅ Quotes submitted successfully:", quotes);
+    res.status(201).json({ success: true, message: "Quotes submitted successfully.", quotes });
+  } catch (error) {
+    console.error("❌ Error submitting Fix and Flip quotes:", error);
+    res.status(500).json({ success: false, message: "Server error while submitting quotes." });
+  }
+});
 
 // DSCR Quotes
 router.post("/dscr", verifyToken, async (req, res) => {

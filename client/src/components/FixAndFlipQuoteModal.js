@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const BASE_URL = "https://www.brokercheetah.com/api/quotes/fix-and-flip"; // Updated to explicitly use the correct route
+const BASE_URL = "https://broker-cheetah-backend.onrender.com/api/quotes/fix-and-flip"; // Updated to use the correct backend base URL
 
 const FixAndFlipQuoteModal = ({ selectedLenders, onClose, searchData }) => {
   const [formData, setFormData] = useState({
