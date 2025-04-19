@@ -14,7 +14,7 @@ const verifyToken = require("../middleware/verifyToken");
 router.post("/fix-and-flip", verifyToken, async (req, res) => {
   try {
     console.log("🔍 Incoming Request Body:", req.body);
-    console.log("🔍 User ID from Token:", req.user?._id);
+    console.log("🔍 User ID from Token:", req.user?.id); // Updated to use req.user.id instead of req.user._id
     console.log("🔍 Lender IDs:", req.body.lenderIds);
     console.log("🔍 Loan Type:", req.body.loanType);
 
@@ -34,9 +34,9 @@ router.post("/fix-and-flip", verifyToken, async (req, res) => {
       return res.status(400).json({ success: false, message: "Required fields are missing." });
     }
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user.id); // Updated to use req.user.id
     if (!user || !user.email) {
-      console.error("❌ User not found or email missing:", req.user._id);
+      console.error("❌ User not found or email missing:", req.user.id);
       return res.status(400).json({ success: false, message: "User email not found." });
     }
 
@@ -50,7 +50,7 @@ router.post("/fix-and-flip", verifyToken, async (req, res) => {
       }
 
       const newQuote = new Quote({
-        userId: req.user._id,
+        userId: req.user.id, // Updated to use req.user.id
         lenderId,
         loanType: "fixAndFlip",
         propertyAddress,
@@ -92,7 +92,7 @@ router.post("/dscr", verifyToken, async (req, res) => {
       return res.status(400).json({ success: false, message: "Required fields are missing." });
     }
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user.id); // Updated to use req.user.id
     if (!user || !user.email) {
       return res.status(400).json({ success: false, message: "User email not found." });
     }
@@ -106,7 +106,7 @@ router.post("/dscr", verifyToken, async (req, res) => {
       }
 
       const newQuote = new Quote({
-        userId: req.user._id,
+        userId: req.user.id, // Updated to use req.user.id
         lenderId,
         loanType: "dscr",
         propertyAddress,
@@ -135,7 +135,7 @@ router.post("/fix-and-flip/log", verifyToken, async (req, res) => {
 
     // Log the quote submission
     const quoteLogs = lenderIds.map((lenderId) => ({
-      userId: req.user._id,
+      userId: req.user.id, // Updated to use req.user.id
       lenderId,
       loanType,
       ...quoteData,
@@ -168,7 +168,7 @@ router.get("/analytics/loan-type", verifyToken, async (req, res) => {
 router.get("/analytics/user", verifyToken, async (req, res) => {
   try {
     const userAnalytics = await Quote.aggregate([
-      { $match: { userId: req.user._id } },
+      { $match: { userId: req.user.id } }, // Updated to use req.user.id
       { $group: { _id: "$loanType", count: { $sum: 1 } } },
     ]);
 

@@ -20,16 +20,6 @@ const FixAndFlipQuoteModal = ({ selectedLenders, onClose, searchData }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("🔍 Request Headers:", {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-      "Content-Type": "application/json",
-    });
-    console.log("🔍 Request Payload:", {
-      lenderId: selectedLenders[0],
-      loanType: "fixAndFlip", // Replace undefined loanType with hardcoded value
-      ...formData,
-    });
-
     try {
       const response = await fetch(BASE_URL, {
         method: "POST",
@@ -40,7 +30,13 @@ const FixAndFlipQuoteModal = ({ selectedLenders, onClose, searchData }) => {
         body: JSON.stringify({
           lenderIds: selectedLenders, // Send all selected lenders
           loanType: "fixAndFlip",
-          ...formData,
+          propertyAddress: formData.address, // Updated field name
+          ficoScore: formData.ficoScore,
+          experience: formData.experience,
+          purchasePrice: formData.purchasePrice,
+          rehabNeeded: formData.rehabNeeded,
+          arv: formData.arv,
+          liquidity: formData.liquidity,
         }),
       });
 
